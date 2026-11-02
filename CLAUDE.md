@@ -1,7 +1,9 @@
-# Misskey – Claude Code Guide
+# 旅人营地 (trekker-camp) – Claude Code Guide
 
-ルール本体は [AGENTS.md](AGENTS.md) (Codex / Copilot と共有する単一ソース)。本ファイルは Claude Code 用の薄いラッパーで、`@AGENTS.md` 構文で本体規約をセッション開始時にコンテキストへ展開する。
+规则本体是 [AGENTS.md](AGENTS.md)（与 Codex / Copilot 共用）。本文件是 Claude Code 的薄包装，用 `@AGENTS.md` 在会话开始时展开。
 
-Claude Code 固有の補助 (skills / agents / slash commands / docs) は `.claude/` 配下にコミット済。個人ローカル設定は `.claude/settings.local.json` に、MCP 認証情報は `.claude/.credentials.json` に置く (いずれも `.gitignore` 済)。
+本仓是 Misskey fork：产品文案以 `locales/zh-CN.yml` 为源；联邦默认非目标；日常分支 `master`。搭环境见 [SETUP.zh-CN.md](SETUP.zh-CN.md)。
+
+Claude 专用辅助在 `.claude/`（skills / agents / slash commands）。个人本地设置放 `.claude/settings.local.json`，MCP 凭证放 `.claude/.credentials.json`（均已 gitignore）。
 
 @AGENTS.md

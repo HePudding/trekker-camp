@@ -1,12 +1,33 @@
-# Misskey – AI Agent Guide
+# 旅人营地 (trekker-camp) – AI Agent Guide
 
-このファイルは Misskey リポジトリで動く AI コーディングエージェント (Claude Code / OpenAI Codex / GitHub Copilot 等) が共通で参照する **絶対禁止事項と最低限のチェック** を集めた索引。次の 3 経路から参照・読み込みされる:
+本仓库是 [misskey-dev/misskey](https://github.com/misskey-dev/misskey) 的 fork，面向 **星塔旅人（Arknights: Endfield）简中第三方社区**。默认开发分支是 **`master`**。
 
-- **Claude Code**: ルート `CLAUDE.md` から `@AGENTS.md` で取り込まれる。詳細手順・規約は `.claude/skills/` (description で自動索引)
-- **OpenAI Codex**: ルート `AGENTS.md` を直接読み込む (skill エントリは `.agents/skills/`、実体は `.claude/skills/` を指す)
-- **GitHub Copilot**: `.github/copilot-instructions.md` (本ファイルの規約を Copilot code review 向けに再掲) 経由で参照する
+本文件给 AI 编码助手 (Claude Code / OpenAI Codex / GitHub Copilot / 小筑 等) 用：硬规矩 + 最低检查。读取路径与上游相同：
 
-人間 contributor 向けの一般規約 (Issue / PR の出し方、ActivityPub 拡張など) は [CONTRIBUTING.md](CONTRIBUTING.md) を参照。本ファイルは AI が **コードを書く・直す・出す** 際に踏み外してはいけない事項に絞る。
+- **Claude Code**: 根目录 `CLAUDE.md` → `@AGENTS.md`；细节在 `.claude/skills/`
+- **OpenAI Codex**: 直接读本文件；`.agents/skills/` 指向 `.claude/skills/`
+- **GitHub Copilot**: `.github/copilot-instructions.md`
+
+人类向导见 [CONTRIBUTING.md](CONTRIBUTING.md)（上游流程）和 [SETUP.zh-CN.md](SETUP.zh-CN.md)（本仓搭环境）。
+
+## 旅人营地覆盖规则（优先于下文上游条文）
+
+1. **产品文案源语言是简体中文 `locales/zh-CN.yml`**
+   - AI / 开发者可以、也应当编辑 `locales/zh-CN.yml`
+   - 仍禁止手改其它 locale YAML（`en-US.yml`、`ja-JP.yml`、`zh-TW.yml` 等），避免和上游/Crowdin 同步互相覆盖
+   - 若需从上游合入文案：先合 `ja-JP.yml`（上游源），再把旅人营地需要的键落到 `zh-CN.yml`
+   - frontend i18n 新增键：写入 `zh-CN.yml`，并保证运行时默认语言走简中（实例配置 / 默认 locale）
+2. **Federation / ActivityPub / 联邦相关默认不做**
+   - 除非主人明确要求，不要改 AP payload、federation 测试、远程互动相关代码
+   - 上游 CONTRIBUTING 里 ActivityPub 扩展章节对本仓非目标
+3. **不要主动扩大产品范围**
+   - 只做主人点名的功能与「营地 / 旅人」向 UX、文案、主题改动
+4. **破坏性操作需确认**
+   - 不部署生产、不 force-push 共享分支、不删数据、不关 Issue/不代发评论，除非主人明确说
+5. **出货分支**
+   - PR / 直接推送默认对着 `master`（本仓不以 `develop` 为日常开发主线）
+
+下文保留上游 Misskey 的通用禁止项与检查清单；与本节冲突时，**以本节为准**。
 
 ---
 
@@ -23,9 +44,11 @@
      `SPDX: OK` なら追加の目視確認はしない
    - `packages/misskey-js` は MIT ライセンスのサブパッケージなので、この AGPL ヘッダーを一律に付けない (サブパッケージ固有の `package.json` / `LICENSE` / 既存ファイルのヘッダーに従う)
 
-2. **`locales/ja-JP.yml` 以外の locale YAML を手動編集しない**
-   - 他言語ファイル (`en-US.yml` など `ja-JP.yml` 以外すべて) は Crowdin の自動配信先。手動編集すると次の同期で上書き喪失する
-   - 根拠: [locales/README.md](locales/README.md) と [crowdin.yml](crowdin.yml) (`ja-JP.yml` → `locales/%locale%.yml` の同期設定)
+2. **`locales/zh-CN.yml` と（上游同期用の）`locales/ja-JP.yml` 以外の locale YAML を手動編集しない**
+   - 旅人营地: 产品文案のソースは **`zh-CN.yml`**。AI はこれを編集してよい
+   - `ja-JP.yml` は上游 Misskey 同期の入口として残す。Crowdin 運用は本 fork では既定オフ想定
+   - それ以外 (`en-US.yml` / `zh-TW.yml` など) は手編集禁止（同期や差分ノイズの原因）
+   - 根拠（上游）: [locales/README.md](locales/README.md)・[crowdin.yml](crowdin.yml)。本仓覆盖见上方「旅人营地覆盖规则」
 
 3. **マージ済 migration ファイルを編集しない**
    - 対象: `packages/backend/migration/{unixMs}-{name}.js` のうち、既に `develop` / `master` にマージされたもの
@@ -54,6 +77,7 @@
 
 13. **`working-on-backend` スキルを参照せずに `packages/backend/` 配下のファイルを編集・追加しない**
 14. **`working-on-frontend` スキルを参照せずに `packages/frontend/` 配下のファイルを編集・追加しない**
+    - スキル本文が「`ja-JP.yml` のみ編集可」と書いていても、**本仓では `zh-CN.yml` をソースとする**（本节覆盖规则优先）
 15. **`shipping-misskey-change` スキルを参照せずに commit / PR 作成 / 作業をユーザーに返さない**
 16. **`creating-issues-and-prs` スキルを参照せずに Issue / PR を起票しない** (脆弱性報告のルールも含む)
 
@@ -68,7 +92,7 @@
 2. **backend API 変更時**: `pnpm build-misskey-js-with-types` を実行し `packages/misskey-js/src/autogen/` の差分も commit に含めた
 3. **entity / migration 変更時**: `pnpm --filter backend check-migrations` が pending DDL 0 件で通る / 新規 migration は `up()` と `down()` 両方実装済
 4. **SPDX**: `node scripts/check-spdx.mjs` が `SPDX: OK` を返すことを確認する
-5. **locale safety**: commit 済み・未commit・untracked の変更集合に `locales/ja-JP.yml` 以外の locale YAML が無いことを確認する
+5. **locale safety**: 変更集合に出てよい locale YAML は `locales/zh-CN.yml` と（上游同期時のみ）`locales/ja-JP.yml`。それ以外の locale YAML 差分が混ざっていないこと
 6. **[CHANGELOG](.claude/skills/shipping-misskey-change/references/tasks/changelog-update.md)**: ユーザーが明示しない限り編集しない。
    ユーザー影響がある変更では引き継ぎに候補を 1 行だけ示す
 
