@@ -1,4 +1,4 @@
-> **旅人营地 (trekker-camp)** — 星塔旅人（Endfield）简中社区用 Misskey fork。默认分支 `master`。搭环境见 [SETUP.zh-CN.md](./SETUP.zh-CN.md)，AI 规矩见 [AGENTS.md](./AGENTS.md)。以下为上游 Misskey README。
+> **旅人营地 (trekker-camp)** — 星塔旅人（Stella Sora）简中社区用 Misskey fork。默认分支 `master`。搭环境见 [SETUP.zh-CN.md](./SETUP.zh-CN.md)，AI 规矩见 [AGENTS.md](./AGENTS.md)。以下为上游 Misskey README。
 
 <div align="center">
 <a href="https://misskey-hub.net">
