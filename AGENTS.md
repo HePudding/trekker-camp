@@ -1,6 +1,6 @@
 # 旅人营地 (trekker-camp) – AI Agent Guide
 
-本仓库是 [misskey-dev/misskey](https://github.com/misskey-dev/misskey) 的 fork，面向 **星塔旅人（Arknights: Endfield）简中第三方社区**。默认开发分支是 **`master`**。
+本仓库是 [misskey-dev/misskey](https://github.com/misskey-dev/misskey) 的 fork，面向 **星塔旅人（Stella Sora）简中第三方社区**。默认开发分支是 **`master`**。
 
 本文件给 AI 编码助手 (Claude Code / OpenAI Codex / GitHub Copilot / 小筑 等) 用：硬规矩 + 最低检查。读取路径与上游相同：
 
