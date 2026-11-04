@@ -1,24 +1,20 @@
-<!-- ℹ お読みください / README
-PRありがとうございます！ PRを作成する前に、コントリビューションガイドをご確認ください:
-Thank you for your PR! Before creating a PR, please check the contribution guide:
+<!-- ℹ 请先阅读
+感谢提交 PR！创建前请阅读贡献指南：
 https://github.com/misskey-dev/misskey/blob/develop/CONTRIBUTING.md
 -->
 
-## What
-<!-- このPRで何をしたのか？ どう変わるのか？ -->
-<!-- What did you do with this PR? How will it change things? -->
+## 修改内容
+<!-- 本 PR 做了什么？行为会如何变化？ -->
 
-## Why
-<!-- なぜそうするのか？ どういう意図なのか？ 何が困っているのか？ -->
-<!-- Why do you do it? What are your intentions? What is the problem? -->
+## 修改原因
+<!-- 为什么需要修改？目标是什么？解决了什么问题？ -->
 
-## Additional info (optional)
-<!-- テスト観点など -->
-<!-- Test perspective, etc -->
+## 补充信息（可选）
+<!-- 测试角度等 -->
 
-## Checklist
-- [ ] Read the [contribution guide](https://github.com/misskey-dev/misskey/blob/develop/CONTRIBUTING.md)
-- [ ] Test working in a local environment
-- [ ] (If needed) Add story of storybook
-- [ ] (If needed) Update CHANGELOG.md
-- [ ] (If possible) Add tests
+## 检查清单
+- [ ] 已阅读[贡献指南](https://github.com/misskey-dev/misskey/blob/develop/CONTRIBUTING.md)
+- [ ] 已在本地环境测试
+- [ ] （如需要）添加 Storybook 示例
+- [ ] （如需要）更新 CHANGELOG.md
+- [ ] （如可行）添加测试

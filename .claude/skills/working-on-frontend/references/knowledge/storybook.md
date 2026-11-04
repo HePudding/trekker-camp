@@ -1,16 +1,16 @@
-# Storybook (`*.stories.impl.ts`) 規約
+# Storybook（*.stories.impl.ts）规范
 
-共有 `Mk*` コンポーネントには `Mk<Name>.stories.impl.ts` を **同階層** に併設するのが慣習。
+共享 Mk 组件应在**同目录**配套 `Mk<Name>.stories.impl.ts`。
 
-## 配置と命名
+## 位置与命名
 
-- **ファイル名は `.stories.impl.ts` 固定** (`.stories.ts` は `packages/frontend/.storybook/generate.tsx` による生成物で手編集・コミット不可)
-- 同階層に置く (`components/MkButton.stories.impl.ts`、`components/global/MkAvatar.stories.impl.ts` 等)
-- 先頭に TS コメント形式の SPDX ヘッダーが必要
+- **后缀固定为 .stories.impl.ts**。`.stories.ts` 由 `packages/frontend/.storybook/generate.tsx` 生成，禁止手动编辑或提交。
+- 与组件放在同一层，包括 global 等子目录。
+- 开头需要 TypeScript 注释形式的 SPDX 头。
 
-## 基本: 単一 story (Default のみ)
+## 单个示例：Default
 
-シンプルなコンポーネントならこれで十分。(以下の `MkColoredTag` は説明用の**架空のコンポーネント名**。実在しない。実物のパターンは `MkButton.stories.impl.ts` を参照。)
+简单组件使用此模式即可。下方 MkColoredTag 是**虚构的示例组件**，真实实现可参考 MkButton.stories.impl.ts。
 
 ```ts
 /*
@@ -30,7 +30,7 @@ export const Default = {
 			setup() {
 				return { args };
 			},
-			template: '<MkColoredTag v-bind="args">タグ</MkColoredTag>',
+			template: '<MkColoredTag v-bind="args">标签</MkColoredTag>',
 		};
 	},
 	args: {
@@ -42,16 +42,13 @@ export const Default = {
 } satisfies StoryObj<typeof MkColoredTag>;
 ```
 
-ポイント:
+- 两个 eslint-disable 是 Storybook 约定，处理 render 返回类型和默认导出规则。
+- `satisfies StoryObj<typeof MkColoredTag>` 用于保留 args 类型补全。
 
-- 上 2 つの `eslint-disable` は Storybook のお作法で必須 (render の関数が return type を明示しないため / `default export` ではないため)
-- `satisfies StoryObj<typeof MkColoredTag>` が無いと `args` の型補完が効かなくなる
+## 多个示例：不同变体
 
-## 複数 story (variant 別)
-
-参考: [MkButton.stories.impl.ts](../../../../../packages/frontend/src/components/MkButton.stories.impl.ts)
-
-variant / size / 状態などのバリエーションがあるなら、`Default` を base にして spread で派生させると簡潔。
+参考 [MkButton.stories.impl.ts](../../../../../packages/frontend/src/components/MkButton.stories.impl.ts)。
+存在 variant、size 或状态差异时，基于 Default 展开并派生：
 
 ```ts
 export const Default = {
@@ -61,7 +58,7 @@ export const Default = {
 			setup() {
 				return { args };
 			},
-			template: '<MkColoredTag v-bind="args">タグ</MkColoredTag>',
+			template: '<MkColoredTag v-bind="args">标签</MkColoredTag>',
 		};
 	},
 	args: {
@@ -88,9 +85,9 @@ export const Disabled = {
 } satisfies StoryObj<typeof MkColoredTag>;
 ```
 
-## イベントを可視化する (`action()`)
+## 使用 action 展示事件
 
-クリック等の emit を Storybook の Actions panel で見たい場合、`storybook/actions` の `action()` を使う。
+通过 `storybook/actions` 的 action，将点击等事件展示在 Actions 面板中：
 
 ```ts
 import { action } from 'storybook/actions';
@@ -113,7 +110,7 @@ export const Default = {
 					};
 				},
 			},
-			template: '<MkColoredTag v-bind="props" v-on="events">タグ</MkColoredTag>',
+			template: '<MkColoredTag v-bind="props" v-on="events">标签</MkColoredTag>',
 		};
 	},
 	args: {},
@@ -121,11 +118,11 @@ export const Default = {
 } satisfies StoryObj<typeof MkColoredTag>;
 ```
 
-`MkButton.stories.impl.ts` がこのパターン。
+MkButton.stories.impl.ts 使用此模式。
 
-## `argTypes` で controls を細かく制御
+## 使用 argTypes 调整控件
 
-string union を radio に / number を range に変えるとレビューが楽になる。(標準の Storybook 機能。現状リポジトリ内の `.stories.impl.ts` では実際には使われていないので必須ではない。)
+可将字符串联合类型显示为单选，将数值显示为范围控件，便于审查。这是 Storybook 标准功能，当前仓库的 .stories.impl.ts 尚未使用，不属于强制要求。
 
 ```ts
 export const Default = {
@@ -144,19 +141,19 @@ export const Default = {
 } satisfies StoryObj<typeof MkColoredTag>;
 ```
 
-## `parameters.layout` の使い分け
+## parameters.layout
 
-| 値 | 使い所 |
+| 值 | 用途 |
 |---|---|
-| `'centered'` | 単体表示 (ボタン、タグ、アイコン等の小さい部品) |
-| `'fullscreen'` | ページ単位、もしくはパネル全体を見せたい時 |
-| `'padded'` (デフォルト) | 周囲に余白が欲しい中サイズ部品 |
+| centered | 按钮、标签、图标等小型独立组件 |
+| fullscreen | 整页或完整面板 |
+| padded（默认） | 需要周围留白的中型组件 |
 
-`layout` を変えるだけで Storybook 上の見え方が大きく変わる。レイアウト依存のコンポーネント (sticky header 等) なら `'fullscreen'` を選ぶ。
+layout 会明显影响展示效果。固定页头等依赖布局的组件应选择 fullscreen。
 
-## slot の中身を可変にする
+## 可变插槽内容
 
-`args` に slot 用文字列フィールドを足し、template で `{{ args.label }}` のように展開する。
+在 args 添加展示字符串，并在模板中通过 `{{ args.label }}` 使用：
 
 ```ts
 export const Default = {
@@ -170,22 +167,24 @@ export const Default = {
 		};
 	},
 	args: {
-		label: 'タグ',
+		label: '标签',
 		variant: 'info',
 	},
 	parameters: { layout: 'centered' },
 } satisfies StoryObj<typeof MkColoredTag>;
 ```
 
-ただし `label` を component の props にしてしまうのは禁物 (slot で受け取る方針なら slot のままにする)。Storybook 上だけで使う表示用文字列として扱う。
+label 仅作为 Storybook 展示参数；组件原本通过插槽接受内容时，应保持插槽设计，不为此添加组件 prop。
 
-## 確認方法
+## 验证
 
 ```bash
 pnpm --filter frontend storybook-dev    # http://localhost:6006
-pnpm --filter frontend build-storybook  # 静的ビルド
+pnpm --filter frontend build-storybook  # 静态构建
 ```
 
-新規コンポーネントの stories が Sidebar に出ない場合、多くは [generate.tsx](../../../../../packages/frontend/.storybook/generate.tsx) の生成対象 **allowlist** に入っていないため。`src/{components,pages,...}/**/*.vue` の全体 glob はコメントアウトされており、対象は `globSync('src/components/global/Mk*.vue')` / `globSync('src/components/Mk[B-E]*.vue')` などの**明示列挙**になっている。`.stories.impl.ts` を併設しただけでは自動では出ないことがあるので、対象外なら generate.tsx に 1 行追加する。加えて、ファイル名 (`.stories.impl.ts`) と SPDX ヘッダー以降に構文エラーが無いかも確認する。
+新组件未出现在侧栏时，常见原因是未进入 [generate.tsx](../../../../../packages/frontend/.storybook/generate.tsx) 的**允许列表**。全量 Vue glob 已被注释，当前通过 `globSync('src/components/global/Mk*.vue')`、`globSync('src/components/Mk[B-E]*.vue')` 等显式列举。
 
-Chromatic (`pnpm --filter frontend chromatic`) で視覚回帰チェックも行われる。
+仅添加 .stories.impl.ts 可能仍不会显示；不在范围内时需在 generate.tsx 添加规则。同时检查后缀和 SPDX 头之后的语法。
+
+Chromatic（`pnpm --filter frontend chromatic`）也会检查视觉回归。

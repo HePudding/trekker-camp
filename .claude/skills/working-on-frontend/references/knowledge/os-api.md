@@ -1,24 +1,25 @@
-# `os.*` UI ヘルパー
+# os.* 界面辅助函数
 
-[`packages/frontend/src/os.ts`](../../../../../packages/frontend/src/os.ts) で公開されている UI 操作 API の一覧。**ブラウザ標準の `window.alert()` / `window.confirm()` / `window.prompt()` を直接呼ばない**。これらは Misskey のテーマ / アクセシビリティ / モーダルレイヤと整合しないため。
+[packages/frontend/src/os.ts](../../../../../packages/frontend/src/os.ts) 提供界面操作 API。
+**禁止直接调用 `window.alert()`、`window.confirm()`、`window.prompt()`**，它们与 Misskey 的主题、无障碍和弹窗层不一致。
 
 ## 主要 API
 
-| 関数 | 用途 |
+| 函数 | 用途 |
 |---|---|
-| `os.alert({ type?, title?, text? })` | 単方向アラート (全フィールド任意) |
-| `os.confirm({ type, title?, text? })` | yes/no 確認 (`type` 必須、`{ canceled }` を返す) |
-| `os.toast(message)` | 一時通知 |
-| `os.popup(component, props, handlers)` | 任意コンポーネントの非同期ポップアップ |
-| `os.popupMenu(items, anchor?)` | コンテキストメニュー |
-| `os.contextMenu(items, ev)` | 右クリックメニュー |
-| `os.form(title, fields)` | フォームダイアログ |
-| `os.apiWithDialog(endpoint, data)` | API 呼出し + エラー時ダイアログ表示 |
-| `os.success()` / `os.waiting()` | 成功 / ローディング表示 |
+| `os.alert({ type?, title?, text? })` | 单向提示，所有字段可选 |
+| `os.confirm({ type, title?, text? })` | 确认对话框，type 必需，返回 canceled |
+| `os.toast(message)` | 临时通知 |
+| `os.popup(component, props, handlers)` | 任意组件的异步弹窗 |
+| `os.popupMenu(items, anchor?)` | 上下文菜单 |
+| `os.contextMenu(items, ev)` | 右键菜单 |
+| `os.form(title, fields)` | 表单对话框 |
+| `os.apiWithDialog(endpoint, data)` | API 调用及错误对话框 |
+| `os.success()`、`os.waiting()` | 成功、加载状态 |
 
-## 使用例
+## 示例
 
-### `os.alert` (単方向通知)
+### os.alert：单向通知
 
 ```ts
 await os.alert({
@@ -27,9 +28,9 @@ await os.alert({
 });
 ```
 
-`type` は `'info'` / `'warning'` / `'error'` / `'question'` / `'success'` / `'waiting'`。
+type 可为 info、warning、error、question、success、waiting。
 
-### `os.confirm` (yes/no 確認)
+### os.confirm：确认
 
 ```ts
 const { canceled } = await os.confirm({
@@ -37,20 +38,20 @@ const { canceled } = await os.confirm({
 	text: i18n.ts._notes.deleteConfirm,
 });
 if (canceled) return;
-// 削除処理
+// 删除处理
 ```
 
-`canceled === true` のとき何もしない、というパターンが頻出。
+常见模式是 canceled 为 true 时不执行后续操作。
 
-### `os.toast` (一時通知)
+### os.toast：临时通知
 
 ```ts
 os.toast(i18n.ts.deleted);
 ```
 
-成功通知などの軽い fire-and-forget なフィードバック。
+适合无需等待结果的成功反馈。
 
-### `os.popup` (任意コンポーネント)
+### os.popup：任意组件
 
 ```ts
 const { dispose } = os.popup(MkUserSelectDialog, {
@@ -66,31 +67,32 @@ const { dispose } = os.popup(MkUserSelectDialog, {
 });
 ```
 
-カスタムダイアログを開く場合は、コンポーネント (props / emits) を `os.popup` で起動する。`dispose()` で閉じる。
+通过 os.popup 传入组件、props 和事件处理器打开自定义对话框，使用 dispose 关闭。
 
-### `os.apiWithDialog` (API + 自動エラーダイアログ)
+### os.apiWithDialog：API 与自动错误提示
 
 ```ts
 const result = await os.apiWithDialog('notes/create', {
 	text: 'hello',
 });
-// 成功時: result は API レスポンス
-// 失敗時: 自動でエラーダイアログを表示。ただし promise 自体は reject されるので、await するなら try/catch が必要
+// 成功时：result 为 API 响应
+// 失败时：自动显示错误对话框，但 Promise 仍拒绝，await 调用需要 try/catch
 ```
 
-通常の `misskeyApi(...)` だと自前でエラーダイアログ表示が必要だが、`apiWithDialog` は失敗時に自動で `os.alert({ type: 'error', ... })` を表示してくれる。ただし返す promise は元の `misskeyApi(...)` と同一で **reject される** ([os.ts](../../../../../packages/frontend/src/os.ts) で `return promise`)。`await` する場合は依然 try/catch が要る (ダイアログ表示後に後続処理を止めたいだけなら catch して握りつぶす)。
+普通 misskeyApi 调用需要自行显示错误；apiWithDialog 在失败时自动调用错误提示。但它返回的仍是原 Promise，失败时仍会拒绝，见 [os.ts](../../../../../packages/frontend/src/os.ts) 的 `return promise`。await 调用仍需要 try/catch；若仅需在显示错误后停止后续操作，可在 catch 中不再抛出。
 
-## なぜブラウザ標準 UI を使わないか
+## 原生对话框的问题
 
-- `window.alert()` は Misskey のテーマ (ダークモード / カスタムテーマ) に追従しない
-- `window.confirm()` はキーボード操作・focus trap・i18n のいずれも Misskey の規約と整合しない
-- `window.prompt()` の入力 UI も同じ
-- ブラウザ依存の表示揺れ (Firefox / Safari / Chrome で見た目が違う)
-- vue-component-reviewer から指摘される
+- alert 不跟随深色或自定义主题。
+- confirm 的键盘操作、焦点限制和国际化与 Misskey 规范不一致。
+- prompt 的输入界面也存在相同问题。
+- Firefox、Safari、Chrome 的外观不同。
+- vue-component-reviewer 会报告此类调用。
 
-代わりに `os.alert` / `os.confirm` / `os.form` / `os.popup` を使う。
+使用 os.alert、os.confirm、os.form 或 os.popup。
 
-## 参照ファイル
+## 参考文件
 
-- [packages/frontend/src/os.ts](../../../../../packages/frontend/src/os.ts) — 全 API の実装
-- 既存のダイアログ系コンポーネント: `MkDialog.vue` (alert / confirm はこれを再利用)、`MkFormDialog.vue` 等
+- [os.ts](../../../../../packages/frontend/src/os.ts)：全部 API 实现。
+- `MkDialog.vue`：alert 和 confirm 复用的组件。
+- `MkFormDialog.vue` 等表单对话框组件。

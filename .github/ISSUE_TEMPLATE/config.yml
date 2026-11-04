@@ -1,8 +1,8 @@
 contact_links:
-  - name: 💬 Misskey official Discord
+  - name: 💬 Misskey 官方 Discord
     url: https://discord.gg/Wp8gVStHW3
-    about: Chat freely about Misskey
-  # 仮
-  - name: 💬 Start discussion
+    about: 自由交流 Misskey 相关话题
+  # 暂定
+  - name: 💬 发起讨论
     url: https://github.com/misskey-dev/misskey/discussions
-    about: The official forum to join conversation and ask question
+    about: 参与交流和提问的官方论坛

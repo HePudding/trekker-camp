@@ -1,19 +1,19 @@
-## misskey-js向け型生成モジュール
+## misskey-js 类型生成模块
 
-バックエンドが吐き出すOpenAPI準拠のapi.jsonからmisskey-jsで使用される型エイリアスを生成するためのモジュールです。
-このモジュールはmisskey-jsそのものにバンドルされることは想定しておらず、生成物をmisskey-jsのsrc配下にコピーして使用することを想定しています。
+本模块根据后端输出的 OpenAPI 格式 api.json，生成 misskey-js 使用的类型别名。
+本模块不随 misskey-js 打包，而是将生成结果复制到 misskey-js 的 src 目录下使用。
 
-## 使い方
+## 使用方法
 
-まず、Misskeyのバックエンドからapi.jsonを取得する必要があります。任意のMisskeyインスタンスの/api-docからダウンロードしても良いですし、
-backendモジュール配下で`pnpm generate-api-json`を実行しても良いでしょう。
+首先从 Misskey 后端获取 api.json。可以从任意 Misskey 实例的 /api-doc 下载，
+也可以在 backend 模块下执行 `pnpm generate-api-json`。
 
-api.jsonを入手したら、このファイルがあるディレクトリに置いてください。
+获取后，将 api.json 放到本文件所在目录。
 
-その後、以下コマンドを実行します。
+然后执行：
 
 ```shell
 pnpm generate
 ```
 
-上記を実行することで、`./built`ディレクトリ配下にtsファイルが生成されます。
+生成的 ts 文件将位于 `./built` 目录下。

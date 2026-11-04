@@ -1,1 +1,1 @@
-This package contains the common scripts that are used to build the frontend and frontend-embed packages.
+本包包含构建 frontend 和 frontend-embed 包时共用的脚本。

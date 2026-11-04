@@ -1,30 +1,30 @@
-# Contribution guide
-:v: Thanks for your contributions :v:
+# 贡献指南
 
-**ℹ️ Important:** This project uses Japanese as its major language, **but you do not need to translate and write the Issues/PRs in Japanese.**
-Also, you might receive comments on your Issue/PR in Japanese, but you do not need to reply to them in Japanese as well.\
-The accuracy of translation into Japanese is not high, so it will be easier for us to understand if you write it in the original language.
-It will also allow the reader to use the translation tool of their preference if necessary.
+:v: 感谢贡献 :v:
 
-## Issues
-Before creating an issue, please check the following:
-- To avoid duplication, please search for similar issues before creating a new issue.
-- Do not use Issues as a question.
-	- Issues should only be used to feature requests, suggestions, and report problems.
-	- Please ask questions in [GitHub Discussions](https://github.com/misskey-dev/misskey/discussions) or [Discord](https://discord.gg/Wp8gVStHW3).
+**ℹ️ 重要：**上游项目主要使用日语，**但你无需将 Issue 或 PR 翻译成日语。**
+即使收到日语评论，也无需用日语回复。\
+机器翻译成日语的准确度有限，使用原语言更便于理解，也方便读者选择自己偏好的翻译工具。
 
-## Creating a PR
-Thank you for your PR! Before creating a PR, please check the following:
-- If possible, prefix the title with a keyword that identifies the type of this PR, as shown below.
-  - fix / refactor / feat / enhance / perf / chore etc.
-  - Also, make sure that the granularity of this PR is appropriate. Please do not include more than one type of change or interest in a single PR.
-- If there is an Issue which will be resolved by this PR, please include a reference to the Issue in the text.
-- Please add the summary of the changes to [`CHANGELOG.md`](/CHANGELOG.md). However, this is not necessary for changes that do not affect the users, such as refactoring.
-- Check if there are any documents that need to be created or updated due to this change.
-- If you have added a feature or fixed a bug, please add a test case if possible.
-- Please make sure that tests and Lint are passed in advance.
-  - You can run it with `npm run test` and `npm run lint`.
-- Run `npm run api` to update the API report and commit it if there are any diffs.
+## Issue
 
-Thanks for your cooperation 🤗
+创建前请检查：
 
+- 搜索相似问题，避免重复创建。
+- Issue 仅用于功能请求、建议和问题报告。
+- 提问请使用 [GitHub Discussions](https://github.com/misskey-dev/misskey/discussions) 或 [Discord](https://discord.gg/Wp8gVStHW3)。
+
+## 创建 PR
+
+感谢提交 PR！创建前请检查：
+
+- 尽可能在标题中使用类型前缀，例如 fix、refactor、feat、enhance、perf、chore。
+- 保持合适粒度，避免一个 PR 混合多类修改或关注点。
+- 若解决已有 Issue，在正文中引用。
+- 在 [`CHANGELOG.md`](/CHANGELOG.md) 添加修改概述；重构等不影响用户的改动可省略。
+- 检查是否需要新增或更新文档。
+- 新增功能或修复缺陷时，尽可能添加测试。
+- 提前确认测试和 lint 通过，可运行 `npm run test` 和 `npm run lint`。
+- 运行 `npm run api` 更新 API 报告，有差异时一并提交。
+
+感谢配合 🤗

@@ -1,31 +1,31 @@
-# 新規 / 既存 `Mk*` Vue コンポーネントを追加・改修する
+# 添加或修改 Mk* Vue 组件
 
-`packages/frontend/src/components/` 配下に新規の共有 Vue 3 SFC を追加する、または既存コンポーネントを大きく改修する時の手順。同じ規約をレビュー側からチェックする agent が [.claude/agents/vue-component-reviewer.md](../../../../agents/vue-component-reviewer.md)。
+用于在 packages/frontend/src/components 下新增共享 Vue 3 单文件组件，或大幅修改已有组件。
+对应审查代理为 [vue-component-reviewer](../../../../agents/vue-component-reviewer.md)。
 
-## 大前提 (事故直結 / Critical)
+## 强制前提（Critical）
 
-1. **SPDX ヘッダー** — `.vue` は HTML コメント形式 `<!-- ... -->`、`.stories.impl.ts` は TS コメント形式 `/* ... */`。欠落すると CI (`spdx` ジョブ) が落ちる
-2. **`Mk` プレフィックス必須** — 共有コンポーネントは `MkButton.vue` / `global/MkAvatar.vue` のように `Mk` で始める。ページ固有 UI は `Mk` を付けず `pages/` 側に置く
-3. **`locales/ja-JP.yml` のみ編集可** — i18n キー追加時に他言語 (`en-US.yml` 等) を手で触ってはいけない。Crowdin の自動配信で上書きされて失われる。詳細は [tasks/adding-i18n-key.md](adding-i18n-key.md) を参照
-4. **文字列リテラルの直書き禁止** — テンプレート / JS どちらでも、ユーザーに見せる文言は必ず `i18n.ts.<key>` か `i18n.tsx.<key>(...)` 経由 → [knowledge/i18n-usage.md](../knowledge/i18n-usage.md)
-5. **ブラウザ標準 UI を直接呼ばない** — `alert()` / `confirm()` / `window.prompt()` は禁止、必ず `os.alert` / `os.confirm` / `os.popup` 経由 → [knowledge/os-api.md](../knowledge/os-api.md)
+1. **SPDX 头**：Vue 文件使用 HTML 注释，.stories.impl.ts 使用 TypeScript 注释；缺失会导致 spdx CI 失败。
+2. **Mk 前缀**：共享组件包括子目录均需 Mk 前缀。页面专用组件放在 pages，无需前缀。
+3. **仅编辑 locales/ja-JP.yml**：其他语言由 Crowdin 分发，手动修改会被覆盖，见 [添加国际化键](adding-i18n-key.md)。
+4. **不硬编码界面字符串**：模板与 JavaScript 均通过 i18n.ts 或 i18n.tsx，见 [国际化用法](../knowledge/i18n-usage.md)。
+5. **不直接调用浏览器对话框**：使用 os.alert、os.confirm、os.popup，见 [os API](../knowledge/os-api.md)。
 
-## ファイル配置
+## 文件位置
 
-| 配置先 | 用途 | 命名 |
+| 路径 | 用途 | 命名 |
 |---|---|---|
-| `packages/frontend/src/components/Mk<Name>.vue` | 通常の共有 UI コンポーネント | `Mk<Name>.vue` |
-| `packages/frontend/src/components/global/Mk<Name>.vue` | `components/index.ts` で Vue グローバルコンポーネント登録 (`app.component`) され、import 無しで全テンプレートから使える基本部品 (`MkA` / `MkAvatar` / `MkAcct` 等) | `Mk<Name>.vue` (サブディレクトリ内でも `Mk` prefix 必須) |
-| `packages/frontend/src/components/grid/Mk<Name>.vue` | テーブル/グリッド系の部品セット | 同上 |
-| `packages/frontend/src/pages/<Name>.vue` | 単一ページ専用の UI (再利用しない) | `Mk` prefix **不要** |
+| packages/frontend/src/components/Mk<Name>.vue | 普通共享组件 | Mk<Name>.vue |
+| packages/frontend/src/components/global/Mk<Name>.vue | 由 components/index.ts 通过 app.component 全局注册，无需导入即可使用，如 MkA、MkAvatar、MkAcct | 子目录中仍需 Mk 前缀 |
+| packages/frontend/src/components/grid/Mk<Name>.vue | 表格、网格组件 | 同上 |
+| packages/frontend/src/pages/<Name>.vue | 单个页面专用、不复用的界面 | 无需 Mk 前缀 |
 
-迷ったら「他の `Mk*.vue` から import される可能性があるか?」で判定する。Yes なら `components/`、No なら `pages/`。
+判断依据是是否可能被其他 Mk 组件导入：会复用则放 components，否则放 pages。
+通常还需同目录添加 .stories.impl.ts，见 [Storybook](../knowledge/storybook.md)。
 
-ストーリーが必要 (= ほぼ常に必要) なら、同階層に `Mk<Name>.stories.impl.ts` も作る → [knowledge/storybook.md](../knowledge/storybook.md)。
+## SPDX 头
 
-## SPDX ヘッダー
-
-### `.vue` ファイル (HTML コメント)
+### Vue 文件：HTML 注释
 
 ```html
 <!--
@@ -34,9 +34,9 @@ SPDX-License-Identifier: AGPL-3.0-only
 -->
 ```
 
-`/* ... */` (TS / JS 形式) は **使わない**。既存の `.vue` ファイルがすべて HTML コメント形式を採用しており、SFC 先頭として自然な形式に統一するため。
+不使用 TypeScript/JavaScript 的块注释，保持与已有单文件组件一致。
 
-### `.stories.impl.ts` ファイル (TS コメント)
+### Storybook 文件：TypeScript 注释
 
 ```ts
 /*
@@ -45,9 +45,9 @@ SPDX-License-Identifier: AGPL-3.0-only
  */
 ```
 
-## 最小テンプレート
+## 最小模板
 
-シンプルな表示コンポーネントの最小形を示す**合成例** (特定ファイルの写しではない)。実在する単純コンポーネントの例は [MkInfo.vue](../../../../../packages/frontend/src/components/MkInfo.vue) 等を参照:
+以下为合成示例，并非某个实际文件的副本。简单真实组件可参考 [MkInfo.vue](../../../../../packages/frontend/src/components/MkInfo.vue)。
 
 ```vue
 <!--
@@ -115,78 +115,76 @@ const emit = defineEmits<{
 </style>
 ```
 
-より複雑なケース (型ジェネリック / 2 ブロック script / `v-model` 連動 / 名前付き slot) は → [knowledge/component-conventions.md §テンプレート集](../knowledge/component-conventions.md)。
+泛型、双 script、v-model、具名插槽等见 [组件规范](../knowledge/component-conventions.md)。
 
-## `<script>` / `<style>` 規約サマリ
+## script 与 style 规范
 
-| 項目 | 規約 | 新規不可 |
+| 项目 | 规范 | 新代码禁止 |
 |---|---|---|
-| `<script>` 開始タグ | `<script lang="ts" setup>` または `<script setup lang="ts">` | `<script>` (lang 無し) / Options API |
-| Props 定義 | `defineProps<{ ... }>()` (type-only) | runtime object 形式 |
-| Emits 定義 | `defineEmits<{ (ev: 'click'): void }>()` (type-only) | runtime array 形式 |
-| `<style>` 開始タグ | `<style lang="scss" module>`、参照は `:class="$style.foo"` | `<style scoped>` (module なし) |
-| CSS 値 | `var(--MI_THEME-...)` / `var(--MI-...)` | `#fff` / `rgb(...)` のハードコード |
-| グローバル class | `_button` / `_panel` / `_selectable` 等を活用 | — |
-| アイコン | Tabler icons クラス `<i class="ti ti-info-circle">` | インライン SVG / 別アイコンセット |
+| script | lang="ts" 与 setup，顺序不限 | 无 lang 或选项式 API |
+| Props | 纯类型 defineProps | 运行时对象 |
+| Emits | 纯类型 defineEmits | 运行时数组 |
+| style | lang="scss" module，通过 $style 引用 | 只有 scoped、无 module |
+| CSS 值 | --MI_THEME-*、--MI-* | 硬编码颜色 |
+| 全局类 | 复用 _button、_panel、_selectable | — |
+| 图标 | Tabler Icons 类 | 内联 SVG 或其他图标集 |
 
-詳細・テンプレート集は → [knowledge/component-conventions.md](../knowledge/component-conventions.md) / [knowledge/scss-modules.md](../knowledge/scss-modules.md)。
+详情见 [组件规范](../knowledge/component-conventions.md)和 [SCSS Modules](../knowledge/scss-modules.md)。
 
-## i18n の使い分け
+## 国际化
 
-引数なし → `i18n.ts.<key>` / 引数あり → `i18n.tsx.<key>(...)`。詳細は → [knowledge/i18n-usage.md](../knowledge/i18n-usage.md)。
+无参数使用 i18n.ts，有参数使用 i18n.tsx。见 [用法](../knowledge/i18n-usage.md)；新增键见[操作步骤](adding-i18n-key.md)。
 
-新キー追加が必要なら → [tasks/adding-i18n-key.md](adding-i18n-key.md)。
+## os 辅助函数
 
-## `os.*` ヘルパー
+使用 os.alert、os.confirm、os.popup、os.toast、os.popupMenu 等，见 [os API](../knowledge/os-api.md)。
 
-`os.alert` / `os.confirm` / `os.popup` / `os.toast` / `os.popupMenu` 等。詳細は → [knowledge/os-api.md](../knowledge/os-api.md)。
+## 无障碍最低要求
 
-## アクセシビリティ最低ライン
+1. 可点击元素优先使用 `<button class="_button">`。必须使用 div 时，同时提供 role="button"、tabindex="0"、Enter 和 Space 键盘处理。
+2. input、select、textarea 关联 label 或 aria-label。
+3. disabled 与 aria-disabled 一致，处理函数内也提前返回。
+4. 验证仅用键盘可完成操作，包括 Tab 移动焦点、Enter 确认。
+5. 仅使用必要的 ARIA 属性。
 
-1. **クリック可能要素は `<button class="_button">` を第一選択**。やむを得ず `<div @click>` なら `role="button"` + `tabindex="0"` + `@keydown.enter` / `@keydown.space.prevent` の 4 点セット必須
-2. **フォーム要素 (`<input>` / `<select>` / `<textarea>`) は `<label>` 接続もしくは `aria-label`**
-3. **`:disabled` バインドと `aria-disabled` を一致**させる。ハンドラ側でも早期 return
-4. **キーボードのみで完結**できるか確認 (Tab で focus 移動できる / Enter で確定できる)
-5. ARIA 属性は最小限
+完整清单及 MkButton、MkSwitch 示例见 [组件规范](../knowledge/component-conventions.md)。
 
-詳細チェックリストと既存例 (`MkButton.vue` / `MkSwitch.vue`) は → [knowledge/component-conventions.md §a11y](../knowledge/component-conventions.md)。
+## 配套 Storybook
 
-## Storybook 併設
+共享 Mk 组件必须在同目录配套 Mk<Name>.stories.impl.ts，子目录也适用，见 [Storybook](../knowledge/storybook.md)。
 
-共有 `Mk*` コンポーネントには `Mk<Name>.stories.impl.ts` を **同階層** に併設する (サブディレクトリ含む)。詳細は → [knowledge/storybook.md](../knowledge/storybook.md)。
-
-## 検証フロー
+## 验证流程
 
 ```bash
-# 型チェック (vue-tsc)
+# 类型检查（vue-tsc）
 pnpm --filter frontend typecheck
 
-# ESLint (規約全体)
+# ESLint（全部规范）
 pnpm --filter frontend eslint
 
-# 単一ファイルに ESLint --fix
+# 对单个文件运行 ESLint --fix
 pnpm exec eslint --fix packages/frontend/src/components/Mk<Name>.vue
 
-# Storybook で目視確認
+# 通过 Storybook 检查外观
 pnpm --filter frontend storybook-dev    # localhost:6006
 
-# Vitest unit test (component spec があれば)
+# Vitest 单元测试（存在组件测试时）
 pnpm --filter frontend test
 ```
 
-## 既存コンポーネントとの整合性
+## 与已有组件保持一致
 
-- 似た用途の既存 `Mk*` を 1-2 個読んで、props 命名 (`primary` / `danger` / `small` 等の形容詞、`onClose` ではなく `emit('close')` 等) を揃える
-- グローバル utility class (`_button` / `_panel` / `_selectable` / `_gaps_m`) を使えば独自スタイルを書かずに済む → [knowledge/scss-modules.md](../knowledge/scss-modules.md)
-- 大きな機能なら Storybook で各バリエーション (variant / size / disabled / loading) を網羅する
+- 阅读一两个类似组件，沿用 primary、danger、small 等属性命名，以及 emit('close') 等事件模式。
+- 复用 _button、_panel、_selectable、_gaps_m，减少自定义样式，见 [SCSS Modules](../knowledge/scss-modules.md)。
+- 较大功能在 Storybook 覆盖 variant、size、disabled、loading。
 
-## 参照コード
+## 参考代码
 
-- [MkInfo.vue](../../../../../packages/frontend/src/components/MkInfo.vue) — simple SFC 例
-- [MkButton.vue](../../../../../packages/frontend/src/components/MkButton.vue) — 汎用ボタン (a11y / `_button` global class)
-- [MkInput.vue](../../../../../packages/frontend/src/components/MkInput.vue) — generic + 2 ブロック script 例
-- [MkSelect.vue](../../../../../packages/frontend/src/components/MkSelect.vue) — `defineModel` + 名前付き slot 例
-- [MkSwitch.vue](../../../../../packages/frontend/src/components/MkSwitch.vue) — a11y 込みカスタム UI
-- [MkButton.stories.impl.ts](../../../../../packages/frontend/src/components/MkButton.stories.impl.ts) — 複数 story Storybook 雛形
-- [packages/frontend/src/os.ts](../../../../../packages/frontend/src/os.ts) — UI 操作 API 一覧
-- [packages/frontend/src/i18n.ts](../../../../../packages/frontend/src/i18n.ts) — `i18n.ts` / `i18n.tsx` 実装
+- [MkInfo.vue](../../../../../packages/frontend/src/components/MkInfo.vue)：简单组件。
+- [MkButton.vue](../../../../../packages/frontend/src/components/MkButton.vue)：通用按钮与无障碍。
+- [MkInput.vue](../../../../../packages/frontend/src/components/MkInput.vue)：泛型与双 script。
+- [MkSelect.vue](../../../../../packages/frontend/src/components/MkSelect.vue)：defineModel 与具名插槽。
+- [MkSwitch.vue](../../../../../packages/frontend/src/components/MkSwitch.vue)：自定义无障碍控件。
+- [MkButton.stories.impl.ts](../../../../../packages/frontend/src/components/MkButton.stories.impl.ts)：多个 Storybook 示例。
+- [os.ts](../../../../../packages/frontend/src/os.ts)：界面 API。
+- [i18n.ts](../../../../../packages/frontend/src/i18n.ts)：国际化实现。

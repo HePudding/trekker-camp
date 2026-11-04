@@ -1,20 +1,25 @@
-## Summary
-This is a release PR.
+## 概述
 
-For more information on the release instructions, please see:
+这是一个发布 PR。
+
+发布流程详见：
 https://github.com/misskey-dev/misskey/blob/develop/CONTRIBUTING.md#release
 
-## For reviewers
-- CHANGELOGに抜け漏れは無いか
-- バージョンの上げ方は適切か
-- 他にこのリリースに含めなければならない変更は無いか
-- 全体的な変更内容を俯瞰し問題は無いか
-- レビューされていないコミットがある場合は、それが問題ないか
-- 最終的な動作確認を行い問題は無いか
+## 审查者须知
 
-などを確認し、リリースする準備が整っていると思われる場合は approve してください。
+请检查：
 
-## Checklist
-- [ ] package.jsonのバージョンが正しく更新されている
-- [ ] CHANGELOGが過不足無く更新されている
-- [ ] CIが全て通っている
+- CHANGELOG 是否存在遗漏。
+- 版本号递增是否合适。
+- 是否还有应纳入本次发布的修改。
+- 从整体来看，全部改动是否存在问题。
+- 未经审查的提交是否可接受。
+- 最终运行验证是否通过。
+
+确认准备就绪后，请批准此 PR。
+
+## 检查清单
+
+- [ ] package.json 中的版本号已正确更新
+- [ ] CHANGELOG 更新完整且没有多余内容
+- [ ] 所有 CI 检查通过

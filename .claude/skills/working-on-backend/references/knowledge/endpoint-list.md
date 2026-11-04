@@ -1,50 +1,50 @@
-# `endpoint-list.ts` への登録
+# 注册到 `endpoint-list.ts`
 
-新規 API endpoint を追加する際の **最大の落とし穴**。エンドポイントは glob 自動収集されないため、ここへの 1 行追加を忘れると 404 になる。
+这是新增 API 端点时**最容易遗漏的步骤**。端点不会通过 glob 自动收集，漏加注册行会导致 404。
 
-## なぜ必要か
+## 为什么需要注册
 
-[`packages/backend/src/server/api/EndpointsModule.ts`](../../../../../packages/backend/src/server/api/EndpointsModule.ts) が [`endpoint-list.ts`](../../../../../packages/backend/src/server/api/endpoint-list.ts) の全エクスポートを `Object.entries()` で反復し、NestJS provider (`provide: 'ep:<path>'`) を生成している。**このリストが API ルーティングの単一の真実** で、ここに無いものは存在しないものとして扱われる。
+[`packages/backend/src/server/api/EndpointsModule.ts`](../../../../../packages/backend/src/server/api/EndpointsModule.ts) 使用 `Object.entries()` 遍历 [`endpoint-list.ts`](../../../../../packages/backend/src/server/api/endpoint-list.ts) 的全部导出，生成 NestJS 提供者（`provide: 'ep:<path>'`）。**此列表是 API 路由的唯一依据**，未列出的端点会被视为不存在。
 
-## 登録方法
+## 注册方法
 
-[endpoint-list.ts](../../../../../packages/backend/src/server/api/endpoint-list.ts) の **同カテゴリ内** に 1 行追加する:
+在 [endpoint-list.ts](../../../../../packages/backend/src/server/api/endpoint-list.ts) 的**同类端点中**添加一行：
 
 ```ts
 export * as '<category>/<name>' from './endpoints/<category>/<name>.js';
 ```
 
-`<category>` は機能領域 (`notes`, `users`, `admin/announcements` 等)、`<name>` はエンドポイント名 (`create`, `show`, `delete` 等)。両方ともケバブケース / スラッシュ区切りで、ファイルシステムのパス構造と一致する。
+`<category>` 是功能领域，例如 `notes`、`users`、`admin/announcements`；`<name>` 是端点名，例如 `create`、`show`、`delete`。两者均使用短横线命名和斜杠分隔，与文件系统路径一致。
 
-例: `endpoints/notes/create.ts` を追加するなら:
+例如，添加 `endpoints/notes/create.ts` 时：
 
 ```ts
 export * as 'notes/create' from './endpoints/notes/create.js';
 ```
 
-## 並び順
+## 排列顺序
 
-**並び順は厳密ではない**。同じディレクトリ (例: `admin/queue/*`) の中でも、アルファベット順ではなく追加された経緯どおりの順になっている箇所が多い。
+**没有严格的排序要求**。同一目录（如 `admin/queue/*`）中很多条目按添加历史排列，并未按字母排序。
 
-- **新規追加**: 同カテゴリ内の末尾に追加すれば OK
-- **既存近傍**: 同カテゴリ内の関連エンドポイントの近くに置く判断もあり
-- **過度に整理しない**: 既存の並びを全部 sort し直すような PR は不要 (review コストだけ増える)
+- **新增条目**：添加到同类端点末尾即可。
+- **相邻条目**：也可放在同类的相关端点附近。
+- **避免过度整理**：无需将已有列表整体重新排序，以免增加审查成本。
 
-## 登録確認
+## 检查注册
 
-ファイルを追加した後、grep で 1 行存在することを確認する:
+添加文件后，通过 grep 检查注册行是否存在：
 
 ```bash
 grep -F "'<category>/<name>'" packages/backend/src/server/api/endpoint-list.ts
 ```
 
-ヒットしなければ登録漏れ。
+没有结果即表示遗漏注册。
 
-## 既存例 (登録漏れに気づくための grep 例)
+## 现有说明
 
-`endpoint-list.ts` の冒頭コメントに「このリストが API ルーティングの単一の真実」という旨が記載されている。新規開発時はこのファイルを開いてカテゴリ単位の構造を把握してから新規 endpoint ファイルを書くのが効率的。
+`endpoint-list.ts` 的开头注释说明了该列表是 API 路由的唯一依据。开发新端点时，先打开此文件了解分类结构，再编写端点文件，更便于正确注册。
 
-## 関連
+## 相关文档
 
-- 新規 endpoint 追加の全手順 → [tasks/adding-api-endpoint.md](../tasks/adding-api-endpoint.md)
-- NestJS DI / module 構造 → [nestjs-di.md](nestjs-di.md)
+- 新增端点完整步骤 → [tasks/adding-api-endpoint.md](../tasks/adding-api-endpoint.md)
+- NestJS 依赖注入和模块结构 → [nestjs-di.md](nestjs-di.md)

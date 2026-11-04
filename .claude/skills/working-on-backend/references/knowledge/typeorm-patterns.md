@@ -1,17 +1,17 @@
-# TypeORM / migration パターン
+# TypeORM 与迁移模式
 
-Misskey backend は TypeORM 1 + PostgreSQL。エンティティ定義と migration の関係、そして migration で踏みうる難ケースをまとめる。
+Misskey 后端使用 TypeORM 1 和 PostgreSQL。本页说明实体与迁移的关系，以及迁移中的复杂情况。
 
-## モデル / Repository
+## 模型与 Repository
 
-- エンティティ: `packages/backend/src/models/<Name>.ts` (`@Entity` + `@Column`)
-- DI 経由で注入される Repository を経由してアクセス (`@Inject(DI.notesRepository)` 等) → [nestjs-di.md](nestjs-di.md)
+- 实体位于 `packages/backend/src/models/<Name>.ts`，使用 `@Entity`、`@Column`。
+- 通过依赖注入的 Repository 访问，例如 `@Inject(DI.notesRepository)`，见 [nestjs-di.md](nestjs-di.md)。
 
-エンティティ側の `@Column` / `@Entity` / `@Index` 変更は migration の DDL と整合させる必要がある。`pnpm --filter backend check-migrations` がエンティティと migration の不一致を検出する ([scripts/check_migrations_clean.js](../../../../../packages/backend/scripts/check_migrations_clean.js))。
+实体的 `@Column`、`@Entity`、`@Index` 必须与迁移 DDL 一致。`pnpm --filter backend check-migrations` 检测差异，实现见 [check_migrations_clean.js](../../../../../packages/backend/scripts/check_migrations_clean.js)。
 
-## migration ファイルの構造
+## 迁移文件结构
 
-各ファイル `packages/backend/migration/{unixMs}-{descriptive-name}.js` は ESM JS。最小形:
+`packages/backend/migration/{unixMs}-{descriptive-name}.js` 使用 ESM JavaScript：
 
 ```js
 /*
@@ -27,18 +27,18 @@ export class PascalCaseName1234567890123 {
     }
 
     async down(queryRunner) {
-        await queryRunner.query(`...`);  // up の完全な巻き戻し
+        await queryRunner.query(`...`);  // 完整撤销 up
     }
 }
 ```
 
-詳細手順は [tasks/creating-migration.md](../tasks/creating-migration.md) を参照。**マージ済 migration の編集は絶対禁止**。
+详细步骤见 [creating-migration.md](../tasks/creating-migration.md)。**严禁编辑已合并迁移。**
 
-## CONCURRENTLY (CREATE INDEX CONCURRENTLY) の扱い
+## CREATE INDEX CONCURRENTLY
 
-大規模テーブルへの `CREATE INDEX` は本番で長時間ロックする恐れがある。`CONCURRENTLY` で発行するときは migration class に **「この migration は transaction を張らない」と指示する** 必要がある。PostgreSQL は `CREATE INDEX CONCURRENTLY` を transaction 内で実行できないため。
+大表上普通 CREATE INDEX 可能长时间锁表。PostgreSQL 禁止在事务内执行 CREATE INDEX CONCURRENTLY，因此必须在迁移类中关闭该迁移的事务。
 
-参照実装: [migration/1745378064470-composite-note-index.js](../../../../../packages/backend/migration/1745378064470-composite-note-index.js)
+参考 [1745378064470-composite-note-index.js](../../../../../packages/backend/migration/1745378064470-composite-note-index.js)：
 
 ```js
 const isConcurrentIndexMigrationEnabled = process.env.MISSKEY_MIGRATION_CREATE_INDEX_CONCURRENTLY === '1';
@@ -57,28 +57,26 @@ export class CompositeNoteIndex1745378064470 {
     }
 
     async down(queryRunner) {
-        // 同様に環境変数で分岐
+        // 同样按环境变量分支
     }
 }
 ```
 
-要点:
+要点：
 
-- **`transaction = isConcurrentIndexMigrationEnabled ? false : undefined;`** が必須。これがないと `CREATE INDEX CONCURRENTLY` が transaction 内で実行されて `ERROR: CREATE INDEX CONCURRENTLY cannot run inside a transaction block` で失敗
-- 環境変数 `MISSKEY_MIGRATION_CREATE_INDEX_CONCURRENTLY=1` がデフォルト OFF。OFF のときは普通の `CREATE INDEX` (transaction 内) で動く必要がある。`up`/`down` 双方を環境変数で分岐させる
-- `ormconfig.js` の `migrationsTransactionMode` は **環境変数で切り替わる**: `MISSKEY_MIGRATION_CREATE_INDEX_CONCURRENTLY=1` のときだけ `'each'`、未設定時は `'all'` (全 migration を 1 つの transaction でラップ) ([ormconfig.js](../../../../../packages/backend/ormconfig.js) の `migrationsTransactionMode`)。普段は `'all'` 前提
+- 必须设置 `transaction = isConcurrentIndexMigrationEnabled ? false : undefined;`，否则出现 `ERROR: CREATE INDEX CONCURRENTLY cannot run inside a transaction block`。
+- 环境变量 `MISSKEY_MIGRATION_CREATE_INDEX_CONCURRENTLY=1` 默认关闭。关闭时应在事务内使用普通 CREATE INDEX。up 和 down 均需按环境变量分支。
+- [ormconfig.js](../../../../../packages/backend/ormconfig.js) 的 `migrationsTransactionMode` 在该环境变量启用时为 `'each'`，否则为 `'all'`，将全部迁移包在同一事务。日常按 all 模式考虑。
 
-## migration 難ケース集
+## 复杂情况
 
-`migration:generate` / 手書きどちらでも踏み外しやすいパターンを「**なぜ危険か → up の形 → down 戦略 → 参照実装**」でまとめる。
+生成式与手写迁移都需注意以下问题。通用要求是：**down 应完整撤销 up**，很多情况不能简单倒转 SQL。
 
-共通の鉄則: `down()` は `up()` の **完全な巻き戻し**。下記ケースは「単純な逆 SQL では戻らない」ものが多い。
+### 1. 添加 NOT NULL 列
 
-### 1. NOT NULL 列の追加
+已有数据的表添加无默认值的 NOT NULL 列会失败。
 
-**なぜ危険か**: 既存行があるテーブルに `NOT NULL` 列を `DEFAULT` 無しで足すと、既存行を埋められず `ALTER TABLE` が失敗する。
-
-- **既定値で良い場合** — `DEFAULT` を付ければ 1 文で済む。これが最も多い
+- **可使用默认值**：添加 DEFAULT，一条语句即可完成，这是常见方式。
 
   ```js
   // up
@@ -87,18 +85,20 @@ export class CompositeNoteIndex1745378064470 {
   await queryRunner.query(`ALTER TABLE "note_draft" DROP COLUMN "isActuallyScheduled"`);
   ```
 
-  参照: [migration/1758677617888-scheduled-post.js](../../../../../packages/backend/migration/1758677617888-scheduled-post.js)
+  参考 [1758677617888-scheduled-post.js](../../../../../packages/backend/migration/1758677617888-scheduled-post.js)。
 
-- **行ごとに計算した値で埋めたい / 既定値を後で外したい場合** — 3 段に分ける: ①nullable で追加 → ②`UPDATE` でバックフィル (ケース 3 参照) → ③`ALTER COLUMN ... SET NOT NULL`。`down` は `DROP COLUMN` で良い。巨大テーブルでは ② の `UPDATE` と ③ の `SET NOT NULL` (全行スキャン) が長時間ロックし得る点に注意
+- **需要逐行计算或随后移除默认值**：先添加可空列，再 UPDATE 回填，最后 SET NOT NULL。down 可删除列。大表的回填及非空检查会扫描大量行，可能长时间锁表。
 
-**補足:** エンティティ側で `@Column({ default: ... })` を付けると `migration:generate` が `DEFAULT` 付き DDL を出す。アプリ実行時に常に値を入れるので DB 既定値が不要なら、生成後に `DEFAULT` 句だけ手で外す判断もある (既存 migration には両スタイルある)。
+实体设置 `@Column({ default: ... })` 后，生成器会输出 DEFAULT。若应用始终传值、不需要数据库默认值，也可在生成后手动去掉 DEFAULT；已有迁移存在两种风格。
 
-### 2. enum 型の値の追加・変更
+### 2. 添加或修改枚举值
 
-**なぜ危険か**: PostgreSQL の enum は **値を削除できない** (`ALTER TYPE ... DROP VALUE` は存在しない) ため、`ADD VALUE` した変更を素直に巻き戻せない。さらに Misskey はデフォルトで migration 全体を 1 トランザクションにまとめる (`migrationsTransactionMode: 'all'`) ので、`ADD VALUE` で足した値を同一トランザクション内で使う処理もエラーになる。そこで TypeORM `migration:generate` は **「旧型を rename → 新型を CREATE → 列を新型へ ALTER (USING キャスト) → 旧型を DROP」** という巻き戻し可能な手順を出す。手書きでもこの形に従うこと。
+PostgreSQL 无法直接删除枚举值，因此 ADD VALUE 难以撤销。默认 all 事务模式下，也不能立即使用同一事务中新添加的枚举值。
+
+TypeORM 生成器采用可回滚的“重命名旧类型 → 创建新类型 → USING 转换列类型 → 删除旧类型”流程，手写时也应遵循。
 
 ```js
-// up: 値 'app' を追加する例 (新値を含む型へ載せ替える)
+// up: 添加 app 值的示例，切换到包含新值的类型
 await queryRunner.query(`ALTER TYPE "public"."notification_type_enum" RENAME TO "notification_type_enum_old"`);
 await queryRunner.query(`CREATE TYPE "public"."notification_type_enum" AS ENUM('follow', 'mention', /* ... */ 'app')`);
 await queryRunner.query(`ALTER TABLE "notification" ALTER COLUMN "type" TYPE "public"."notification_type_enum" USING "type"::"text"::"public"."notification_type_enum"`);
@@ -106,55 +106,59 @@ await queryRunner.query(`DROP TYPE "public"."notification_type_enum_old"`);
 ```
 
 ```js
-// down: 新値を含まない旧い値集合へ同じ手順で戻す
+// down: 按相同步骤恢复为不含新值的旧类型
 await queryRunner.query(`ALTER TYPE "public"."notification_type_enum" RENAME TO "notification_type_enum_old"`);
-await queryRunner.query(`CREATE TYPE "public"."notification_type_enum" AS ENUM('follow', 'mention', /* ... 'app' を除く ... */)`);
+await queryRunner.query(`CREATE TYPE "public"."notification_type_enum" AS ENUM('follow', 'mention', /* ... 不包含 app ... */)`);
 await queryRunner.query(`ALTER TABLE "notification" ALTER COLUMN "type" TYPE "public"."notification_type_enum" USING "type"::"text"::"public"."notification_type_enum"`);
 await queryRunner.query(`DROP TYPE "public"."notification_type_enum_old"`);
 ```
 
-要点: ①列がデフォルトを持つ場合は ALTER 前に `DROP DEFAULT`、ALTER 後に `SET DEFAULT` を挟む。②配列列 (`mutingNotificationTypes` 等) は `TYPE "..."[] USING "col"::"text"::"..."[]` と配列キャストにする。③**`down` の落とし穴**: 削除する値を既存行が使っていると `USING` キャストが「該当 enum に存在しない」で失敗する。新値を追加しただけの直後の巻き戻しは安全だが、運用後に使われた値を消す巻き戻しは本質的に危うい — その場合は down で先に `UPDATE ... SET "type" = '<代替値>' WHERE "type" = '<消す値>'` で退避してからキャストする。
+注意：
 
-参照: [migration/1674118260469-achievement.js](../../../../../packages/backend/migration/1674118260469-achievement.js) (rename/recreate の完全な up/down)。型の新規作成は [migration/1580276619901-v12-10.js](../../../../../packages/backend/migration/1580276619901-v12-10.js)。
+1. 列有默认值时，转换前 DROP DEFAULT，转换后 SET DEFAULT。
+2. 数组列（如 mutingNotificationTypes）需使用数组类型与数组转换：`TYPE "..."[] USING "col"::"text"::"..."[]`。
+3. down 删除的枚举值若仍被数据使用，USING 转换会失败。上线使用后回滚，应先将相关行 UPDATE 为替代值，再转换类型。刚添加新值、尚未使用时回滚较安全。
 
-### 3. データ移行 (UPDATE バックフィル)
+完整示例见 [1674118260469-achievement.js](../../../../../packages/backend/migration/1674118260469-achievement.js)；新建类型见 [1580276619901-v12-10.js](../../../../../packages/backend/migration/1580276619901-v12-10.js)。
 
-**なぜ危険か**: migration 内の `UPDATE` は本番の全行を触る可能性がある。大量行では長時間ロック・トランザクション肥大を招く。
+### 3. 数据迁移与回填
 
-- 既定値を入れるだけなら `UPDATE ... WHERE col IS NULL` で冪等に書く。複数回流れても安全な形にする
-- 巨大テーブルの全行更新は避けるのが基本。どうしても必要なら CONCURRENTLY 同様にバッチ分割や別運用を検討し、PR で相談する
-- `down` で元値に戻せないデータ移行 (情報が失われる変換) は、`down` に戻せない旨をコメントで明示し、最低限スキーマだけは巻き戻す
+迁移中的 UPDATE 可能影响生产表全部数据，造成长时间锁和大事务。
+
+- 仅填默认值时使用 `UPDATE ... WHERE col IS NULL`，确保重复执行安全。
+- 尽量避免大表全量更新。确有需要时，考虑分批或单独运维，并在 PR 中讨论。
+- 有信息损失、无法恢复原值的数据迁移，应在 down 注释中明确说明，至少恢复数据库结构。
 
 ```js
-// up: nullable 追加 → バックフィル → NOT NULL 化
+// up: 添加可空列 → 回填 → 设置 NOT NULL
 await queryRunner.query(`ALTER TABLE "user_profile" ADD "github" boolean`);
 await queryRunner.query(`UPDATE "user_profile" SET "github" = FALSE WHERE "github" IS NULL`);
 await queryRunner.query(`ALTER TABLE "user_profile" ALTER COLUMN "github" SET NOT NULL`);
 ```
 
-### 4. JSONB / 配列列のデフォルト
+### 4. JSONB 与数组列默认值
 
-**なぜ危険か**: 既定値リテラルの書式を誤ると `migration:generate` の出力とズレてスタイル不一致になる。実績ある書式に揃える。
+默认值字面量应遵循已有格式，避免与生成器输出不一致：
 
 ```js
-await queryRunner.query(`ALTER TABLE "user_profile" ADD "room" jsonb NOT NULL DEFAULT '{}'`);          // オブジェクト
-await queryRunner.query(`ALTER TABLE "bubble_game_record" ADD "logs" jsonb NOT NULL DEFAULT '[]'`);     // 配列(JSON)
-await queryRunner.query(`ALTER TABLE "meta" ADD "pinnedUsers" character varying(256) array NOT NULL DEFAULT '{}'::varchar[]`); // PG 配列型
+await queryRunner.query(`ALTER TABLE "user_profile" ADD "room" jsonb NOT NULL DEFAULT '{}'`);          // 对象
+await queryRunner.query(`ALTER TABLE "bubble_game_record" ADD "logs" jsonb NOT NULL DEFAULT '[]'`);     // 数组(JSON)
+await queryRunner.query(`ALTER TABLE "meta" ADD "pinnedUsers" character varying(256) array NOT NULL DEFAULT '{}'::varchar[]`); // PostgreSQL 数组类型
 ```
 
-参照: [migration/1565634203341-room.js](../../../../../packages/backend/migration/1565634203341-room.js), [migration/1704959805077-bubble-game-record.js](../../../../../packages/backend/migration/1704959805077-bubble-game-record.js), [migration/1557476068003-PinnedUsers.js](../../../../../packages/backend/migration/1557476068003-PinnedUsers.js)。`down` はいずれも `DROP COLUMN`。
+参考 [1565634203341-room.js](../../../../../packages/backend/migration/1565634203341-room.js)、[1704959805077-bubble-game-record.js](../../../../../packages/backend/migration/1704959805077-bubble-game-record.js)、[1557476068003-PinnedUsers.js](../../../../../packages/backend/migration/1557476068003-PinnedUsers.js)。down 均为 DROP COLUMN。
 
-### 5. 安全な DROP と COMMENT
+### 5. 安全的 DROP 与 COMMENT
 
-- **DROP の冪等性**: 状況により対象が無いことがある DROP は `IF EXISTS` を付ける (`DROP INDEX IF EXISTS "..."`)。ただし `migration:generate` は通常 `IF EXISTS` を付けない素の DDL を出すので、手で足すのは「条件付きで存在する」と分かっている時だけにする (無闇に付けると本来検出すべき不整合を隠す)
-- **COMMENT ON COLUMN**: Misskey は denormalize した列に `'[Denormalized]'` コメントを付ける慣習がある。エンティティの `@Column({ comment: '[Denormalized]' })` に対応して `migration:generate` が `COMMENT ON COLUMN` を出す。`up` で付与したら `down` でも対称に書く
+- 对已知只在部分情况下存在的对象，可使用 `DROP ... IF EXISTS`。生成器通常不添加此条件，不要无差别补上，以免掩盖应被发现的不一致。
+- Misskey 反规范化列通常使用 `[Denormalized]` 注释。实体的 `@Column({ comment: '[Denormalized]' })` 会生成 COMMENT ON COLUMN；up 添加后，down 应对称处理。
 
   ```js
   await queryRunner.query(`COMMENT ON COLUMN "note"."renoteChannelId" IS '[Denormalized]'`);
   ```
 
-  参照: [migration/1761569941833-add-channel-muting.js](../../../../../packages/backend/migration/1761569941833-add-channel-muting.js)
+参考 [1761569941833-add-channel-muting.js](../../../../../packages/backend/migration/1761569941833-add-channel-muting.js)。
 
-### 6. 列リネーム
+### 6. 重命名列
 
-`migration:generate` はエンティティのプロパティ名変更を **「DROP 旧列 + ADD 新列」** と解釈しがちで、これだと **データが消える**。意図がリネームなら生成 SQL を捨て、手書きで `ALTER TABLE "t" RENAME COLUMN "old" TO "new"` (down は逆) に直す。生成結果を鵜呑みにしないこと。
+生成器常将实体属性改名解释为“删除旧列、添加新列”，这会**丢失数据**。若意图为重命名，应将生成 SQL 改为 `ALTER TABLE "t" RENAME COLUMN "old" TO "new"`，down 使用逆向改名。必须审查生成结果。

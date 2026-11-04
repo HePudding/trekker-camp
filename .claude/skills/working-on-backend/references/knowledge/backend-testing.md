@@ -1,78 +1,77 @@
-# Backend テストの前提と書き方
+# 后端测试前置条件与编写方法
 
-Misskey backend のテスト構成、`.config/test.yml` の前提、e2e テストのヘルパー関数集を 1 つにまとめたページ。
+本页汇集 Misskey 后端测试结构、`.config/test.yml` 前置条件和端到端测试辅助函数。
 
-## 目次
+## 目录
 
-- [前提: `.config/test.yml`](#前提-configtestyml)
-- [テスト種別と実行コマンド](#テスト種別と実行コマンド)
-- [e2e テストの配置](#e2e-テストの配置)
-- [共通 setup](#共通-setup)
-- [`api()` ヘルパー](#api-ヘルパー)
-- [`signup()` / `post()` / `uploadFile()` 等](#signup--post--uploadfile-等)
-- [ローカル DB / Redis](#ローカル-db--redis)
+- [测试配置](#测试配置)
+- [测试类型与命令](#测试类型与命令)
+- [端到端测试位置](#端到端测试位置)
+- [共享初始化](#共享初始化)
+- [api 辅助函数](#api-辅助函数)
+- [其他辅助函数](#其他辅助函数)
+- [本地数据库与 Redis](#本地数据库与-redis)
 
-## 前提: `.config/test.yml`
+## 测试配置
 
-backend のテストスクリプト (`test` / `test:e2e` / `test:fed`) はすべて内部で `cross-env NODE_ENV=test pnpm compile-config` を実行し、`.config/test.yml` を読み込む ([packages/backend/package.json](../../../../../packages/backend/package.json), [packages/backend/scripts/compile_config.js](../../../../../packages/backend/scripts/compile_config.js))。**未作成だとテスト自体が起動しない**。
+后端 test、test:e2e、test:fed 均在内部运行 `cross-env NODE_ENV=test pnpm compile-config`，读取 `.config/test.yml`。见 [package.json](../../../../../packages/backend/package.json) 和 [compile_config.js](../../../../../packages/backend/scripts/compile_config.js)。**缺少配置时测试无法启动。**
 
-未作成なら以下を 1 回だけ手動コピーする (どちらでも可):
+尚未创建时，任选一种方式复制一次：
 
 ```bash
 ncp .github/misskey/test.yml .config/test.yml
-# または
+# 或
 cp .github/misskey/test.yml .config/test.yml
 ```
 
-補足:
+- 根目录 `pnpm start:test` 用于 Playwright，运行时会自动通过 ncp 复制配置，见 [package.json](../../../../../package.json)。直接执行后端测试时需手动复制。
+- 已有配置时，测试脚本内部的 compile-config 已足够，无需额外执行。
+- 后端端到端测试无需先运行 start:test，额外启动会造成端口冲突。
 
-- ルートの `pnpm start:test` (Playwright 用にテストサーバーを起動するコマンド) を使う経路では実行時に `ncp` で自動コピーされる ([package.json](../../../../../package.json))。それ以外で backend テストを直接走らせる時は上記の手動コピーが必要
-- すでに `.config/test.yml` があれば各テストスクリプトの内部 `compile-config` で十分なので、追加で `pnpm --filter backend compile-config` を叩く必要はない
-- `pnpm start:test` は backend e2e テスト (`pnpm --filter backend test:e2e`) の前提ではない (ポート競合の元になるため使わないこと)
+## 测试类型与命令
 
-## テスト種別と実行コマンド
+| 类型 | 配置 | 命令 |
+|---|---|---|
+| 单元测试 | packages/backend/vitest.config.unit.ts | `pnpm --filter backend test` |
+| HTTP / 数据库端到端测试 | packages/backend/vitest.config.e2e.ts | `pnpm --filter backend test:e2e` |
+| 联邦测试 | packages/backend/vitest.config.fed.ts | `pnpm --filter backend test:fed` |
 
-| 種別 | 設定ファイル | 実行コマンド |
-| --- | --- | --- |
-| Unit | `packages/backend/vitest.config.unit.ts` | `pnpm --filter backend test` |
-| E2E (HTTP / DB) | `packages/backend/vitest.config.e2e.ts` | `pnpm --filter backend test:e2e` |
-| Federation | `packages/backend/vitest.config.fed.ts` | `pnpm --filter backend test:fed` |
+测试位于 packages/backend/test 下。覆盖率命令为 `pnpm --filter backend test-and-coverage`。
 
-- 配置: `packages/backend/test/` 配下
-- カバレッジ: `pnpm --filter backend test-and-coverage`
+## 端到端测试位置
 
-## e2e テストの配置
-
-`packages/backend/test/e2e/` の現状ファイル例:
+packages/backend/test/e2e 中的文件示例：
 
 ```
-note.ts            ノート関連 (作成・renote・visibility・添付ファイル等)
-users.ts           ユーザー関連
-timelines.ts       タイムライン
-drive.ts           ドライブ (アップロード/ダウンロード)
-clips.ts           クリップ
-oauth.ts           OAuth フロー
+note.ts            帖子相关（创建、转发、可见范围、附件等）
+users.ts           用户相关
+timelines.ts       时间线
+drive.ts           网盘（上传、下载）
+clips.ts           收藏夹
+oauth.ts           OAuth 流程
 streaming.ts       WebSocket
-api.ts             API レイヤ全般 (認証・レート制限など)
-api-visibility.ts  公開範囲チェック
-endpoints.ts       上記カテゴリに収まらない雑多なもの
+api.ts             API 层（认证、限流等）
+api-visibility.ts  可见范围检查
+endpoints.ts       其他分类未覆盖的端点
 2fa.ts             2FA
 block.ts / mute.ts / antennas.ts / clips.ts / move.ts / nodeinfo.ts / ...
 ```
 
-**`admin.ts` は存在しない**。admin 系エンドポイントの e2e は `api.ts` (API レイヤ挙動として) または `endpoints.ts` (雑多枠) に置くのが現実的。
+**没有 admin.ts**。管理端点测试可放入 api.ts（API 层行为）或 endpoints.ts（其他端点）。
 
-### 判断ルール
+### 选择规则
 
-1. 自分の追加するエンドポイントが既存カテゴリファイル (`note.ts`, `users.ts` 等) に所属するなら、そこに `describe('...', () => { test(...) })` を追加
-2. どのカテゴリにも収まらないなら `endpoints.ts` に追加
-3. テストケースが多くなり (>200 行)、独立性が高い場合のみ新ファイル化
+1. 已有 note.ts、users.ts 等合适分类时，在其中添加 describe/test。
+2. 无合适分类时放入 endpoints.ts。
+3. 测试超过约 200 行且独立性高时，才考虑新建文件。
 
-`describe` のラベル名は **人間可読** で OK (`describe('Note', ...)`, `describe('管理者操作', ...)` のような形式)。`<category>/<name>` 形式である必要はない。
+describe 使用人类可读名称即可，如 Note、管理员操作，无需使用端点路径。
 
-## 共通 setup
+## 共享初始化
 
-`packages/backend/test/setup.e2e.ts` (vitest の `setupFiles`) が各テストファイル共通の `beforeAll` (テスト DB 初期化 + 環境リセット) を登録する。テストサーバーの起動/停止は別途 vitest の `globalSetup` (`test-server/entry.ts` の `setup()` / `teardown()`) が担う。各テストファイルでは自前の `beforeAll` でユーザーを用意する:
+Vitest 的 setupFiles 加载 `packages/backend/test/setup.e2e.ts`，为各文件注册共享 beforeAll，初始化测试数据库并重置环境。
+服务器启动和停止由 globalSetup 中 `test-server/entry.ts` 的 setup/teardown 负责。
+测试文件自身的 beforeAll 用于准备用户：
 
 ```ts
 import { describe, test, beforeAll, afterAll } from 'vitest';
@@ -80,130 +79,131 @@ import * as assert from 'node:assert';
 import { api, signup, post, role, uploadFile } from '../utils.js';
 import type { UserToken } from '../utils.js';
 
-describe('機能名', () => {
+describe('功能名称', () => {
 	let alice: UserToken;
 
 	beforeAll(async () => {
 		alice = await signup({ username: 'alice' });
 	});
 
-	test('正常系', async () => {
+	test('正常情况', async () => {
 		const res = await api('<category>/<name>', { /* params */ }, alice);
 		assert.strictEqual(res.status, 200);
 	});
 });
 ```
 
-## `api()` ヘルパー
+## api 辅助函数
 
-[test/utils.ts](../../../../../packages/backend/test/utils.ts) の `api()`:
+实现见 [test/utils.ts](../../../../../packages/backend/test/utils.ts)：
 
 ```ts
 const res = await api('<category>/<name>', params, me?);
-// res.status   : HTTP ステータス (200 / 400 / 401 / 403 / 500 等)
+// res.status   : HTTP 状态码（200 / 400 / 401 / 403 / 500 等）
 // res.headers  : Headers
-// res.body     : レスポンス JSON (型は misskey.Endpoints から自動推論)
+// res.body     : 响应 JSON（类型由 misskey.Endpoints 自动推导）
 ```
 
-`me?` を省略すると未認証リクエスト。`me` を渡すとそのユーザーの token で叩く。
+省略 me 时发送匿名请求，传入 me 时使用对应用户令牌。
 
-### エラーレスポンスの検証
+### 验证错误响应
 
 ```ts
-test('存在しないノートで怒られる', async () => {
+test('帖子不存在时返回错误', async () => {
 	const res = await api('notes/show', { noteId: '0000000000000000' }, alice);
 	assert.strictEqual(res.status, 400);
 	assert.strictEqual(castAsError(res.body as any).error.code, 'NO_SUCH_NOTE');
 });
 ```
 
-`castAsError(...).error.code` で `meta.errors.<key>.code` を検証できる ([test/utils.ts](../../../../../packages/backend/test/utils.ts) の `castAsError`)。
+使用 utils.ts 的 `castAsError(...).error.code` 验证 meta.errors 中定义的错误码。
 
-## `signup()` / `post()` / `uploadFile()` 等
+## 其他辅助函数
 
-### `signup()` — テストユーザー作成
+### signup：创建测试用户
 
 ```ts
-const alice = await signup({ username: 'alice' });        // 既定パスワード 'test'
+const alice = await signup({ username: 'alice' });        // 默认密码为 test
 const bob = await signup({ username: 'bob', password: 'secret123' });
 ```
 
-戻り値はサインアップレスポンス (token を含む) で、`api()` の第 3 引数にそのまま渡せる。
+返回注册响应，包含令牌，可直接作为 api 的第三个参数。
 
-### `post()` — ノート投稿
+### post：发布帖子
 
 ```ts
 const note = await post(alice, { text: 'hello' });
-// 戻り値は misskey.entities.Note
+// 返回值为 misskey.entities.Note
 ```
 
-複雑な公開範囲・添付ファイル付きでも `post(alice, { text: ..., visibility: 'specified', visibleUserIds: [...], fileIds: [...] })` のように渡せる。
+也可传入 visibility、visibleUserIds、fileIds 等，测试特定可见范围和附件。
 
-### `uploadFile()` — ドライブにファイルアップロード
+### uploadFile：上传到网盘
 
 ```ts
-const file = await uploadFile(alice);                                       // resources/192.jpg をアップロード
+const file = await uploadFile(alice);                                       // 上传 resources/192.jpg
 const file2 = await uploadFile(alice, { path: '192.png' });                 // resources/192.png
 const file3 = await uploadFile(alice, { blob: new Blob([...]) });           // 任意 Blob
-// file.body.id を fileIds に渡せる
+// 可将 file.body.id 传入 fileIds
 ```
 
-### `role()` — ロール作成 + アサイン
+### role：创建并分配角色
 
-[test/utils.ts](../../../../../packages/backend/test/utils.ts) の `role()`:
+实现见 [test/utils.ts](../../../../../packages/backend/test/utils.ts)。
 
 ```ts
 const myRole = await role(adminUser, { name: 'tester' }, { canCreateChannel: { useDefault: false, priority: 0, value: true } });
-// admin/roles/create を叩く。policies 引数で個別ポリシーを上書き可能
+// 调用 admin/roles/create，可通过 policies 参数覆盖单项策略
 ```
 
-モデレーター・管理者ロールが要るテストは事前に `signup({ ... })` + `role(...)` で作る。
+需要管理员助手或管理员权限的测试，应提前通过 signup 和 role 准备。
 
-### `createAppToken()` — アプリ scope 付きトークン
+### createAppToken：创建带权限范围的应用令牌
 
 ```ts
 const token = await createAppToken(alice, ['write:notes', 'read:account']);
-// token は文字列。api() の me.token として使うか、{ token, bearer: true } で渡せば Bearer Auth で叩く
+// token 为字符串，可用作 api 的 me.token，或传入 { token, bearer: true } 使用 Bearer 认证
 ```
 
-OAuth scope (`kind`) のテストに使う。
+用于验证 OAuth 权限范围 kind。
 
-### その他のヘルパー
+### 更多工具
 
-[test/utils.ts](../../../../../packages/backend/test/utils.ts) には以下も用意されている:
+[test/utils.ts](../../../../../packages/backend/test/utils.ts) 还提供：
 
-- `userList()` — ユーザーリスト作成
-- `page()` / `play()` — Page / Flash 作成
-- `clip()` / `galleryPost()` / `channel()` — 各種リソース作成
-- `react()` — リアクション
-- `simpleGet()` — fetch ラッパ (raw HTTP)
-- `testPaginationConsistency()` — ページネーション挙動の網羅検証
-- `sendEnvUpdateRequest()` / `sendEnvResetRequest()` — テスト用環境変数の更新
-- `connectStream()` / `waitFire()` — WebSocket (Streaming API)
+- userList：创建用户列表。
+- page、play：创建 Page 和 Flash。
+- clip、galleryPost、channel：创建对应资源。
+- react：添加回应。
+- simpleGet：原始 HTTP fetch 包装。
+- testPaginationConsistency：全面验证分页行为。
+- sendEnvUpdateRequest、sendEnvResetRequest：更新测试环境变量。
+- connectStream、waitFire：WebSocket 实时 API。
 
-詳細はソースを直接参照。
+详细参数请查看源码。
 
-### 既存テスト例
+### 现有测试
 
-- [test/e2e/note.ts](../../../../../packages/backend/test/e2e/note.ts) — `describe('Note', ...)` で多数の `test(...)` を並べる伝統的なスタイル
-- [test/e2e/endpoints.ts](../../../../../packages/backend/test/e2e/endpoints.ts) — カテゴリ不問の雑多なエンドポイント
-- [test/e2e/api.ts](../../../../../packages/backend/test/e2e/api.ts) — API レイヤ (認証・レート制限) の挙動
+- [note.ts](../../../../../packages/backend/test/e2e/note.ts)：describe('Note') 下组织多个测试。
+- [endpoints.ts](../../../../../packages/backend/test/e2e/endpoints.ts)：未按领域分类的端点。
+- [api.ts](../../../../../packages/backend/test/e2e/api.ts)：认证、限流等 API 层行为。
 
-## ローカル DB / Redis
+## 本地数据库与 Redis
 
-backend の **テスト** と **開発** では用途別に別の compose ファイルを使う。ポートが異なるので混同すると接続できない。
+测试和开发使用不同 compose 文件及端口，混用会导致连接失败。
 
-| 用途 | compose ファイル | host ポート (db / redis) |
-| --- | --- | --- |
-| テスト (`test` / `test:e2e` / `test:fed`) | [packages/backend/test/compose.yml](../../../../../packages/backend/test/compose.yml) | `54312` / `56312` ([.github/misskey/test.yml](../../../../../.github/misskey/test.yml) のポート設定と一致) |
-| 開発 (`pnpm dev` 等) | `compose.local-db.yml` (リポジトリルート) | `5432` / `6379` |
+| 用途 | compose 文件 | 数据库 / Redis 主机端口 |
+|---|---|---|
+| test、test:e2e、test:fed | [packages/backend/test/compose.yml](../../../../../packages/backend/test/compose.yml) | 54312 / 56312，与 [.github/misskey/test.yml](../../../../../.github/misskey/test.yml) 一致 |
+| pnpm dev 等开发 | 根目录 compose.local-db.yml | 5432 / 6379 |
 
 ```bash
-# テスト用 DB / Redis (テスト時はこちら)
+# 测试用数据库和 Redis
 docker compose -f packages/backend/test/compose.yml up -d
 
-# 開発用 DB / Redis (Misskey 本体は起動せず postgres / redis / meilisearch だけ立てる)
+# 开发用数据库和 Redis，仅启动 postgres、redis、meilisearch
 docker compose -f compose.local-db.yml up -d
 ```
 
-`compose.local-db.yml` は開発向け (標準ポート `5432` / `6379`) で、テスト用 DB (`test-misskey` / ポート `54312` / `56312`) とは別物。CI (`.github/workflows/test-backend.yml`) は docker compose ではなく GitHub Actions の `services:` で同じテスト用ポートの postgres / redis コンテナを立ててから走る。
+开发配置使用标准端口；测试配置使用 test-misskey 数据库及专用端口。
+CI 的 `.github/workflows/test-backend.yml` 通过 GitHub Actions services 启动相同测试端口的 PostgreSQL 和 Redis 容器。
