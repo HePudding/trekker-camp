@@ -4,22 +4,22 @@
 import { type ILocale, type ParameterizedString } from "../types.js";
 export interface Locale extends ILocale {
     /**
-     * 日本語
+     * 中文(简体)
      */
     "_lang_": string;
     /**
-     * ノートでつながるネットワーク
+     * 通过帖子连接在一起的网络
      */
     "headlineMisskey": string;
     /**
-     * ようこそ！Misskeyは、オープンソースの分散型マイクロブログサービスです。
-     * 「ノート」を作成して、いま起こっていることを共有したり、あなたについて皆に発信しよう📡
-     * 「リアクション」機能で、皆のノートに素早く反応を追加することもできます👍
-     * 新しい世界を探検しよう🚀
+     * 欢迎！Misskey是一个开源的、去中心化的“微博客”服务。
+     * 通过编写「帖文」来和大家分享你的以及你周围的事情吧！📡
+     * 通过「回应」功能，可以让你快速地对大家的帖文表达反馈👍
+     * 来探索新的世界吧！🚀
      */
     "introMisskey": string;
     /**
-     * {name}は、オープンソースのプラットフォーム<b>Misskey</b>のサーバーのひとつです。
+     * {name} 是开源平台 <b>Misskey</b> 的服务器之一。
      */
     "poweredByMisskeyDescription": ParameterizedString<"name">;
     /**
@@ -27,11 +27,11 @@ export interface Locale extends ILocale {
      */
     "monthAndDay": ParameterizedString<"month" | "day">;
     /**
-     * 検索
+     * 搜索
      */
     "search": string;
     /**
-     * リセット
+     * 重置
      */
     "reset": string;
     /**
@@ -39,33 +39,33 @@ export interface Locale extends ILocale {
      */
     "notifications": string;
     /**
-     * ユーザー名
+     * 用户名
      */
     "username": string;
     /**
-     * パスワード
+     * 密码
      */
     "password": string;
     /**
-     * 初期設定開始用パスワード
+     * 初始化密码
      */
     "initialPasswordForSetup": string;
     /**
-     * 初期設定開始用のパスワードが違います。
+     * 初始化密码不正确。
      */
     "initialPasswordIsIncorrect": string;
     /**
-     * Misskeyを自分でインストールした場合は、設定ファイルに入力したパスワードを使用してください。
-     * Misskeyのホスティングサービスなどを使用している場合は、提供されたパスワードを使用してください。
-     * パスワードを設定していない場合は、空欄にしたまま続行してください。
+     * 如果是自己安装的 Misskey，请输入配置文件里设好的密码。
+     * 如果使用的是 Misskey 的托管服务等，请输入服务商提供的密码。
+     * 如果没有设置密码，请留空并继续。
      */
     "initialPasswordForSetupDescription": string;
     /**
-     * パスワードを忘れた
+     * 忘记密码
      */
     "forgotPassword": string;
     /**
-     * 連合に照会中
+     * 在联邦中查找中…
      */
     "fetchingAsApObject": string;
     /**
@@ -73,87 +73,87 @@ export interface Locale extends ILocale {
      */
     "ok": string;
     /**
-     * わかった
+     * 好
      */
     "gotIt": string;
     /**
-     * キャンセル
+     * 取消
      */
     "cancel": string;
     /**
-     * やめておく
+     * 不用，谢谢
      */
     "noThankYou": string;
     /**
-     * ユーザー名を入力
+     * 输入用户名
      */
     "enterUsername": string;
     /**
-     * {user}がリノート
+     * {user} 转发了
      */
     "renotedBy": ParameterizedString<"user">;
     /**
-     * ノートはありません
+     * 没有帖子
      */
     "noNotes": string;
     /**
-     * 通知はありません
+     * 无通知
      */
     "noNotifications": string;
     /**
-     * サーバー
+     * 服务器
      */
     "instance": string;
     /**
-     * 設定
+     * 设置
      */
     "settings": string;
     /**
-     * 通知の設定
+     * 通知设置
      */
     "notificationSettings": string;
     /**
-     * 基本設定
+     * 基本设置
      */
     "basicSettings": string;
     /**
-     * その他の設定
+     * 其他设置
      */
     "otherSettings": string;
     /**
-     * ウィンドウで開く
+     * 在新窗口中打开
      */
     "openInWindow": string;
     /**
-     * プロフィール
+     * 个人资料
      */
     "profile": string;
     /**
-     * タイムライン
+     * 时间线
      */
     "timeline": string;
     /**
-     * 自己紹介はありません
+     * 此用户尚无自我介绍
      */
     "noAccountDescription": string;
     /**
-     * ログイン
+     * 登录
      */
     "login": string;
     /**
-     * ログイン中
+     * 正在登录...
      */
     "loggingIn": string;
     /**
-     * ログアウト
+     * 登出
      */
     "logout": string;
     /**
-     * 新規登録
+     * 新用户注册
      */
     "signup": string;
     /**
-     * アップロード中
+     * 正在上传
      */
     "uploading": string;
     /**
@@ -161,331 +161,331 @@ export interface Locale extends ILocale {
      */
     "save": string;
     /**
-     * ユーザー
+     * 用户
      */
     "users": string;
     /**
-     * ユーザーを追加
+     * 添加用户
      */
     "addUser": string;
     /**
-     * お気に入り
+     * 收藏
      */
     "favorite": string;
     /**
-     * お気に入り
+     * 收藏
      */
     "favorites": string;
     /**
-     * お気に入り解除
+     * 取消收藏
      */
     "unfavorite": string;
     /**
-     * お気に入りに登録しました。
+     * 已加入收藏夹。
      */
     "favorited": string;
     /**
-     * 既にお気に入りに登録されています。
+     * 收藏夹中已存在。
      */
     "alreadyFavorited": string;
     /**
-     * お気に入りに登録できませんでした。
+     * 无法添加到收藏夹。
      */
     "cantFavorite": string;
     /**
-     * ピン留め
+     * 置顶
      */
     "pin": string;
     /**
-     * ピン留め解除
+     * 取消置顶
      */
     "unpin": string;
     /**
-     * 内容をコピー
+     * 复制内容
      */
     "copyContent": string;
     /**
-     * リンクをコピー
+     * 复制链接
      */
     "copyLink": string;
     /**
-     * リモートのリンクをコピー
+     * 复制远程链接
      */
     "copyRemoteLink": string;
     /**
-     * リノートのリンクをコピー
+     * 复制转帖链接
      */
     "copyLinkRenote": string;
     /**
-     * 削除
+     * 删除
      */
     "delete": string;
     /**
-     * 削除して編集
+     * 删除并编辑
      */
     "deleteAndEdit": string;
     /**
-     * このノートを削除してもう一度編集しますか？このノートへのリアクション、リノート、返信も全て削除されます。
+     * 要删除该帖并重新编辑吗？该帖下的所有回应、转发和回复也将被删除。
      */
     "deleteAndEditConfirm": string;
     /**
-     * リストに追加
+     * 添加至列表
      */
     "addToList": string;
     /**
-     * アンテナに追加
+     * 添加到天线
      */
     "addToAntenna": string;
     /**
-     * メッセージを送信
+     * 发送消息
      */
     "sendMessage": string;
     /**
-     * RSSをコピー
+     * 复制 RSS
      */
     "copyRSS": string;
     /**
-     * ユーザー名をコピー
+     * 复制用户名
      */
     "copyUsername": string;
     /**
-     * ユーザーIDをコピー
+     * 复制用户 ID
      */
     "copyUserId": string;
     /**
-     * ノートIDをコピー
+     * 复制帖子 ID
      */
     "copyNoteId": string;
     /**
-     * ファイルIDをコピー
+     * 复制文件ID
      */
     "copyFileId": string;
     /**
-     * フォルダーIDをコピー
+     * 复制文件夹ID
      */
     "copyFolderId": string;
     /**
-     * プロフィールURLをコピー
+     * 复制个人资料链接
      */
     "copyProfileUrl": string;
     /**
-     * ユーザーを検索
+     * 搜索用户
      */
     "searchUser": string;
     /**
-     * ユーザーのノートを検索
+     * 搜索用户帖子
      */
     "searchThisUsersNotes": string;
     /**
-     * 返信
+     * 回复
      */
     "reply": string;
     /**
-     * もっと見る
+     * 查看更多
      */
     "loadMore": string;
     /**
-     * もっと見る
+     * 查看更多
      */
     "showMore": string;
     /**
-     * 閉じる
+     * 关闭
      */
     "showLess": string;
     /**
-     * フォローされました
+     * 你有新的关注者
      */
     "youGotNewFollower": string;
     /**
-     * フォローリクエストされました
+     * 您收到了关注请求
      */
     "receiveFollowRequest": string;
     /**
-     * フォローが承認されました
+     * 您的关注请求被通过了
      */
     "followRequestAccepted": string;
     /**
-     * メンション
+     * 提及
      */
     "mention": string;
     /**
-     * メンション
+     * 提到我的
      */
     "mentions": string;
     /**
-     * 指名
+     * 私信
      */
     "directNotes": string;
     /**
-     * インポートとエクスポート
+     * 导入和导出
      */
     "importAndExport": string;
     /**
-     * インポート
+     * 导入
      */
     "import": string;
     /**
-     * エクスポート
+     * 导出
      */
     "export": string;
     /**
-     * ファイル
+     * 文件
      */
     "files": string;
     /**
-     * ダウンロード
+     * 下载
      */
     "download": string;
     /**
-     * ファイル「{name}」を削除しますか？このファイルを使用した一部のコンテンツも削除されます。
+     * 确认删除文件 “{name}” 吗？使用此文件的帖子也将被删除。
      */
     "driveFileDeleteConfirm": ParameterizedString<"name">;
     /**
-     * {name}のフォローを解除しますか？
+     * 要取消对 {name} 的关注吗？
      */
     "unfollowConfirm": ParameterizedString<"name">;
     /**
-     * {name}へのフォロー申請をキャンセルしますか？
+     * 要取消申请关注{name}吗？
      */
     "cancelFollowRequestConfirm": ParameterizedString<"name">;
     /**
-     * {name}からのフォロー申請を拒否しますか？
+     * 要拒绝{name}的关注申请吗？
      */
     "rejectFollowRequestConfirm": ParameterizedString<"name">;
     /**
-     * エクスポートをリクエストしました。これには時間がかかる場合があります。エクスポートが終わると、「ドライブ」に追加されます。
+     * 已请求导出，这可能需要一段时间，导出的文件将保存至网盘中。
      */
     "exportRequested": string;
     /**
-     * インポートをリクエストしました。これには時間がかかる場合があります。
+     * 导入请求已提交，这可能需要花一点时间。
      */
     "importRequested": string;
     /**
-     * リスト
+     * 列表
      */
     "lists": string;
     /**
-     * リストはありません
+     * 列表为空
      */
     "noLists": string;
     /**
-     * ノート
+     * 发帖
      */
     "note": string;
     /**
-     * ノート
+     * 帖子
      */
     "notes": string;
     /**
-     * フォロー
+     * 关注中
      */
     "following": string;
     /**
-     * フォロワー
+     * 关注者
      */
     "followers": string;
     /**
-     * フォローされています
+     * 正在关注你
      */
     "followsYou": string;
     /**
-     * リスト作成
+     * 创建列表
      */
     "createList": string;
     /**
-     * リストの管理
+     * 管理列表
      */
     "manageLists": string;
     /**
-     * エラー
+     * 错误
      */
     "error": string;
     /**
-     * 問題が発生しました
+     * 出错了
      */
     "somethingHappened": string;
     /**
-     * 再試行
+     * 重试
      */
     "retry": string;
     /**
-     * ページの読み込みに失敗しました。
+     * 页面加载失败。
      */
     "pageLoadError": string;
     /**
-     * これは通常、ネットワークまたはブラウザキャッシュが原因です。キャッシュをクリアするか、しばらく待ってから再度試してください。
+     * 这通常是由于网络或浏览器缓存的原因。请清除缓存或等待片刻后重试。
      */
     "pageLoadErrorDescription": string;
     /**
-     * サーバーの応答がありません。しばらく待ってから再度試してください。
+     * 服务器未响应。 请稍后再试。
      */
     "serverIsDead": string;
     /**
-     * このページを表示するためには、リロードして新しいバージョンのクライアントをご利用ください。
+     * 请刷新并使用新版本客户端查看此页面。
      */
     "youShouldUpgradeClient": string;
     /**
-     * リスト名を入力
+     * 输入列表名称
      */
     "enterListName": string;
     /**
-     * プライバシー
+     * 隐私
      */
     "privacy": string;
     /**
-     * フォローを承認制にする
+     * 关注请求需要批准
      */
     "makeFollowManuallyApprove": string;
     /**
-     * デフォルトの公開範囲
+     * 默认可见范围
      */
     "defaultNoteVisibility": string;
     /**
-     * フォロー
+     * 关注
      */
     "follow": string;
     /**
-     * フォロー申請
+     * 申请关注
      */
     "followRequest": string;
     /**
-     * フォロー申請
+     * 关注请求
      */
     "followRequests": string;
     /**
-     * フォロー解除
+     * 取消关注
      */
     "unfollow": string;
     /**
-     * フォロー許可待ち
+     * 关注请求待批准
      */
     "followRequestPending": string;
     /**
-     * 絵文字を入力
+     * 输入表情符号
      */
     "enterEmoji": string;
     /**
-     * リノート
+     * 转发
      */
     "renote": string;
     /**
-     * リノート解除
+     * 取消转发
      */
     "unrenote": string;
     /**
-     * リノートしました。
+     * 已转发。
      */
     "renoted": string;
     /**
-     * {name} にリノートしました。
+     * 转发给 {name} 了
      */
     "renotedToX": ParameterizedString<"name">;
     /**
-     * この投稿はリノートできません。
+     * 该帖无法转发。
      */
     "cantRenote": string;
     /**
-     * リノートをリノートすることはできません。
+     * 转发无法被再次转发。
      */
     "cantReRenote": string;
     /**
@@ -493,407 +493,407 @@ export interface Locale extends ILocale {
      */
     "quote": string;
     /**
-     * チャンネル内リノート
+     * 在频道内转发
      */
     "inChannelRenote": string;
     /**
-     * チャンネル内引用
+     * 在频道内引用
      */
     "inChannelQuote": string;
     /**
-     * チャンネルにリノート
+     * 转发至频道
      */
     "renoteToChannel": string;
     /**
-     * 他のチャンネルにリノート
+     * 转发至其它频道
      */
     "renoteToOtherChannel": string;
     /**
-     * ピン留めされたノート
+     * 置顶的帖子
      */
     "pinnedNote": string;
     /**
-     * ピン留め
+     * 置顶
      */
     "pinned": string;
     /**
-     * あなた
+     * 您
      */
     "you": string;
     /**
-     * クリックして表示
+     * 点击以显示
      */
     "clickToShow": string;
     /**
-     * センシティブ
+     * 敏感内容
      */
     "sensitive": string;
     /**
-     * 追加
+     * 添加
      */
     "add": string;
     /**
-     * リアクション
+     * 回应
      */
     "reaction": string;
     /**
-     * リアクション
+     * 回应
      */
     "reactions": string;
     /**
-     * 絵文字ピッカー
+     * 表情符号选择器
      */
     "emojiPicker": string;
     /**
-     * リアクション時にピン留め表示する絵文字を設定できます
+     * 可以设置发表回应时置顶显示的表情符号
      */
     "pinnedEmojisForReactionSettingDescription": string;
     /**
-     * 絵文字入力時にピン留め表示する絵文字を設定できます
+     * 可以设置输入表情符号时置顶显示的表情符号
      */
     "pinnedEmojisSettingDescription": string;
     /**
-     * ピッカーの表示
+     * 选择器显示设置
      */
     "emojiPickerDisplay": string;
     /**
-     * リアクション設定から上書きする
+     * 使用「置顶（回应）」设置覆盖
      */
     "overwriteFromPinnedEmojisForReaction": string;
     /**
-     * 全般設定から上書きする
+     * 使用全局设置覆盖
      */
     "overwriteFromPinnedEmojis": string;
     /**
-     * ドラッグして並び替え、クリックして削除、＋を押して追加します。
+     * 拖动重新排序，单击删除，点击 + 添加。
      */
     "reactionSettingDescription2": string;
     /**
-     * 公開範囲を記憶する
+     * 保存上次设置的可见性
      */
     "rememberNoteVisibility": string;
     /**
-     * 添付取り消し
+     * 移除附件
      */
     "attachCancel": string;
     /**
-     * ファイルを削除
+     * 删除文件
      */
     "deleteFile": string;
     /**
-     * センシティブとして設定
+     * 标记为敏感内容
      */
     "markAsSensitive": string;
     /**
-     * センシティブを解除する
+     * 取消标记为敏感内容
      */
     "unmarkAsSensitive": string;
     /**
-     * ファイル名を入力
+     * 输入文件名
      */
     "enterFileName": string;
     /**
-     * ミュート
+     * 屏蔽
      */
     "mute": string;
     /**
-     * ミュート解除
+     * 取消隐藏
      */
     "unmute": string;
     /**
-     * リノートをミュート
+     * 隐藏转帖
      */
     "renoteMute": string;
     /**
-     * リノートのミュートを解除
+     * 取消隐藏转帖
      */
     "renoteUnmute": string;
     /**
-     * ブロック
+     * 屏蔽
      */
     "block": string;
     /**
-     * ブロック解除
+     * 取消屏蔽
      */
     "unblock": string;
     /**
-     * 凍結
+     * 冻结
      */
     "suspend": string;
     /**
-     * 解凍
+     * 解除冻结
      */
     "unsuspend": string;
     /**
-     * ブロックしますか？
+     * 确定要屏蔽吗？
      */
     "blockConfirm": string;
     /**
-     * ブロック解除しますか？
+     * 确定要取消屏蔽吗？
      */
     "unblockConfirm": string;
     /**
-     * 凍結しますか？
+     * 要冻结吗？
      */
     "suspendConfirm": string;
     /**
-     * 解凍しますか？
+     * 要解除冻结吗？
      */
     "unsuspendConfirm": string;
     /**
-     * リストを選択
+     * 选择列表
      */
     "selectList": string;
     /**
-     * リストを編集
+     * 编辑列表
      */
     "editList": string;
     /**
-     * チャンネルを選択
+     * 选择频道
      */
     "selectChannel": string;
     /**
-     * アンテナを選択
+     * 选择天线
      */
     "selectAntenna": string;
     /**
-     * クリップを選択
+     * 选择便签
      */
     "selectClip": string;
     /**
-     * アンテナを編集
+     * 编辑天线
      */
     "editAntenna": string;
     /**
-     * アンテナを作成
+     * 创建天线
      */
     "createAntenna": string;
     /**
-     * ウィジェットを選択
+     * 选择小工具
      */
     "selectWidget": string;
     /**
-     * ウィジェットを編集
+     * 编辑小工具
      */
     "editWidgets": string;
     /**
-     * 編集を終了
+     * 完成编辑
      */
     "editWidgetsExit": string;
     /**
-     * カスタム絵文字
+     * 自定义表情符号
      */
     "customEmojis": string;
     /**
-     * 絵文字
+     * 表情符号
      */
     "emoji": string;
     /**
-     * 絵文字
+     * 表情符号
      */
     "emojis": string;
     /**
-     * 絵文字名
+     * 表情符号名称
      */
     "emojiName": string;
     /**
-     * 絵文字画像URL
+     * emoji 地址
      */
     "emojiUrl": string;
     /**
-     * 絵文字を追加
+     * 添加表情符号
      */
     "addEmoji": string;
     /**
-     * おすすめ設定
+     * 推荐配置
      */
     "settingGuide": string;
     /**
-     * リモートのファイルをキャッシュする
+     * 缓存远程文件
      */
     "cacheRemoteFiles": string;
     /**
-     * この設定を有効にすると、リモートファイルをこのサーバーのストレージにキャッシュするようになります。画像の表示が高速になりますが、サーバーのストレージを多く消費します。リモートユーザーがどれほどキャッシュを保持するかは、ロールによるドライブ容量制限によって決定されます。この制限を超えた場合、古いファイルからキャッシュが削除されリンクになります。この設定が無効の場合、リモートのファイルを最初からリンクとして保持します。
+     * 启用此设定时，将在此服务器上缓存远程文件。虽然可以加快图片显示的速度，但是相对的会消耗大量的服务器存储空间。用户角色内的网盘容量决定了这个远程用户能在服务器上保留多少缓存。当超出了这个限制时，旧的文件将从缓存中被删除，成为链接。当禁用此设定时，则是从一开始就将远程文件保留为链接。此时推荐将  的 proxyRemoteFiles 设置为 true 以优化缩略图生成及保护用户隐私。
      */
     "cacheRemoteFilesDescription": string;
     /**
-     * ファイル管理の🗑️ボタンで全てのキャッシュを削除できます。
+     * 可以使用文件管理的🗑️按钮来删除所有的缓存。
      */
     "youCanCleanRemoteFilesCache": string;
     /**
-     * リモートのセンシティブなファイルをキャッシュする
+     * 缓存远程敏感媒体文件
      */
     "cacheRemoteSensitiveFiles": string;
     /**
-     * この設定を無効にすると、リモートのセンシティブなファイルはキャッシュせず直リンクするようになります。
+     * 如果禁用这项设定，远程服务器的敏感媒体将不会被缓存，而是直接链接。
      */
     "cacheRemoteSensitiveFilesDescription": string;
     /**
-     * Botとして設定
+     * 这是一个机器人账号
      */
     "flagAsBot": string;
     /**
-     * このアカウントがプログラムによって運用される場合は、このフラグをオンにします。オンにすると、反応の連鎖を防ぐためのフラグとして他の開発者に役立ったり、Misskeyのシステム上での扱いがBotに合ったものになります。
+     * 如果此账户由程序控制，请启用此项。启用后，此标志可以帮助其他开发人员防止机器人之间产生无限互动的行为，并让 Misskey 的内部系统将此账户识别为机器人。
      */
     "flagAsBotDescription": string;
     /**
-     * にゃああああああああああああああ！！！！！！！！！！！！
+     * 喵！！！！！！！！！！！！
      */
     "flagAsCat": string;
     /**
-     * にゃにゃにゃ？？
+     * 喵喵喵？？
      */
     "flagAsCatDescription": string;
     /**
-     * タイムラインにノートへの返信を表示する
+     * 在时间线上显示帖子的回复
      */
     "flagShowTimelineReplies": string;
     /**
-     * オンにすると、タイムラインにユーザーのノート以外にもそのユーザーの他のノートへの返信を表示します。
+     * 启用时，时间线除了显示用户的帖子外，还会显示其他用户对帖子的回复。
      */
     "flagShowTimelineRepliesDescription": string;
     /**
-     * フォロー中ユーザーからのフォロー申請を自動承認
+     * 自动允许我关注的人的关注请求
      */
     "autoAcceptFollowed": string;
     /**
-     * アカウントを追加
+     * 添加账户
      */
     "addAccount": string;
     /**
-     * アカウントリストの情報を更新
+     * 更新账户列表
      */
     "reloadAccountsList": string;
     /**
-     * ログインに失敗しました
+     * 登录失败
      */
     "loginFailed": string;
     /**
-     * リモートで表示
+     * 转到所在服务器显示
      */
     "showOnRemote": string;
     /**
-     * リモートで続行
+     * 转到所在服务器继续
      */
     "continueOnRemote": string;
     /**
-     * Misskey Hubからサーバーを選択
+     * 从 Misskey Hub 选择服务器
      */
     "chooseServerOnMisskeyHub": string;
     /**
-     * サーバーのドメインを直接指定
+     * 直接输入服务器域名
      */
     "specifyServerHost": string;
     /**
-     * ドメインを入力してください
+     * 请输入域名
      */
     "inputHostName": string;
     /**
-     * 全般
+     * 常规设置
      */
     "general": string;
     /**
-     * 壁紙
+     * 壁纸
      */
     "wallpaper": string;
     /**
-     * 壁紙を設定
+     * 设置壁纸
      */
     "setWallpaper": string;
     /**
-     * 壁紙を削除
+     * 移除壁纸
      */
     "removeWallpaper": string;
     /**
-     * 検索: {q}
+     * 搜索:{q}
      */
     "searchWith": ParameterizedString<"q">;
     /**
-     * リストがありません
+     * 列表为空
      */
     "youHaveNoLists": string;
     /**
-     * {name}をフォローしますか？
+     * 确定要关注 {name} 吗？
      */
     "followConfirm": ParameterizedString<"name">;
     /**
-     * プロキシアカウント
+     * 代理账户
      */
     "proxyAccount": string;
     /**
-     * プロキシアカウントは、特定の条件下でユーザーのリモートフォローを代行するアカウントです。例えば、ユーザーがリモートユーザーをリストに入れたとき、リストに入れられたユーザーを誰もフォローしていないとアクティビティがサーバーに配達されないため、代わりにプロキシアカウントがフォローするようにします。
+     * 代理账户是在某些情况下替代用户进行远程关注用的账户。 例如说，当用户将一位远程用户放入一个列表中时，如果本地服务器上没有任何人关注这位远程用户，则这位远程用户的账户活动将不会被送到本地服务器上。作为替代，此时将使用代理账户进行关注。
      */
     "proxyAccountDescription": string;
     /**
-     * ホスト
+     * 主机名
      */
     "host": string;
     /**
-     * 自分を選択
+     * 选择自己
      */
     "selectSelf": string;
     /**
-     * ユーザーを選択
+     * 选择用户
      */
     "selectUser": string;
     /**
-     * 宛先
+     * 收件人
      */
     "recipient": string;
     /**
-     * 注釈
+     * 注解
      */
     "annotation": string;
     /**
-     * 連合
+     * 联邦
      */
     "federation": string;
     /**
-     * サーバー
+     * 服务器
      */
     "instances": string;
     /**
-     * 初観測
+     * 初次观测
      */
     "registeredAt": string;
     /**
-     * 直近のリクエスト受信
+     * 上次收到的请求
      */
     "latestRequestReceivedAt": string;
     /**
-     * 直近のステータス
+     * 最后状态
      */
     "latestStatus": string;
     /**
-     * ストレージ使用量
+     * 已用存储
      */
     "storageUsage": string;
     /**
-     * チャート
+     * 图表
      */
     "charts": string;
     /**
-     * 1時間ごと
+     * 每小时
      */
     "perHour": string;
     /**
-     * 1日ごと
+     * 每天
      */
     "perDay": string;
     /**
-     * アクティビティの配送を停止
+     * 停止发送活动
      */
     "stopActivityDelivery": string;
     /**
-     * このサーバーをブロック
+     * 屏蔽此服务器
      */
     "blockThisInstance": string;
     /**
-     * サーバーをサイレンス
+     * 静音此服务器
      */
     "silenceThisInstance": string;
     /**
-     * サーバーをメディアサイレンス
+     * 隐藏此服务器的媒体文件
      */
     "mediaSilenceThisInstance": string;
     /**
@@ -901,627 +901,627 @@ export interface Locale extends ILocale {
      */
     "operations": string;
     /**
-     * ソフトウェア
+     * 软件
      */
     "software": string;
     /**
-     * ソフトウェア名
+     * 软件名
      */
     "softwareName": string;
     /**
-     * バージョン
+     * 版本
      */
     "version": string;
     /**
-     * メタデータ
+     * 元数据
      */
     "metadata": string;
     /**
-     * {n}つのファイル
+     * {n} 个文件
      */
     "withNFiles": ParameterizedString<"n">;
     /**
-     * モニター
+     * 服务器状态
      */
     "monitor": string;
     /**
-     * ジョブキュー
+     * 作业队列
      */
     "jobQueue": string;
     /**
-     * CPUとメモリ
+     * CPU和内存
      */
     "cpuAndMemory": string;
     /**
-     * ネットワーク
+     * 网络
      */
     "network": string;
     /**
-     * ディスク
+     * 存储
      */
     "disk": string;
     /**
-     * サーバー情報
+     * 服务器信息
      */
     "instanceInfo": string;
     /**
-     * 統計
+     * 统计
      */
     "statistics": string;
     /**
-     * キューをクリア
+     * 清除队列
      */
     "clearQueue": string;
     /**
-     * キューをクリアしますか？
+     * 确定要清除队列吗？
      */
     "clearQueueConfirmTitle": string;
     /**
-     * 未配達の投稿は配送されなくなります。通常この操作を行う必要はありません。
+     * 未送达的帖子将不会被投递。 通常无需执行此操作。
      */
     "clearQueueConfirmText": string;
     /**
-     * キャッシュをクリア
+     * 清除缓存
      */
     "clearCachedFiles": string;
     /**
-     * キャッシュされたリモートファイルをすべて削除しますか？
+     * 确定要清除所有缓存的远程文件吗？
      */
     "clearCachedFilesConfirm": string;
     /**
-     * ブロックしたサーバー
+     * 被屏蔽的服务器
      */
     "blockedInstances": string;
     /**
-     * ブロックしたいサーバーのホストを改行で区切って設定します。ブロックされたサーバーは、このインスタンスとやり取りできなくなります。
+     * 设定要屏蔽的服务器，以换行分隔。被屏蔽的服务器将无法与本服务器进行交换通讯。子域名也同样会被屏蔽。
      */
     "blockedInstancesDescription": string;
     /**
-     * サイレンスしたサーバー
+     * 被静音的服务器
      */
     "silencedInstances": string;
     /**
-     * サイレンスしたいサーバーのホストを改行で区切って設定します。サイレンスされたサーバーに所属するアカウントはすべて「サイレンス」として扱われ、フォローがすべてリクエストになります。ブロックしたインスタンスには影響しません。
+     * 设置要静音的服务器，以换行分隔。被静音的服务器内所有的账户都被视为「静音」状态，且关注操作均需要被批准。已被屏蔽的实例不受影响。
      */
     "silencedInstancesDescription": string;
     /**
-     * メディアサイレンスしたサーバー
+     * 已隐藏媒体文件的服务器
      */
     "mediaSilencedInstances": string;
     /**
-     * メディアサイレンスしたいサーバーのホストを改行で区切って設定します。メディアサイレンスされたサーバーに所属するアカウントによるファイルはすべてセンシティブとして扱われ、カスタム絵文字が使用できないようになります。ブロックしたインスタンスには影響しません。
+     * 设置要隐藏媒体文件的服务器，以换行分隔。被设置的服务器内所有账号的文件均按照 “敏感内容” 处理，且将无法使用自定义表情符号。已被屏蔽的实例不受影响。
      */
     "mediaSilencedInstancesDescription": string;
     /**
-     * 連合を許可するサーバー
+     * 允许联邦交互的服务器
      */
     "federationAllowedHosts": string;
     /**
-     * 連合を許可するサーバーのホストを改行で区切って設定します。
+     * 设定允许联邦通信的服务器，以换行分隔。
      */
     "federationAllowedHostsDescription": string;
     /**
-     * ミュートとブロック
+     * 隐藏和屏蔽
      */
     "muteAndBlock": string;
     /**
-     * ミュートしたユーザー
+     * 已隐藏的用户
      */
     "mutedUsers": string;
     /**
-     * ブロックしたユーザー
+     * 已屏蔽的用户
      */
     "blockedUsers": string;
     /**
-     * ユーザーはいません
+     * 无用户
      */
     "noUsers": string;
     /**
-     * プロフィールを編集
+     * 编辑个人资料
      */
     "editProfile": string;
     /**
-     * このノートを削除しますか？
+     * 确定要删除该帖子吗？
      */
     "noteDeleteConfirm": string;
     /**
-     * これ以上ピン留めできません
+     * 无法置顶更多了
      */
     "pinLimitExceeded": string;
     /**
-     * 完了
+     * 完成
      */
     "done": string;
     /**
-     * 処理中
+     * 正在处理
      */
     "processing": string;
     /**
-     * 準備中
+     * 准备中
      */
     "preprocessing": string;
     /**
-     * プレビュー
+     * 预览
      */
     "preview": string;
     /**
-     * デフォルト
+     * 默认
      */
     "default": string;
     /**
-     * デフォルト: {value}
+     * 默认值: {value}
      */
     "defaultValueIs": ParameterizedString<"value">;
     /**
-     * 絵文字はありません
+     * 没有自定义表情符号
      */
     "noCustomEmojis": string;
     /**
-     * ジョブはありません
+     * 没有任务
      */
     "noJobs": string;
     /**
-     * 連合中
+     * 联邦通信中
      */
     "federating": string;
     /**
-     * ブロック中
+     * 已屏蔽
      */
     "blocked": string;
     /**
-     * 配信停止
+     * 停止投递
      */
     "suspended": string;
     /**
-     * 全て
+     * 全部
      */
     "all": string;
     /**
-     * 購読中
+     * 已订阅
      */
     "subscribing": string;
     /**
-     * 配信中
+     * 投递中
      */
     "publishing": string;
     /**
-     * 応答なし
+     * 没有响应
      */
     "notResponding": string;
     /**
-     * サーバーのフォロー
+     * 关注服务器
      */
     "instanceFollowing": string;
     /**
-     * サーバーのフォロワー
+     * 关注的服务器
      */
     "instanceFollowers": string;
     /**
-     * サーバーのユーザー
+     * 服务器用户
      */
     "instanceUsers": string;
     /**
-     * パスワードを変更
+     * 修改密码
      */
     "changePassword": string;
     /**
-     * セキュリティ
+     * 安全
      */
     "security": string;
     /**
-     * 入力が一致しません。
+     * 两次输入不一致！
      */
     "retypedNotMatch": string;
     /**
-     * 現在のパスワード
+     * 现在的密码
      */
     "currentPassword": string;
     /**
-     * 新しいパスワード
+     * 新密码
      */
     "newPassword": string;
     /**
-     * 新しいパスワード(再入力)
+     * 重新输入密码：
      */
     "newPasswordRetype": string;
     /**
-     * ファイルを添付
+     * 添加附件
      */
     "attachFile": string;
     /**
-     * もっと！
+     * 更多！
      */
     "more": string;
     /**
-     * ハイライト
+     * 热门
      */
     "featured": string;
     /**
-     * ユーザー名かユーザーID
+     * 用户名或用户 ID
      */
     "usernameOrUserId": string;
     /**
-     * ユーザーが見つかりません
+     * 未找到该用户
      */
     "noSuchUser": string;
     /**
-     * 照会
+     * 查找用户
      */
     "lookup": string;
     /**
-     * お知らせ
+     * 公告
      */
     "announcements": string;
     /**
-     * 画像URL
+     * 图片 URL
      */
     "imageUrl": string;
     /**
-     * 削除
+     * 删除
      */
     "remove": string;
     /**
-     * 削除しました
+     * 已删除
      */
     "removed": string;
     /**
-     * 「{x}」を削除しますか？
+     * 要删掉「{x}」吗？
      */
     "removeAreYouSure": ParameterizedString<"x">;
     /**
-     * 「{x}」を削除しますか？
+     * 要删掉「{x}」吗？
      */
     "deleteAreYouSure": ParameterizedString<"x">;
     /**
-     * リセットしますか？
+     * 确定要重置吗？
      */
     "resetAreYouSure": string;
     /**
-     * よろしいですか？
+     * 你确定吗？
      */
     "areYouSure": string;
     /**
-     * 保存しました
+     * 已保存
      */
     "saved": string;
     /**
-     * アップロード
+     * 本地上传
      */
     "upload": string;
     /**
-     * オリジナル画像を保持
+     * 保留原图
      */
     "keepOriginalUploading": string;
     /**
-     * 画像をアップロードする時にオリジナル版を保持します。オフにするとアップロード時にブラウザでWeb公開用画像を生成します。
+     * 上传图片时保留原始图片。关闭时，浏览器会在上传时生成一张用于web发布的图片。
      */
     "keepOriginalUploadingDescription": string;
     /**
-     * ドライブから
+     * 从网盘中
      */
     "fromDrive": string;
     /**
-     * URLから
+     * 从 URL
      */
     "fromUrl": string;
     /**
-     * URLアップロード
+     * 从网址上传
      */
     "uploadFromUrl": string;
     /**
-     * アップロードしたいファイルのURL
+     * 输入文件的 URL
      */
     "uploadFromUrlDescription": string;
     /**
-     * アップロードをリクエストしました
+     * 请求上传
      */
     "uploadFromUrlRequested": string;
     /**
-     * アップロードが完了するまで時間がかかる場合があります。
+     * 上传可能需要一些时间完成。
      */
     "uploadFromUrlMayTakeTime": string;
     /**
-     * {n}個のファイルをアップロード
+     * 上传 {n} 个文件
      */
     "uploadNFiles": ParameterizedString<"n">;
     /**
-     * みつける
+     * 发现
      */
     "explore": string;
     /**
-     * 既読
+     * 已读
      */
     "messageRead": string;
     /**
-     * すべてのメッセージを既読にする
+     * 将所有消息标记为已读
      */
     "readAllChatMessages": string;
     /**
-     * これより過去の履歴はありません
+     * 没有更多的历史记录
      */
     "noMoreHistory": string;
     /**
-     * メッセージを送る
+     * 开始聊天
      */
     "startChat": string;
     /**
-     * {n}人が読みました
+     * {n}人已读
      */
     "nUsersRead": ParameterizedString<"n">;
     /**
-     * {0}に同意
+     * 勾选则表示已阅读并同意 {0}
      */
     "agreeTo": ParameterizedString<"0">;
     /**
-     * 同意する
+     * 同意
      */
     "agree": string;
     /**
-     * 下記に同意する
+     * 同意以下内容
      */
     "agreeBelow": string;
     /**
-     * 基本的な注意事項
+     * 基本注意事项
      */
     "basicNotesBeforeCreateAccount": string;
     /**
-     * 利用規約
+     * 服务条款
      */
     "termsOfService": string;
     /**
-     * 始める
+     * 开始
      */
     "start": string;
     /**
-     * ホーム
+     * 首页
      */
     "home": string;
     /**
-     * リモートユーザーのため、情報が不完全です。
+     * 由于此用户来自其它服务器，显示的信息可能不完整。
      */
     "remoteUserCaution": string;
     /**
-     * アクティビティ
+     * 活动
      */
     "activity": string;
     /**
-     * 画像
+     * 图片
      */
     "images": string;
     /**
-     * 画像
+     * 图片
      */
     "image": string;
     /**
-     * 誕生日
+     * 生日
      */
     "birthday": string;
     /**
-     * {age}歳
+     * {age}岁
      */
     "yearsOld": ParameterizedString<"age">;
     /**
-     * 登録日
+     * 注册于
      */
     "registeredDate": string;
     /**
-     * 場所
+     * 位置
      */
     "location": string;
     /**
-     * テーマ
+     * 主题
      */
     "theme": string;
     /**
-     * ライトモードで使うテーマ
+     * 在浅色模式下使用的主题
      */
     "themeForLightMode": string;
     /**
-     * ダークモードで使うテーマ
+     * 在深色模式下使用的主题
      */
     "themeForDarkMode": string;
     /**
-     * ライト
+     * 浅色
      */
     "light": string;
     /**
-     * ダーク
+     * 深色
      */
     "dark": string;
     /**
-     * 明るいテーマ
+     * 浅色主题
      */
     "lightThemes": string;
     /**
-     * 暗いテーマ
+     * 深色主题
      */
     "darkThemes": string;
     /**
-     * デバイスのダークモードと同期する
+     * 将深色模式与设备设置同步
      */
     "syncDeviceDarkMode": string;
     /**
-     * 「{x}」がオンになっています。同期をオフにして手動でモードを切り替えますか？
+     * “{x}” 已开启。要关闭同步并手动切换模式吗？
      */
     "switchDarkModeManuallyWhenSyncEnabledConfirm": ParameterizedString<"x">;
     /**
-     * ドライブ
+     * 网盘
      */
     "drive": string;
     /**
-     * ファイル名
+     * 文件名称
      */
     "fileName": string;
     /**
-     * ファイルを選択
+     * 选择文件
      */
     "selectFile": string;
     /**
-     * ファイルを選択
+     * 选择文件
      */
     "selectFiles": string;
     /**
-     * フォルダーを選択
+     * 选择文件夹
      */
     "selectFolder": string;
     /**
-     * フォルダーの選択を解除
+     * 取消全选文件夹
      */
     "unselectFolder": string;
     /**
-     * フォルダーを選択
+     * 选择多个文件夹
      */
     "selectFolders": string;
     /**
-     * ファイルが選択されていません
+     * 未选择文件
      */
     "fileNotSelected": string;
     /**
-     * ファイル名を変更
+     * 重命名文件
      */
     "renameFile": string;
     /**
-     * フォルダー名
+     * 文件夹名称
      */
     "folderName": string;
     /**
-     * フォルダーを作成
+     * 新建文件夹
      */
     "createFolder": string;
     /**
-     * フォルダー名を変更
+     * 重命名文件夹
      */
     "renameFolder": string;
     /**
-     * フォルダーを削除
+     * 删除文件夹
      */
     "deleteFolder": string;
     /**
-     * フォルダー
+     * 文件夹
      */
     "folder": string;
     /**
-     * ファイルを追加
+     * 添加文件
      */
     "addFile": string;
     /**
-     * ファイルを表示
+     * 显示文件
      */
     "showFile": string;
     /**
-     * ドライブは空です
+     * 网盘中无文件
      */
     "emptyDrive": string;
     /**
-     * フォルダーは空です
+     * 此文件夹为空
      */
     "emptyFolder": string;
     /**
-     * ここにファイルをドロップしてアップロード
+     * 将文件拖动到这里来上传
      */
     "dropHereToUpload": string;
     /**
-     * 削除できません
+     * 无法删除
      */
     "unableToDelete": string;
     /**
-     * 新しいファイル名を入力してください
+     * 请输入新文件名
      */
     "inputNewFileName": string;
     /**
-     * 新しいキャプションを入力してください
+     * 请输入新的描述文本
      */
     "inputNewDescription": string;
     /**
-     * 新しいフォルダ名を入力してください
+     * 请输入新文件夹名
      */
     "inputNewFolderName": string;
     /**
-     * 移動先のフォルダーは、移動するフォルダーのサブフォルダーです。
+     * 目标文件夹是要移动的文件夹的子文件夹。
      */
     "circularReferenceFolder": string;
     /**
-     * このフォルダは空でないため、削除できません。
+     * 此文件夹中有文件，无法删除。
      */
     "hasChildFilesOrFolders": string;
     /**
-     * URLをコピー
+     * 复制链接
      */
     "copyUrl": string;
     /**
-     * 名前を変更
+     * 重命名
      */
     "rename": string;
     /**
-     * アイコン
+     * 头像
      */
     "avatar": string;
     /**
-     * バナー
+     * 横幅
      */
     "banner": string;
     /**
-     * センシティブなメディアの表示
+     * 显示敏感媒体
      */
     "displayOfSensitiveMedia": string;
     /**
-     * サーバーとの接続が失われたとき
+     * 与服务器连接中断时
      */
     "whenServerDisconnected": string;
     /**
-     * サーバーから切断されました
+     * 已和服务器断开连接
      */
     "disconnectedFromServer": string;
     /**
-     * リロード
+     * 刷新
      */
     "reload": string;
     /**
-     * なにもしない
+     * 关闭
      */
     "doNothing": string;
     /**
-     * リロードしますか？
+     * 确定要刷新吗？
      */
     "reloadConfirm": string;
     /**
-     * ウォッチ
+     * 关注
      */
     "watch": string;
     /**
-     * ウォッチ解除
+     * 取消关注
      */
     "unwatch": string;
     /**
-     * 許可
+     * 允许
      */
     "accept": string;
     /**
-     * 拒否
+     * 拒绝
      */
     "reject": string;
     /**
-     * 通常
+     * 正常
      */
     "normal": string;
     /**
-     * サーバー名
+     * 服务器名称
      */
     "instanceName": string;
     /**
-     * サーバーの紹介
+     * 服务器简介
      */
     "instanceDescription": string;
     /**
-     * 管理者の名前
+     * 管理员名称
      */
     "maintainerName": string;
     /**
-     * 管理者のメールアドレス
+     * 管理员电子邮箱
      */
     "maintainerEmail": string;
     /**
-     * 利用規約URL
+     * 服务条款地址
      */
     "tosUrl": string;
     /**
@@ -1529,11 +1529,11 @@ export interface Locale extends ILocale {
      */
     "thisYear": string;
     /**
-     * 今月
+     * 本月
      */
     "thisMonth": string;
     /**
-     * 今日
+     * 今天
      */
     "today": string;
     /**
@@ -1549,87 +1549,87 @@ export interface Locale extends ILocale {
      */
     "yearX": ParameterizedString<"year">;
     /**
-     * ページ
+     * 页面
      */
     "pages": string;
     /**
-     * 連携
+     * 关联
      */
     "integration": string;
     /**
-     * 接続する
+     * 连接
      */
     "connectService": string;
     /**
-     * 切断する
+     * 断开连接
      */
     "disconnectService": string;
     /**
-     * ローカルタイムラインを有効にする
+     * 启用本地时间线
      */
     "enableLocalTimeline": string;
     /**
-     * グローバルタイムラインを有効にする
+     * 启用全局时间线
      */
     "enableGlobalTimeline": string;
     /**
-     * これらのタイムラインを無効化しても、利便性のため管理者およびモデレーターは引き続き利用することができます。
+     * 即使时间线功能被禁用，出于方便，管理员和监察员也可以继续使用。
      */
     "disablingTimelinesInfo": string;
     /**
-     * 登録
+     * 注册
      */
     "registration": string;
     /**
-     * 招待
+     * 邀请
      */
     "invite": string;
     /**
-     * ローカルユーザーひとりあたりのドライブ容量
+     * 每个用户的网盘容量
      */
     "driveCapacityPerLocalAccount": string;
     /**
-     * リモートユーザーひとりあたりのドライブ容量
+     * 每个远程用户的网盘容量
      */
     "driveCapacityPerRemoteAccount": string;
     /**
-     * メガバイト単位
+     * 以兆字节(MegaByte)为单位
      */
     "inMb": string;
     /**
-     * バナー画像のURL
+     * 横幅 URL
      */
     "bannerUrl": string;
     /**
-     * 背景画像のURL
+     * 背景图片的链接
      */
     "backgroundImageUrl": string;
     /**
-     * 基本情報
+     * 基本信息
      */
     "basicInfo": string;
     /**
-     * ピン留めユーザー
+     * 置顶用户
      */
     "pinnedUsers": string;
     /**
-     * 「みつける」ページなどにピン留めしたいユーザーを改行で区切って記述します。
+     * 在 “发现” 页面中使用换行标记要置顶的用户。
      */
     "pinnedUsersDescription": string;
     /**
-     * ピン留めページ
+     * 固定页面
      */
     "pinnedPages": string;
     /**
-     * サーバーのトップページにピン留めしたいページのパスを改行で区切って記述します。
+     * 输入您要固定到服务器首页的页面路径，以换行符分隔。
      */
     "pinnedPagesDescription": string;
     /**
-     * ピン留めするクリップのID
+     * 置顶的便签 ID
      */
     "pinnedClipId": string;
     /**
-     * ピン留めされたノート
+     * 置顶的帖子
      */
     "pinnedNotes": string;
     /**
@@ -1637,15 +1637,15 @@ export interface Locale extends ILocale {
      */
     "hcaptcha": string;
     /**
-     * hCaptchaを有効にする
+     * 启用 hCaptcha
      */
     "enableHcaptcha": string;
     /**
-     * サイトキー
+     * 网站密钥
      */
     "hcaptchaSiteKey": string;
     /**
-     * シークレットキー
+     * hCaptcha 密钥(SecretKey)
      */
     "hcaptchaSecretKey": string;
     /**
@@ -1653,19 +1653,19 @@ export interface Locale extends ILocale {
      */
     "mcaptcha": string;
     /**
-     * mCaptchaを有効にする
+     * 启用 mCaptcha
      */
     "enableMcaptcha": string;
     /**
-     * サイトキー
+     * 网站密钥
      */
     "mcaptchaSiteKey": string;
     /**
-     * シークレットキー
+     * mCaptcha 密钥(SecretKey)
      */
     "mcaptchaSecretKey": string;
     /**
-     * mCaptchaのインスタンスのURL
+     * mCaptcha 实例地址
      */
     "mcaptchaInstanceUrl": string;
     /**
@@ -1673,15 +1673,16 @@ export interface Locale extends ILocale {
      */
     "recaptcha": string;
     /**
-     * reCAPTCHAを有効にする
+     * 启用 reCAPTCHA
+     * (请注意, 此功能在中国大陆不可用. 如果启用, 可能导致无法正常使用登录或注册等功能)
      */
     "enableRecaptcha": string;
     /**
-     * サイトキー
+     * 网站密钥
      */
     "recaptchaSiteKey": string;
     /**
-     * シークレットキー
+     * mCaptcha 密钥(SecretKey)
      */
     "recaptchaSecretKey": string;
     /**
@@ -1689,579 +1690,579 @@ export interface Locale extends ILocale {
      */
     "turnstile": string;
     /**
-     * Turnstileを有効にする
+     * 启用 Turnstile
      */
     "enableTurnstile": string;
     /**
-     * サイトキー
+     * 网站密钥
      */
     "turnstileSiteKey": string;
     /**
-     * シークレットキー
+     * Turnstile 密钥(SecretKey)
      */
     "turnstileSecretKey": string;
     /**
-     * 複数のCaptchaを使用すると干渉を起こす可能性があります。他のCaptchaを無効にしますか？キャンセルして複数のCaptchaを有効化したままにすることも可能です。
+     * 使用多个 Captcha 可能会互相干扰，您要禁用其它 Captcha 吗？您可以按“取消”按钮，继续保持启用多种验证方式。
      */
     "avoidMultiCaptchaConfirm": string;
     /**
-     * アンテナ
+     * 天线
      */
     "antennas": string;
     /**
-     * アンテナの管理
+     * 天线管理
      */
     "manageAntennas": string;
     /**
-     * 名前
+     * 名称
      */
     "name": string;
     /**
-     * 受信ソース
+     * 接收来源
      */
     "antennaSource": string;
     /**
-     * 受信キーワード
+     * 包含关键字
      */
     "antennaKeywords": string;
     /**
-     * 除外キーワード
+     * 排除关键字
      */
     "antennaExcludeKeywords": string;
     /**
-     * Botアカウントを除外
+     * 排除机器人账户
      */
     "antennaExcludeBots": string;
     /**
-     * スペースで区切るとAND指定になり、改行で区切るとOR指定になります
+     * AND 条件用空格分隔，OR 条件用换行符分隔。
      */
     "antennaKeywordsDescription": string;
     /**
-     * 新しいノートを通知する
+     * 开启通知
      */
     "notifyAntenna": string;
     /**
-     * ファイルが添付されたノートのみ
+     * 仅包含附件的帖子
      */
     "withFileAntenna": string;
     /**
-     * センシティブなチャンネルのノートを除外
+     * 排除敏感频道的帖子
      */
     "excludeNotesInSensitiveChannel": string;
     /**
-     * ブラウザへのプッシュ通知を有効にする
+     * 启用 ServiceWorker
      */
     "enableServiceworker": string;
     /**
-     * ユーザー名を改行で区切って指定します
+     * 指定用户名，用换行符进行分隔
      */
     "antennaUsersDescription": string;
     /**
-     * 大文字小文字を区別する
+     * 区分大小写
      */
     "caseSensitive": string;
     /**
-     * 返信を含む
+     * 包含回复
      */
     "withReplies": string;
     /**
-     * 次のアカウントに接続されています
+     * 您的账号已连到接以下第三方账号
      */
     "connectedTo": string;
     /**
-     * 投稿と返信
+     * 帖子与回复
      */
     "notesAndReplies": string;
     /**
-     * ファイル付き
+     * 附件
      */
     "withFiles": string;
     /**
-     * サイレンス
+     * 禁言
      */
     "silence": string;
     /**
-     * サイレンスしますか？
+     * 确认要禁言吗？
      */
     "silenceConfirm": string;
     /**
-     * サイレンス解除
+     * 解除禁言
      */
     "unsilence": string;
     /**
-     * サイレンス解除しますか？
+     * 要解除禁言吗？
      */
     "unsilenceConfirm": string;
     /**
-     * 人気のユーザー
+     * 热门用户
      */
     "popularUsers": string;
     /**
-     * 最近投稿したユーザー
+     * 最近投稿的用户
      */
     "recentlyUpdatedUsers": string;
     /**
-     * 最近登録したユーザー
+     * 最近登录的用户
      */
     "recentlyRegisteredUsers": string;
     /**
-     * 最近発見されたユーザー
+     * 最近发现的用户
      */
     "recentlyDiscoveredUsers": string;
     /**
-     * {count}のユーザーがいます
+     * 有 {count} 个用户
      */
     "exploreUsersCount": ParameterizedString<"count">;
     /**
-     * Fediverseを探索
+     * 探索联邦宇宙
      */
     "exploreFediverse": string;
     /**
-     * 人気のタグ
+     * 热门标签
      */
     "popularTags": string;
     /**
-     * リスト
+     * 列表
      */
     "userList": string;
     /**
-     * 情報
+     * 关于
      */
     "about": string;
     /**
-     * Misskeyについて
+     * 关于 Misskey
      */
     "aboutMisskey": string;
     /**
-     * 管理者
+     * 管理员
      */
     "administrator": string;
     /**
-     * 確認コード
+     * Token (令牌)
      */
     "token": string;
     /**
-     * 二要素認証
+     * 双重认证
      */
     "2fa": string;
     /**
-     * 二要素認証のセットアップ
+     * 设置双重认证
      */
     "setupOf2fa": string;
     /**
-     * 認証アプリ
+     * 验证器
      */
     "totp": string;
     /**
-     * 認証アプリを使ってワンタイムパスワードを入力
+     * 使用验证器输入一次性密码
      */
     "totpDescription": string;
     /**
-     * モデレーター
+     * 监察员
      */
     "moderator": string;
     /**
-     * モデレーション
+     * 管理
      */
     "moderation": string;
     /**
-     * モデレーションノート
+     * 管理笔记
      */
     "moderationNote": string;
     /**
-     * モデレーター間でだけ共有されるメモを記入することができます。
+     * 可以用来记录仅在管理员之间共享的笔记。
      */
     "moderationNoteDescription": string;
     /**
-     * モデレーションノートを追加する
+     * 添加管理笔记
      */
     "addModerationNote": string;
     /**
-     * モデログ
+     * 管理日志
      */
     "moderationLogs": string;
     /**
-     * {n}人が投稿
+     * {n}人投稿
      */
     "nUsersMentioned": ParameterizedString<"n">;
     /**
-     * セキュリティキー・パスキー
+     * 安全密钥或 Passkey
      */
     "securityKeyAndPasskey": string;
     /**
-     * セキュリティキー
+     * 安全密钥
      */
     "securityKey": string;
     /**
-     * 最後の使用
+     * 最后使用：
      */
     "lastUsed": string;
     /**
-     * 最後の使用: {t}
+     * 最后使用: {t}
      */
     "lastUsedAt": ParameterizedString<"t">;
     /**
-     * 登録を解除
+     * 删除账户
      */
     "unregister": string;
     /**
-     * パスワードレスログイン
+     * 无密码登录
      */
     "passwordLessLogin": string;
     /**
-     * パスワードを使用せず、セキュリティキーやパスキーなどのみでログインします
+     * 不使用密码，仅使用安全密钥或 Passkey 登录
      */
     "passwordLessLoginDescription": string;
     /**
-     * パスワードをリセット
+     * 重置密码
      */
     "resetPassword": string;
     /**
-     * 新しいパスワードは「{password}」です
+     * 新的密码是「{password}」
      */
     "newPasswordIs": ParameterizedString<"password">;
     /**
-     * UIのアニメーションを減らす
+     * 减少 UI 动效
      */
     "reduceUiAnimation": string;
     /**
-     * 共有
+     * 分享
      */
     "share": string;
     /**
-     * 見つかりません
+     * 未找到
      */
     "notFound": string;
     /**
-     * 指定されたURLに該当するページはありませんでした。
+     * 没有与指定 URL 对应的页面。
      */
     "notFoundDescription": string;
     /**
-     * 既定アップロード先
+     * 默认上传文件夹
      */
     "uploadFolder": string;
     /**
-     * すべての通知を既読にする
+     * 将所有通知标为已读
      */
     "markAsReadAllNotifications": string;
     /**
-     * すべての投稿を既読にする
+     * 将所有帖子标记为已读
      */
     "markAsReadAllUnreadNotes": string;
     /**
-     * すべてのダイレクトメッセージを既読にする
+     * 将所有私信标记为已读
      */
     "markAsReadAllTalkMessages": string;
     /**
-     * ヘルプ
+     * 帮助
      */
     "help": string;
     /**
-     * ここにメッセージを入力
+     * 在此输入信息
      */
     "inputMessageHere": string;
     /**
-     * 閉じる
+     * 关闭
      */
     "close": string;
     /**
-     * 招待
+     * 邀请
      */
     "invites": string;
     /**
-     * メンバー
+     * 成员
      */
     "members": string;
     /**
-     * 譲渡
+     * 转让
      */
     "transfer": string;
     /**
-     * タイトル
+     * 标题
      */
     "title": string;
     /**
-     * テキスト
+     * 文本
      */
     "text": string;
     /**
-     * 有効にする
+     * 启用
      */
     "enable": string;
     /**
-     * 次
+     * 下一个
      */
     "next": string;
     /**
-     * 再入力
+     * 重新输入
      */
     "retype": string;
     /**
-     * {user}のノート
+     * {user} 的帖子
      */
     "noteOf": ParameterizedString<"user">;
     /**
-     * 引用付き
+     * 已引用
      */
     "quoteAttached": string;
     /**
-     * 引用として添付しますか？
+     * 是否引用此链接内容？
      */
     "quoteQuestion": string;
     /**
-     * クリップボードのテキストが長いです。テキストファイルとして添付しますか？
+     * 剪贴板内的文字过长。要转换为文本文件并添加吗？
      */
     "attachAsFileQuestion": string;
     /**
-     * メッセージに添付できるファイルはひとつです
+     * 只能添加一个附件
      */
     "onlyOneFileCanBeAttached": string;
     /**
-     * 続行する前に、登録またはログインが必要です
+     * 请先登录
      */
     "signinRequired": string;
     /**
-     * 続行するには、お使いのサーバーに移動するか、このサーバーに登録・ログインする必要があります
+     * 若要继续，需要转到您所使用的实例，或者在此服务器上注册或登录。
      */
     "signinOrContinueOnRemote": string;
     /**
-     * 招待
+     * 邀请
      */
     "invitations": string;
     /**
-     * 招待コード
+     * 邀请码
      */
     "invitationCode": string;
     /**
-     * 確認しています
+     * 正在确认
      */
     "checking": string;
     /**
-     * 利用できます
+     * 可用
      */
     "available": string;
     /**
-     * 利用できません
+     * 不可用
      */
     "unavailable": string;
     /**
-     * a~z、A~Z、0~9、_が使えます
+     * 可使用大小写英文字母、数字和下划线。
      */
     "usernameInvalidFormat": string;
     /**
-     * 短すぎます
+     * 过短
      */
     "tooShort": string;
     /**
-     * 長すぎます
+     * 过长
      */
     "tooLong": string;
     /**
-     * 弱いパスワード
+     * 密码强度：弱
      */
     "weakPassword": string;
     /**
-     * 普通のパスワード
+     * 密码强度：中等
      */
     "normalPassword": string;
     /**
-     * 強いパスワード
+     * 密码强度：强
      */
     "strongPassword": string;
     /**
-     * 一致しました
+     * 密码一致
      */
     "passwordMatched": string;
     /**
-     * 一致していません
+     * 密码不一致
      */
     "passwordNotMatched": string;
     /**
-     * {x}でログイン
+     * 以{x}登录
      */
     "signinWith": ParameterizedString<"x">;
     /**
-     * ログインできませんでした。ユーザー名とパスワードを確認してください。
+     * 无法登录，请检查您的用户名和密码是否正确。
      */
     "signinFailed": string;
     /**
-     * もしくは
+     * 或者
      */
     "or": string;
     /**
-     * 言語
+     * 语言
      */
     "language": string;
     /**
-     * UIの表示言語
+     * 显示语言
      */
     "uiLanguage": string;
     /**
-     * {x}について
+     * 关于 {x}
      */
     "aboutX": ParameterizedString<"x">;
     /**
-     * 絵文字のスタイル
+     * 表情符号的样式
      */
     "emojiStyle": string;
     /**
-     * ネイティブ
+     * 原生
      */
     "native": string;
     /**
-     * メニューのスタイル
+     * 菜单样式
      */
     "menuStyle": string;
     /**
-     * スタイル
+     * 样式
      */
     "style": string;
     /**
-     * ドロワー
+     * 抽屉
      */
     "drawer": string;
     /**
-     * ポップアップ
+     * 弹窗
      */
     "popup": string;
     /**
-     * ノートのアクションをホバー時のみ表示する
+     * 仅在悬停时显示帖子操作
      */
     "showNoteActionsOnlyHover": string;
     /**
-     * ノートのリアクション数を表示する
+     * 显示帖子的回应数
      */
     "showReactionsCount": string;
     /**
-     * 履歴はありません
+     * 没有历史记录
      */
     "noHistory": string;
     /**
-     * ログイン履歴
+     * 登录历史
      */
     "signinHistory": string;
     /**
-     * 高度なMFMを有効にする
+     * 启用扩展 MFM
      */
     "enableAdvancedMfm": string;
     /**
-     * 動きのあるMFMを有効にする
+     * 启用 MFM 动画
      */
     "enableAnimatedMfm": string;
     /**
-     * やっています
+     * 正在进行
      */
     "doing": string;
     /**
-     * カテゴリ
+     * 类别
      */
     "category": string;
     /**
-     * タグ
+     * 标签
      */
     "tags": string;
     /**
-     * このドキュメントのソース
+     * 文件来源
      */
     "docSource": string;
     /**
-     * アカウントを作成
+     * 注册账户
      */
     "createAccount": string;
     /**
-     * 既存のアカウント
+     * 现有的账户
      */
     "existingAccount": string;
     /**
-     * 再生成
+     * 重新生成
      */
     "regenerate": string;
     /**
-     * フォントサイズ
+     * 字体大小
      */
     "fontSize": string;
     /**
-     * 画像が1枚のみのメディアリストの高さ
+     * 仅一张图片的媒体列表高度
      */
     "mediaListWithOneImageAppearance": string;
     /**
-     * {x}を上限に
+     * 上限为 {x}
      */
     "limitTo": ParameterizedString<"x">;
     /**
-     * 画面幅が広いときはメディアリストを横並びで表示する
+     * 在宽屏上并排显示媒体列表
      */
     "showMediaListByGridInWideArea": string;
     /**
-     * フォロー申請はありません
+     * 没有关注请求
      */
     "noFollowRequests": string;
     /**
-     * 画像を新しいタブで開く
+     * 在新标签页中打开图片
      */
     "openImageInNewTab": string;
     /**
-     * ダッシュボード
+     * 管理面板
      */
     "dashboard": string;
     /**
-     * ローカル
+     * 本地
      */
     "local": string;
     /**
-     * リモート
+     * 远程
      */
     "remote": string;
     /**
-     * 合計
+     * 总计
      */
     "total": string;
     /**
-     * 前週比
+     * 与前一周相比
      */
     "weekOverWeekChanges": string;
     /**
-     * 前日比
+     * 与前一日相比
      */
     "dayOverDayChanges": string;
     /**
-     * アピアランス
+     * 外观
      */
     "appearance": string;
     /**
-     * クライアント設定
+     * 客户端设置
      */
     "clientSettings": string;
     /**
-     * アカウント設定
+     * 账户设置
      */
     "accountSettings": string;
     /**
-     * プロモーション
+     * 推广
      */
     "promotion": string;
     /**
-     * プロモート
+     * 推广
      */
     "promote": string;
     /**
-     * 日数
+     * 天数
      */
     "numberOfDays": string;
     /**
-     * このノートを非表示
+     * 隐藏这条帖子
      */
     "hideThisNote": string;
     /**
-     * タイムラインにおすすめのノートを表示する
+     * 在时间线上显示热门推荐
      */
     "showFeaturedNotesInTimeline": string;
     /**
-     * オブジェクトストレージ
+     * 对象存储
      */
     "objectStorage": string;
     /**
-     * オブジェクトストレージを使用
+     * 使用对象存储
      */
     "useObjectStorage": string;
     /**
@@ -2269,119 +2270,119 @@ export interface Locale extends ILocale {
      */
     "objectStorageBaseUrl": string;
     /**
-     * 参照に使用するURL。CDNやProxyを使用している場合はそのURL、S3: 'https://<bucket>.s3.amazonaws.com'、GCS等: 'https://storage.googleapis.com/<bucket>'。
+     * 用于参考的 URL，如果您正在使用 CDN 或 Proxy，请填入服务商提供的 URL；S3：“https://<bucket>.s3.amazonaws.com”；GCS：“https://storage.googleapis.com/<bucket>”
      */
     "objectStorageBaseUrlDesc": string;
     /**
-     * Bucket
+     * 存储桶
      */
     "objectStorageBucket": string;
     /**
-     * 使用サービスのbucket名を指定してください。
+     * 请指定使用的对象存储服务的存储桶名称。
      */
     "objectStorageBucketDesc": string;
     /**
-     * Prefix
+     * 前缀
      */
     "objectStoragePrefix": string;
     /**
-     * このprefixのディレクトリ下に格納されます。
+     * 文件将存储在此前缀的目录下。
      */
     "objectStoragePrefixDesc": string;
     /**
-     * Endpoint
+     * 端点
      */
     "objectStorageEndpoint": string;
     /**
-     * S3の場合は空、それ以外の場合は各サービスのendpointを指定してください。'<host>'または'<host>:<port>'のように指定します。
+     * 如果你使用 AWS S3 请留空。否则请根据你使用的服务商的说明来进行设置，指定端点形式为“<host>”或“<host>:<port>”。
      */
     "objectStorageEndpointDesc": string;
     /**
-     * Region
+     * 可用区
      */
     "objectStorageRegion": string;
     /**
-     * 'xx-east-1'のようなregionを指定してください。使用サービスにregionの概念がない場合は'us-east-1'にしてください。AWS設定ファイルまたは環境変数を参照する場合は空にしてください。
+     * 指定一个可用区，例如“xx-east-1”。 如果您的对象存储服务没有可用区概念，请将其留空或填写“us-east-1”。如果引用 AWS 的配置文件或环境变量，则留空。
      */
     "objectStorageRegionDesc": string;
     /**
-     * SSLを使用する
+     * 使用 SSL
      */
     "objectStorageUseSSL": string;
     /**
-     * API接続にhttpsを使用しない場合はオフにしてください
+     * 如果不使用 https 进行 API 连接，请关闭。
      */
     "objectStorageUseSSLDesc": string;
     /**
-     * Proxyを利用する
+     * 使用代理
      */
     "objectStorageUseProxy": string;
     /**
-     * API接続にproxyを利用しない場合はオフにしてください
+     * 如果不使用代理进行 API 连接，请关闭。
      */
     "objectStorageUseProxyDesc": string;
     /**
-     * アップロード時に'public-read'を設定する
+     * 上传时设置为 public-read
      */
     "objectStorageSetPublicRead": string;
     /**
-     * s3ForcePathStyleを有効にすると、バケット名をURLのホスト名ではなくパスの一部として指定することを強制します。セルフホストされたMinioなどの使用時に有効にする必要がある場合があります。
+     * 启用 s3ForcePathStyle 会强制将存储桶名称指定为 URL 中路径的一部分，而不是主机名。使用自托管 Minio 等时可能需要启用。
      */
     "s3ForcePathStyleDesc": string;
     /**
-     * サーバーログ
+     * 服务器日志
      */
     "serverLogs": string;
     /**
-     * 全て削除
+     * 全部删除
      */
     "deleteAll": string;
     /**
-     * タイムライン上部に投稿フォームを表示する
+     * 在时间线顶部显示发帖框
      */
     "showFixedPostForm": string;
     /**
-     * タイムライン上部に投稿フォームを表示する(チャンネル)
+     * 在时间线顶部显示发帖框（频道）
      */
     "showFixedPostFormInChannel": string;
     /**
-     * フォローする際、デフォルトで返信をTLに含むようにする
+     * 在时间线中默认包含新关注用户的回复
      */
     "withRepliesByDefaultForNewlyFollowed": string;
     /**
-     * 新しいノートがあります
+     * 有新的帖子
      */
     "newNoteRecived": string;
     /**
-     * 新しいノート
+     * 新帖子
      */
     "newNote": string;
     /**
-     * サウンド
+     * 提示音
      */
     "sounds": string;
     /**
-     * サウンド
+     * 提示音
      */
     "sound": string;
     /**
-     * 通知音の設定
+     * 设置通知声音
      */
     "notificationSoundSettings": string;
     /**
-     * 聴く
+     * 试听
      */
     "listen": string;
     /**
-     * なし
+     * 无
      */
     "none": string;
     /**
-     * ページで表示
+     * 在页面中显示
      */
     "showInPage": string;
     /**
-     * ポップアウト
+     * 弹窗
      */
     "popout": string;
     /**
@@ -2389,31 +2390,31 @@ export interface Locale extends ILocale {
      */
     "volume": string;
     /**
-     * マスター音量
+     * 主音量
      */
     "masterVolume": string;
     /**
-     * サウンドを出力しない
+     * 静音
      */
     "notUseSound": string;
     /**
-     * Misskeyがアクティブな時のみサウンドを出力する
+     * 仅在使用 Misskey 时发出音效
      */
     "useSoundOnlyWhenActive": string;
     /**
-     * 詳細
+     * 详情
      */
     "details": string;
     /**
-     * リノートの詳細
+     * 转帖详情
      */
     "renoteDetails": string;
     /**
-     * 絵文字を選択
+     * 选择表情符号
      */
     "chooseEmoji": string;
     /**
-     * 操作を完了できません
+     * 操作无法完成
      */
     "unableToProcess": string;
     /**
@@ -2421,235 +2422,235 @@ export interface Locale extends ILocale {
      */
     "recentUsed": string;
     /**
-     * インストール
+     * 安装
      */
     "install": string;
     /**
-     * アンインストール
+     * 卸载
      */
     "uninstall": string;
     /**
-     * インストールされたアプリ
+     * 已授权的应用
      */
     "installedApps": string;
     /**
-     * ありません
+     * 无
      */
     "nothing": string;
     /**
-     * インストール日時
+     * 授权日期
      */
     "installedDate": string;
     /**
-     * 最終使用日時
+     * 最近使用
      */
     "lastUsedDate": string;
     /**
-     * 状態
+     * 状态
      */
     "state": string;
     /**
-     * ソート
+     * 排序
      */
     "sort": string;
     /**
-     * 昇順
+     * 升序
      */
     "ascendingOrder": string;
     /**
-     * 降順
+     * 降序
      */
     "descendingOrder": string;
     /**
-     * スクラッチパッド
+     * AiScript 控制台
      */
     "scratchpad": string;
     /**
-     * スクラッチパッドは、AiScriptの実験環境を提供します。Misskeyと対話するコードの記述、実行、結果の確認ができます。
+     * AiScript 控制台为 AiScript 提供了实验环境。您可以编写代码与 Misskey 交互，运行并查看结果。
      */
     "scratchpadDescription": string;
     /**
-     * UIインスペクター
+     * UI 检查器
      */
     "uiInspector": string;
     /**
-     * メモリ上に存在しているUIコンポーネントのインスタンスの一覧を見ることができます。UIコンポーネントはUi:C:系関数により生成されます。
+     * 查看内存中所有由 UI 组件生成出的实例。UI 组件由 UI:C 系列函数所生成。
      */
     "uiInspectorDescription": string;
     /**
-     * 出力
+     * 输出
      */
     "output": string;
     /**
-     * スクリプト
+     * 脚本
      */
     "script": string;
     /**
-     * Pagesのスクリプトを無効にする
+     * 禁用页面脚本
      */
     "disablePagesScript": string;
     /**
-     * リモートユーザー情報の更新
+     * 更新远程用户信息
      */
     "updateRemoteUser": string;
     /**
-     * 二要素認証を解除
+     * 解除双重认证
      */
     "unsetMfa": string;
     /**
-     * 二要素認証を解除しますか？
+     * 确认解除双重认证吗？
      */
     "unsetMfaConfirm": string;
     /**
-     * アイコンを解除
+     * 清除头像
      */
     "unsetUserAvatar": string;
     /**
-     * アイコンを解除しますか？
+     * 要清除头像吗？
      */
     "unsetUserAvatarConfirm": string;
     /**
-     * バナーを解除
+     * 清除横幅
      */
     "unsetUserBanner": string;
     /**
-     * バナーを解除しますか？
+     * 要清除横幅吗？
      */
     "unsetUserBannerConfirm": string;
     /**
-     * すべてのファイルを削除
+     * 删除所有文件
      */
     "deleteAllFiles": string;
     /**
-     * すべてのファイルを削除しますか？
+     * 要删除所有文件吗？
      */
     "deleteAllFilesConfirm": string;
     /**
-     * フォローを全解除
+     * 取消所有关注
      */
     "removeAllFollowing": string;
     /**
-     * {host}からのフォローをすべて解除します。そのサーバーがもう存在しなくなった場合などに実行してください。
+     * 取消来自 {host} 的所有关注者。当服务器不再存在时执行。
      */
     "removeAllFollowingDescription": ParameterizedString<"host">;
     /**
-     * このユーザーは凍結されています。
+     * 该用户已被冻结。
      */
     "userSuspended": string;
     /**
-     * このユーザーはサイレンスされています。
+     * 该用户已被禁言。
      */
     "userSilenced": string;
     /**
-     * アカウントが凍結されています
+     * 账户已被冻结
      */
     "yourAccountSuspendedTitle": string;
     /**
-     * このアカウントは、サーバーの利用規約に違反したなどの理由により、凍結されています。詳細については管理者までお問い合わせください。新しいアカウントを作らないでください。
+     * 由于违反了服务器的服务条款或其他原因，该账户已被冻结。 您可以与管理员联系以了解更多信息。 请不要创建一个新的账户。
      */
     "yourAccountSuspendedDescription": string;
     /**
-     * トークンが無効です
+     * 令牌无效
      */
     "tokenRevoked": string;
     /**
-     * ログイントークンが失効しています。ログインし直してください。
+     * 登录令牌已经失效。请重新登录。
      */
     "tokenRevokedDescription": string;
     /**
-     * アカウントは削除されています
+     * 帐户已删除
      */
     "accountDeleted": string;
     /**
-     * このアカウントは削除されています。
+     * 此帐户已经被删除。
      */
     "accountDeletedDescription": string;
     /**
-     * メニュー
+     * 菜单
      */
     "menu": string;
     /**
-     * 分割線
+     * 分割线
      */
     "divider": string;
     /**
-     * 項目を追加
+     * 添加项目
      */
     "addItem": string;
     /**
-     * 並び替え
+     * 排序方式
      */
     "rearrange": string;
     /**
-     * リレー
+     * 中继
      */
     "relays": string;
     /**
-     * リレーの追加
+     * 添加中继
      */
     "addRelay": string;
     /**
-     * inboxのURL
+     * Inbox URL
      */
     "inboxUrl": string;
     /**
-     * 追加済みのリレー
+     * 已添加的中继
      */
     "addedRelays": string;
     /**
-     * プッシュ通知を行うには有効にする必要があります。
+     * 您需要启用推送通知
      */
     "serviceworkerInfo": string;
     /**
-     * 削除されたノート
+     * 已删除的帖子
      */
     "deletedNote": string;
     /**
-     * 非公開のノート
+     * 隐藏的帖子
      */
     "invisibleNote": string;
     /**
-     * 自動でもっと見る
+     * 自动加载更多内容
      */
     "enableInfiniteScroll": string;
     /**
-     * 公開範囲
+     * 可见性
      */
     "visibility": string;
     /**
-     * アンケート
+     * 投票
      */
     "poll": string;
     /**
-     * 内容を隠す
+     * 隐藏内容
      */
     "useCw": string;
     /**
-     * プレイヤーを開く
+     * 打开播放器
      */
     "enablePlayer": string;
     /**
-     * プレイヤーを閉じる
+     * 关闭播放器
      */
     "disablePlayer": string;
     /**
-     * ポストを展開する
+     * 展开帖子
      */
     "expandTweet": string;
     /**
-     * テーマエディター
+     * 主题编辑器
      */
     "themeEditor": string;
     /**
-     * 説明
+     * 描述
      */
     "description": string;
     /**
-     * キャプションを付ける
+     * 添加描述
      */
     "describeFile": string;
     /**
-     * キャプションを入力
+     * 输入描述文本
      */
     "enterFileDescription": string;
     /**
@@ -2657,7 +2658,7 @@ export interface Locale extends ILocale {
      */
     "author": string;
     /**
-     * 未保存の変更があります。破棄しますか？
+     * 存在未保存的更改。要放弃更改吗？
      */
     "leaveConfirm": string;
     /**
@@ -2665,35 +2666,35 @@ export interface Locale extends ILocale {
      */
     "manage": string;
     /**
-     * プラグイン
+     * 插件
      */
     "plugins": string;
     /**
-     * 設定のバックアップ
+     * 备份设置
      */
     "preferencesBackups": string;
     /**
-     * デッキ
+     * Deck
      */
     "deck": string;
     /**
-     * デッキ解除
+     * 取消 Deck
      */
     "undeck": string;
     /**
-     * モーダルにぼかし効果を使用
+     * 发帖背景使用模糊效果
      */
     "useBlurEffectForModal": string;
     /**
-     * フル機能リアクションピッカーを使用
+     * 使用全功能的回应工具栏
      */
     "useFullReactionPicker": string;
     /**
-     * 幅
+     * 宽度
      */
     "width": string;
     /**
-     * 高さ
+     * 高度
      */
     "height": string;
     /**
@@ -2709,515 +2710,515 @@ export interface Locale extends ILocale {
      */
     "small": string;
     /**
-     * アクセストークンの発行
+     * 生成访问令牌
      */
     "generateAccessToken": string;
     /**
-     * 権限
+     * 权限
      */
     "permission": string;
     /**
-     * 管理者権限
+     * 管理员权限
      */
     "adminPermission": string;
     /**
-     * 全て有効にする
+     * 启用全部
      */
     "enableAll": string;
     /**
-     * 全て無効にする
+     * 禁用全部
      */
     "disableAll": string;
     /**
-     * アカウントへのアクセス許可
+     * 允许访问账户
      */
     "tokenRequested": string;
     /**
-     * このプラグインはここで設定した権限を行使できるようになります。
+     * 此插件将能够拥有这里设置的权限
      */
     "pluginTokenRequestedDescription": string;
     /**
-     * 通知の種類
+     * 通知类型
      */
     "notificationType": string;
     /**
-     * 編集
+     * 编辑
      */
     "edit": string;
     /**
-     * メールサーバー
+     * 邮件服务器
      */
     "emailServer": string;
     /**
-     * メール配信機能を有効化する
+     * 启用发送邮件功能
      */
     "enableEmail": string;
     /**
-     * メールアドレスの確認やパスワードリセットの際に使います
+     * 用于确认电子邮件和密码重置
      */
     "emailConfigInfo": string;
     /**
-     * メール
+     * 邮箱
      */
     "email": string;
     /**
-     * メールアドレス
+     * 电子邮件地址
      */
     "emailAddress": string;
     /**
-     * SMTP サーバーの設定
+     * SMTP 服务器设置
      */
     "smtpConfig": string;
     /**
-     * ホスト
+     * 主机名
      */
     "smtpHost": string;
     /**
-     * ポート
+     * 端口
      */
     "smtpPort": string;
     /**
-     * ユーザー名
+     * 用户名
      */
     "smtpUser": string;
     /**
-     * パスワード
+     * 密码
      */
     "smtpPass": string;
     /**
-     * ユーザー名とパスワードを空欄にすることで、SMTP認証を無効化出来ます
+     * 用户名和密码留空可以禁用 SMTP 验证
      */
     "emptyToDisableSmtpAuth": string;
     /**
-     * SMTP 接続に暗黙的なSSL/TLSを使用する
+     * 在 SMTP 连接中使用隐式 SSL / TLS
      */
     "smtpSecure": string;
     /**
-     * STARTTLS使用時はオフにします。
+     * 使用 STARTTLS 时关闭。
      */
     "smtpSecureInfo": string;
     /**
-     * 配信テスト
+     * 邮件发送测试
      */
     "testEmail": string;
     /**
-     * ワードミュート
+     * 折叠关键词
      */
     "wordMute": string;
     /**
-     * 指定した語句を含むノートを最小化します。最小化されたノートをクリックすることで表示することができます。
+     * 折叠包含指定关键词的帖子。被折叠的帖子可单击展开。
      */
     "wordMuteDescription": string;
     /**
-     * ハードワードミュート
+     * 屏蔽关键词
      */
     "hardWordMute": string;
     /**
-     * ミュートされたワードを表示
+     * 显示折叠关键词
      */
     "showMutedWord": string;
     /**
-     * 指定した語句を含むノートを隠します。ワードミュートとは異なり、ノートは完全に表示されなくなります。
+     * 屏蔽包含指定关键词的帖子。与折叠关键词不同，帖子将完全不会被显示。
      */
     "hardWordMuteDescription": string;
     /**
-     * 正規表現エラー
+     * 正则表达式错误
      */
     "regexpError": string;
     /**
-     * {tab}ワードミュートの{line}行目の正規表現にエラーが発生しました:
+     * {tab} 折叠关键词的第 {line} 行的正则表达式有错误：
      */
     "regexpErrorDescription": ParameterizedString<"tab" | "line">;
     /**
-     * サーバーミュート
+     * 已隐藏的服务器
      */
     "instanceMute": string;
     /**
-     * {name}が何かを言いました
+     * {name} 说了些什么，但被屏蔽词过滤了
      */
     "userSaysSomething": ParameterizedString<"name">;
     /**
-     * {name}が「{word}」について何かを言いました
+     * {name} 说了关于 “{word}” 的什么
      */
     "userSaysSomethingAbout": ParameterizedString<"name" | "word">;
     /**
-     * アクティブにする
+     * 启用
      */
     "makeActive": string;
     /**
-     * 表示
+     * 显示
      */
     "display": string;
     /**
-     * コピー
+     * 复制
      */
     "copy": string;
     /**
-     * クリップボードにコピーされました
+     * 已复制到剪贴板
      */
     "copiedToClipboard": string;
     /**
-     * メトリクス
+     * 指标
      */
     "metrics": string;
     /**
-     * 概要
+     * 概览
      */
     "overview": string;
     /**
-     * ログ
+     * 日志
      */
     "logs": string;
     /**
-     * 遅延
+     * 滞后
      */
     "delayed": string;
     /**
-     * データベース
+     * 数据库
      */
     "database": string;
     /**
-     * チャンネル
+     * 频道
      */
     "channel": string;
     /**
-     * 作成
+     * 创建
      */
     "create": string;
     /**
-     * 通知設定
+     * 通知设置
      */
     "notificationSetting": string;
     /**
-     * 表示する通知の種別を選択してください。
+     * 选择要显示的通知类型。
      */
     "notificationSettingDesc": string;
     /**
-     * グローバル設定を使う
+     * 使用全局设置
      */
     "useGlobalSetting": string;
     /**
-     * オンにすると、アカウントの通知設定が使用されます。オフにすると、個別に設定できるようになります。
+     * 启用时，将使用账户通知设置。关闭时，则可以单独设置。
      */
     "useGlobalSettingDesc": string;
     /**
-     * その他
+     * 其他
      */
     "other": string;
     /**
-     * ログイントークンを再生成
+     * 重新生成登录令牌
      */
     "regenerateLoginToken": string;
     /**
-     * ログインに使用される内部トークンを再生成します。通常この操作を行う必要はありません。再生成すると、全てのデバイスでログアウトされます。
+     * 重新生成用于登录的内部令牌。通常您不需要这样做。重新生成后，您将在所有设备上登出。
      */
     "regenerateLoginTokenDescription": string;
     /**
-     * カスタム絵文字を検索する時のキーワードになります。
+     * 这将是搜索自定义表情符号时的关键词。
      */
     "theKeywordWhenSearchingForCustomEmoji": string;
     /**
-     * スペースで区切って複数設定できます。
+     * 您可以使用空格分隔多个项目。
      */
     "setMultipleBySeparatingWithSpace": string;
     /**
-     * ファイルIDまたはURL
+     * 文件 ID 或者 URL
      */
     "fileIdOrUrl": string;
     /**
-     * 動作
+     * 行为
      */
     "behavior": string;
     /**
-     * サンプル
+     * 示例
      */
     "sample": string;
     /**
-     * 通報
+     * 举报
      */
     "abuseReports": string;
     /**
-     * 通報
+     * 举报
      */
     "reportAbuse": string;
     /**
-     * リノートを通報
+     * 举报转帖
      */
     "reportAbuseRenote": string;
     /**
-     * {name}を通報する
+     * 举报 {name}
      */
     "reportAbuseOf": ParameterizedString<"name">;
     /**
-     * 通報理由の詳細を記入してください。対象のノートやページなどがある場合はそのURLも記入してください。
+     * 请填写举报的详细原因。如果有对方发的帖子，请同时填写 URL 地址。
      */
     "fillAbuseReportDescription": string;
     /**
-     * 内容が送信されました。ご報告ありがとうございました。
+     * 内容已发送。感谢您提交信息。
      */
     "abuseReported": string;
     /**
-     * 通報者
+     * 举报者
      */
     "reporter": string;
     /**
-     * 通報先
+     * 举报来源
      */
     "reporteeOrigin": string;
     /**
-     * 通報元
+     * 举报者来源
      */
     "reporterOrigin": string;
     /**
-     * 送信
+     * 发送
      */
     "send": string;
     /**
-     * 新しいタブで開く
+     * 在新标签页中打开
      */
     "openInNewTab": string;
     /**
-     * サイドビューで開く
+     * 在侧边栏中打开
      */
     "openInSideView": string;
     /**
-     * デフォルトのナビゲーション
+     * 默认导航
      */
     "defaultNavigationBehaviour": string;
     /**
-     * これらの設定を編集するとアカウントが破損する可能性があります。
+     * 编辑这些设置可以会损坏您的账号
      */
     "editTheseSettingsMayBreakAccount": string;
     /**
-     * ノートのサーバー情報
+     * 帖子的服务器来源
      */
     "instanceTicker": string;
     /**
-     * {x}を待っています
+     * 等待 {x}
      */
     "waitingFor": ParameterizedString<"x">;
     /**
-     * ランダム
+     * 随机
      */
     "random": string;
     /**
-     * システム
+     * 系统
      */
     "system": string;
     /**
-     * UI切り替え
+     * 切换界面
      */
     "switchUi": string;
     /**
-     * デスクトップ
+     * 桌面
      */
     "desktop": string;
     /**
-     * クリップ
+     * 便签
      */
     "clip": string;
     /**
-     * 新規作成
+     * 新建
      */
     "createNew": string;
     /**
-     * 任意
+     * 可选
      */
     "optional": string;
     /**
-     * 新しいクリップを作成
+     * 新建便签
      */
     "createNewClip": string;
     /**
-     * クリップ解除
+     * 移除便签
      */
     "unclip": string;
     /**
-     * このノートはすでにクリップ「{name}」に含まれています。ノートをこのクリップから除外しますか？
+     * 本帖已包含在便签 “{name}” 里。您想要将本帖从该便签中移除吗？
      */
     "confirmToUnclipAlreadyClippedNote": ParameterizedString<"name">;
     /**
-     * このアンテナから削除
+     * 从此天线中删除
      */
     "removeFromAntenna": string;
     /**
-     * 「{name}」からこのノートを削除しますか？
+     * 要从「{name}」中删除此帖子吗？
      */
     "removeNoteFromAntennaConfirm": ParameterizedString<"name">;
     /**
-     * パブリック
+     * 公开
      */
     "public": string;
     /**
-     * 非公開
+     * 私密
      */
     "private": string;
     /**
-     * Misskeyは有志によって様々な言語に翻訳されています。{link}で翻訳に協力できます。
+     * Misskey 已经被志愿者们翻译成了各种语言。如果你也有兴趣，可以通过 {link} 帮助翻译。
      */
     "i18nInfo": ParameterizedString<"link">;
     /**
-     * アクセストークンの管理
+     * 管理访问令牌
      */
     "manageAccessTokens": string;
     /**
-     * アカウント情報
+     * 账户信息
      */
     "accountInfo": string;
     /**
-     * ノートの数
+     * 帖子数量
      */
     "notesCount": string;
     /**
-     * 返信した数
+     * 回复数量
      */
     "repliesCount": string;
     /**
-     * リノートした数
+     * 转帖数量
      */
     "renotesCount": string;
     /**
-     * 返信された数
+     * 回复数
      */
     "repliedCount": string;
     /**
-     * リノートされた数
+     * 转发数
      */
     "renotedCount": string;
     /**
-     * フォロー数
+     * 正在关注数量
      */
     "followingCount": string;
     /**
-     * フォロワー数
+     * 关注者数量
      */
     "followersCount": string;
     /**
-     * リアクションした数
+     * 发送回应数
      */
     "sentReactionsCount": string;
     /**
-     * リアクションされた数
+     * 收到回应数
      */
     "receivedReactionsCount": string;
     /**
-     * アンケートに投票した数
+     * 问卷调查的投票数
      */
     "pollVotesCount": string;
     /**
-     * アンケートに投票された数
+     * 问卷调查的被投票数
      */
     "pollVotedCount": string;
     /**
-     * はい
+     * 是
      */
     "yes": string;
     /**
-     * いいえ
+     * 否
      */
     "no": string;
     /**
-     * ドライブのファイル数
+     * 网盘的文件数
      */
     "driveFilesCount": string;
     /**
-     * ドライブ使用量
+     * 网盘的空间用量
      */
     "driveUsage": string;
     /**
-     * クローラーによるインデックスを拒否
+     * 拒绝搜索引擎的索引
      */
     "noCrawle": string;
     /**
-     * 外部の検索エンジンにあなたのユーザーページ、ノート、Pagesなどのコンテンツを登録(インデックス)しないよう要求します。
+     * 拒绝搜索引擎收录（索引）您的个人资料，帖子，页面等。
      */
     "noCrawleDescription": string;
     /**
-     * フォローを承認制にしても、ノートの公開範囲を「フォロワー」にしない限り、誰でもあなたのノートを見ることができます。
+     * 即使启用该功能，只要帖子可见范围不是 “仅关注者”，任何人都可以看到您的帖子。
      */
     "lockedAccountInfo": string;
     /**
-     * デフォルトでメディアをセンシティブ設定にする
+     * 默认将媒体文件标记为敏感内容
      */
     "alwaysMarkSensitive": string;
     /**
-     * 添付画像のサムネイルをオリジナル画質にする
+     * 添加附件图像的缩略图时使用原始图像质量
      */
     "loadRawImages": string;
     /**
-     * アニメーション画像を再生しない
+     * 不播放动态图像
      */
     "disableShowingAnimatedImages": string;
     /**
-     * この設定に関わらずアニメーション画像が再生されないときは、ブラウザ・OSのアクセシビリティ設定や省電力設定等が干渉している場合があります。
+     * 如果即使禁用了此设置，动态图像仍无法播放，可能是由于浏览器或操作系统的辅助功能设置、省电设置或其他因素所致。
      */
     "disableShowingAnimatedImages_caption": string;
     /**
-     * メディアがセンシティブであることを分かりやすく表示
+     * 高亮显示敏感媒体
      */
     "highlightSensitiveMedia": string;
     /**
-     * 確認のメールを送信しました。メールに記載されたリンクにアクセスして、設定を完了してください。
+     * 已发送确认电子邮件。请访问电子邮件中的链接以完成设置。
      */
     "verificationEmailSent": string;
     /**
-     * 未設定
+     * 未设置
      */
     "notSet": string;
     /**
-     * メールアドレスが確認されました
+     * 电子邮件地址已验证
      */
     "emailVerified": string;
     /**
-     * お気に入りノートの数
+     * 收藏的帖子数
      */
     "noteFavoritesCount": string;
     /**
-     * Pageにいいねした数
+     * 页面点赞次数
      */
     "pageLikesCount": string;
     /**
-     * Pageにいいねされた数
+     * 页面被点赞次数
      */
     "pageLikedCount": string;
     /**
-     * 連絡先
+     * 联系方式
      */
     "contact": string;
     /**
-     * システムのデフォルトのフォントを使う
+     * 使用系统默认字体
      */
     "useSystemFont": string;
     /**
-     * クリップ
+     * 便签
      */
     "clips": string;
     /**
-     * 実験的機能
+     * 实验性功能
      */
     "experimentalFeatures": string;
     /**
-     * 実験的
+     * 实验性的
      */
     "experimental": string;
     /**
-     * これは実験的な機能です。仕様が変更されたり、正常に動作しなかったりする可能性があります。
+     * 这是一项实验性功能。规范可能会变更，或者可能无法正常工作。
      */
     "thisIsExperimentalFeature": string;
     /**
-     * 開発者
+     * 开发者
      */
     "developer": string;
     /**
-     * アカウントを見つけやすくする
+     * 使账号可见。
      */
     "makeExplorable": string;
     /**
-     * オフにすると、「みつける」にアカウントが載らなくなります。
+     * 关闭时，账号不会显示在"发现"中。
      */
     "makeExplorableDescription": string;
     /**
-     * 複製
+     * 复制
      */
     "duplicate": string;
     /**
@@ -3225,59 +3226,59 @@ export interface Locale extends ILocale {
      */
     "left": string;
     /**
-     * 中央
+     * 居中
      */
     "center": string;
     /**
-     * 広い
+     * 宽
      */
     "wide": string;
     /**
-     * 狭い
+     * 窄
      */
     "narrow": string;
     /**
-     * 設定はページリロード後に反映されます。
+     * 页面刷新后设置才会生效。是否现在刷新页面？
      */
     "reloadToApplySetting": string;
     /**
-     * 反映には再起動が必要です。
+     * 重新载入后应用才会生效。
      */
     "needReloadToApply": string;
     /**
-     * 反映にはサーバーの再起動が必要です。
+     * 需要重启服务才能应用更改。
      */
     "needToRestartServerToApply": string;
     /**
-     * タイトルバーを表示する
+     * 显示标题栏
      */
     "showTitlebar": string;
     /**
-     * キャッシュをクリア
+     * 清除缓存
      */
     "clearCache": string;
     /**
-     * {n}人がオンライン
+     * {n} 人在线
      */
     "onlineUsersCount": ParameterizedString<"n">;
     /**
-     * {n}ユーザー
+     * {n} 位用户
      */
     "nUsers": ParameterizedString<"n">;
     /**
-     * {n}ノート
+     * {n}帖子
      */
     "nNotes": ParameterizedString<"n">;
     /**
-     * エラーリポートを送信
+     * 发送错误报告
      */
     "sendErrorReports": string;
     /**
-     * オンにすると、問題が発生したときにエラーの詳細情報がMisskeyに共有され、ソフトウェアの品質向上に役立てることができます。エラー情報には、OSのバージョン、ブラウザの種類、行動履歴などが含まれます。
+     * 启用后，如果出现问题，可以与 Misskey 共享详细的错误信息，从而帮助提高软件的质量。错误信息包括操作系统版本、浏览器类型、行为历史记录等。
      */
     "sendErrorReportsDescription": string;
     /**
-     * マイテーマ
+     * 我的主题
      */
     "myTheme": string;
     /**
@@ -3285,71 +3286,71 @@ export interface Locale extends ILocale {
      */
     "backgroundColor": string;
     /**
-     * アクセント
+     * 强调色
      */
     "accentColor": string;
     /**
-     * 文字
+     * 文本
      */
     "textColor": string;
     /**
-     * 名前を付けて保存
+     * 另存为
      */
     "saveAs": string;
     /**
-     * 高度
+     * 高级
      */
     "advanced": string;
     /**
-     * 高度な設定
+     * 高级设置
      */
     "advancedSettings": string;
     /**
-     * 値
+     * 值
      */
     "value": string;
     /**
-     * 作成日時
+     * 创建日期
      */
     "createdAt": string;
     /**
-     * 更新日時
+     * 更新日期
      */
     "updatedAt": string;
     /**
-     * 保存しますか？
+     * 确定保存？
      */
     "saveConfirm": string;
     /**
-     * 削除しますか？
+     * 确定删除?
      */
     "deleteConfirm": string;
     /**
-     * 有効な値ではありません。
+     * 无效值。
      */
     "invalidValue": string;
     /**
-     * レジストリ
+     * 注册表
      */
     "registry": string;
     /**
-     * アカウントを閉鎖する
+     * 永久注销账户
      */
     "closeAccount": string;
     /**
-     * 現在のバージョン
+     * 当前版本
      */
     "currentVersion": string;
     /**
-     * 最新のバージョン
+     * 最新版本
      */
     "latestVersion": string;
     /**
-     * お使いのクライアントは最新です。
+     * 您所使用的客户端已经是最新的。
      */
     "youAreRunningUpToDateClient": string;
     /**
-     * 新しいバージョンのクライアントが利用可能です。
+     * 新版本的客户端可用。
      */
     "newVersionOfClientAvailable": string;
     /**
@@ -3361,155 +3362,155 @@ export interface Locale extends ILocale {
      */
     "capacity": string;
     /**
-     * 使用中
+     * 已使用
      */
     "inUse": string;
     /**
-     * コードを編集
+     * 编辑代码
      */
     "editCode": string;
     /**
-     * 適用
+     * 应用
      */
     "apply": string;
     /**
-     * サーバーからのお知らせを受け取る
+     * 从服务器接收通知
      */
     "receiveAnnouncementFromInstance": string;
     /**
-     * メール通知
+     * 邮件通知
      */
     "emailNotification": string;
     /**
-     * 公開
+     * 发布
      */
     "publish": string;
     /**
-     * チャンネル内検索
+     * 频道内搜索
      */
     "inChannelSearch": string;
     /**
-     * 右クリックでリアクションピッカーを開く
+     * 单击右键打开回应工具栏
      */
     "useReactionPickerForContextMenu": string;
     /**
-     * {users}が入力中
+     * {users} 正在输入
      */
     "typingUsers": ParameterizedString<"users">;
     /**
-     * 特定の日付にジャンプ
+     * 跳转到特定日期
      */
     "jumpToSpecifiedDate": string;
     /**
-     * 過去のタイムラインを表示しています
+     * 显示过去的时间线
      */
     "showingPastTimeline": string;
     /**
-     * クリア
+     * 清除
      */
     "clear": string;
     /**
-     * 全て既読にする
+     * 全部标记为已读
      */
     "markAllAsRead": string;
     /**
-     * 戻る
+     * 返回
      */
     "goBack": string;
     /**
-     * いいね解除しますか？
+     * 取消赞？
      */
     "unlikeConfirm": string;
     /**
-     * フルビュー
+     * 全屏
      */
     "fullView": string;
     /**
-     * フルビュー解除
+     * 退出全屏
      */
     "quitFullView": string;
     /**
-     * 説明を追加
+     * 添加描述
      */
     "addDescription": string;
     /**
-     * 個々のノートのメニューから「ピン留め」を選択することで、ここにノートを表示しておくことができます。
+     * 在帖子的菜单中选择“置顶”，即可显示该条帖子。
      */
     "userPagePinTip": string;
     /**
-     * 宛先に含まれていないメンションがあります
+     * 有未添加到收件人的提及
      */
     "notSpecifiedMentionWarning": string;
     /**
-     * 情報
+     * 关于
      */
     "info": string;
     /**
-     * ユーザー情報
+     * 用户信息
      */
     "userInfo": string;
     /**
-     * 不明
+     * 未知
      */
     "unknown": string;
     /**
-     * オンライン状態
+     * 在线状态
      */
     "onlineStatus": string;
     /**
-     * オンライン状態を隠す
+     * 隐藏在线状态
      */
     "hideOnlineStatus": string;
     /**
-     * オンライン状態を隠すと、検索などの一部機能において利便性が低下することがあります。
+     * 隐藏在线状态后，可能会降低搜索等功能的便利性。
      */
     "hideOnlineStatusDescription": string;
     /**
-     * オンライン
+     * 在线
      */
     "online": string;
     /**
-     * アクティブ
+     * 活动
      */
     "active": string;
     /**
-     * オフライン
+     * 离线
      */
     "offline": string;
     /**
-     * 非推奨
+     * 不推荐
      */
     "notRecommended": string;
     /**
-     * Botプロテクション
+     * Bot防御
      */
     "botProtection": string;
     /**
-     * サーバーブロック・サイレンス
+     * 屏蔽/静音的服务器
      */
     "instanceBlocking": string;
     /**
-     * アカウントを選択
+     * 选择账户
      */
     "selectAccount": string;
     /**
-     * アカウントを切り替え
+     * 切换账户
      */
     "switchAccount": string;
     /**
-     * 有効
+     * 已启用
      */
     "enabled": string;
     /**
-     * 無効
+     * 已禁用
      */
     "disabled": string;
     /**
-     * クイックアクション
+     * 快捷操作
      */
     "quickAction": string;
     /**
-     * ユーザー
+     * 用户
      */
     "user": string;
     /**
@@ -3517,71 +3518,71 @@ export interface Locale extends ILocale {
      */
     "administration": string;
     /**
-     * アカウント
+     * 账户
      */
     "accounts": string;
     /**
-     * 切り替え
+     * 切换
      */
     "switch": string;
     /**
-     * 管理者情報が設定されていません。
+     * 尚未设置管理员信息。
      */
     "noMaintainerInformationWarning": string;
     /**
-     * 問い合わせ先URLが設定されていません。
+     * 尚未设置联络地址。
      */
     "noInquiryUrlWarning": string;
     /**
-     * Botプロテクションが設定されていません。
+     * 尚未设置 Bot 防御。
      */
     "noBotProtectionWarning": string;
     /**
-     * 設定する
+     * 设置
      */
     "configure": string;
     /**
-     * ギャラリーへ投稿
+     * 发布相册
      */
     "postToGallery": string;
     /**
-     * このハッシュタグで投稿
+     * 发布至该话题
      */
     "postToHashtag": string;
     /**
-     * ギャラリー
+     * 相册
      */
     "gallery": string;
     /**
-     * 最近の投稿
+     * 最新发布
      */
     "recentPosts": string;
     /**
-     * 人気の投稿
+     * 热门投稿
      */
     "popularPosts": string;
     /**
-     * ノートで共有
+     * 分享到帖文
      */
     "shareWithNote": string;
     /**
-     * 広告
+     * 广告
      */
     "ads": string;
     /**
-     * 期限
+     * 截止时间
      */
     "expiration": string;
     /**
-     * 開始期間
+     * 开始时间
      */
     "startingperiod": string;
     /**
-     * メモ
+     * 备注
      */
     "memo": string;
     /**
-     * 優先度
+     * 优先级
      */
     "priority": string;
     /**
@@ -3597,7 +3598,7 @@ export interface Locale extends ILocale {
      */
     "low": string;
     /**
-     * メールアドレスの設定がされていません。
+     * 尚未设置电子邮件地址。
      */
     "emailNotConfiguredWarning": string;
     /**
@@ -3605,431 +3606,431 @@ export interface Locale extends ILocale {
      */
     "ratio": string;
     /**
-     * 本文をプレビュー
+     * 预览正文
      */
     "previewNoteText": string;
     /**
-     * カスタムCSS
+     * 自定义 CSS
      */
     "customCss": string;
     /**
-     * この設定は必ず知識のある方が行ってください。不適切な設定を行うとクライアントが正常に使用できなくなる恐れがあります。
+     * 这些设置必须有相关的基础知识，不当的配置可能导致客户端无法正常使用。
      */
     "customCssWarn": string;
     /**
-     * グローバル
+     * 全局
      */
     "global": string;
     /**
-     * アイコンを四角形で表示
+     * 显示方形头像图标
      */
     "squareAvatars": string;
     /**
-     * 送信
+     * 发送
      */
     "sent": string;
     /**
-     * 受信
+     * 收取
      */
     "received": string;
     /**
-     * 検索結果
+     * 搜索结果
      */
     "searchResult": string;
     /**
-     * ハッシュタグ
+     * 话题标签
      */
     "hashtags": string;
     /**
-     * トラブルシューティング
+     * 故障排除
      */
     "troubleshooting": string;
     /**
-     * UIにぼかし効果を使用
+     * 在 UI 上使用模糊效果
      */
     "useBlurEffect": string;
     /**
-     * 詳しく
+     * 更多信息
      */
     "learnMore": string;
     /**
-     * Misskeyが更新されました！
+     * Misskey 更新完成！
      */
     "misskeyUpdated": string;
     /**
-     * 更新情報を見る
+     * 显示更新信息
      */
     "whatIsNew": string;
     /**
-     * 翻訳
+     * 翻译
      */
     "translate": string;
     /**
-     * {x}から翻訳
+     * 从 {x} 翻译
      */
     "translatedFrom": ParameterizedString<"x">;
     /**
-     * アカウントの削除が進行中です
+     * 正在删除账户
      */
     "accountDeletionInProgress": string;
     /**
-     * サーバー上であなたのアカウントを一意に識別するための名前。アルファベット(a~z, A~Z)、数字(0~9)、およびアンダーバー(_)が使用できます。ユーザー名は後から変更することは出来ません。
+     * 在服务器上唯一标识您的帐户的名称。您可以使用字母 (a ~ z, A ~ Z)、数字 (0 ~ 9) 和下划线 (_)。用户名以后不能更改。
      */
     "usernameInfo": string;
     /**
-     * 藍モード
+     * 小蓝模式
      */
     "aiChanMode": string;
     /**
-     * 開発者モード
+     * 开发者模式
      */
     "devMode": string;
     /**
-     * CWを維持する
+     * 始终开启内容警告
      */
     "keepCw": string;
     /**
-     * Pub/Subのアカウント
+     * Pub/Sub 账户
      */
     "pubSub": string;
     /**
-     * 直近の通信
+     * 最近通信
      */
     "lastCommunication": string;
     /**
-     * 解決済み
+     * 已解决
      */
     "resolved": string;
     /**
-     * 未解決
+     * 未解决
      */
     "unresolved": string;
     /**
-     * フォロワーを解除
+     * 移除关注者
      */
     "breakFollow": string;
     /**
-     * フォロワー解除しますか？
+     * 你想取消关注吗？
      */
     "breakFollowConfirm": string;
     /**
-     * オンになっています
+     * 已开启
      */
     "itsOn": string;
     /**
-     * オフになっています
+     * 已关闭
      */
     "itsOff": string;
     /**
-     * オン
+     * 开启
      */
     "on": string;
     /**
-     * オフ
+     * 关闭
      */
     "off": string;
     /**
-     * アカウント登録にメールアドレスを必須にする
+     * 注册账户需要电子邮件地址
      */
     "emailRequiredForSignup": string;
     /**
-     * 未読
+     * 未读
      */
     "unread": string;
     /**
-     * フィルタ
+     * 筛选
      */
     "filter": string;
     /**
-     * コントロールパネル
+     * 控制面板
      */
     "controlPanel": string;
     /**
-     * アカウントを管理
+     * 管理账户
      */
     "manageAccounts": string;
     /**
-     * リアクション一覧を公開する
+     * 将回应设置为公开
      */
     "makeReactionsPublic": string;
     /**
-     * あなたがしたリアクション一覧を誰でも見れるようにします。
+     * 将您发表过的回应设置成公开可见。
      */
     "makeReactionsPublicDescription": string;
     /**
-     * クラシック
+     * 经典
      */
     "classic": string;
     /**
-     * スレッドをミュート
+     * 静音帖文串
      */
     "muteThread": string;
     /**
-     * スレッドのミュートを解除
+     * 取消帖文串静音
      */
     "unmuteThread": string;
     /**
-     * フォローの公開範囲
+     * 关注的人的公开范围
      */
     "followingVisibility": string;
     /**
-     * フォロワーの公開範囲
+     * 关注者的公开范围
      */
     "followersVisibility": string;
     /**
-     * さらにスレッドを見る
+     * 查看更多帖子
      */
     "continueThread": string;
     /**
-     * アカウントが削除されます。よろしいですか？
+     * 将要删除账户。是否确认？
      */
     "deleteAccountConfirm": string;
     /**
-     * パスワードが間違っています。
+     * 密码错误
      */
     "incorrectPassword": string;
     /**
-     * ワンタイムパスワードが間違っているか、期限切れになっています。
+     * 一次性密码不正确或已过期
      */
     "incorrectTotp": string;
     /**
-     * 「{choice}」に投票しますか？
+     * 要投给 “{choice}” 吗？
      */
     "voteConfirm": ParameterizedString<"choice">;
     /**
-     * 隠す
+     * 隐藏
      */
     "hide": string;
     /**
-     * モバイルデバイスのときドロワーで表示
+     * 在移动设备上使用抽屉显示
      */
     "useDrawerReactionPickerForMobile": string;
     /**
-     * おかえりなさい、{name}さん
+     * 欢迎回来，{name}
      */
     "welcomeBackWithName": ParameterizedString<"name">;
     /**
-     * [{ok}]を押して、メールアドレスの確認を完了してください。
+     * 点击 [{ok}] 完成电子邮件地址认证。
      */
     "clickToFinishEmailVerification": ParameterizedString<"ok">;
     /**
-     * デバイスタイプ
+     * 设备类型
      */
     "overridedDeviceKind": string;
     /**
-     * スマートフォン
+     * 智能手机
      */
     "smartphone": string;
     /**
-     * タブレット
+     * 平板
      */
     "tablet": string;
     /**
-     * 自動
+     * 自动
      */
     "auto": string;
     /**
-     * テーマカラー
+     * 主题颜色
      */
     "themeColor": string;
     /**
-     * サイズ
+     * 大小
      */
     "size": string;
     /**
-     * 列の数
+     * 列数
      */
     "numberOfColumn": string;
     /**
-     * 検索
+     * Google
      */
     "searchByGoogle": string;
     /**
-     * サーバーデフォルトのライトテーマ
+     * 服务器默认浅色主题
      */
     "instanceDefaultLightTheme": string;
     /**
-     * サーバーデフォルトのダークテーマ
+     * 服务器默认深色主题
      */
     "instanceDefaultDarkTheme": string;
     /**
-     * オブジェクト形式のテーマコードを記入します。
+     * 以对象格式输入主题代码
      */
     "instanceDefaultThemeDescription": string;
     /**
-     * ミュートする期限
+     * 隐藏时长
      */
     "mutePeriod": string;
     /**
-     * 期限
+     * 截止时间
      */
     "period": string;
     /**
-     * 無期限
+     * 永久
      */
     "indefinitely": string;
     /**
-     * 10分
+     * 10分钟
      */
     "tenMinutes": string;
     /**
-     * 1時間
+     * 1 小时
      */
     "oneHour": string;
     /**
-     * 1日
+     * 1天
      */
     "oneDay": string;
     /**
-     * 1週間
+     * 1 周
      */
     "oneWeek": string;
     /**
-     * 1ヶ月
+     * 1个月
      */
     "oneMonth": string;
     /**
-     * 3ヶ月
+     * 3个月
      */
     "threeMonths": string;
     /**
-     * 1年
+     * 1 年
      */
     "oneYear": string;
     /**
-     * 3日
+     * 3天
      */
     "threeDays": string;
     /**
-     * 反映されるまで時間がかかる場合があります。
+     * 可能需要一些时间才能体现出效果。
      */
     "reflectMayTakeTime": string;
     /**
-     * アカウント情報の取得に失敗しました
+     * 获取账户信息失败
      */
     "failedToFetchAccountInformation": string;
     /**
-     * レート制限を超えました
+     * 已超过速率限制
      */
     "rateLimitExceeded": string;
     /**
-     * 画像のクロップ
+     * 裁剪图像
      */
     "cropImage": string;
     /**
-     * 画像をクロップしますか？
+     * 是否要裁剪图像？
      */
     "cropImageAsk": string;
     /**
-     * クロップする
+     * 去裁剪
      */
     "cropYes": string;
     /**
-     * そのまま使う
+     * 就这样吧！
      */
     "cropNo": string;
     /**
-     * ファイル
+     * 文件
      */
     "file": string;
     /**
-     * 直近{n}時間
+     * 最近{n}小时
      */
     "recentNHours": ParameterizedString<"n">;
     /**
-     * 直近{n}日
+     * 最近{n}天
      */
     "recentNDays": ParameterizedString<"n">;
     /**
-     * メールサーバーの設定がされていません。
+     * 电子邮件服务器未设置。
      */
     "noEmailServerWarning": string;
     /**
-     * 未対応の通報があります。
+     * 有未解决的报告
      */
     "thereIsUnresolvedAbuseReportWarning": string;
     /**
-     * 推奨
+     * 推荐
      */
     "recommended": string;
     /**
-     * チェック
+     * 检查
      */
     "check": string;
     /**
-     * このユーザーのドライブ容量上限を変更
+     * 更改此用户的网盘容量上限
      */
     "driveCapOverrideLabel": string;
     /**
-     * 0以下を指定すると解除されます。
+     * 设定为 0 以下则会解除此限制。
      */
     "driveCapOverrideCaption": string;
     /**
-     * 閲覧するには管理者アカウントでログインしている必要があります。
+     * 需要使用管理员账户登录才能查看。
      */
     "requireAdminForView": string;
     /**
-     * システムにより自動で作成・管理されているアカウントです。
+     * 该账号由系统自动创建和管理。
      */
     "isSystemAccount": string;
     /**
-     * この操作を行うには {x} と入力してください
+     * 输入 {x} 以确认操作。
      */
     "typeToConfirm": ParameterizedString<"x">;
     /**
-     * アカウント削除
+     * 删除账户
      */
     "deleteAccount": string;
     /**
-     * ドキュメント
+     * 文档
      */
     "document": string;
     /**
-     * ページキャッシュ数
+     * 缓存页数
      */
     "numberOfPageCache": string;
     /**
-     * 多くすると利便性が向上しますが、負荷とメモリ使用量が増えます。
+     * 设置较高的值会更方便用户，但设备的负载和内存使用量会增加。
      */
     "numberOfPageCacheDescription": string;
     /**
-     * ログアウトしますか？
+     * 是否确认登出？
      */
     "logoutConfirm": string;
     /**
-     * ログアウトするとクライアントの設定情報がブラウザから消去されます。再ログイン時に設定情報を復元できるようにするためには、設定の自動バックアップを有効にしてください。
+     * 登出时将会从浏览器中删除客户端的设置信息。如果想要在再次登入时恢复设置信息，请在设置里打开自动备份。
      */
     "logoutWillClearClientData": string;
     /**
-     * 最終利用日時
+     * 最后活跃时间
      */
     "lastActiveDate": string;
     /**
-     * ステータスバー
+     * 状态栏
      */
     "statusbar": string;
     /**
-     * 選択してください
+     * 请选择
      */
     "pleaseSelect": string;
     /**
-     * 反転
+     * 翻转
      */
     "reverse": string;
     /**
-     * 色付き
+     * 彩色
      */
     "colored": string;
     /**
-     * 更新間隔
+     * 刷新间隔
      */
     "refreshInterval": string;
     /**
-     * ラベル
+     * 标签
      */
     "label": string;
     /**
-     * タイプ
+     * 类型
      */
     "type": string;
     /**
@@ -4037,115 +4038,115 @@ export interface Locale extends ILocale {
      */
     "speed": string;
     /**
-     * 遅い
+     * 慢
      */
     "slow": string;
     /**
-     * 速い
+     * 快
      */
     "fast": string;
     /**
-     * センシティブなメディアの検出
+     * 检测到敏感媒体
      */
     "sensitiveMediaDetection": string;
     /**
-     * ローカルのみ
+     * 仅限本地
      */
     "localOnly": string;
     /**
-     * リモートのみ
+     * 仅远程
      */
     "remoteOnly": string;
     /**
-     * アップロード失敗
+     * 上传失败
      */
     "failedToUpload": string;
     /**
-     * 不適切な内容を含む可能性があると判定されたためアップロードできません。
+     * 因为可能含有不适宜的内容，无法上传。
      */
     "cannotUploadBecauseInappropriate": string;
     /**
-     * ドライブの空き容量が無いためアップロードできません。
+     * 因为已无可用空间，无法上传。
      */
     "cannotUploadBecauseNoFreeSpace": string;
     /**
-     * ファイルサイズの制限を超えているためアップロードできません。
+     * 无法上传文件，超过文件大小限制。
      */
     "cannotUploadBecauseExceedsFileSizeLimit": string;
     /**
-     * 許可されていないファイル種別のためアップロードできません。
+     * 因文件类型被禁止而无法上传。
      */
     "cannotUploadBecauseUnallowedFileType": string;
     /**
-     * ベータ
+     * 测试
      */
     "beta": string;
     /**
-     * 自動センシティブ判定
+     * 自动 NSFW 识别
      */
     "enableAutoSensitive": string;
     /**
-     * 利用可能な場合は、機械学習を利用して自動でメディアにセンシティブフラグを設定します。この機能をオフにしても、サーバーによっては自動で設定されることがあります。
+     * 使用机器学习在可用时自动使用 NSFW 标记来标记媒体。即使您关闭此功能，根据服务器的不同，它仍然可能会自动设置。
      */
     "enableAutoSensitiveDescription": string;
     /**
-     * ユーザーのメールアドレスのバリデーションを、捨てアドかどうかや実際に通信可能かどうかなどを判定しより積極的に行います。オフにすると単に文字列として正しいかどうかのみチェックされます。
+     * 开启用户的电子邮件地址验证，判断它是一次性的电子邮件地址，还是可以实际通信的地址。关闭时，则只检查字符串是否正确。
      */
     "activeEmailValidationDescription": string;
     /**
-     * ナビゲーションバー
+     * 导航栏
      */
     "navbar": string;
     /**
-     * シャッフル
+     * 随机
      */
     "shuffle": string;
     /**
-     * アカウント
+     * 账户
      */
     "account": string;
     /**
-     * 移動
+     * 移动
      */
     "move": string;
     /**
-     * プッシュ通知
+     * 推送通知
      */
     "pushNotification": string;
     /**
-     * プッシュ通知を有効化
+     * 启用推送通知消息
      */
     "subscribePushNotification": string;
     /**
-     * プッシュ通知を停止する
+     * 停用推送通知消息
      */
     "unsubscribePushNotification": string;
     /**
-     * プッシュ通知は有効です
+     * 推送通知消息已启用
      */
     "pushNotificationAlreadySubscribed": string;
     /**
-     * ブラウザかサーバーがプッシュ通知に非対応
+     * 浏览器或服务器不支持推送通知消息
      */
     "pushNotificationNotSupported": string;
     /**
-     * 通知が既読になったらプッシュ通知を削除する
+     * 删除已读推送通知消息
      */
     "sendPushNotificationReadMessage": string;
     /**
-     * 端末の電池消費量が増加する可能性があります。
+     * 您终端设备的电池消耗可能会增加。
      */
     "sendPushNotificationReadMessageCaption": string;
     /**
-     * ブラウザの通知設定を許可してください
+     * 请在浏览器中启用推送通知
      */
     "pleaseAllowPushNotification": string;
     /**
-     * 通知の送信権限の取得に失敗しました
+     * 未能获取发送通知的权限
      */
     "browserPushNotificationDisabled": string;
     /**
-     * {serverName}から通知を送信する権限がありません。ブラウザの設定から通知を許可して再度お試しください。
+     * {serverName}无权限发送通知。请在浏览器设置中允许通知后重新尝试。
      */
     "browserPushNotificationDisabledDescription": ParameterizedString<"serverName">;
     /**
@@ -4157,447 +4158,447 @@ export interface Locale extends ILocale {
      */
     "windowMinimize": string;
     /**
-     * 元に戻す
+     * 还原
      */
     "windowRestore": string;
     /**
-     * キャプション
+     * 描述文本
      */
     "caption": string;
     /**
-     * Botアカウントでログイン中
+     * 以机器人账户登录中
      */
     "loggedInAsBot": string;
     /**
-     * ツール
+     * 工具
      */
     "tools": string;
     /**
-     * 読み込めません
+     * 无法加载
      */
     "cannotLoad": string;
     /**
-     * プレビューできません
+     * 无法预览
      */
     "cannotPreview": string;
     /**
-     * プロフィール表示回数
+     * 个人资料展示次数
      */
     "numberOfProfileView": string;
     /**
-     * いいね！
+     * 点赞！
      */
     "like": string;
     /**
-     * いいねを解除
+     * 取消喜欢
      */
     "unlike": string;
     /**
-     * いいね数
+     * 点赞数
      */
     "numberOfLikes": string;
     /**
-     * 表示
+     * 显示
      */
     "show": string;
     /**
-     * 今後表示しない
+     * 不再显示
      */
     "neverShow": string;
     /**
-     * また後で
+     * 稍后提醒我
      */
     "remindMeLater": string;
     /**
-     * Misskeyを気に入っていただけましたか？
+     * 您喜欢 Misskey 吗？
      */
     "didYouLikeMisskey": string;
     /**
-     * Misskeyは{host}が使用している無料のソフトウェアです。これからも開発を続けられるように、ぜひ寄付をお願いします！
+     * Misskey 是 {host} 所使用的免费软件。为了今后也能够维持 Misskey 的开发，请在有余力的情况下进行捐助！
      */
     "pleaseDonate": ParameterizedString<"host">;
     /**
-     * 対応するソースコードは{anchor}から利用可能です。
+     * 对应的源代码可在{anchor}找到
      */
     "correspondingSourceIsAvailable": ParameterizedString<"anchor">;
     /**
-     * ロール
+     * 角色
      */
     "roles": string;
     /**
-     * ロール
+     * 角色
      */
     "role": string;
     /**
-     * ロールはありません
+     * 角色不存在
      */
     "noRole": string;
     /**
-     * 一般ユーザー
+     * 普通用户
      */
     "normalUser": string;
     /**
-     * 未定義
+     * 未定义
      */
     "undefined": string;
     /**
-     * アサイン
+     * 分配
      */
     "assign": string;
     /**
-     * アサインを解除
+     * 取消分配
      */
     "unassign": string;
     /**
-     * 色
+     * 颜色
      */
     "color": string;
     /**
-     * カスタム絵文字の管理
+     * 管理自定义表情符号
      */
     "manageCustomEmojis": string;
     /**
-     * アバターデコレーションの管理
+     * 管理头像挂件
      */
     "manageAvatarDecorations": string;
     /**
-     * これ以上作成することはできません。
+     * 抱歉，您无法再创建更多了。
      */
     "youCannotCreateAnymore": string;
     /**
-     * 一時的に利用できません
+     * 暂时不可用
      */
     "cannotPerformTemporary": string;
     /**
-     * 操作回数が制限を超過するため一時的に利用できません。しばらく時間を置いてから再度お試しください。
+     * 因操作过于频繁，暂时不可用，请稍后再试。
      */
     "cannotPerformTemporaryDescription": string;
     /**
-     * パラメータエラー
+     * 参数错误
      */
     "invalidParamError": string;
     /**
-     * リクエストパラメータに問題があります。通常これはバグですが、入力した文字数が多すぎる・許可されていない文字を入力している等の可能性もあります。
+     * 请求参数出现问题。通常是因为 bug 造成的，但也可能是输入文字数量过多之类的原因。
      */
     "invalidParamErrorDescription": string;
     /**
-     * 操作が拒否されました
+     * 操作被拒绝
      */
     "permissionDeniedError": string;
     /**
-     * このアカウントにはこの操作を行うための権限がありません。
+     * 本账户没有执行该操作的权限。
      */
     "permissionDeniedErrorDescription": string;
     /**
-     * プリセット
+     * 预设值
      */
     "preset": string;
     /**
-     * プリセットから選択
+     * 从预设值中选择
      */
     "selectFromPresets": string;
     /**
-     * カスタム
+     * 自定义
      */
     "custom": string;
     /**
-     * 実績
+     * 成就
      */
     "achievements": string;
     /**
-     * サーバーの応答が無効です
+     * 服务器无应答
      */
     "gotInvalidResponseError": string;
     /**
-     * サーバーがダウンまたはメンテナンスしている可能性があります。しばらくしてから再度お試しください。
+     * 您的网络连接可能出现了问题, 或是远程服务器暂时不可用. 请稍后重试。
      */
     "gotInvalidResponseErrorDescription": string;
     /**
-     * この投稿は迷惑になる可能性があります。
+     * 该帖文可能会使他人感到不适。
      */
     "thisPostMayBeAnnoying": string;
     /**
-     * ホームに投稿
+     * 发布到首页
      */
     "thisPostMayBeAnnoyingHome": string;
     /**
-     * やめる
+     * 取消
      */
     "thisPostMayBeAnnoyingCancel": string;
     /**
-     * このまま投稿
+     * 就这样发布
      */
     "thisPostMayBeAnnoyingIgnore": string;
     /**
-     * リノートのスマート省略
+     * 折叠已经看过的转贴
      */
     "collapseRenotes": string;
     /**
-     * リアクションやリノートをしたことがあるノートをたたんで表示します。
+     * 折叠显示回应或转发过的帖文。
      */
     "collapseRenotesDescription": string;
     /**
-     * サーバー内部エラー
+     * 内部服务器错误
      */
     "internalServerError": string;
     /**
-     * サーバー内部で予期しないエラーが発生しました。
+     * 内部服务器发生了预期外的错误
      */
     "internalServerErrorDescription": string;
     /**
-     * エラー情報をコピー
+     * 复制错误信息
      */
     "copyErrorInfo": string;
     /**
-     * このサーバーに登録する
+     * 在本服务器上注册
      */
     "joinThisServer": string;
     /**
-     * 他のサーバーを探す
+     * 探索其他服务器
      */
     "exploreOtherServers": string;
     /**
-     * タイムラインを見てみる
+     * 看看时间线
      */
     "letsLookAtTimeline": string;
     /**
-     * 連合なしにしますか？
+     * 确定要禁用联邦交互？
      */
     "disableFederationConfirm": string;
     /**
-     * 連合なしにしても投稿は非公開になりません。ほとんどの場合、連合なしにする必要はありません。
+     * 即使禁用联邦交互，也不会将帖子设为私有。在大多数情况下，没有必要禁用联邦交互。
      */
     "disableFederationConfirmWarn": string;
     /**
-     * 連合なしにする
+     * 禁用联邦
      */
     "disableFederationOk": string;
     /**
-     * 現在このサーバーは招待制です。招待コードをお持ちの方のみ登録できます。
+     * 此服务器目前只允许拥有邀请码的人注册。
      */
     "invitationRequiredToRegister": string;
     /**
-     * このサーバーではメール配信はサポートされていません
+     * 此服务器不支持发送邮件
      */
     "emailNotSupported": string;
     /**
-     * チャンネルに投稿
+     * 发布到频道
      */
     "postToTheChannel": string;
     /**
-     * 後から変更できません。
+     * 之后不能再更改。
      */
     "cannotBeChangedLater": string;
     /**
-     * リアクションの受け入れ
+     * 接受表情回应
      */
     "reactionAcceptance": string;
     /**
-     * いいねのみ
+     * 仅点赞
      */
     "likeOnly": string;
     /**
-     * 全て (リモートはいいねのみ)
+     * 全部（远程仅点赞）
      */
     "likeOnlyForRemote": string;
     /**
-     * 非センシティブのみ
+     * 仅限非敏感内容
      */
     "nonSensitiveOnly": string;
     /**
-     * 非センシティブのみ (リモートはいいねのみ)
+     * 仅限非敏感内容（远程仅点赞）
      */
     "nonSensitiveOnlyForLocalLikeOnlyForRemote": string;
     /**
-     * 自分に割り当てられたロール
+     * 我的角色
      */
     "rolesAssignedToMe": string;
     /**
-     * パスワードリセットしますか？
+     * 确定重置密码？
      */
     "resetPasswordConfirm": string;
     /**
-     * センシティブワード
+     * 敏感词
      */
     "sensitiveWords": string;
     /**
-     * 設定したワードが含まれるノートの公開範囲をホームにします。改行で区切って複数設定できます。
+     * 包含这些词的帖子将只在首页可见。可用换行来设定多个词。
      */
     "sensitiveWordsDescription": string;
     /**
-     * スペースで区切るとAND指定になり、キーワードをスラッシュで囲むと正規表現になります。
+     * AND 条件用空格分隔，正则表达式用斜线包裹。
      */
     "sensitiveWordsDescription2": string;
     /**
-     * 禁止ワード
+     * 禁用词
      */
     "prohibitedWords": string;
     /**
-     * 設定したワードが含まれるノートを投稿しようとした際、エラーとなるようにします。改行で区切って複数設定できます。
+     * 发布包含设定词汇的帖子时将出错。可用换行设定多个关键字。
      */
     "prohibitedWordsDescription": string;
     /**
-     * スペースで区切るとAND指定になり、キーワードをスラッシュで囲むと正規表現になります。
+     * AND 条件用空格分隔，正则表达式用斜线包裹。
      */
     "prohibitedWordsDescription2": string;
     /**
-     * 非表示ハッシュタグ
+     * 隐藏标签
      */
     "hiddenTags": string;
     /**
-     * 設定したタグをトレンドに表示させないようにします。改行で区切って複数設定できます。
+     * 设定的标签将不会在时间线上显示。可使用换行来设置多个标签。
      */
     "hiddenTagsDescription": string;
     /**
-     * ノート検索は利用できません。
+     * 帖子检索不可用
      */
     "notesSearchNotAvailable": string;
     /**
-     * ユーザー検索は利用できません。
+     * 用户检索不可用
      */
     "usersSearchNotAvailable": string;
     /**
-     * ライセンス
+     * 许可信息
      */
     "license": string;
     /**
-     * お気に入り解除しますか？
+     * 确定要取消收藏吗？
      */
     "unfavoriteConfirm": string;
     /**
-     * 自分のクリップ
+     * 我的便签
      */
     "myClips": string;
     /**
-     * ドライブクリーナー
+     * 网盘整理
      */
     "drivecleaner": string;
     /**
-     * すべてのキューを今すぐ再試行
+     * 立刻重试所有队列
      */
     "retryAllQueuesNow": string;
     /**
-     * 今すぐ再試行しますか？
+     * 要再尝试一次吗？
      */
     "retryAllQueuesConfirmTitle": string;
     /**
-     * 一時的にサーバーの負荷が増大することがあります。
+     * 可能会使服务器负荷在一定时间内增加
      */
     "retryAllQueuesConfirmText": string;
     /**
-     * リモートユーザーのチャートを生成
+     * 生成远程用户的图表
      */
     "enableChartsForRemoteUser": string;
     /**
-     * リモートサーバーのチャートを生成
+     * 生成远程服务器的图表
      */
     "enableChartsForFederatedInstances": string;
     /**
-     * リモートサーバーの情報を取得
+     * 获取远程服务器的信息
      */
     "enableStatsForFederatedInstances": string;
     /**
-     * ノートのアクションにクリップを追加
+     * 在帖文下方显示便签按钮
      */
     "showClipButtonInNoteFooter": string;
     /**
-     * リアクションの表示サイズ
+     * 回应显示大小
      */
     "reactionsDisplaySize": string;
     /**
-     * リアクションの最大横幅を制限し、縮小して表示する
+     * 限制回应的最大宽度，并将其缩小显示
      */
     "limitWidthOfReaction": string;
     /**
-     * ノートIDまたはURL
+     * 帖子 ID 或 URL
      */
     "noteIdOrUrl": string;
     /**
-     * 動画
+     * 视频
      */
     "video": string;
     /**
-     * 動画
+     * 视频
      */
     "videos": string;
     /**
-     * 音声
+     * 音频
      */
     "audio": string;
     /**
-     * 音声
+     * 音频
      */
     "audioFiles": string;
     /**
-     * データセーバー
+     * 省流量模式
      */
     "dataSaver": string;
     /**
-     * アカウントの移行
+     * 账户迁移
      */
     "accountMigration": string;
     /**
-     * このユーザーは新しいアカウントに移行しました：
+     * 此用户已迁移账户
      */
     "accountMoved": string;
     /**
-     * このアカウントは移行されています
+     * 此帐户已迁移
      */
     "accountMovedShort": string;
     /**
-     * この操作はできません
+     * 不允许此操作
      */
     "operationForbidden": string;
     /**
-     * 常に広告を表示する
+     * 总是显示广告
      */
     "forceShowAds": string;
     /**
-     * メモを追加
+     * 添加备注
      */
     "addMemo": string;
     /**
-     * メモを編集
+     * 编辑备注
      */
     "editMemo": string;
     /**
-     * リアクション一覧
+     * 回应列表
      */
     "reactionsList": string;
     /**
-     * リノート一覧
+     * 转贴列表
      */
     "renotesList": string;
     /**
-     * 通知の表示
+     * 显示通知
      */
     "notificationDisplay": string;
     /**
-     * 左上
+     * 屏幕左上方
      */
     "leftTop": string;
     /**
-     * 右上
+     * 屏幕右上方
      */
     "rightTop": string;
     /**
-     * 左下
+     * 屏幕左下方
      */
     "leftBottom": string;
     /**
-     * 右下
+     * 屏幕右下方
      */
     "rightBottom": string;
     /**
-     * スタック方向
+     * 堆叠方向
      */
     "stackAxis": string;
     /**
-     * 縦
+     * 纵向
      */
     "vertical": string;
     /**
-     * 横
+     * 横向
      */
     "horizontal": string;
     /**
@@ -4605,99 +4606,99 @@ export interface Locale extends ILocale {
      */
     "position": string;
     /**
-     * サーバールール
+     * 服务器规则
      */
     "serverRules": string;
     /**
-     * このサーバーに登録するには、以下の内容を確認し同意する必要があります。
+     * 如果要在此服务器上注册，需要确认并同意以下内容。
      */
     "pleaseConfirmBelowBeforeSignup": string;
     /**
-     * 続けるには、全ての「同意する」にチェックが入っている必要があります。
+     * 必须全部勾选 “同意” 才能够继续。
      */
     "pleaseAgreeAllToContinue": string;
     /**
-     * 続ける
+     * 继续
      */
     "continue": string;
     /**
-     * 予約ユーザー名
+     * 保留的用户名
      */
     "preservedUsernames": string;
     /**
-     * 予約するユーザー名を改行で列挙します。ここで指定されたユーザー名はアカウント作成時に使えなくなりますが、管理者によるアカウント作成時はこの制限を受けません。また、既に存在するアカウントも影響を受けません。
+     * 列出需要保留的用户名，使用换行来作为分割。被指定的用户名在建立账户时无法使用，但由管理员所创建的账户不受该限制。此外，现有的账户也不会受到影响。
      */
     "preservedUsernamesDescription": string;
     /**
-     * このファイルからノートを作成
+     * 使用该文件发帖
      */
     "createNoteFromTheFile": string;
     /**
-     * アーカイブ
+     * 归档
      */
     "archive": string;
     /**
-     * アーカイブ済み
+     * 已归档
      */
     "archived": string;
     /**
-     * アーカイブ解除
+     * 取消归档
      */
     "unarchive": string;
     /**
-     * {name}をアーカイブしますか？
+     * 要将 {name} 归档吗？
      */
     "channelArchiveConfirmTitle": ParameterizedString<"name">;
     /**
-     * アーカイブすると、チャンネル一覧や検索結果に表示されなくなり、新たな書き込みもできなくなります。
+     * 归档后，不会在频道列表与搜索结果中显示，也无法发布新的帖文。
      */
     "channelArchiveConfirmDescription": string;
     /**
-     * このチャンネルはアーカイブされています。
+     * 该频道已被归档。
      */
     "thisChannelArchived": string;
     /**
-     * ノートの表示
+     * 显示帖子
      */
     "displayOfNote": string;
     /**
-     * 初期設定
+     * 初始设定
      */
     "initialAccountSetting": string;
     /**
-     * フォロー中
+     * 正在关注
      */
     "youFollowing": string;
     /**
-     * 生成AIによる学習を拒否
+     * 拒绝用于训练生成式 AI
      */
     "preventAiLearning": string;
     /**
-     * 外部の文章生成AIや画像生成AIに対して、投稿したノートや画像などのコンテンツを学習の対象にしないように要求します。これはnoaiフラグをHTMLレスポンスに含めることによって実現されますが、この要求に従うかはそのAI次第であるため、学習を完全に防止するものではありません。
+     * 要求文章生成 AI 或图像生成 AI 不能够以发布的帖子和图像等内容作为学习对象。这是通过在 HTML 响应中包含 noai 标志来实现的，这不能完全阻止 AI 学习你的发布内容，并不是所有 AI 都会遵守这类请求。
      */
     "preventAiLearningDescription": string;
     /**
-     * オプション
+     * 选项
      */
     "options": string;
     /**
-     * ユーザー指定
+     * 指定用户
      */
     "specifyUser": string;
     /**
-     * 照会しますか？
+     * 确定查找吗？
      */
     "lookupConfirm": string;
     /**
-     * ハッシュタグのページを開きますか？
+     * 确定打开话题标签页面？
      */
     "openTagPageConfirm": string;
     /**
-     * ホスト指定
+     * 指定主机名
      */
     "specifyHost": string;
     /**
-     * プレビューできません
+     * 无法预览
      */
     "failedToPreviewUrl": string;
     /**
@@ -4705,115 +4706,115 @@ export interface Locale extends ILocale {
      */
     "update": string;
     /**
-     * リアクションとして使えるロール
+     * 可以使用表情作为回应的角色
      */
     "rolesThatCanBeUsedThisEmojiAsReaction": string;
     /**
-     * ロールの指定が一つもない場合、誰でもリアクションとして使えます。
+     * 在没有指定角色的情况下，任何人都可以使用表情作为回应。
      */
     "rolesThatCanBeUsedThisEmojiAsReactionEmptyDescription": string;
     /**
-     * ロールは公開ロールである必要があります。
+     * 角色必须是公开的。
      */
     "rolesThatCanBeUsedThisEmojiAsReactionPublicRoleWarn": string;
     /**
-     * リアクションを取り消しますか？
+     * 要取消回应吗？
      */
     "cancelReactionConfirm": string;
     /**
-     * リアクションを変更しますか？
+     * 要更改回应吗？
      */
     "changeReactionConfirm": string;
     /**
-     * あとで
+     * 一会再说
      */
     "later": string;
     /**
-     * Misskeyへ
+     * 去往 Misskey
      */
     "goToMisskey": string;
     /**
-     * 絵文字の追加辞書
+     * 表情符号追加字典
      */
     "additionalEmojiDictionary": string;
     /**
-     * インストール済み
+     * 已安装
      */
     "installed": string;
     /**
-     * ブランディング
+     * 品牌
      */
     "branding": string;
     /**
-     * サーバーのマシン情報を公開する
+     * 公开服务器硬件统计信息
      */
     "enableServerMachineStats": string;
     /**
-     * ユーザーごとのIdenticon生成を有効にする
+     * 启用生成用户 Identicon
      */
     "enableIdenticonGeneration": string;
     /**
-     * リモートユーザーに付与したロールバッジを表示する
+     * 显示远程用户的角色徽章
      */
     "showRoleBadgesOfRemoteUsers": string;
     /**
-     * オフにするとパフォーマンスが向上します。
+     * 关闭该选项可以提高性能。
      */
     "turnOffToImprovePerformance": string;
     /**
-     * 招待コードを作成
+     * 生成邀请码
      */
     "createInviteCode": string;
     /**
-     * オプションを指定して作成
+     * 使用选项来创建
      */
     "createWithOptions": string;
     /**
-     * 作成数
+     * 发行数
      */
     "createCount": string;
     /**
-     * 招待コードを作成しました
+     * 已生成邀请码
      */
     "inviteCodeCreated": string;
     /**
-     * 作成できる招待コードの数が上限に達しています。
+     * 可供生成的邀请码已达上限。
      */
     "inviteLimitExceeded": string;
     /**
-     * 作成できる招待コード: 残り {limit} 個
+     * 可供生成的邀请码：剩余 {limit} 个
      */
     "createLimitRemaining": ParameterizedString<"limit">;
     /**
-     * {time}で最大 {limit} 個の招待コードを作成できます。
+     * 可以在 {time} 内生成最多 {limit} 个邀请码。
      */
     "inviteLimitResetCycle": ParameterizedString<"time" | "limit">;
     /**
-     * 有効期限
+     * 有效日期
      */
     "expirationDate": string;
     /**
-     * 有効期限を設けない
+     * 不设置有效日期
      */
     "noExpirationDate": string;
     /**
-     * 招待コードが使用された日時
+     * 邀请码被使用的日期和时间
      */
     "inviteCodeUsedAt": string;
     /**
-     * 招待コードを使用したユーザー
+     * 使用了邀请码的用户
      */
     "registeredUserUsingInviteCode": string;
     /**
-     * メール認証待ち
+     * 等待验证电子邮件
      */
     "waitingForMailAuth": string;
     /**
-     * 招待コードを作成したユーザー
+     * 生成邀请码的用户
      */
     "inviteCodeCreator": string;
     /**
-     * 使用日時
+     * 使用时间
      */
     "usedAt": string;
     /**
@@ -4821,223 +4822,223 @@ export interface Locale extends ILocale {
      */
     "unused": string;
     /**
-     * 使用済み
+     * 已使用
      */
     "used": string;
     /**
-     * 期限切れ
+     * 已过期
      */
     "expired": string;
     /**
-     * 同意しますか？
+     * 你同意吗？
      */
     "doYouAgree": string;
     /**
-     * 重要ですので必ずお読みください。
+     * 请好好阅读，这真的很重要。
      */
     "beSureToReadThisAsItIsImportant": string;
     /**
-     * 「{x}」の内容をよく読み、同意します。
+     * 我已经仔细阅读并同意了 “{x}” 的内容。
      */
     "iHaveReadXCarefullyAndAgree": ParameterizedString<"x">;
     /**
-     * ダイアログ
+     * 对话框
      */
     "dialog": string;
     /**
-     * アイコン
+     * 头像
      */
     "icon": string;
     /**
-     * あなたへ
+     * 您的
      */
     "forYou": string;
     /**
-     * 現在のお知らせ
+     * 现在的公告
      */
     "currentAnnouncements": string;
     /**
-     * 過去のお知らせ
+     * 过去的公告
      */
     "pastAnnouncements": string;
     /**
-     * 未読のお知らせがあります。
+     * 您有未读的公告
      */
     "youHaveUnreadAnnouncements": string;
     /**
-     * ブラウザまたはデバイスの指示に従って、セキュリティキーまたはパスキーを使用してください。
+     * 请根据浏览器或设备的提示，使用安全密钥或通行密钥。
      */
     "useSecurityKey": string;
     /**
-     * 返信
+     * 回复
      */
     "replies": string;
     /**
-     * リノート
+     * 转贴
      */
     "renotes": string;
     /**
-     * 返信を見る
+     * 查看回复
      */
     "loadReplies": string;
     /**
-     * 会話を見る
+     * 查看对话
      */
     "loadConversation": string;
     /**
-     * ピン留めされたリスト
+     * 已置顶的列表
      */
     "pinnedList": string;
     /**
-     * デバイスの画面を常にオンにする
+     * 保持屏幕常亮
      */
     "keepScreenOn": string;
     /**
-     * このリンク先の所有者であることが確認されました
+     * 已验证的链接
      */
     "verifiedLink": string;
     /**
-     * 投稿を通知
+     * 开启发帖通知
      */
     "notifyNotes": string;
     /**
-     * 投稿の通知を解除
+     * 关闭发帖通知
      */
     "unnotifyNotes": string;
     /**
-     * 投稿通知を設定したユーザー
+     * 已开启发帖通知的用户
      */
     "notifyUsers": string;
     /**
-     * 認証
+     * 验证
      */
     "authentication": string;
     /**
-     * 続けるには認証を行ってください
+     * 要继续，请先进行验证
      */
     "authenticationRequiredToContinue": string;
     /**
-     * 日時
+     * 日期和时间
      */
     "dateAndTime": string;
     /**
-     * リノートを表示
+     * 显示转帖
      */
     "showRenotes": string;
     /**
-     * 編集済み
+     * 已编辑
      */
     "edited": string;
     /**
-     * 通知の受信設定
+     * 通知接收设置
      */
     "notificationRecieveConfig": string;
     /**
-     * 相互フォロー
+     * 互相关注
      */
     "mutualFollow": string;
     /**
-     * フォロー中またはフォロワー
+     * 关注中或关注者
      */
     "followingOrFollower": string;
     /**
-     * ファイル付きのみ
+     * 仅限媒体
      */
     "fileAttachedOnly": string;
     /**
-     * TLに他の人への返信を含める
+     * 在时间线中显示对他人的回复
      */
     "showRepliesToOthersInTimeline": string;
     /**
-     * TLに他の人への返信を含めない
+     * 在时间线中隐藏对他人的回复
      */
     "hideRepliesToOthersInTimeline": string;
     /**
-     * TLに現在フォロー中の人全員の返信を含めるようにする
+     * 在时间线中显示所有现在关注的人的回复
      */
     "showRepliesToOthersInTimelineAll": string;
     /**
-     * TLに現在フォロー中の人全員の返信を含めないようにする
+     * 在时间线中隐藏所有现在关注的人的回复
      */
     "hideRepliesToOthersInTimelineAll": string;
     /**
-     * この操作は元に戻せません。本当にTLに現在フォロー中の人全員の返信を含めるようにしますか？
+     * 此操作不可撤销。确认要在时间线中显示所有现在关注的人的回复吗？
      */
     "confirmShowRepliesAll": string;
     /**
-     * この操作は元に戻せません。本当にTLに現在フォロー中の人全員の返信を含めないようにしますか？
+     * 此操作不可撤销。确认要在时间线中隐藏所有现在关注的人的回复吗？
      */
     "confirmHideRepliesAll": string;
     /**
-     * 外部サービス
+     * 外部服务
      */
     "externalServices": string;
     /**
-     * ソースコード
+     * 源代码
      */
     "sourceCode": string;
     /**
-     * ソースコードはまだ提供されていません。この問題の修正について管理者に問い合わせてください。
+     * 还未提供源代码。要解决此问题请联系管理员。
      */
     "sourceCodeIsNotYetProvided": string;
     /**
-     * リポジトリURL
+     * 仓库地址
      */
     "repositoryUrl": string;
     /**
-     * ソースコードが公開されているリポジトリがある場合、そのURLを記入します。Misskeyを現状のまま（ソースコードにいかなる変更も加えずに）使用している場合は https://github.com/misskey-dev/misskey と記入します。
+     * 若源代码所在的仓库是公开的，请填入对应的 URL。若并未追加或者修改 Misskey 的代码，请填入 https://github.com/misskey-dev/misskey。
      */
     "repositoryUrlDescription": string;
     /**
-     * リポジトリを公開していない場合、代わりにtarballを提供する必要があります。詳細は.config/example.ymlを参照してください。
+     * 若仓库并未公开，则需要提供 tarball 作为替代。详情请看 .config/example.yml。
      */
     "repositoryUrlOrTarballRequired": string;
     /**
-     * フィードバック
+     * 反馈
      */
     "feedback": string;
     /**
-     * フィードバックURL
+     * 反馈地址
      */
     "feedbackUrl": string;
     /**
-     * 運営者情報
+     * 运营商信息
      */
     "impressum": string;
     /**
-     * 運営者情報URL
+     * 运营商信息地址
      */
     "impressumUrl": string;
     /**
-     * ドイツなどの一部の国と地域では表示が義務付けられています(Impressum)。
+     * 德国等国家和地区有义务展示此类信息（Impressum）。
      */
     "impressumDescription": string;
     /**
-     * プライバシーポリシー
+     * 隐私政策
      */
     "privacyPolicy": string;
     /**
-     * プライバシーポリシーURL
+     * 隐私政策地址
      */
     "privacyPolicyUrl": string;
     /**
-     * 利用規約・プライバシーポリシー
+     * 服务条款及隐私政策
      */
     "tosAndPrivacyPolicy": string;
     /**
-     * アイコンデコレーション
+     * 头像挂件
      */
     "avatarDecorations": string;
     /**
-     * 付ける
+     * 佩戴
      */
     "attach": string;
     /**
-     * 外す
+     * 卸下
      */
     "detach": string;
     /**
-     * 全て外す
+     * 全部卸下
      */
     "detachAll": string;
     /**
@@ -5045,444 +5046,443 @@ export interface Locale extends ILocale {
      */
     "angle": string;
     /**
-     * 反転
+     * 翻转
      */
     "flip": string;
     /**
-     * アイコンのデコレーションを表示
+     * 显示头像挂件
      */
     "showAvatarDecorations": string;
     /**
-     * 離してリロード
+     * 松开以刷新
      */
     "releaseToRefresh": string;
     /**
-     * リロード中
+     * 刷新中
      */
     "refreshing": string;
     /**
-     * 引っ張ってリロード
+     * 下拉以刷新
      */
     "pullDownToRefresh": string;
     /**
-     * 通知をグルーピング
+     * 分组显示通知
      */
     "useGroupedNotifications": string;
     /**
-     * メールアドレスの確認中に問題が発生しました。リンクの有効期限が切れている可能性があります。
+     * 确认电子邮件时出现错误。链接可能已过期。
      */
     "emailVerificationFailedError": string;
     /**
-     * 「内容を隠す」がオンの場合は注釈の記述が必要です。
+     * 如果启用了 “隐藏内容”，则需要进行注解。
      */
     "cwNotationRequired": string;
     /**
-     * リアクションする
+     * 回应
      */
     "doReaction": string;
     /**
-     * コード
+     * 代码
      */
     "code": string;
     /**
-     * 設定の反映にはリロードが必要です。
+     * 需要重新载入来使设置生效
      */
     "reloadRequiredToApplySettings": string;
     /**
-     * 残り: {n}
+     * 剩余：{n}
      */
     "remainingN": ParameterizedString<"n">;
     /**
-     * 現在の内容に上書きされますがよろしいですか？
+     * 将覆盖现有内容。确定吗？
      */
     "overwriteContentConfirm": string;
     /**
-     * 季節に応じた画面の演出
+     * 符合当前季节的画面效果
      */
     "seasonalScreenEffect": string;
     /**
-     * デコる
+     * 装饰
      */
     "decorate": string;
     /**
-     * 装飾を追加
+     * 添加装饰
      */
     "addMfmFunction": string;
     /**
-     * 高度なMFMのピッカーを表示する
+     * 显示高级 MFM 选择器
      */
     "enableQuickAddMfmFunction": string;
     /**
-     * バブルゲーム
+     * 泡泡游戏
      */
     "bubbleGame": string;
     /**
-     * 効果音
+     * 音效
      */
     "sfx": string;
     /**
-     * サウンドが再生されます
+     * 声音将会播放
      */
     "soundWillBePlayed": string;
     /**
-     * リプレイを見る
+     * 观看回放
      */
     "showReplay": string;
     /**
-     * リプレイ
+     * 重播
      */
     "replay": string;
     /**
-     * リプレイ中
+     * 重播中
      */
     "replaying": string;
     /**
-     * リプレイを終了
+     * 结束回放
      */
     "endReplay": string;
     /**
-     * リプレイデータをコピー
+     * 复制回放数据
      */
     "copyReplayData": string;
     /**
-     * ランキング
+     * 排行榜
      */
     "ranking": string;
     /**
-     * 直近{n}日
+     * 最近{n}天
      */
     "lastNDays": ParameterizedString<"n">;
     /**
-     * タイトルへ
+     * 返回标题
      */
     "backToTitle": string;
     /**
-     * お住まいの地域
+     * 居住地区
      */
     "hemisphere": string;
     /**
-     * センシティブなファイルを含むノートを表示
+     * 显示包含敏感媒体的帖子
      */
     "withSensitive": string;
     /**
-     * {name}のセンシティブなファイルを含む投稿
+     * 含 {name} 敏感文件的帖子
      */
     "userSaysSomethingSensitive": ParameterizedString<"name">;
     /**
-     * スワイプしてタブを切り替える
+     * 滑动切换标签页
      */
     "enableHorizontalSwipe": string;
     /**
-     * 読み込み中
+     * 读取中
      */
     "loading": string;
     /**
-     * やめる
+     * 取消
      */
     "surrender": string;
     /**
-     * リトライ
+     * 重试
      */
     "gameRetry": string;
     /**
-     * 使用しない場合は空欄にしてください
+     * 如不使用请留空
      */
     "notUsePleaseLeaveBlank": string;
     /**
-     * ワンタイムパスワードを使う
+     * 使用一次性代码
      */
     "useTotp": string;
     /**
-     * バックアップコードを使う
+     * 使用备用代码
      */
     "useBackupCode": string;
     /**
-     * アプリを起動
+     * 启动应用
      */
     "launchApp": string;
     /**
-     * 動画・音声の再生にブラウザのUIを使用する
+     * 使用浏览器的 UI 播放动画及音频
      */
     "useNativeUIForVideoAudioPlayer": string;
     /**
-     * オリジナルのファイル名を保持
+     * 保持原文件名
      */
     "keepOriginalFilename": string;
     /**
-     * この設定をオフにすると、アップロード時にファイル名が自動でランダム文字列に置き換えられます。
+     * 若关闭此设置，上传文件时文件名将被替换为随机字符。
      */
     "keepOriginalFilenameDescription": string;
     /**
-     * センシティブなメディアは選択できません
+     * 无法选择敏感媒体
      */
     "cannotSelectSensitiveMedia": string;
     /**
-     * 自分でセンシティブ設定を行っていないのにこのエラーが出ている場合、自動判定によりセンシティブなメディアとされている可能性があります。
-     * サーバーの規則に照らして不要な場合は、ファイルのセンシティブ設定を解除してもう一度お試しください。
+     * 若并未自行设为敏感媒体却仍出现此错误，则可能是自动判定将其归类为敏感媒体。如果依服务器规则其并非敏感媒体，则可解除设置再试一次。
      */
     "cannotSelectSensitiveMediaDescription": string;
     /**
-     * 説明文はありません
+     * 没有描述
      */
     "noDescription": string;
     /**
-     * フォローの際常に確認する
+     * 在关注时始终确认
      */
     "alwaysConfirmFollow": string;
     /**
-     * お問い合わせ
+     * 联系我们
      */
     "inquiry": string;
     /**
-     * もう一度お試しください。
+     * 请再试一次
      */
     "tryAgain": string;
     /**
-     * センシティブなメディアを表示するとき確認する
+     * 显示敏感内容前需要确认
      */
     "confirmWhenRevealingSensitiveMedia": string;
     /**
-     * センシティブなメディアです。表示しますか？
+     * 这是敏感内容。是否显示？
      */
     "sensitiveMediaRevealConfirm": string;
     /**
-     * 作成したリスト
+     * 已创建的列表
      */
     "createdLists": string;
     /**
-     * 作成したアンテナ
+     * 已创建的天线
      */
     "createdAntennas": string;
     /**
-     * {x}から
+     * 从 {x}
      */
     "fromX": ParameterizedString<"x">;
     /**
-     * 埋め込みコードを生成
+     * 生成嵌入代码
      */
     "genEmbedCode": string;
     /**
-     * このユーザーのノート一覧
+     * 此用户的帖子
      */
     "noteOfThisUser": string;
     /**
-     * これ以上このクリップにノートを追加できません。
+     * 无法再往此便签内添加更多帖子
      */
     "clipNoteLimitExceeded": string;
     /**
-     * パフォーマンス
+     * 性能
      */
     "performance": string;
     /**
-     * 変更あり
+     * 有变更
      */
     "modified": string;
     /**
-     * 破棄
+     * 取消
      */
     "discard": string;
     /**
-     * {n}件の変更があります
+     * 有 {n} 处更改
      */
     "thereAreNChanges": ParameterizedString<"n">;
     /**
-     * パスキーでログイン
+     * 使用通行密钥登录
      */
     "signinWithPasskey": string;
     /**
-     * 登録されていないパスキーです。
+     * 此通行密钥未注册。
      */
     "unknownWebAuthnKey": string;
     /**
-     * パスキーの検証に失敗しました。
+     * 验证通行密钥失败。
      */
     "passkeyVerificationFailed": string;
     /**
-     * パスキーの検証に成功しましたが、パスワードレスログインが無効になっています。
+     * 通行密钥验证成功，但账户未开启无密码登录。
      */
     "passkeyVerificationSucceededButPasswordlessLoginDisabled": string;
     /**
-     * フォロワーへのメッセージ
+     * 给关注者的消息
      */
     "messageToFollower": string;
     /**
-     * 対象
+     * 对象
      */
     "target": string;
     /**
-     * CAPTCHAのテストを目的とした機能です。<strong>本番環境で使用しないでください。</strong>
+     * 此功能为测试 CAPTCHA 用。<strong>请勿在正式环境中使用。</strong>
      */
     "testCaptchaWarning": string;
     /**
-     * 禁止ワード（ユーザーの名前）
+     * 用户名中禁止的词
      */
     "prohibitedWordsForNameOfUser": string;
     /**
-     * このリストに含まれる文字列がユーザーの名前に含まれる場合、ユーザーの名前の変更を拒否します。モデレーター権限を持つユーザーはこの制限の影響を受けません。ユーザー名(username)に対しても全て小文字に置き換えて検査します。
+     * 更改用户名时，如果用户名中包含此列表里的词汇，用户的改名请求将被拒绝。持有管理员权限的用户不受此限制。
      */
     "prohibitedWordsForNameOfUserDescription": string;
     /**
-     * 変更しようとした名前に禁止された文字列が含まれています
+     * 目标用户名包含违禁词
      */
     "yourNameContainsProhibitedWords": string;
     /**
-     * 名前に禁止されている文字列が含まれています。この名前を使用したい場合は、サーバー管理者にお問い合わせください。
+     * 用户名内含有违禁词。若想使用此用户名，请联系服务器管理员。
      */
     "yourNameContainsProhibitedWordsDescription": string;
     /**
-     * 投稿者により、表示にはログインが必要と設定されています
+     * 根据发帖者的设定，需要登录才能显示
      */
     "thisContentsAreMarkedAsSigninRequiredByAuthor": string;
     /**
-     * ロックダウン
+     * 锁定
      */
     "lockdown": string;
     /**
-     * アカウントを選択してください
+     * 请选择帐户
      */
     "pleaseSelectAccount": string;
     /**
-     * 利用可能なロール
+     * 可用角色
      */
     "availableRoles": string;
     /**
-     * 注意事項を理解した上でオンにします。
+     * 理解注意事项后再开启。
      */
     "acknowledgeNotesAndEnable": string;
     /**
-     * このサーバーはホワイトリスト連合で運用されています。管理者が指定したサーバー以外とやり取りすることはできません。
+     * 此服务器已开启联邦白名单模式。只能与管理员指定的服务器通信。
      */
     "federationSpecified": string;
     /**
-     * このサーバーは連合が無効化されています。他のサーバーのユーザーとやり取りすることはできません。
+     * 此服务器已禁用联邦功能。无法与其它服务器上的用户通信。
      */
     "federationDisabled": string;
     /**
-     * 下書き
+     * 草稿
      */
     "draft": string;
     /**
-     * 下書きと予約投稿
+     * 草稿和定时发送
      */
     "draftsAndScheduledNotes": string;
     /**
-     * リアクションする際に確認する
+     * 发送回应前需要确认
      */
     "confirmOnReact": string;
     /**
-     * " {emoji} " をリアクションしますか？
+     * 要用 “{emoji}” 进行回应吗？
      */
     "reactAreYouSure": ParameterizedString<"emoji">;
     /**
-     * このメディアをセンシティブとして設定しますか？
+     * 确定标记此媒体为敏感内容吗？
      */
     "markAsSensitiveConfirm": string;
     /**
-     * このメディアのセンシティブ指定を解除しますか？
+     * 确定取消标记为敏感内容吗？
      */
     "unmarkAsSensitiveConfirm": string;
     /**
-     * 環境設定
+     * 偏好设置
      */
     "preferences": string;
     /**
-     * アクセシビリティ
+     * 辅助功能
      */
     "accessibility": string;
     /**
-     * 設定のプロファイル
+     * 设置的配置文件
      */
     "preferencesProfile": string;
     /**
-     * 設定IDをコピー
+     * 复制设置 ID
      */
     "copyPreferenceId": string;
     /**
-     * 初期値に戻す
+     * 重置为默认值
      */
     "resetToDefaultValue": string;
     /**
-     * アカウントで上書き
+     * 使用账户设置
      */
     "overrideByAccount": string;
     /**
-     * 無題
+     * 未命名
      */
     "untitled": string;
     /**
-     * 名前はありません
+     * 未命名
      */
     "noName": string;
     /**
-     * スキップ
+     * 跳过
      */
     "skip": string;
     /**
-     * 復元
+     * 恢复
      */
     "restore": string;
     /**
-     * デバイス間で同期
+     * 设备间同步
      */
     "syncBetweenDevices": string;
     /**
-     * サーバーに設定値が存在します
+     * 服务器上已存在设定值
      */
     "preferenceSyncConflictTitle": string;
     /**
-     * 同期が有効にされた設定項目は設定値をサーバーに保存しますが、この設定項目のサーバーに保存された設定値が見つかりました。どうしますか？
+     * 即将保存设定值到服务器，但检测到服务器上已有此设置的设定值。要使用哪个设定值？
      */
     "preferenceSyncConflictText": string;
     /**
-     * 統合する
+     * 合并
      */
     "preferenceSyncConflictChoiceMerge": string;
     /**
-     * サーバーの設定値で上書き
+     * 服务器上的设定值
      */
     "preferenceSyncConflictChoiceServer": string;
     /**
-     * デバイスの設定値で上書き
+     * 设备上的设定值
      */
     "preferenceSyncConflictChoiceDevice": string;
     /**
-     * 同期の有効化をキャンセル
+     * 取消同步
      */
     "preferenceSyncConflictChoiceCancel": string;
     /**
-     * ペースト
+     * 粘贴
      */
     "paste": string;
     /**
-     * 絵文字パレット
+     * 表情符号选择器
      */
     "emojiPalette": string;
     /**
-     * 投稿フォーム
+     * 发帖窗口
      */
     "postForm": string;
     /**
-     * 文字数
+     * 字数
      */
     "textCount": string;
     /**
-     * 情報
+     * 关于
      */
     "information": string;
     /**
-     * チャット
+     * 聊天
      */
     "chat": string;
     /**
-     * ダイレクトメッセージ
+     * 私信
      */
     "directMessage": string;
     /**
-     * メッセージ
+     * 消息
      */
     "directMessage_short": string;
     /**
-     * 圧縮
+     * 压缩
      */
     "compress": string;
     /**
@@ -5498,62 +5498,62 @@ export interface Locale extends ILocale {
      */
     "top": string;
     /**
-     * 埋め込み
+     * 嵌入
      */
     "embed": string;
     /**
-     * 読み取り専用
+     * 只读
      */
     "readonly": string;
     /**
-     * デッキへ戻る
+     * 返回至 Deck
      */
     "goToDeck": string;
     /**
-     * 連合ジョブ
+     * 联邦作业
      */
     "federationJobs": string;
     /**
-     * ドライブでは、過去にアップロードしたファイルの一覧が表示されます。<br>
-     * ノートに添付する際に再利用したり、あとで投稿するファイルを予めアップロードしておくこともできます。<br>
-     * <b>ファイルを削除すると、今までそのファイルを使用した全ての場所(ノート、ページ、アバター、バナー等)からも見えなくなるので注意してください。</b><br>
-     * フォルダを作って整理することもできます。
+     * 网盘可以显示以前上传的文件。<br>
+     * 也可以在发布帖子时重复使用文件，或在发布帖子前预先上传文件。<br>
+     * <b>删除文件时，其将从至今为止所有用到该文件的地方（如帖子、页面、头像、横幅）消失。</b><br>
+     * 也可以新建文件夹来整理文件。
      */
     "driveAboutTip": string;
     /**
-     * スクロールして閉じる
+     * 滑动并关闭
      */
     "scrollToClose": string;
     /**
-     * アドバイス
+     * 建议
      */
     "advice": string;
     /**
-     * リアルタイムモード
+     * 实时模式
      */
     "realtimeMode": string;
     /**
-     * オンにする
+     * 开启
      */
     "turnItOn": string;
     /**
-     * オフにする
+     * 关闭
      */
     "turnItOff": string;
     /**
-     * 絵文字ミュート
+     * 屏蔽表情符号
      */
     "emojiMute": string;
     /**
-     * 絵文字ミュート解除
+     * 取消屏蔽表情符号
      */
     "emojiUnmute": string;
     /**
-     * {x}をミュート
+     * 隐藏{x}
      */
     "muteX": ParameterizedString<"x">;
     /**
-     * {x}のミュートを解除
+     * 取消对{x}的隐藏
      */
     "unmuteX": ParameterizedString<"x">;
     /**
@@ -5561,581 +5561,581 @@ export interface Locale extends ILocale {
      */
     "abort": string;
     /**
-     * ヒントとコツ
+     * 提示和技巧
      */
     "tip": string;
     /**
-     * 全ての「ヒントとコツ」を再表示
+     * 重新显示所有 “提示和技巧”
      */
     "redisplayAllTips": string;
     /**
-     * 全ての「ヒントとコツ」を非表示
+     * 隐藏所有的 “提示与技巧”
      */
     "hideAllTips": string;
     /**
-     * デフォルトの画像圧縮度
+     * 默认图像压缩等级
      */
     "defaultImageCompressionLevel": string;
     /**
-     * 低くすると画質を保てますが、ファイルサイズは増加します。<br>高くするとファイルサイズを減らせますが、画質は低下します。
+     * 较低的等级可以保持画质，但会增加文件大小。<br>较高的等级可以减少文件大小，但相对应的画质将会降低。
      */
     "defaultImageCompressionLevel_description": string;
     /**
-     * デフォルトの圧縮度
+     * 默认压缩等级
      */
     "defaultCompressionLevel": string;
     /**
-     * 低くすると品質を保てますが、ファイルサイズは増加します。<br>高くするとファイルサイズを減らせますが、品質は低下します。
+     * 较低的等级可以保持质量，但会增加文件大小。<br>较高的等级可以减少文件大小，但相对应的质量将会降低。
      */
     "defaultCompressionLevel_description": string;
     /**
-     * 分
+     * 分钟
      */
     "inMinutes": string;
     /**
-     * 日
+     * 天
      */
     "inDays": string;
     /**
-     * セーフモードが有効です
+     * 已启用安全模式
      */
     "safeModeEnabled": string;
     /**
-     * セーフモードが有効なため、プラグインはすべて無効化されています。
+     * 因启用了安全模式，所有插件均已被禁用。
      */
     "pluginsAreDisabledBecauseSafeMode": string;
     /**
-     * セーフモードが有効なため、カスタムCSSは適用されていません。
+     * 因启用了安全模式，无法应用自定义 CSS。
      */
     "customCssIsDisabledBecauseSafeMode": string;
     /**
-     * セーフモードが有効な間はデフォルトのテーマが使用されます。セーフモードをオフにすると元に戻ります。
+     * 启用安全模式时将使用默认主题。关闭安全模式后将还原。
      */
     "themeIsDefaultBecauseSafeMode": string;
     /**
-     * ベータ版の検証にご協力いただきありがとうございます！
+     * 感谢您协助测试 beta 版！
      */
     "thankYouForTestingBeta": string;
     /**
-     * ユーザー指定ノートを作成
+     * 提及该用户并发帖
      */
     "createUserSpecifiedNote": string;
     /**
-     * 投稿を予約
+     * 定时发布
      */
     "schedulePost": string;
     /**
-     * {x}に投稿を予約します
+     * 预定在 {x} 发出
      */
     "scheduleToPostOnX": ParameterizedString<"x">;
     /**
-     * {x}に投稿が予約されています
+     * 已预定在 {x} 发出
      */
     "scheduledToPostOnX": ParameterizedString<"x">;
     /**
-     * 予約
+     * 定时
      */
     "schedule": string;
     /**
-     * 予約
+     * 定时
      */
     "scheduled": string;
     /**
-     * ウィジェット
+     * 小工具
      */
     "widgets": string;
     /**
-     * デバイス情報
+     * 设备信息
      */
     "deviceInfo": string;
     /**
-     * 技術的なお問い合わせの際に、以下の情報を併記すると問題の解決に役立つことがあります。
+     * 咨询技术问题时，将以下信息一并发送有助于解决问题。
      */
     "deviceInfoDescription": string;
     /**
-     * あなたは管理者です
+     * 你是管理员
      */
     "youAreAdmin": string;
     /**
-     * フレーム
+     * 边框
      */
     "frame": string;
     /**
-     * プリセット
+     * 预设值
      */
     "presets": string;
     /**
-     * ゼロ埋め
+     * 填充 0
      */
     "zeroPadding": string;
     /**
-     * 設定項目はありません
+     * 没有项目
      */
     "nothingToConfigure": string;
     /**
-     * リノート先のチャンネルを見る
+     * 查看转帖所属频道
      */
     "viewRenotedChannel": string;
     /**
-     * テーマのプレビュー中
+     * 正在预览主题
      */
     "previewingTheme": string;
     /**
-     * 元に戻す
+     * 还原
      */
     "previewingThemeRestore": string;
     /**
-     * アクセストークン
+     * 访问令牌
      */
     "accessToken": string;
     /**
-     * 絵文字パレットを選択
+     * 选择表情符号选择器
      */
     "chooseEmojiPalette": string;
     /**
-     * 絵文字パレットに追加
+     * 添加至表情符号选择器
      */
     "addToEmojiPalette": string;
     /**
-     * この絵文字はすでにこの絵文字パレットに含まれています。追加しなおしますか？
+     * 此表情符号已存在于此表情符号选择器中。要再次添加吗？
      */
     "emojiPaletteAlreadyAddedConfirm": string;
     /**
-     * 末尾に追加
+     * 加到最后
      */
     "append": string;
     /**
-     * 先頭に追加
+     * 加到最前
      */
     "prepend": string;
     /**
-     * サムネイルの表示を制限するURL
+     * 限制显示缩略图的 URL
      */
     "urlPreviewSensitiveList": string;
     /**
-     * スペースで区切るとAND指定になり、改行で区切るとOR指定になります。スラッシュで囲むと正規表現になります。一致した場合、サムネイルが表示されなくなります。
+     * AND 条件用空格分隔，OR 条件用换行符分隔，正则表达式用斜线包裹。成功匹配则不再显示缩略图。
      */
     "urlPreviewSensitiveListDescription": string;
     /**
-     * ピクセルアート拡大モード
+     * 像素画放大模式
      */
     "pixelatedZoom": string;
     "_imageEditing": {
         "_vars": {
             /**
-             * ファイルのキャプション
+             * 文件标题
              */
             "caption": string;
             /**
-             * ファイル名
+             * 文件名称
              */
             "filename": string;
             /**
-             * 拡張子無しファイル名
+             * 不带扩展名的文件名
              */
             "filename_without_ext": string;
             /**
-             * 撮影年
+             * 拍摄年
              */
             "year": string;
             /**
-             * 撮影月
+             * 拍摄月
              */
             "month": string;
             /**
-             * 撮影日
+             * 拍摄日
              */
             "day": string;
             /**
-             * 撮影した時刻(時)
+             * 拍摄时间（时）
              */
             "hour": string;
             /**
-             * 撮影した時刻(分)
+             * 拍摄时间（分）
              */
             "minute": string;
             /**
-             * 撮影した時刻(秒)
+             * 拍摄时间（秒）
              */
             "second": string;
             /**
-             * カメラ名
+             * 相机名称
              */
             "camera_model": string;
             /**
-             * レンズ名
+             * 镜头型号
              */
             "camera_lens_model": string;
             /**
-             * 焦点距離
+             * 焦距
              */
             "camera_mm": string;
             /**
-             * 焦点距離(35mm判換算)
+             * 焦距（35mm等效）
              */
             "camera_mm_35": string;
             /**
-             * 絞り
+             * 光圈
              */
             "camera_f": string;
             /**
-             * シャッタースピード
+             * 快门速度
              */
             "camera_s": string;
             /**
-             * ISO感度
+             * ISO
              */
             "camera_iso": string;
             /**
-             * 緯度
+             * 纬度
              */
             "gps_lat": string;
             /**
-             * 経度
+             * 经度
              */
             "gps_long": string;
         };
     };
     "_imageFrameEditor": {
         /**
-         * フレームの編集
+         * 编辑边框
          */
         "title": string;
         /**
-         * 画像にフレームやメタデータを含んだラベルを追加して装飾できます。
+         * 您可以通过添加包含边框和元数据的标签来装饰图片。
          */
         "tip": string;
         /**
-         * ヘッダー
+         * 顶栏
          */
         "header": string;
         /**
-         * フッター
+         * 页脚
          */
         "footer": string;
         /**
-         * フチの幅
+         * 边框宽度
          */
         "borderThickness": string;
         /**
-         * ラベルの幅
+         * 标签宽度
          */
         "labelThickness": string;
         /**
-         * ラベルのスケール
+         * 标签比例
          */
         "labelScale": string;
         /**
-         * 中央揃え
+         * 居中
          */
         "centered": string;
         /**
-         * キャプション(大)
+         * 标题（大）
          */
         "captionMain": string;
         /**
-         * キャプション(小)
+         * 标题（小）
          */
         "captionSub": string;
         /**
-         * 利用可能な変数
+         * 可修改的变量
          */
         "availableVariables": string;
         /**
-         * 二次元コード
+         * 二维码
          */
         "withQrCode": string;
         /**
-         * 背景色
+         * 背景颜色
          */
         "backgroundColor": string;
         /**
-         * 文字色
+         * 文本颜色
          */
         "textColor": string;
         /**
-         * フォント
+         * 字体
          */
         "font": string;
         /**
-         * セリフ
+         * 衬线字体
          */
         "fontSerif": string;
         /**
-         * サンセリフ
+         * 无衬线字体
          */
         "fontSansSerif": string;
         /**
-         * 保存せずに終了しますか？
+         * 放弃未保存的更改？
          */
         "quitWithoutSaveConfirm": string;
         /**
-         * 画像の読み込みに失敗しました
+         * 图片加载失败
          */
         "failedToLoadImage": string;
     };
     "_compression": {
         "_quality": {
             /**
-             * 高品質
+             * 高质量
              */
             "high": string;
             /**
-             * 中品質
+             * 中质量
              */
             "medium": string;
             /**
-             * 低品質
+             * 低质量
              */
             "low": string;
         };
         "_size": {
             /**
-             * サイズ大
+             * 大
              */
             "large": string;
             /**
-             * サイズ中
+             * 中
              */
             "medium": string;
             /**
-             * サイズ小
+             * 小
              */
             "small": string;
         };
     };
     "_order": {
         /**
-         * 新しい順
+         * 从新到旧
          */
         "newest": string;
         /**
-         * 古い順
+         * 从旧到新
          */
         "oldest": string;
     };
     "_chat": {
         /**
-         * メッセージ
+         * 消息
          */
         "messages": string;
         /**
-         * まだメッセージはありません
+         * 还没有消息
          */
         "noMessagesYet": string;
         /**
-         * 新しいメッセージ
+         * 新消息
          */
         "newMessage": string;
         /**
-         * 個別
+         * 私聊
          */
         "individualChat": string;
         /**
-         * 特定ユーザーと個別にメッセージのやりとりができます。
+         * 与特定的用户单独聊天。
          */
         "individualChat_description": string;
         /**
-         * グループ
+         * 群聊
          */
         "roomChat": string;
         /**
-         * 複数人でメッセージのやりとりができます。
-         * また、個別のメッセージを許可していないユーザーとでも、相手が受け入れればやりとりできます。
+         * 支持多人同时聊天。
+         * 即使对方不允许私聊，只要接受邀请也能加入。
          */
         "roomChat_description": string;
         /**
-         * グループを作成
+         * 创建群聊
          */
         "createRoom": string;
         /**
-         * ユーザーを招待してメッセージを送信しましょう
+         * 邀请用户来聊天吧
          */
         "inviteUserToChat": string;
         /**
-         * 作成したグループ
+         * 已创建的群聊
          */
         "yourRooms": string;
         /**
-         * 参加中のグループ
+         * 已加入的群聊
          */
         "joiningRooms": string;
         /**
-         * 招待
+         * 邀请
          */
         "invitations": string;
         /**
-         * 招待はありません
+         * 没有邀请
          */
         "noInvitations": string;
         /**
-         * 履歴
+         * 历史
          */
         "history": string;
         /**
-         * 履歴はありません
+         * 没有历史记录
          */
         "noHistory": string;
         /**
-         * グループはありません
+         * 没有群聊
          */
         "noRooms": string;
         /**
-         * ユーザーを招待
+         * 邀请用户
          */
         "inviteUser": string;
         /**
-         * 送信した招待
+         * 已发送的邀请
          */
         "sentInvitations": string;
         /**
-         * 参加
+         * 加入
          */
         "join": string;
         /**
-         * 無視
+         * 忽略
          */
         "ignore": string;
         /**
-         * グループから退出
+         * 退出群聊
          */
         "leave": string;
         /**
-         * メンバー
+         * 成员
          */
         "members": string;
         /**
-         * メッセージを検索
+         * 搜索消息
          */
         "searchMessages": string;
         /**
-         * ホーム
+         * 首页
          */
         "home": string;
         /**
-         * 送信
+         * 发送
          */
         "send": string;
         /**
-         * 改行
+         * 换行
          */
         "newline": string;
         /**
-         * このグループをミュート
+         * 消息免打扰
          */
         "muteThisRoom": string;
         /**
-         * グループを削除
+         * 删除群聊
          */
         "deleteRoom": string;
         /**
-         * このサーバー、またはこのアカウントでダイレクトメッセージは有効化されていません。
+         * 此服务器或者账户还未开启聊天功能。
          */
         "chatNotAvailableForThisAccountOrServer": string;
         /**
-         * このサーバー、またはこのアカウントでダイレクトメッセージは読み取り専用となっています。新たに書き込んだり、グループを作成・参加したりすることはできません。
+         * 此服务器或者账户内的聊天为只读。无法发布新信息或创建及加入群聊。
          */
         "chatIsReadOnlyForThisAccountOrServer": string;
         /**
-         * 相手のアカウントでダイレクトメッセージが使えない状態になっています。
+         * 对方的账户当前无法使用私信。
          */
         "chatNotAvailableInOtherAccount": string;
         /**
-         * このユーザーとのダイレクトメッセージを開始できません
+         * 无法私信该用户
          */
         "cannotChatWithTheUser": string;
         /**
-         * ダイレクトメッセージが使えない状態になっているか、相手がダイレクトメッセージを開放していません。
+         * 可能现在无法使用聊天，或者对方未开启聊天。
          */
         "cannotChatWithTheUser_description": string;
         /**
-         * あなたはこのグループの参加者ではありませんが、招待が届いています。参加するには、招待を承認してください。
+         * 您尚未加入此群组，但已收到加入邀请。请接受邀请加入。
          */
         "youAreNotAMemberOfThisRoomButInvited": string;
         /**
-         * 招待を承認しますか？
+         * 要接受邀请吗？
          */
         "doYouAcceptInvitation": string;
         /**
-         * ダイレクトメッセージ
+         * 私信
          */
         "chatWithThisUser": string;
         /**
-         * このユーザーはフォロワーからのみメッセージを受け付けています。
+         * 此用户仅接受关注者发起的聊天。
          */
         "thisUserAllowsChatOnlyFromFollowers": string;
         /**
-         * このユーザーは、このユーザーがフォローしているユーザーからのみメッセージを受け付けています。
+         * 此用户仅接受关注的人发起的聊天。
          */
         "thisUserAllowsChatOnlyFromFollowing": string;
         /**
-         * このユーザーは相互フォローのユーザーからのみメッセージを受け付けています。
+         * 此用户仅接受互相关注的人发起的聊天。
          */
         "thisUserAllowsChatOnlyFromMutualFollowing": string;
         /**
-         * このユーザーは誰からもメッセージを受け付けていません。
+         * 此用户不接受任何人发起的聊天。
          */
         "thisUserNotAllowedChatAnyone": string;
         /**
-         * メッセージを許可する相手
+         * 谁可以发起聊天
          */
         "chatAllowedUsers": string;
         /**
-         * 自分からメッセージを送った相手とはこの設定に関わらずメッセージの送受信が可能です。
+         * 主动发起聊天时，对方将不受此设置限制。
          */
         "chatAllowedUsers_note": string;
         "_chatAllowedUsers": {
             /**
-             * 誰でも
+             * 任何人
              */
             "everyone": string;
             /**
-             * 自分のフォロワーのみ
+             * 仅关注者
              */
             "followers": string;
             /**
-             * 自分がフォローしているユーザーのみ
+             * 仅关注的人
              */
             "following": string;
             /**
-             * 相互フォローのユーザーのみ
+             * 仅相互关注
              */
             "mutual": string;
             /**
-             * 誰も許可しない
+             * 没有人
              */
             "none": string;
         };
     };
     "_emojiPalette": {
         /**
-         * パレット
+         * 表情符号托盘
          */
         "palettes": string;
         /**
-         * パレットのデバイス間同期を有効にする
+         * 在设备间同步表情符号托盘
          */
         "enableSyncBetweenDevicesForPalettes": string;
         /**
-         * メインで使用するパレット
+         * 主表情符号托盘
          */
         "paletteForMain": string;
         /**
-         * リアクションで使用するパレット
+         * 回应时的表情符号托盘
          */
         "paletteForReaction": string;
     };
     "_settings": {
         /**
-         * ドライブの管理と設定、使用量の確認、ファイルをアップロードする際の設定を行えます。
+         * 可在此管理和设置网盘、确认使用量及配置上传文件的设置。
          */
         "driveBanner": string;
         /**
-         * プラグインを利用するとクライアントの機能を拡張することができます。プラグインのインストール、個別の設定と管理が行えます。
+         * 使用插件可以扩展客户端的功能。可以在此安装、单独管理插件。
          */
         "pluginBanner": string;
         /**
-         * サーバーからの受信する通知の種類と範囲や、プッシュ通知の設定が行えます。
+         * 可在此设置从服务器接收的通知的种类和范围，以及推送通知的设置。
          */
         "notificationsBanner": string;
         /**
@@ -6147,1218 +6147,1222 @@ export interface Locale extends ILocale {
          */
         "webhook": string;
         /**
-         * サービス連携
+         * 连接服务
          */
         "serviceConnection": string;
         /**
-         * 外部のアプリ・サービスと連携するためのアクセストークンやWebhookの管理と設定が行えます。
+         * 可在此管理用于连接外部应用或服务的访问令牌及 Webhook。
          */
         "serviceConnectionBanner": string;
         /**
-         * アカウントのデータ
+         * 账户数据
          */
         "accountData": string;
         /**
-         * アカウントデータのアーカイブをエクスポート/インポートして管理できます。
+         * 可在此导入或导出帐户数据的存档。
          */
         "accountDataBanner": string;
         /**
-         * 非表示にするコンテンツの設定や、特定のユーザーからのアクションを制限する設定と管理を行えます。
+         * 可在此设置隐藏内容，或限制指定用户能进行的操作。
          */
         "muteAndBlockBanner": string;
         /**
-         * クライアントの視覚や動作に関するパーソナライズを行い、より最適に使用できるように設定できます。
+         * 可在此设置客户端的显示及动态效果等辅助设置。
          */
         "accessibilityBanner": string;
         /**
-         * コンテンツの公開範囲、見つけやすさ、フォローの承認制などアカウントのプライバシーに関する設定を行えます。
+         * 可在此设置如内容可见性、可发现性、批准关注请求等账户隐私设置。
          */
         "privacyBanner": string;
         /**
-         * パスワード、ログイン方法、認証アプリ、パスキーなどアカウントのセキュリティに関する設定を行えます。
+         * 可在此设置如密码、登入方式、验证器、Passkey 等账户安全性设置。
          */
         "securityBanner": string;
         /**
-         * 好みに応じた、クライアントの全体的な動作の設定が行えます。
+         * 可在此设置客户端的整体运作行为。
          */
         "preferencesBanner": string;
         /**
-         * 好みに応じた、クライアントの見た目・表示方法に関する設定が行えます。
+         * 可在此设置客户端的外观及显示方式。
          */
         "appearanceBanner": string;
         /**
-         * クライアントで再生するサウンドの設定が行えます。
+         * 可在此设置客户端播放的声音。
          */
         "soundsBanner": string;
         /**
-         * タイムラインとノート
+         * 时间线和帖子
          */
         "timelineAndNote": string;
         /**
-         * 全てのテキスト要素を選択可能にする
+         * 使所有的文字均可选择
          */
         "makeEveryTextElementsSelectable": string;
         /**
-         * 有効にすると、一部のシチュエーションでのユーザビリティが低下する場合があります。
+         * 若开启，在某些情况下可能降低用户体验。
          */
         "makeEveryTextElementsSelectable_description": string;
         /**
-         * アイコンをスクロールに追従させる
+         * 用户头像跟随页面滚动
          */
         "useStickyIcons": string;
         /**
-         * 高品質な画像のプレースホルダを表示
+         * 显示高质量图像的占位符
          */
         "enableHighQualityImagePlaceholders": string;
         /**
-         * UIのアニメーション
+         * UI 动效
          */
         "uiAnimations": string;
         /**
-         * ナビゲーションバーに副ボタンを表示
+         * 在导航栏中显示副按钮
          */
         "showNavbarSubButtons": string;
         /**
-         * オンのとき
+         * 启用时
          */
         "ifOn": string;
         /**
-         * オフのとき
+         * 关闭时
          */
         "ifOff": string;
         /**
-         * デバイス間でインストールしたテーマを同期
+         * 在设备间同步已安装的主题
          */
         "enableSyncThemesBetweenDevices": string;
         /**
-         * ひっぱって更新
+         * 开启下拉刷新
          */
         "enablePullToRefresh": string;
         /**
-         * マウスでは、ホイールを押し込みながらドラッグします。
+         * 使用鼠标时按下滚轮来拖动
          */
         "enablePullToRefresh_description": string;
         /**
-         * サーバーと接続を確立し、リアルタイムでコンテンツを更新します。通信量とバッテリーの消費が多くなる場合があります。
+         * 与服务器建立连接并实时更新内容。将会增加流量和电池消耗。
          */
         "realtimeMode_description": string;
         /**
-         * コンテンツの取得頻度
+         * 内容获取频率
          */
         "contentsUpdateFrequency": string;
         /**
-         * 高いほどリアルタイムにコンテンツが更新されますが、パフォーマンスが低下し、通信量とバッテリーの消費が多くなります。
+         * 设置越高，内容更新越实时，但性能会降低，并且会消耗更多的流量和电池。
          */
         "contentsUpdateFrequency_description": string;
         /**
-         * リアルタイムモードがオンのときは、この設定に関わらずリアルタイムでコンテンツが更新されます。
+         * 当实时模式开启时，无论此设置如何，内容都会实时更新。
          */
         "contentsUpdateFrequency_description2": string;
         /**
-         * URLプレビューを表示する
+         * 显示 URL 预览
          */
         "showUrlPreview": string;
         /**
-         * 利用できるリアクションを先頭に表示
+         * 在顶部显示可用的回应
          */
         "showAvailableReactionsFirstInNote": string;
         /**
-         * ページのタブバーを下部に表示
+         * 在下方显示页面标签栏
          */
         "showPageTabBarBottom": string;
         /**
-         * 絵文字ピッカーに固定表示するプリセットをパレットとして登録したり、ピッカーの表示方法をカスタマイズしたりできます。
+         * 可以将固定显示在表情符号选择器中的预设注册为调色板，也可以自定义表情符号选择器的显示方式。
          */
         "emojiPaletteBanner": string;
         /**
-         * アニメーション画像を有効にする
+         * 启用动态图像
          */
         "enableAnimatedImages": string;
         /**
-         * 設定の永続化
+         * 设置持久化
          */
         "settingsPersistence_title": string;
         /**
-         * 設定の永続化を有効にすると、設定情報が失われるのを防止できます。
+         * 启用设置持久化可防止设置信息丢失。
          */
         "settingsPersistence_description1": string;
         /**
-         * 環境によっては有効化できない場合があります。
+         * 根据环境不同，有可能无法开启。
          */
         "settingsPersistence_description2": string;
         "_chat": {
             /**
-             * 送信者の名前を表示
+             * 显示发送者的名字
              */
             "showSenderName": string;
             /**
-             * Enterで送信
+             * 回车键发送
              */
             "sendOnEnter": string;
         };
     };
     "_preferencesProfile": {
         /**
-         * プロファイル名
+         * 配置文件名
          */
         "profileName": string;
         /**
-         * このデバイスを識別する名前を設定してください。
+         * 请指定用于识别此设备的名称
          */
         "profileNameDescription": string;
         /**
-         * 例: 「メインPC」、「スマホ」など
+         * 例如：“PC"、“手机” 等
          */
         "profileNameDescription2": string;
         /**
-         * プロファイルの管理
+         * 管理配置文件
          */
         "manageProfiles": string;
         /**
-         * 複数のデバイスで同一のプロファイルを共有することは推奨しません。
+         * 不建议在多个设备间共用同一个配置文件。
          */
         "shareSameProfileBetweenDevicesIsNotRecommended": string;
         /**
-         * 複数のデバイスで同期したい設定項目が存在する場合は、個別に「複数のデバイスで同期」オプションを有効にしてください。
+         * 若想在多个设备间同步某些设置，请为每个设置打开 “多设备间同步” 选项。
          */
         "useSyncBetweenDevicesOptionIfYouWantToSyncSetting": string;
     };
     "_preferencesBackup": {
         /**
-         * 自動バックアップ
+         * 自动备份
          */
         "autoBackup": string;
         /**
-         * バックアップから復元
+         * 从备份恢复
          */
         "restoreFromBackup": string;
         /**
-         * バックアップが見つかりませんでした
+         * 没有找到备份
          */
         "noBackupsFoundTitle": string;
         /**
-         * 自動で作成されたバックアップは見つかりませんでしたが、バックアップファイルを手動で保存している場合、それをインポートして復元することはできます。
+         * 没有找到自动备份。若有手动保存备份文件，可将其导入来恢复。
          */
         "noBackupsFoundDescription": string;
         /**
-         * 復元するバックアップを選択してください
+         * 请选择要恢复的备份
          */
         "selectBackupToRestore": string;
         /**
-         * 自動バックアップを有効にするにはプロファイル名の設定が必要です。
+         * 需指定配置名以开启自动备份。
          */
         "youNeedToNameYourProfileToEnableAutoBackup": string;
         /**
-         * このデバイスで設定の自動バックアップは有効になっていません。
+         * 此设备未开启自动备份
          */
         "autoPreferencesBackupIsNotEnabledForThisDevice": string;
         /**
-         * 設定のバックアップが見つかりました
+         * 已找到备份
          */
         "backupFound": string;
         /**
-         * 設定の強制バックアップ
+         * 强制备份设置
          */
         "forceBackup": string;
     };
     "_followApproval": {
         /**
-         * フォロー承認
+         * 批准关注请求
          */
         "groupTitle": string;
         /**
-         * すべてのフォローが承認制になるため、期間による設定は適用されません。フォローの承認制を解除すると、以下の設定が再び適用されます。
+         * 因为所有的关注请求都需要批准，因此按时间段设置的规则将不再生效。关闭「关注请求需要批准」后下面的设置将重新生效。
          */
         "inactiveDescription": string;
         /**
-         * 新しいアカウントからのフォローを承認制にする
+         * 新账户的关注请求需要批准
          */
         "title": string;
         /**
-         * フォローを承認制にしている場合や、新しいアカウントからのフォローを保留する場合にも、あなたがフォローしている相手は自動承認します。
+         * 就算开启了「关注请求需要批准」或「新账户的关注请求需要批准」，您已关注的账户的关注请求将被自动批准。
          */
         "autoAcceptDescription": string;
         /**
-         * 指定した期間が経過していない相手からのフォローを、フォローリクエストとして保留します。既存のフォロワーには影響しません。フォローしている相手の自動承認が有効な場合、その相手は自動承認されます。
+         * 注册未达指定时长的账户的关注将作为关注请求予以保留。这不影响现有的关注者。已开启「自动允许我关注的人的关注请求」的话，对方的关注请求将被自动批准。
          */
         "description": string;
         /**
-         * ローカルユーザーからのフォロー
+         * 从本地用户发来的关注
          */
         "local": string;
         /**
-         * このサーバーでのアカウント作成からの期間で判定します。
+         * 以本服务器的账户注册时间来计算时长。
          */
         "localDescription": string;
         /**
-         * リモートユーザーからのフォロー
+         * 从远程用户发来的关注
          */
         "remote": string;
         /**
-         * 相手のサーバーでの作成日時ではなく、このサーバーが初めてそのアカウントを認識してからの期間で判定します。
+         * 不是以远程服务器上的注册时间，而是以本服务器最初认知到这个账户的时间来计算时长。
          */
         "remoteDescription": string;
         /**
-         * 既定値を使う（現在は無効）
+         * 使用默认值（当前为无效）
          */
         "useDefault": string;
         /**
-         * 期間を指定する
+         * 指定时间段
          */
         "custom": string;
         /**
-         * 承認が必要な期間
+         * 批准所需注册时长
          */
         "period": string;
         /**
-         * 単位
+         * 单位
          */
         "unit": string;
         /**
-         * 期間が正しくありません。1秒以上の期間を、指定できる範囲内で入力してください。
+         * 输入的时间不正确。请在可输入的范围内输入 1 秒以上的时间。
          */
         "invalidPeriod": string;
     };
     "_accountSettings": {
         /**
-         * コンテンツの表示にログインを必須にする
+         * 需要登录才能显示内容
          */
         "requireSigninToViewContents": string;
         /**
-         * あなたが作成した全てのノートなどのコンテンツを表示するのにログインを必須にします。クローラーに情報が収集されるのを防ぐ効果が期待できます。
+         * 您发布的所有帖子将变成需要登入后才会显示。有望防止爬虫收集各种信息。
          */
         "requireSigninToViewContentsDescription1": string;
         /**
-         * URLプレビュー(OGP)、Webページへの埋め込み、ノートの引用に対応していないサーバーからの表示も不可になります。
+         * 没有 URL 预览（OGP）、内嵌网页、引用帖子的功能的服务器也将无法显示。
          */
         "requireSigninToViewContentsDescription2": string;
         /**
-         * リモートサーバーに連合されたコンテンツでは、これらの制限が適用されない場合があります。
+         * 对于已通过联邦分发到远程服务器的内容，这些限制可能不适用。
          */
         "requireSigninToViewContentsDescription3": string;
         /**
-         * 過去のノートをフォロワーのみ表示可能にする
+         * 可将过去的帖子设为仅关注者可见
          */
         "makeNotesFollowersOnlyBefore": string;
         /**
-         * この機能が有効になっている間、設定された日時より過去、または設定された時間を経過しているノートがフォロワーのみ表示可能になります。無効に戻すと、ノートの公開状態も元に戻ります。
+         * 开启此设定时，超过设定的时间或日期后，帖子将变为仅关注者可见。关闭后帖子的公开状态将恢复成原本的设定。
          */
         "makeNotesFollowersOnlyBeforeDescription": string;
         /**
-         * 過去のノートを非公開化する
+         * 将过去的帖子设为私密
          */
         "makeNotesHiddenBefore": string;
         /**
-         * この機能が有効になっている間、設定された日時より過去、または設定された時間を経過しているノートが自分のみ表示可能(非公開化)になります。無効に戻すと、ノートの公開状態も元に戻ります。
+         * 开启此设定时，超过设定的时间或日期后，帖子将变为仅自己可见。关闭后帖子的公开状态将恢复成原本的设定。
          */
         "makeNotesHiddenBeforeDescription": string;
         /**
-         * リモートサーバーに連合されたノートには効果が及ばない場合があります。
+         * 对于已通过联邦投递到远程服务器的帖子，此操作在远端可能无法生效。
          */
         "mayNotEffectForFederatedNotes": string;
         /**
-         * これらの制限は簡易的なものです。リモートサーバーでの閲覧やモデレーション時など、一部のシチュエーションでは適用されない場合があります。
+         * 此限制功能非常简单，在与远程服务器联合等情形时可能不适用。
          */
         "mayNotEffectSomeSituations": string;
         /**
-         * 指定した時間を経過しているノート
+         * 超过指定时间的帖子
          */
         "notesHavePassedSpecifiedPeriod": string;
         /**
-         * 指定した日時より前のノート
+         * 指定日期前的帖子
          */
         "notesOlderThanSpecifiedDateAndTime": string;
     };
     "_abuseUserReport": {
         /**
-         * 転送
+         * 转发
          */
         "forward": string;
         /**
-         * 匿名のシステムアカウントとして、リモートサーバーに通報を転送します。
+         * 以匿名系统账户的身份，将举报转发至远程服务器。
          */
         "forwardDescription": string;
         /**
-         * 解決
+         * 解决
          */
         "resolve": string;
         /**
-         * 是認
+         * 认可
          */
         "accept": string;
         /**
-         * 否認
+         * 驳回
          */
         "reject": string;
         /**
-         * 内容が正当である通報に対応した場合は「是認」を選択し、肯定的にケースが解決されたことをマークします。
-         * 内容が正当でない通報の場合は「否認」を選択し、否定的にケースが解決されたことをマークします。
+         * 若处理的举报内容属实，请选择 “认可”，以标记该案件已得到妥善解决。
+         * 若举报内容不属实，请选择 “驳回”，以标记该案件未得到妥善解决。
          */
         "resolveTutorial": string;
     };
     "_delivery": {
         /**
-         * 配信状態
+         * 投递状态
          */
         "status": string;
         /**
-         * 配信停止
+         * 停止投递
          */
         "stop": string;
         /**
-         * 配信再開
+         * 继续投递
          */
         "resume": string;
         "_type": {
             /**
-             * 配信中
+             * 投递中
              */
             "none": string;
             /**
-             * 手動停止中
+             * 手动停止中
              */
             "manuallySuspended": string;
             /**
-             * サーバー削除のため停止中
+             * 因服务器被删除而停止
              */
             "goneSuspended": string;
             /**
-             * サーバー応答なしのため停止中
+             * 因服务器无应答而停止
              */
             "autoSuspendedForNotResponding": string;
             /**
-             * 配信停止中のソフトウェアであるため停止中
+             * 因有停止投递的软件而停止
              */
             "softwareSuspended": string;
         };
     };
     "_bubbleGame": {
         /**
-         * 遊び方
+         * 游戏说明
          */
         "howToPlay": string;
         /**
-         * ホールド
+         * 抓住
          */
         "hold": string;
         "_score": {
             /**
-             * スコア
+             * 得分
              */
             "score": string;
             /**
-             * 稼いだ金額
+             * 赚到的钱
              */
             "scoreYen": string;
             /**
-             * ハイスコア
+             * 最高分
              */
             "highScore": string;
             /**
-             * 最大チェーン数
+             * 最高连击数
              */
             "maxChain": string;
             /**
-             * {yen}円
+             * {yen} 日元
              */
             "yen": ParameterizedString<"yen">;
             /**
-             * {qty}個分
+             * 约 {qty} 个
              */
             "estimatedQty": ParameterizedString<"qty">;
             /**
-             * おにぎり {onigiriQtyWithUnit}
+             * 相当于 {onigiriQtyWithUnit} 饭团
              */
             "scoreSweets": ParameterizedString<"onigiriQtyWithUnit">;
         };
         "_howToPlay": {
             /**
-             * 位置を調整してハコにモノを落とします。
+             * 对准位置将Emoji投入盒子。
              */
             "section1": string;
             /**
-             * 同じ種類のモノがくっつくと別のモノに変化して、スコアが得られます。
+             * 相同的Emoji相互接触合成后会得到新的Emoji，以此获得分数。
              */
             "section2": string;
             /**
-             * モノがハコからあふれるとゲームオーバーです。ハコからあふれないようにしつつモノを融合させてハイスコアを目指そう！
+             * 如果Emoji从箱子中溢出游戏将会结束。在防止Emoji溢出的同时，不断合成新的Emoji，来获取更高的分数吧！
              */
             "section3": string;
         };
     };
     "_announcement": {
         /**
-         * 既存ユーザーのみ
+         * 仅限现有用户
          */
         "forExistingUsers": string;
         /**
-         * 有効にすると、このお知らせ作成時点で存在するユーザーにのみお知らせが表示されます。無効にすると、このお知らせ作成後にアカウントを作成したユーザーにもお知らせが表示されます。
+         * 若启用，该公告将仅对创建此公告时存在的用户可见。 如果禁用，则在创建此公告后注册的用户也可以看到该公告。
          */
         "forExistingUsersDescription": string;
         /**
-         * 既読にするのに確認が必要
+         * 需要确认才能标记为已读
          */
         "needConfirmationToRead": string;
         /**
-         * 有効にすると、このお知らせを既読にする際に確認ダイアログが表示されます。また、一括既読操作の対象になりません。
+         * 若启用，则会在标记已读时会显示确认对话框。此外，它也会不受批量已读操作的影响。
          */
         "needConfirmationToReadDescription": string;
         /**
-         * 自動アーカイブ日時
+         * 自动存档时间
          */
         "autoArchiveAt": string;
         /**
-         * 指定した日時を過ぎると、このお知らせは自動的にアーカイブされます。空欄の場合は自動的にアーカイブされません。
+         * 当超过指定的时间时，此通知将自动存档。留空则不自动存档。
          */
         "autoArchiveAtDescription": string;
         /**
-         * 自動アーカイブ日時には現在より後の日時を指定してください。
+         * 请指定晚于当前时间的值。
          */
         "autoArchiveAtMustBeInFuture": string;
         /**
-         * お知らせを終了
+         * 结束公告
          */
         "end": string;
         /**
-         * アクティブなお知らせが多いため、UXが低下する可能性があります。終了したお知らせはアーカイブすることを検討してください。
+         * 若有大量活动公告，可能会造成用户体验下降。请考虑归档已完成的公告。
          */
         "tooManyActiveAnnouncementDescription": string;
         /**
-         * 既読にしますか？
+         * 标记为已读？
          */
         "readConfirmTitle": string;
         /**
-         * 「{title}」の内容を読み、既読にします。
+         * 阅读 “{title}” 的内容，并标记为已读。
          */
         "readConfirmText": ParameterizedString<"title">;
         /**
-         * 特に新規ユーザーのUXを損ねる可能性が高いため、常時掲示するための情報ではなく、即時性が求められる情報の掲示のためにお知らせを使用することを推奨します。
+         * 因可能损坏新用户的 UX 体验，建议将通知用于发布具有时效性的信息，而不是用于长期展示的信息。
          */
         "shouldNotBeUsedToPresentPermanentInfo": string;
         /**
-         * ダイアログ形式のお知らせが同時に2つ以上ある場合、UXに悪影響を及ぼす可能性が非常に高いため、使用は慎重に行うことを推奨します。
+         * 同时存在 2 个或以上的对话框公告极有可能对用户体验产生负面的影响，建议谨慎使用。
          */
         "dialogAnnouncementUxWarn": string;
         /**
-         * 非通知
+         * 不发送通知
          */
         "silence": string;
         /**
-         * オンにすると、このお知らせは通知されず、既読にする必要もなくなります。
+         * 开启后，此条公告将不会发送通知，也不强制用户阅读。
          */
         "silenceDescription": string;
     };
     "_initialAccountSetting": {
         /**
-         * アカウントの作成が完了しました！
+         * 账户创建完成了！
          */
         "accountCreated": string;
         /**
-         * さっそくアカウントの初期設定を行いましょう。
+         * 马上来进行账户的初始设定吧。
          */
         "letsStartAccountSetup": string;
         /**
-         * まずはあなたのプロフィールを設定しましょう。
+         * 首先，设置一下您的个人资料吧！
          */
         "letsFillYourProfile": string;
         /**
-         * プロフィール設定
+         * 个人资料设置
          */
         "profileSetting": string;
         /**
-         * プライバシー設定
+         * 隐私设置
          */
         "privacySetting": string;
         /**
-         * これらの設定は後から変更できます。
+         * 也可以在稍后修改这里的设置。
          */
         "theseSettingsCanEditLater": string;
         /**
-         * この他にも様々な設定を「設定」ページから行えます。ぜひ後で確認してみてください。
+         * 还可以在 “设置” 页面进行各种其它设置，稍后来确认一下吧。
          */
         "youCanEditMoreSettingsInSettingsPageLater": string;
         /**
-         * タイムラインを構築するため、気になるユーザーをフォローしてみましょう。
+         * 为了建立属于你自己的时间线，试着去关注你感兴趣的用户吧。
          */
         "followUsers": string;
         /**
-         * プッシュ通知を有効にすると{name}の通知をお使いのデバイスで受け取ることができます。
+         * 启用推送通知的话，就可以在设备上接收来自 {name} 的通知了。
          */
         "pushNotificationDescription": ParameterizedString<"name">;
         /**
-         * 初期設定が完了しました！
+         * 初始设定已经完成了！
          */
         "initialAccountSettingCompleted": string;
         /**
-         * {name}をお楽しみください！
+         * 希望 {name} 在这里玩得开心！
          */
         "haveFun": ParameterizedString<"name">;
         /**
-         * このまま{name}(Misskey)の使い方についてのチュートリアルに進むこともできますが、ここで中断してすぐに使い始めることもできます。
+         * 您可以继续了解 {name}(Misskey) 的使用教程，也可以在此停止教程并立即开始使用它。
+         *
          */
         "youCanContinueTutorial": ParameterizedString<"name">;
         /**
-         * チュートリアルを開始
+         * 开始教学
          */
         "startTutorial": string;
         /**
-         * 初期設定をスキップしますか？
+         * 要跳过初始设定吗？
          */
         "skipAreYouSure": string;
         /**
-         * 初期設定をあとでやり直しますか？
+         * 要稍后再进行初始设定吗？
          */
         "laterAreYouSure": string;
     };
     "_initialTutorial": {
         /**
-         * チュートリアルを見る
+         * 观看教学
          */
         "launchTutorial": string;
         /**
-         * チュートリアル
+         * 教学
          */
         "title": string;
         /**
-         * よくできました
+         * 做得好
          */
         "wellDone": string;
         /**
-         * チュートリアルを終了しますか？
+         * 是否退出教学？
          */
         "skipAreYouSure": string;
         "_landing": {
             /**
-             * チュートリアルへようこそ
+             * 欢迎来到教学
              */
             "title": string;
             /**
-             * ここでは、Misskeyの基本的な使い方や機能を確認できます。
+             * 在这里，您可以查看 Misskey 的基本使用方法和功能。
              */
             "description": string;
         };
         "_note": {
             /**
-             * ノートって何？
+             * 什么是帖子？
              */
             "title": string;
             /**
-             * Misskeyでの投稿は「ノート」と呼びます。ノートはタイムラインに時系列で並んでいて、リアルタイムで更新されていきます。
+             * 在 Misskey 上发表的文章称为 “帖子”。帖子在时间线上按照时间顺序排列，并实时更新。
              */
             "description": string;
             /**
-             * 返信することができます。返信に対しての返信も可能で、スレッドのように会話を続けることもできます。
+             * 用来回复帖子。可以对回复进行回复，从而形成一串对话。
              */
             "reply": string;
             /**
-             * そのノートを自分のタイムラインに流して共有することができます。テキストを追加して引用することも可能です。
+             * 用来将帖子共享到自己的时间线上。也可以加上自己的文字然后引用它。
              */
             "renote": string;
             /**
-             * リアクションをつけることができます。詳しくは次のページで解説します。
+             * 用来添加回应。详细信息将在下一页进行说明。
              */
             "reaction": string;
             /**
-             * ノートの詳細を表示したり、リンクをコピーしたりなどの様々な操作が行えます。
+             * 用来进行例如显示帖子详情、复制链接等各种各样的操作。
              */
             "menu": string;
         };
         "_reaction": {
             /**
-             * リアクションって何？
+             * 什么是回应？
              */
             "title": string;
             /**
-             * ノートには「リアクション」をつけることができます。「いいね」では伝わらないニュアンスも、リアクションで簡単・気軽に表現できます。
+             * 您可以在帖子中添加 “回应”。 使用回应可以轻松地表达 “点赞” 无法传达的心情。
              */
             "description": string;
             /**
-             * リアクションは、ノートの「＋」ボタンをクリックするとつけられます。試しにこのサンプルのノートにリアクションをつけてみてください！
+             * 点击帖子下方的 “＋” 可以添加回应。试着给这个示例帖子添加一个回应！
              */
             "letsTryReacting": string;
             /**
-             * リアクションをつけると先に進めるようになります。
+             * 添加一个回应来继续
              */
             "reactToContinue": string;
             /**
-             * あなたのノートが誰かにリアクションされると、リアルタイムで通知を受け取ります。
+             * 当您的帖子被某人添加了回应时，将实时收到通知。
              */
             "reactNotification": string;
             /**
-             * 「ー」ボタンを押すとリアクションを取り消すことができます。
+             * 点击 “ー” 可以取消回应。
              */
             "reactDone": string;
         };
         "_timeline": {
             /**
-             * タイムラインのしくみ
+             * 时间线的运作方式
              */
             "title": string;
             /**
-             * Misskeyには、使い方に応じて複数のタイムラインが用意されています（サーバーによってはいずれかが無効になっていることがあります）。
+             * Misskey 根据使用方式提供了多个时间线（根据服务器的设定，可能有一些被禁用）。
              */
             "description1": string;
             /**
-             * あなたがフォローしているアカウントの投稿を見られます。
+             * 可以查看您关注的账户的帖子。
              */
             "home": string;
             /**
-             * このサーバーにいるユーザー全員の投稿を見られます。
+             * 可以查看这个服务器上所有用户发表的帖子。
              */
             "local": string;
             /**
-             * ホームタイムラインとローカルタイムラインの投稿が両方表示されます。
+             * 将同时显示首页时间线和本地时间线的内容。
              */
             "social": string;
             /**
-             * 接続している他のすべてのサーバーからの投稿を見られます。
+             * 可以查看所有已联合的服务器上的帖子。
              */
             "global": string;
             /**
-             * それぞれのタイムラインは、画面上部でいつでも切り替えられます。
+             * 可以随时在屏幕顶部在每个时间线之间切换。
              */
             "description2": string;
             /**
-             * その他にも、リストタイムラインやチャンネルタイムラインなどがあります。詳しくは{link}をご覧ください。
+             * 另外，还有列表时间线和频道时间线。请参阅{link}了解更多详细信息。
              */
             "description3": ParameterizedString<"link">;
         };
         "_postNote": {
             /**
-             * ノートの投稿設定
+             * 帖子发布设置
              */
             "title": string;
             /**
-             * Misskeyにノートを投稿する際には、様々なオプションの設定が可能です。投稿フォームはこのようになっています。
+             * 在 Misskey 发布帖子时，您可以设置各种选项。发帖窗口看起来是这样的。
+             *
              */
             "description1": string;
             "_visibility": {
                 /**
-                 * ノートを表示できる相手を制限できます。
+                 * 您可以限制谁可以看到您的帖子。
                  */
                 "description": string;
                 /**
-                 * すべてのユーザーに公開。
+                 * 向所有用户公开。
+                 *
                  */
                 "public": string;
                 /**
-                 * ホームタイムラインのみに公開。フォロワー・プロフィールを見に来た人・リノートから、他のユーザーも見ることができます。
+                 * 仅发布至首页时间线。 仅您的关注者，以及从个人资料页、通过转帖，其他用户才能够看到。
                  */
                 "home": string;
                 /**
-                 * フォロワーにのみ公開。本人以外がリノートすることはできず、またフォロワー以外は閲覧できません。
+                 * 仅关注者可见。 除了您自己，其他人无法转贴。
                  */
                 "followers": string;
                 /**
-                 * 指定したユーザーにのみ公開され、また相手に通知が入ります。
+                 * 仅对指定用户公开，且收件人将收到通知。
                  */
                 "direct": string;
                 /**
-                 * 機密情報は送信する際は注意してください。
+                 * 发送敏感信息时请注意。
+                 *
                  */
                 "doNotSendConfidencialOnDirect1": string;
                 /**
-                 * 送信先のサーバーの管理者は投稿内容を見ることが可能なので、信頼できないサーバーのユーザーが含まれる限定公開のノートを作成する際は、機密情報の扱いに注意が必要です。
+                 * 目标服务器的管理员可以看到发布的内容，因此如果您向不受信任的服务器上的用户发送私信，则在处理敏感信息时需要小心。
                  */
                 "doNotSendConfidencialOnDirect2": string;
                 /**
-                 * 他のサーバーに投稿を連合しません。上記の公開範囲に関わらず、他のサーバーのユーザーは、この設定がついたノートを直接閲覧することができなくなります。
+                 * 不将帖子通过联邦推送到其它服务器。 无论上述公开范围如何，其它服务器的用户将无法看到附加了此设定的帖子。
+                 *
                  */
                 "localOnly": string;
             };
             "_cw": {
                 /**
-                 * 内容を隠す（CW）
+                 * 隐藏内容（CW）
                  */
                 "title": string;
                 /**
-                 * 本文のかわりに「注釈」に書いた内容が表示されます。「もっと見る」を押すと本文が表示されます。
+                 * 显示 “注释” 中的内容，而非正文。点击 “查看更多” 以显示正文。
                  */
                 "description": string;
                 "_exampleNote": {
                     /**
-                     * 飯テロ注意
+                     * 深夜报复社会
                      */
                     "cw": string;
                     /**
-                     * チョコのかかったドーナツを食べました🍩😋
+                     * 茨了带巧克力的甜甜圈🍩😋
                      */
                     "note": string;
                 };
                 /**
-                 * サーバーのガイドラインにより必要とされるノートに指定したり、ネタバレ投稿やセンシティブな文章を自主規制したりするときに使います。
+                 * 用于服务器条款所规定的帖子，或对剧透内容和敏感内容进行自主规制。
                  */
                 "useCases": string;
             };
         };
         "_howToMakeAttachmentsSensitive": {
             /**
-             * 添付ファイルをセンシティブにするには？
+             * 如何标记附件为敏感内容？
              */
             "title": string;
             /**
-             * サーバーのガイドラインにより必要とされる際や、そのまま見れる状態にしておくべきではない添付ファイルには、「センシティブ」設定を付けます。
+             * 对于服务器守则所要求的，或不适合直接展示的附件，请添加 “敏感” 标记。
              */
             "description": string;
             /**
-             * 試しに、このフォームに添付された画像をセンシティブにしてみてください！
+             * 试试看！将添加到该窗口的图像标记为敏感内容。
              */
             "tryThisFile": string;
             "_exampleNote": {
                 /**
-                 * 納豆のフタ開けるのミスったわね…
+                 * 拆纳豆包装时失手了…
                  */
                 "note": string;
             };
             /**
-             * 添付ファイルをセンシティブにする際は、そのファイルをクリックしてメニューを開き、「センシティブとして設定」をクリックします。
+             * 要标注附件为敏感内容，请单击该文件以打开菜单，然后单击 “标记为敏感内容”。
              */
             "method": string;
             /**
-             * ファイルを添付する際は、サーバーのガイドラインに従ってセンシティブを適切に設定してください。
+             * 添加附件时，请遵循服务器的条款、适当设定敏感内容。
              */
             "sensitiveSucceeded": string;
             /**
-             * 画像をセンシティブに設定すると先に進めるようになります。
+             * 将图像标记为敏感后才能够继续
              */
             "doItToContinue": string;
         };
         "_done": {
             /**
-             * チュートリアルは終了です🎉
+             * 恭喜您，已经完成了教程🎉
+             *
              */
             "title": string;
             /**
-             * ここで紹介した機能はほんの一部にすぎません。Misskeyの使い方をより詳しく知るには、{link}をご覧ください。
+             * 这里介绍的只是其中一小部分的功能。 要了解更多有关如何使用 Misskey 的更多信息，请访问 {link}。
              */
             "description": ParameterizedString<"link">;
         };
     };
     "_timelineDescription": {
         /**
-         * ホームタイムラインでは、あなたがフォローしているアカウントの投稿を見られます。
+         * 首页时间线可以查看您关注的账户的帖子。
          */
         "home": string;
         /**
-         * ローカルタイムラインでは、このサーバーにいるユーザー全員の投稿を見られます。
+         * 本地时间线可以查看这个服务器上所有用户发表的帖子。
          */
         "local": string;
         /**
-         * ソーシャルタイムラインには、ホームタイムラインとローカルタイムラインの投稿が両方表示されます。
+         * 社交时间线将同时显示首页时间线和本地时间线的内容。
          */
         "social": string;
         /**
-         * グローバルタイムラインでは、接続している他のすべてのサーバーからの投稿を見られます。
+         * 全局时间线可以查看所有已联合的服务器上的帖子。
          */
         "global": string;
     };
     "_serverRules": {
         /**
-         * 新規登録前に表示する、サーバーの簡潔なルールを設定します。内容は利用規約の要約とすることを推奨します。
+         * 在新用户注册前显示服务器的简单规则。推荐显示服务条款的主要内容。
          */
         "description": string;
     };
     "_serverSettings": {
         /**
-         * アイコン画像のURL
+         * 图标 URL
          */
         "iconUrl": string;
         /**
-         * {host}がアプリとして表示される際のアイコンを指定します。
+         * 指定当 {host} 显示为 app 时的图标。
          */
         "appIconDescription": ParameterizedString<"host">;
         /**
-         * 例: PWAや、スマートフォンのホーム画面にブックマークとして追加された時など
+         * 如作为书签添加到 PWA 或手机主屏幕时
          */
         "appIconUsageExample": string;
         /**
-         * 円形もしくは角丸にクロップされる場合があるため、塗り潰された余白のある背景を持つことが推奨されます。
+         * 因为有可能会被裁切为圆形或者圆角矩形，建议使用边缘带有留白背景的图标。
          */
         "appIconStyleRecommendation": string;
         /**
-         * 解像度は必ず{resolution}である必要があります。
+         * 分辨率必须为 {resolution}。
          */
         "appIconResolutionMustBe": ParameterizedString<"resolution">;
         /**
-         * manifest.jsonのオーバーライド
+         * 覆盖 manifest.json
          */
         "manifestJsonOverride": string;
         /**
-         * 略称
+         * 简称
          */
         "shortName": string;
         /**
-         * サーバーの正式名称が長い場合に、代わりに表示することのできる略称や通称。
+         * 如果服务器的正式名称很长，可以用简称或者別名来替代。
          */
         "shortNameDescription": string;
         /**
-         * 有効にすると、各種タイムラインを取得する際のパフォーマンスが大幅に向上し、データベースへの負荷を軽減することが可能です。ただし、Redisのメモリ使用量は増加します。サーバーのメモリ容量が少ない場合、または動作が不安定な場合は無効にすることができます。
+         * 当启用时，可显著提高获取各种时间线时的性能，并减轻数据库的负荷。但是相对的 Redis 的内存使用量将会增加。如果服务器的内存不是很大，又或者运行不稳定的话可以把它关掉。
          */
         "fanoutTimelineDescription": string;
         /**
-         * データベースへのフォールバック
+         * 回退到数据库
          */
         "fanoutTimelineDbFallback": string;
         /**
-         * 有効にすると、タイムラインがキャッシュされていない場合にDBへ追加で問い合わせを行うフォールバック処理を行います。無効にすると、フォールバック処理を行わないことでさらにサーバーの負荷を軽減することができますが、タイムラインが取得できる範囲に制限が生じます。
+         * 当启用时，若时间线未被缓存，则将额外查询数据库。禁用该功能可通过不执行回退处理进一步减少服务器负载，但会限制可检索的时间线范围。
          */
         "fanoutTimelineDbFallbackDescription": string;
         /**
-         * 有効にすると、リアクション作成時のパフォーマンスが大幅に向上し、データベースへの負荷を軽減することが可能です。ただし、Redisのメモリ使用量は増加します。
+         * 开启时可显著提高发送回应时的性能，及减轻数据库负荷。但 Redis 的内存用量会相应增加。
          */
         "reactionsBufferingDescription": string;
         /**
-         * リモート投稿の自動クリーニング
+         * 自动清理远程投稿
          */
         "remoteNotesCleaning": string;
         /**
-         * 有効にすると、一定期間経過したリモートの投稿を定期的にクリーンアップしてデータベースの肥大化を抑制します。
+         * 启用后，将自动清理已无法找到的旧的远程投稿，可减缓数据库的增长。
          */
         "remoteNotesCleaning_description": string;
         /**
-         * 最大クリーニング処理継続時間
+         * 最长清理持续时间
          */
         "remoteNotesCleaningMaxProcessingDuration": string;
         /**
-         * 最低ノート保持日数
+         * 最短帖子保留期限
          */
         "remoteNotesCleaningExpiryDaysForEachNotes": string;
         /**
-         * 問い合わせ先URL
+         * 联络地址
          */
         "inquiryUrl": string;
         /**
-         * サーバー運営者へのお問い合わせフォームのURLや、運営者の連絡先等が記載されたWebページのURLを指定します。
+         * 用来指定诸如向服务运营商咨询的论坛地址，或记载了运营商联系方式之类的网页地址。
          */
         "inquiryUrlDescription": string;
         /**
-         * アカウントの作成をオープンにする
+         * 开放注册
          */
         "openRegistration": string;
         /**
-         * 登録を開放することはリスクが伴います。サーバーを常に監視し、トラブルが発生した際にすぐに対応できる体制がある場合のみオンにすることを推奨します。
+         * 开放注册有风险。建议仅当能够持续监控服务器，并在出现问题时能够立即响应时才打开它。
          */
         "openRegistrationWarning": string;
         /**
-         * 一定期間モデレーターのアクティビティが検出されなかった場合、スパム防止のためこの設定は自動でオフになります。
+         * 若在一段时间内没有检测到管理活动，为防止垃圾信息，此设定将自动关闭。
          */
         "thisSettingWillAutomaticallyOffWhenModeratorsInactive": string;
         /**
-         * 配信停止中のソフトウェア
+         * 停止投递的软件
          */
         "deliverSuspendedSoftware": string;
         /**
-         * 脆弱性などの理由で、サーバーのソフトウェアの名前及びバージョンの範囲を指定して配信を停止できます。このバージョン情報はサーバーが提供したものであり、信頼性は保証されません。バージョン指定には semver の範囲指定が使用できますが、>= 2024.3.1 と指定すると 2024.3.1-custom.0 のようなカスタムバージョンが含まれないため、>= 2024.3.1-0 のように prerelease の指定を行うことを推奨します。
+         * 可因安全漏洞之类的原因，停止向指定的服务器及服务器版本送信。版本信息由服务器提供，不保证可靠性。可使用 semver 范围来指定版本，但指定 >= 2024.3.1 将不包括如 2024.3.1-custom.0 等自定义版本，因此建议像 >= 2024.3.1-0 这样指定 prerelease 版本。
          */
         "deliverSuspendedSoftwareDescription": string;
         /**
-         * お一人様モード
+         * 单用户模式
          */
         "singleUserMode": string;
         /**
-         * このサーバーを利用するのが自分だけの場合、このモードを有効にすることで動作が最適化されます。
+         * 若此服务器只有自己使用，开启此模式将最佳化性能。
          */
         "singleUserMode_description": string;
         /**
-         * GETリクエストに署名する
+         * 对 GET 请求签名
          */
         "signToActivityPubGet": string;
         /**
-         * 通常は有効にしてください。連合の通信に関する問題がある場合に、無効にすると改善することがありますが、逆にサーバーによっては通信が不可になることがあります。
+         * 通常情况下请保持启用。若遇到联邦通信方面的问题，将其关闭可能会有所改善，但另一方面有可能会造成无法通信。
          */
         "signToActivityPubGet_description": string;
         /**
-         * リモートファイルをプロキシする
+         * 代理远程文件
          */
         "proxyRemoteFiles": string;
         /**
-         * 有効にすると、リモートのファイルをプロキシして提供します。画像のサムネイル生成やユーザーのプライバシー保護に役立ちます。
+         * 如果启用，远程服务器的文件将由代理提供。可有效保护图像预览缩略图的生成与用户隐私。
          */
         "proxyRemoteFiles_description": string;
         /**
-         * ActivityPub経由の照会にリダイレクトを許可する
+         * 允许通过 ActivityPub 重定向查询
          */
         "allowExternalApRedirect": string;
         /**
-         * 有効にすると、他のサーバーがこのサーバーを通して第三者のコンテンツを照会することが可能になりますが、コンテンツのなりすましが発生する可能性があります。
+         * 启用时，将允许其它服务器通过此服务器查询第三方内容，但有可能导致内容欺骗。
          */
         "allowExternalApRedirect_description": string;
         /**
-         * 非利用者に対するユーザー作成コンテンツの公開範囲
+         * 用户生成内容对非用户的可见性
          */
         "userGeneratedContentsVisibilityForVisitor": string;
         /**
-         * モデレーションが行き届きにくい不適切なリモートコンテンツなどが、自サーバー経由で図らずもインターネットに公開されてしまうことによるトラブル防止などに役立ちます。
+         * 对于防止诸如难以管理的不适当的远程内容通过自己的服务器意外地在互联网上公开等问题很有用。
          */
         "userGeneratedContentsVisibilityForVisitor_description": string;
         /**
-         * サーバーで受信したリモートのコンテンツを含め、サーバー内の全てのコンテンツを無条件でインターネットに公開することはリスクが伴います。特に、分散型の特性を知らない閲覧者にとっては、リモートのコンテンツであってもサーバー内で作成されたコンテンツであると誤って認識してしまう可能性があるため、注意が必要です。
+         * 包含服务器接收到的远程内容在内，无条件将服务器上的所有内容公开在互联网上存在风险。特别是对去中心化的特性不是很了解的访问者有可能将远程服务器上的内容误认为是在此服务器内生成的，需要特别留意。
          */
         "userGeneratedContentsVisibilityForVisitor_description2": string;
         /**
-         * サーバーの初期設定ウィザードをやり直しますか？
+         * 要重新开始服务器初始设定向导吗？
          */
         "restartServerSetupWizardConfirm_title": string;
         /**
-         * 現在の一部の設定はリセットされます。
+         * 当前的部分设置将被重置。
          */
         "restartServerSetupWizardConfirm_text": string;
         /**
-         * エントランスページのスタイル
+         * 入口页面样式
          */
         "entrancePageStyle": string;
         /**
-         * タイムラインを表示する
+         * 显示时间线
          */
         "showTimelineForVisitor": string;
         /**
-         * アクティビティを表示する
+         * 显示活动
          */
         "showActivitiesForVisitor": string;
         "_userGeneratedContentsVisibilityForVisitor": {
             /**
-             * 全て公開
+             * 全部公开
              */
             "all": string;
             /**
-             * ローカルコンテンツのみ公開し、リモートコンテンツは非公開
+             * 仅公开本地内容，隐藏远程内容
              */
             "localOnly": string;
             /**
-             * 全て非公開
+             * 全部隐藏
              */
             "none": string;
         };
     };
     "_accountMigration": {
         /**
-         * 別のアカウントからこのアカウントに移行
+         * 从别的账号迁移到此账户
          */
         "moveFrom": string;
         /**
-         * 別のアカウントへエイリアスを作成
+         * 为另一个账户建立别名
          */
         "moveFromSub": string;
         /**
-         * 移行元のアカウント #{n}
+         * 迁移前的账户 #{n}
          */
         "moveFromLabel": ParameterizedString<"n">;
         /**
-         * 別のアカウントからこのアカウントに移行したい場合、ここでエイリアスを作成しておく必要があります。
-         * 移行元のアカウントをこのように入力してください: @username@server.example.com
-         * 削除するには、入力欄を空にして保存します（非推奨）。
+         * 如果迁移时需要继承其他账户的关注者，你需要创建一个别名。此操作需要在迁移前完成！
+         * 请像这样输入要迁移的账户：@username@server.example.com
+         * 如果要删除，请将输入字段留空，并保存（不推荐）。
          */
         "moveFromDescription": string;
         /**
-         * このアカウントを新しいアカウントへ移行
+         * 把这个账户迁移到新的账户
          */
         "moveTo": string;
         /**
-         * 移行先のアカウント:
+         * 迁移后的账户
          */
         "moveToLabel": string;
         /**
-         * アカウントを移行すると、取り消すことはできません。
+         * 一旦迁移账户，就无法撤销。
          */
         "moveCannotBeUndone": string;
         /**
-         * 新しいアカウントへ移行します。
-         * 　・フォロワーが新しいアカウントを自動でフォローします
-         * 　・このアカウントからのフォローは全て解除されます
-         * 　・このアカウントではノートの作成などができなくなります
          *
-         * フォロワーの移行は自動ですが、フォローの移行は手動で行う必要があります。移行前にこのアカウントでフォローエクスポートし、移行後すぐに移行先アカウントでインポートを行なってください。
-         * リスト・ミュート・ブロックについても同様ですので、手動で移行する必要があります。
-         *
-         * （この説明はこのサーバー（Misskey v13.12.0以降）の仕様です。Mastodonなどの他のActivityPubソフトウェアでは挙動が異なる場合があります。）
+         * 迁移到新帐户。
+         * 　・现有的关注者自动关注新帐户
+         * 　・此帐户的所有关注者都将被删除
+         * 　・您将无法再使用此帐户发帖。
+         * 关注者迁移是自动的，但关注中迁移必须手动完成。请在迁移前在此帐户上导出关注列表，并在迁移后立即在目标帐户上执行导入。
+         * 列表、隐藏、屏蔽也是如此，因此您必须手动迁移它。
+         * （此描述适用于该服务器（Misskey v13.12.0 或更高版本）。其他 ActivityPub 软件（例如 Mastodon）的行为可能有所不同。）
          */
         "moveAccountDescription": string;
         /**
-         * アカウントの移行には、まずは移行先のアカウントでこのアカウントに対しエイリアスを作成します。
-         * エイリアス作成後、移行先のアカウントを次のように入力してください: @username@server.example.com
+         * 要进行账户迁移，请现在目标账户中为此账户建立一个别名。
+         * 建立别名后，请像这样输入目标账户：@username@server.example.com
          */
         "moveAccountHowTo": string;
         /**
-         * 移行する
+         * 迁移
          */
         "startMigration": string;
         /**
-         * 本当にこのアカウントを {account} に移行しますか？一度移行すると取り消せず、二度とこのアカウントを元の状態で使用できなくなります。
+         * 确定要把此账户迁移到 {account} 吗？一旦确定后，此操作无法取消，此账户也无法以原来的状态使用。
+         * 同时，请确认迁移后的账户，已创造别名。
          */
         "migrationConfirm": ParameterizedString<"account">;
         /**
-         *
-         * アカウントは移行されています。
-         * 移行を取り消すことはできません。
+         * 该账户已被迁移。
+         * 迁移操作无法撤销。
          */
         "movedAndCannotBeUndone": string;
         /**
-         * このアカウントからのフォロー解除は移行操作から24時間後に実行されます。
-         * このアカウントのフォロー・フォロワー数は0になっています。フォロワーの解除はされないため、あなたのフォロワーはこのアカウントのフォロワー向け投稿を引き続き閲覧できます。
+         * 这个账户的关注会在迁移操作后的24小时后解除。该账户的 “关注中” 和 “关注者” 的数量都将变为0。由于不会解除关注关系，你的关注者仍然可以继续查看该账户发布的帖子。
          */
         "postMigrationNote": string;
         /**
-         * 移行先のアカウント:
+         * 迁移后的账户
          */
         "movedTo": string;
     };
     "_achievements": {
         /**
-         * 獲得日時
+         * 达成时间
          */
         "earnedAt": string;
         "_types": {
             "_notes1": {
                 /**
-                 * just setting up my msky
+                 * 初来乍到
                  */
                 "title": string;
                 /**
-                 * 初めてノートを投稿した
+                 * 第一次发帖
                  */
                 "description": string;
                 /**
-                 * 良いMisskeyライフを！
+                 * 祝您在 Misskey 玩的愉快～
                  */
                 "flavor": string;
             };
             "_notes10": {
                 /**
-                 * いくつかのノート
+                 * 一些帖子
                  */
                 "title": string;
                 /**
-                 * ノートを10回投稿した
+                 * 发布了 10 篇帖子
                  */
                 "description": string;
             };
             "_notes100": {
                 /**
-                 * たくさんのノート
+                 * 很多帖子
                  */
                 "title": string;
                 /**
-                 * ノートを100回投稿した
+                 * 发布了 100 篇帖子
                  */
                 "description": string;
             };
             "_notes500": {
                 /**
-                 * ノートまみれ
+                 * 满是帖子
                  */
                 "title": string;
                 /**
-                 * ノートを500回投稿した
+                 * 发布了 500 篇帖子
                  */
                 "description": string;
             };
             "_notes1000": {
                 /**
-                 * ノートの山
+                 * 积帖成山
                  */
                 "title": string;
                 /**
-                 * ノートを1,000回投稿した
+                 * 发布了 1,000 篇帖子
                  */
                 "description": string;
             };
             "_notes5000": {
                 /**
-                 * 湧き出るノート
+                 * 帖如泉涌
                  */
                 "title": string;
                 /**
-                 * ノートを5,000回投稿した
+                 * 发布了 5,000 篇帖子
                  */
                 "description": string;
             };
             "_notes10000": {
                 /**
-                 * スーパーノート
+                 * 超级帖
                  */
                 "title": string;
                 /**
-                 * ノートを10,000回投稿した
+                 * 发布了 10,000 篇帖子
                  */
                 "description": string;
             };
             "_notes20000": {
                 /**
-                 * ニードモアノート
+                 * 还想要更多帖子
                  */
                 "title": string;
                 /**
-                 * ノートを20,000回投稿した
+                 * 发布了 20,000 篇帖子
                  */
                 "description": string;
             };
             "_notes30000": {
                 /**
-                 * ノートノートノート
+                 * 帖子帖子帖子
                  */
                 "title": string;
                 /**
-                 * ノートを30,000回投稿した
+                 * 发布了 30,000 篇帖子
                  */
                 "description": string;
             };
             "_notes40000": {
                 /**
-                 * ノート工場
+                 * 帖子工厂
                  */
                 "title": string;
                 /**
-                 * ノートを40,000回投稿した
+                 * 发布了 40,000 篇帖子
                  */
                 "description": string;
             };
             "_notes50000": {
                 /**
-                 * ノートの惑星
+                 * 帖子星球
                  */
                 "title": string;
                 /**
-                 * ノートを50,000回投稿した
+                 * 发布了 50,000 篇帖子
                  */
                 "description": string;
             };
             "_notes60000": {
                 /**
-                 * ノートクエーサー
+                 * 帖子类星体
                  */
                 "title": string;
                 /**
-                 * ノートを60,000回投稿した
+                 * 发布了 60,000 篇帖子
                  */
                 "description": string;
             };
             "_notes70000": {
                 /**
-                 * ブラックノートホール
+                 * 帖子黑洞
                  */
                 "title": string;
                 /**
-                 * ノートを70,000回投稿した
+                 * 发布了 70,000 篇帖子
                  */
                 "description": string;
             };
             "_notes80000": {
                 /**
-                 * ノートギャラクシー
+                 * 帖子星系
                  */
                 "title": string;
                 /**
-                 * ノートを80,000回投稿した
+                 * 发布了 80,000 篇帖子
                  */
                 "description": string;
             };
             "_notes90000": {
                 /**
-                 * ノートバース
+                 * 帖子起源
                  */
                 "title": string;
                 /**
-                 * ノートを90,000回投稿した
+                 * 发布了 90,000 篇帖子
                  */
                 "description": string;
             };
@@ -7368,375 +7372,375 @@ export interface Locale extends ILocale {
                  */
                 "title": string;
                 /**
-                 * ノートを100,000回投稿した
+                 * 发布了 100,000 篇帖子
                  */
                 "description": string;
                 /**
-                 * そんなに書くことある？
+                 * 真的有那么多可以写的东西吗？
                  */
                 "flavor": string;
             };
             "_login3": {
                 /**
-                 * ビギナーⅠ
+                 * 初学者 I
                  */
                 "title": string;
                 /**
-                 * 通算ログイン日数が3日
+                 * 累计登录 3 天
                  */
                 "description": string;
                 /**
-                 * 今日からね僕は ミスキストってことで
+                 * 今天开始我就是 Misskist！
                  */
                 "flavor": string;
             };
             "_login7": {
                 /**
-                 * ビギナーⅡ
+                 * 初学者 II
                  */
                 "title": string;
                 /**
-                 * 通算ログイン日数が7日
+                 * 累计登录 7 天
                  */
                 "description": string;
                 /**
-                 * 慣れてきましたか？
+                 * 您开始习惯了吗？
                  */
                 "flavor": string;
             };
             "_login15": {
                 /**
-                 * ビギナーⅢ
+                 * 初学者 III
                  */
                 "title": string;
                 /**
-                 * 通算ログイン日数が15日
+                 * 累计登录 15 天
                  */
                 "description": string;
             };
             "_login30": {
                 /**
-                 * ミスキストⅠ
+                 * Misskist Ⅰ
                  */
                 "title": string;
                 /**
-                 * 通算ログイン日数が30日
+                 * 累计登录 30 天
                  */
                 "description": string;
             };
             "_login60": {
                 /**
-                 * ミスキストⅡ
+                 * Misskist Ⅱ
                  */
                 "title": string;
                 /**
-                 * 通算ログイン日数が60日
+                 * 累计登录 60 天
                  */
                 "description": string;
             };
             "_login100": {
                 /**
-                 * ミスキストⅢ
+                 * Misskist Ⅲ
                  */
                 "title": string;
                 /**
-                 * 通算ログイン日数が100日
+                 * 累计登入 100 天
                  */
                 "description": string;
                 /**
-                 * そのユーザー、ミスキストにつき
+                 * 那个用户，是 Misskist 喔
                  */
                 "flavor": string;
             };
             "_login200": {
                 /**
-                 * 常連Ⅰ
+                 * 定期联系Ⅰ
                  */
                 "title": string;
                 /**
-                 * 通算ログイン日数が200日
+                 * 累计登录 200 天
                  */
                 "description": string;
             };
             "_login300": {
                 /**
-                 * 常連Ⅱ
+                 * 定期联系Ⅱ
                  */
                 "title": string;
                 /**
-                 * 通算ログイン日数が300日
+                 * 累计登录 300 天
                  */
                 "description": string;
             };
             "_login400": {
                 /**
-                 * 常連Ⅲ
+                 * 定期联系Ⅲ
                  */
                 "title": string;
                 /**
-                 * 通算ログイン日数が400日
+                 * 累计登录 400 天
                  */
                 "description": string;
             };
             "_login500": {
                 /**
-                 * ベテランⅠ
+                 * 老熟人Ⅰ
                  */
                 "title": string;
                 /**
-                 * 通算ログイン日数が500日
+                 * 累计登录 500 天
                  */
                 "description": string;
                 /**
-                 * 諸君、私はノートが好きだ
+                 * 诸君，我喜欢帖文
                  */
                 "flavor": string;
             };
             "_login600": {
                 /**
-                 * ベテランⅡ
+                 * 老熟人Ⅱ
                  */
                 "title": string;
                 /**
-                 * 通算ログイン日数が600日
+                 * 累计登录 600 天
                  */
                 "description": string;
             };
             "_login700": {
                 /**
-                 * ベテランⅢ
+                 * 老熟人Ⅲ
                  */
                 "title": string;
                 /**
-                 * 通算ログイン日数が700日
+                 * 累计登录 700 天
                  */
                 "description": string;
             };
             "_login800": {
                 /**
-                 * ノートマスターⅠ
+                 * 帖子大师 Ⅰ
                  */
                 "title": string;
                 /**
-                 * 通算ログイン日数が800日
+                 * 累计登录 800 天
                  */
                 "description": string;
             };
             "_login900": {
                 /**
-                 * ノートマスターⅡ
+                 * 帖子大师 Ⅱ
                  */
                 "title": string;
                 /**
-                 * 通算ログイン日数が900日
+                 * 累计登录 900 天
                  */
                 "description": string;
             };
             "_login1000": {
                 /**
-                 * ノートマスターⅢ
+                 * 帖子大师 Ⅲ
                  */
                 "title": string;
                 /**
-                 * 通算ログイン日数が1,000日
+                 * 累计登录 1000 天
                  */
                 "description": string;
                 /**
-                 * Misskeyを使ってくれてありがとう！
+                 * 感谢您使用 Misskey！
                  */
                 "flavor": string;
             };
             "_noteClipped1": {
                 /**
-                 * クリップせずにはいられないな
+                 * 忍不住想加入便签
                  */
                 "title": string;
                 /**
-                 * 初めてノートをクリップした
+                 * 第一次将帖子加入便签
                  */
                 "description": string;
             };
             "_noteFavorited1": {
                 /**
-                 * 星をみるひと
+                 * 观星者
                  */
                 "title": string;
                 /**
-                 * 初めてノートをお気に入りに登録した
+                 * 第一次将帖子加入收藏
                  */
                 "description": string;
             };
             "_myNoteFavorited1": {
                 /**
-                 * 星が欲しい
+                 * 想要星星
                  */
                 "title": string;
                 /**
-                 * 自分のノートが他の人からお気に入りに登録された
+                 * 自己的帖子被其他人收藏了
                  */
                 "description": string;
             };
             "_profileFilled": {
                 /**
-                 * 準備万端
+                 * 整装待发
                  */
                 "title": string;
                 /**
-                 * プロフィール設定を行った
+                 * 设置了个人资料
                  */
                 "description": string;
             };
             "_markedAsCat": {
                 /**
-                 * 吾輩は猫である
+                 * 我是猫
                  */
                 "title": string;
                 /**
-                 * アカウントをCatとして設定した
+                 * 将账户设定为一只猫
                  */
                 "description": string;
                 /**
-                 * 名前はまだない。
+                 * 还没有名字
                  */
                 "flavor": string;
             };
             "_following1": {
                 /**
-                 * はじめてのフォロー
+                 * 首次关注
                  */
                 "title": string;
                 /**
-                 * 初めてフォローした
+                 * 第一次关注别人
                  */
                 "description": string;
             };
             "_following10": {
                 /**
-                 * ついてく、ついてく
+                 * 关注，跟随
                  */
                 "title": string;
                 /**
-                 * フォローが10人を超した
+                 * 关注超过 10 人
                  */
                 "description": string;
             };
             "_following50": {
                 /**
-                 * 友達たくさん
+                 * 我的朋友很多
                  */
                 "title": string;
                 /**
-                 * フォローが50人を超した
+                 * 关注超过 50 人
                  */
                 "description": string;
             };
             "_following100": {
                 /**
-                 * 友達100人
+                 * 胜友如云
                  */
                 "title": string;
                 /**
-                 * フォローが100人を超した
+                 * 关注超过 100 人
                  */
                 "description": string;
             };
             "_following300": {
                 /**
-                 * 友達過多
+                 * 朋友成群
                  */
                 "title": string;
                 /**
-                 * フォローが300人を超した
+                 * 关注数超过 300
                  */
                 "description": string;
             };
             "_followers1": {
                 /**
-                 * はじめてのフォロワー
+                 * 最初的关注者
                  */
                 "title": string;
                 /**
-                 * 初めてフォローされた
+                 * 第一次被关注
                  */
                 "description": string;
             };
             "_followers10": {
                 /**
-                 * フォローミー！
+                 * 关注我吧！
                  */
                 "title": string;
                 /**
-                 * フォロワーが10人を超した
+                 * 拥有超过 10 名关注者
                  */
                 "description": string;
             };
             "_followers50": {
                 /**
-                 * ぞろぞろ
+                 * 三五成群
                  */
                 "title": string;
                 /**
-                 * フォロワーが50人を超した
+                 * 拥有超过 50 名关注者
                  */
                 "description": string;
             };
             "_followers100": {
                 /**
-                 * 人気者
+                 * 胜友如云
                  */
                 "title": string;
                 /**
-                 * フォロワーが100人を超した
+                 * 拥有超过 100 名关注者
                  */
                 "description": string;
             };
             "_followers300": {
                 /**
-                 * 一列でお並びください
+                 * 排列成行
                  */
                 "title": string;
                 /**
-                 * フォロワーが300人を超した
+                 * 拥有超过 300 名关注者
                  */
                 "description": string;
             };
             "_followers500": {
                 /**
-                 * 基地局
+                 * 信号塔
                  */
                 "title": string;
                 /**
-                 * フォロワーが500人を超した
+                 * 拥有超过 500 名关注者
                  */
                 "description": string;
             };
             "_followers1000": {
                 /**
-                 * インフルエンサー
+                 * 大影响家
                  */
                 "title": string;
                 /**
-                 * フォロワーが1,000人を超した
+                 * 拥有超过 1000 名关注者
                  */
                 "description": string;
             };
             "_collectAchievements30": {
                 /**
-                 * 実績コレクター
+                 * 成就收藏家
                  */
                 "title": string;
                 /**
-                 * 実績を30個以上獲得した
+                 * 获得超过 30 个成就
                  */
                 "description": string;
             };
             "_viewAchievements3min": {
                 /**
-                 * 実績好き
+                 * 成就爱好者
                  */
                 "title": string;
                 /**
-                 * 実績一覧を3分以上眺め続けた
+                 * 盯着成就看三分钟
                  */
                 "description": string;
             };
@@ -7746,109 +7750,109 @@ export interface Locale extends ILocale {
                  */
                 "title": string;
                 /**
-                 * "I ❤ #Misskey"を投稿した
+                 * 发布 "I ❤ #Misskey" 帖子
                  */
                 "description": string;
                 /**
-                 * Misskeyを使ってくださりありがとうございます！ by 開発チーム
+                 * 感谢您使用 Misskey ！ by 开发团队
                  */
                 "flavor": string;
             };
             "_foundTreasure": {
                 /**
-                 * 宝探し
+                 * 寻宝
                  */
                 "title": string;
                 /**
-                 * 隠されたお宝を発見した
+                 * 发现了隐藏的宝藏
                  */
                 "description": string;
             };
             "_client30min": {
                 /**
-                 * ひとやすみ
+                 * 休息一下！
                  */
                 "title": string;
                 /**
-                 * クライアントを起動してから30分以上経過した
+                 * 启动客户端超过 30 分钟
                  */
                 "description": string;
             };
             "_client60min": {
                 /**
-                 * Misskeyの見すぎ
+                 * Misskey 重度依赖
                  */
                 "title": string;
                 /**
-                 * クライアントを起動してから60分以上経過した
+                 * 启动客户端超过 60 分钟
                  */
                 "description": string;
             };
             "_noteDeletedWithin1min": {
                 /**
-                 * いまのなし
+                 * 欲言又止
                  */
                 "title": string;
                 /**
-                 * 投稿してから1分以内にその投稿を削除した
+                 * 发帖后一分钟内就将其删除
                  */
                 "description": string;
             };
             "_postedAtLateNight": {
                 /**
-                 * 夜行性
+                 * 夜猫子
                  */
                 "title": string;
                 /**
-                 * 深夜にノートを投稿した
+                 * 深夜发布帖子
                  */
                 "description": string;
                 /**
-                 * そろそろ寝よう。
+                 * 差不多该去睡了喔。
                  */
                 "flavor": string;
             };
             "_postedAt0min0sec": {
                 /**
-                 * 時報
+                 * 报时
                  */
                 "title": string;
                 /**
-                 * 0分0秒にノートを投稿した
+                 * 在 0 点发布一篇帖子
                  */
                 "description": string;
                 /**
-                 * ポッ ポッ ポッ ピーン
+                 * 嘟 · 嘟 · 嘟 · 哔——
                  */
                 "flavor": string;
             };
             "_selfQuote": {
                 /**
-                 * 自己言及
+                 * 自我引用
                  */
                 "title": string;
                 /**
-                 * 自分のノートを引用した
+                 * 引用了自己的帖子
                  */
                 "description": string;
             };
             "_htl20npm": {
                 /**
-                 * 流れるTL
+                 * 流动的时间线
                  */
                 "title": string;
                 /**
-                 * ホームタイムラインの流速が20npmを越す
+                 * 首页时间线中，帖子加载速度超过每分钟20篇
                  */
                 "description": string;
             };
             "_viewInstanceChart": {
                 /**
-                 * アナリスト
+                 * 分析师
                  */
                 "title": string;
                 /**
-                 * サーバーのチャートを表示した
+                 * 查看了服务器信息中的图表
                  */
                 "description": string;
             };
@@ -7858,67 +7862,67 @@ export interface Locale extends ILocale {
                  */
                 "title": string;
                 /**
-                 * スクラッチパッドで hello world を出力した
+                 * 在 AiScript 控制台中输出 hello world
                  */
                 "description": string;
             };
             "_open3windows": {
                 /**
-                 * マルチウィンドウ
+                 * 多窗口
                  */
                 "title": string;
                 /**
-                 * ウィンドウを3つ以上開いた状態にした
+                 * 打开了三个或更多的窗口
                  */
                 "description": string;
             };
             "_driveFolderCircularReference": {
                 /**
-                 * 循環参照
+                 * 循环引用
                  */
                 "title": string;
                 /**
-                 * ドライブのフォルダを再帰的な入れ子にしようとした
+                 * 试图对网盘中的文件夹进行循环嵌套
                  */
                 "description": string;
             };
             "_reactWithoutRead": {
                 /**
-                 * ちゃんと読んだ？
+                 * 有好好读过吗？
                  */
                 "title": string;
                 /**
-                 * 100文字以上のテキストを含むノートに投稿されてから3秒以内にリアクションした
+                 * 在含有100字以上的帖子被发出三秒内做出回应
                  */
                 "description": string;
             };
             "_clickedClickHere": {
                 /**
-                 * ここをクリック
+                 * 点这里
                  */
                 "title": string;
                 /**
-                 * ここをクリックした
+                 * 点了这里
                  */
                 "description": string;
             };
             "_justPlainLucky": {
                 /**
-                 * 単なるラッキー
+                 * 超高校级的幸运
                  */
                 "title": string;
                 /**
-                 * 10秒ごとに0.005%の確率で獲得
+                 * 每 10 秒有 0.005% 的概率自动获得
                  */
                 "description": string;
             };
             "_setNameToSyuilo": {
                 /**
-                 * 神様コンプレックス
+                 * 上帝情结
                  */
                 "title": string;
                 /**
-                 * 名前を syuilo に設定した
+                 * 将名称设定为 syuilo
                  */
                 "description": string;
             };
@@ -7928,7 +7932,7 @@ export interface Locale extends ILocale {
                  */
                 "title": string;
                 /**
-                 * アカウント作成から1年経過した
+                 * 账户创建时间超过 1 年
                  */
                 "description": string;
             };
@@ -7938,7 +7942,7 @@ export interface Locale extends ILocale {
                  */
                 "title": string;
                 /**
-                 * アカウント作成から2年経過した
+                 * 账户创建时间超过 2 年
                  */
                 "description": string;
             };
@@ -7948,45 +7952,45 @@ export interface Locale extends ILocale {
                  */
                 "title": string;
                 /**
-                 * アカウント作成から3年経過した
+                 * 账户创建时间超过 3 年
                  */
                 "description": string;
             };
             "_loggedInOnBirthday": {
                 /**
-                 * ハッピーバースデー
+                 * 生日快乐
                  */
                 "title": string;
                 /**
-                 * 誕生日にログインした
+                 * 在生日当天登录
                  */
                 "description": string;
             };
             "_loggedInOnNewYearsDay": {
                 /**
-                 * あけましておめでとうございます
+                 * 恭贺新禧
                  */
                 "title": string;
                 /**
-                 * 元日にログインした
+                 * 在元旦登入
                  */
                 "description": string;
                 /**
-                 * 今年も弊サーバーをよろしくお願いします
+                 * 今年也请对本服务器多多指教！
                  */
                 "flavor": string;
             };
             "_cookieClicked": {
                 /**
-                 * クッキーをクリックするゲーム
+                 * 饼干点点乐
                  */
                 "title": string;
                 /**
-                 * クッキーをクリックした
+                 * 点击了饼干
                  */
                 "description": string;
                 /**
-                 * ソフト間違ってない？
+                 * 穿越了？
                  */
                 "flavor": string;
             };
@@ -7996,7 +8000,7 @@ export interface Locale extends ILocale {
                  */
                 "title": string;
                 /**
-                 * Brain Diverへのリンクを投稿した
+                 * 发布了包含 Brain Diver 链接的帖子
                  */
                 "description": string;
                 /**
@@ -8006,21 +8010,21 @@ export interface Locale extends ILocale {
             };
             "_smashTestNotificationButton": {
                 /**
-                 * テスト過剰
+                 * 过度测试
                  */
                 "title": string;
                 /**
-                 * 通知のテストをごく短時間のうちに連続して行った
+                 * 短时间内连续测试通知
                  */
                 "description": string;
             };
             "_tutorialCompleted": {
                 /**
-                 * Misskey初心者講座 修了証
+                 * Misskey 初学者课程 结业证书
                  */
                 "title": string;
                 /**
-                 * チュートリアルを完了した
+                 * 完成了教学
                  */
                 "description": string;
             };
@@ -8030,21 +8034,21 @@ export interface Locale extends ILocale {
                  */
                 "title": string;
                 /**
-                 * バブルゲームで最も大きいモノを出した
+                 * 你合成出了游戏里最大的Emoji
                  */
                 "description": string;
             };
             "_bubbleGameDoubleExplodingHead": {
                 /**
-                 * ダブル🤯
+                 * 两个🤯
                  */
                 "title": string;
                 /**
-                 * バブルゲームで最も大きいモノを2つ同時に出した
+                 * 你合成出了2个游戏里最大的Emoji
                  */
                 "description": string;
                 /**
-                 * これくらいの　おべんとばこに　🤯　🤯　ちょっとつめて
+                 * 大约能　装满　这些便当盒　🤯　🤯　（比划）
                  */
                 "flavor": string;
             };
@@ -8052,53 +8056,53 @@ export interface Locale extends ILocale {
     };
     "_role": {
         /**
-         * ロールの作成
+         * 创建角色
          */
         "new": string;
         /**
-         * ロールの編集
+         * 编辑角色
          */
         "edit": string;
         /**
-         * ロール名
+         * 角色名称
          */
         "name": string;
         /**
-         * ロールの説明
+         * 角色描述
          */
         "description": string;
         /**
-         * ロールの権限
+         * 角色权限
          */
         "permission": string;
         /**
-         * <b>モデレーター</b>は基本的なモデレーションに関する操作を行えます。
-         * <b>管理者</b>はサーバーの全ての設定を変更できます。
+         * <b>监察员</b>可以执行基本的审核操作。
+         * <b>管理员</b>可以更改实例的所有设置。
          */
         "descriptionOfPermission": string;
         /**
-         * アサイン
+         * 授权对象
          */
         "assignTarget": string;
         /**
-         * <b>マニュアル</b>は誰がこのロールに含まれるかを手動で管理します。
-         * <b>コンディショナル</b>は条件を設定し、それに合致するユーザーが自動で含まれるようになります。
+         * <b>手动</b>指手动选择谁被包括在这个角色中。
+         * <b>符合条件</b>指设置条件以自动包括符合条件的用户。
          */
         "descriptionOfAssignTarget": string;
         /**
-         * マニュアル
+         * 手动
          */
         "manual": string;
         /**
-         * マニュアルロール
+         * 手动角色
          */
         "manualRoles": string;
         /**
-         * コンディショナル
+         * 符合条件
          */
         "conditional": string;
         /**
-         * コンディショナルロール
+         * 条件角色
          */
         "conditionalRoles": string;
         /**
@@ -8106,83 +8110,83 @@ export interface Locale extends ILocale {
          */
         "condition": string;
         /**
-         * これはコンディショナルロールです。
+         * 这是一个条件控制的角色。
          */
         "isConditionalRole": string;
         /**
-         * 公開ロール
+         * 角色公开
          */
         "isPublic": string;
         /**
-         * ユーザーのプロフィールでこのロールが表示されます。
+         * 任何人都可以看到分配该角色的用户。而用户的个人资料也将显示该角色。
          */
         "descriptionOfIsPublic": string;
         /**
-         * オプション
+         * 选项
          */
         "options": string;
         /**
-         * ポリシー
+         * 策略
          */
         "policies": string;
         /**
-         * ベースロール
+         * 基本角色
          */
         "baseRole": string;
         /**
-         * ベースロールの値を使用
+         * 使用基本角色的值
          */
         "useBaseValue": string;
         /**
-         * アサインするロールを選択
+         * 选择要分配的角色
          */
         "chooseRoleToAssign": string;
         /**
-         * アイコン画像のURL
+         * 图标 URL
          */
         "iconUrl": string;
         /**
-         * バッジとして表示
+         * 作为徽章显示
          */
         "asBadge": string;
         /**
-         * オンにすると、ユーザー名の横にロールのアイコンが表示されます。
+         * 开启后，用户名旁边将会出现角色图标。
          */
         "descriptionOfAsBadge": string;
         /**
-         * ユーザーを見つけやすくする
+         * 公开角色时间线
          */
         "isExplorable": string;
         /**
-         * オンにすると、「みつける」でメンバー一覧が公開されるほか、ロールのタイムラインが利用可能になります。
+         * 开启后将公开角色时间线。如果角色为非公开，则无法公开时间线。
          */
         "descriptionOfIsExplorable": string;
         /**
-         * 表示順
+         * 显示顺序
          */
         "displayOrder": string;
         /**
-         * 数値が大きいほどUI上で先頭に表示されます。
+         * 数字越大，显示位置越靠前。
          */
         "descriptionOfDisplayOrder": string;
         /**
-         * アサイン状態を移行先アカウントにも引き継ぐ
+         * 将分配状态继承到目标账户
          */
         "preserveAssignmentOnMoveAccount": string;
         /**
-         * オンにすると、このロールが付与されたアカウントが移行された際に、移行先アカウントにもこのロールが引き継がれるようになります。
+         * 启用后，当迁移具有该角色的账户时，目标账户也会继承该角色。
          */
         "preserveAssignmentOnMoveAccount_description": string;
         /**
-         * モデレーターのメンバー編集を許可
+         * 允许监察员编辑成员
          */
         "canEditMembersByModerator": string;
         /**
-         * オンにすると、管理者に加えてモデレーターもこのロールへユーザーをアサイン/アサイン解除できるようになります。オフにすると管理者のみが行えます。
+         * 如果选中，监察员和管理员都能够为用户分配/取消分配角色。如果未选中，则只有管理员可以执行此操作。
          */
         "descriptionOfCanEditMembersByModerator": string;
         /**
-         * 優先度
+         * 优先级
          */
         "priority": string;
         "_priority": {
@@ -8201,888 +8205,888 @@ export interface Locale extends ILocale {
         };
         "_options": {
             /**
-             * グローバルタイムラインの閲覧
+             * 查看全局时间线
              */
             "gtlAvailable": string;
             /**
-             * ローカルタイムラインの閲覧
+             * 查看本地时间线
              */
             "ltlAvailable": string;
             /**
-             * パブリック投稿の許可
+             * 允许公开发帖
              */
             "canPublicNote": string;
             /**
-             * ノート内の最大メンション数
+             * 帖子内最多提及数
              */
             "mentionMax": string;
             /**
-             * サーバー招待コードの発行
+             * 发放服务器邀请码
              */
             "canInvite": string;
             /**
-             * 招待コードの作成可能数
+             * 可生成邀请码的数量
              */
             "inviteLimit": string;
             /**
-             * 招待コードの発行間隔
+             * 邀请码的发行间隔
              */
             "inviteLimitCycle": string;
             /**
-             * 招待コードの有効期限
+             * 邀请码的有效日期
              */
             "inviteExpirationTime": string;
             /**
-             * カスタム絵文字の管理
+             * 管理自定义表情符号
              */
             "canManageCustomEmojis": string;
             /**
-             * アバターデコレーションの管理
+             * 管理头像挂件
              */
             "canManageAvatarDecorations": string;
             /**
-             * ドライブ容量
+             * 网盘容量
              */
             "driveCapacity": string;
             /**
-             * アップロード可能な最大ファイルサイズ
+             * 可上传的最大文件大小
              */
             "maxFileSize": string;
             /**
-             * リバースプロキシやCDNなど、前段で別の設定値が存在する場合があります。
+             * 可能在反向代理或 CDN 等前端存在其它设定值。
              */
             "maxFileSize_caption": string;
             /**
-             * サーバー全体の最大ファイルサイズ設定は {max} です。これより大きいファイルをアップロードできるようにするには、Misskeyの設定ファイルからこの設定を緩和してください。
+             * 服务器整体的最大文件大小限制为 {max}。若要允许上传大于此限制的文件，请在 Misskey 配置文件中放宽此设置。
              */
             "maxFileSize_caption2": ParameterizedString<"max">;
             /**
-             * ファイルにNSFWを常に付与
+             * 总是将文件标记为 NSFW
              */
             "alwaysMarkNsfw": string;
             /**
-             * アイコンとバナーの更新を許可
+             * 允许更新头像和横幅
              */
             "canUpdateBioMedia": string;
             /**
-             * ノートのピン留めの最大数
+             * 帖子置顶数量限制
              */
             "pinMax": string;
             /**
-             * アンテナの作成可能数
+             * 可创建的天线数量
              */
             "antennaMax": string;
             /**
-             * ワードミュートの最大文字数
+             * 折叠词的字数限制
              */
             "wordMuteMax": string;
             /**
-             * Webhookの作成可能数
+             * 可创建的 Webhook 的数量
              */
             "webhookMax": string;
             /**
-             * クリップの作成可能数
+             * 可创建的便签数量
              */
             "clipMax": string;
             /**
-             * クリップ内のノートの最大数
+             * 便签内贴文的最大数量
              */
             "noteEachClipsMax": string;
             /**
-             * ユーザーリストの作成可能数
+             * 可创建的用户列表数量
              */
             "userListMax": string;
             /**
-             * ユーザーリスト内のユーザーの最大数
+             * 单个用户列表内用户数量限制
              */
             "userEachUserListsMax": string;
             /**
-             * レートリミット
+             * 速率限制
              */
             "rateLimitFactor": string;
             /**
-             * 小さいほど制限が緩和され、大きいほど制限が強化されます。
+             * 值越小限制越少，值越大限制越多。
              */
             "descriptionOfRateLimitFactor": string;
             /**
-             * 広告の非表示
+             * 可以隐藏广告
              */
             "canHideAds": string;
             /**
-             * ノート検索の利用
+             * 是否可以搜索帖子
              */
             "canSearchNotes": string;
             /**
-             * ユーザー検索の利用
+             * 使用用户检索
              */
             "canSearchUsers": string;
             /**
-             * 翻訳機能の利用
+             * 使用翻译功能
              */
             "canUseTranslator": string;
             /**
-             * チャンネルの作成
+             * 创建频道
              */
             "canCreateChannel": string;
             /**
-             * アイコンデコレーションの最大取付個数
+             * 可添加头像挂件的最大个数
              */
             "avatarDecorationLimit": string;
             /**
-             * アンテナのインポートを許可
+             * 允许导入天线
              */
             "canImportAntennas": string;
             /**
-             * ブロックのインポートを許可
+             * 允许导入屏蔽列表
              */
             "canImportBlocking": string;
             /**
-             * フォローのインポートを許可
+             * 允许导入关注列表
              */
             "canImportFollowing": string;
             /**
-             * ミュートのインポートを許可
+             * 允许导入隐藏列表
              */
             "canImportMuting": string;
             /**
-             * リストのインポートを許可
+             * 允许导入用户列表
              */
             "canImportUserLists": string;
             /**
-             * ダイレクトメッセージを許可
+             * 允许私信
              */
             "chatAvailability": string;
             /**
-             * アップロード可能なファイル種別
+             * 可上传的文件类型
              */
             "uploadableFileTypes": string;
             /**
-             * MIMEタイプを指定します。改行で区切って複数指定できるほか、アスタリスク(*)でワイルドカード指定できます。(例: image/*)
+             * 指定 MIME 类型。可用换行指定多个类型，也可以用星号（*）作为通配符。（如 image/*）
              */
             "uploadableFileTypes_caption": string;
             /**
-             * ファイルによっては種別を判定できないことがあります。そのようなファイルを許可する場合は {x} を指定に追加してください。
+             * 文件根据文件的不同，可能无法判断其类型。若要允许此类文件，请在指定中添加 {x}。
              */
             "uploadableFileTypes_caption2": ParameterizedString<"x">;
             /**
-             * サーバーサイドのノートの下書きの作成可能数
+             * 可在服务器上创建的草稿数量
              */
             "noteDraftLimit": string;
             /**
-             * 予約投稿の同時作成可能数
+             * 可同时创建的定时帖子数量
              */
             "scheduledNoteLimit": string;
             /**
-             * ウォーターマーク機能の使用可否
+             * 能否使用水印功能
              */
             "watermarkAvailable": string;
         };
         "_condition": {
             /**
-             * マニュアルロールにアサイン済み
+             * 已分配给手动角色
              */
             "roleAssignedTo": string;
             /**
-             * ローカルユーザー
+             * 是本地用户
              */
             "isLocal": string;
             /**
-             * リモートユーザー
+             * 是远程用户
              */
             "isRemote": string;
             /**
-             * 猫ユーザー
+             * 猫猫用户
              */
             "isCat": string;
             /**
-             * botユーザー
+             * 机器人用户
              */
             "isBot": string;
             /**
-             * サスペンド済みユーザー
+             * 停用的用户
              */
             "isSuspended": string;
             /**
-             * 鍵アカウントユーザー
+             * 锁推用户
              */
             "isLocked": string;
             /**
-             * 「アカウントを見つけやすくする」が有効なユーザー
+             * 启用 “使账号可见” 的用户
              */
             "isExplorable": string;
             /**
-             * アカウント作成から～以内
+             * 账户创建时间少于
              */
             "createdLessThan": string;
             /**
-             * アカウント作成から～経過
+             * 账户创建时间超过
              */
             "createdMoreThan": string;
             /**
-             * フォロワー数が～以下
+             * 关注者不多于
              */
             "followersLessThanOrEq": string;
             /**
-             * フォロワー数が～以上
+             * 关注者不少于
              */
             "followersMoreThanOrEq": string;
             /**
-             * フォロー数が～以下
+             * 关注人数不多于
              */
             "followingLessThanOrEq": string;
             /**
-             * フォロー数が～以上
+             * 关注人数不少于
              */
             "followingMoreThanOrEq": string;
             /**
-             * 投稿数が～以下
+             * 帖子数在～以下
              */
             "notesLessThanOrEq": string;
             /**
-             * 投稿数が～以上
+             * 帖子数在～以上
              */
             "notesMoreThanOrEq": string;
             /**
-             * ～かつ～
+             * 符合以下全部条件
              */
             "and": string;
             /**
-             * ～または～
+             * 符合以下任一条件
              */
             "or": string;
             /**
-             * ～ではない
+             * 不符合以下任何条件
              */
             "not": string;
         };
     };
     "_sensitiveMediaDetection": {
         /**
-         * 機械学習を使って自動でセンシティブなメディアを検出し、モデレーションに役立てることができます。サーバーの負荷が少し増えます。
+         * 使用机器学习技术自动检测敏感媒体，以便进行审核。服务器负载将略微增加。
          */
         "description": string;
         /**
-         * 検出感度
+         * 检测敏感度
          */
         "sensitivity": string;
         /**
-         * 感度を低くすると、誤検知(偽陽性)が減ります。感度を高くすると、検知漏れ(偽陰性)が減ります。
+         * 敏感度较低，则误检（假阳性）会减少；敏感度较高，则漏检（假阴性）会减少。
          */
         "sensitivityDescription": string;
         /**
-         * センシティブフラグを設定する
+         * 自动设置 NSFW 标签
          */
         "setSensitiveFlagAutomatically": string;
         /**
-         * この設定をオフにしても内部的に判定結果は保持されます。
+         * 即使关闭此配置，识别结果也会在内部保存。
          */
         "setSensitiveFlagAutomaticallyDescription": string;
         /**
-         * 動画の解析を有効化
+         * 启用对视频的检测
          */
         "analyzeVideos": string;
         /**
-         * 静止画に加えて動画も解析するようにします。サーバーの負荷が少し増えます。
+         * 除了静止图像之外，还对视频进行分析。服务器负载会略微增加。
          */
         "analyzeVideosDescription": string;
         /**
-         * センシティブメディアの判定は外部サービス (sensitive-detector) に分離されました。この機能を利用するには、別途サイドカーサービスをセットアップし、下記の接続先を設定する必要があります。接続先が未設定の場合、判定は行われません (非センシティブ扱い)。
+         * 检测敏感媒体已分离至外部服务 (sensitive-detector)。若要使用，需额外部署 Sidecar 服务，并设置下方的连接 URL。未设定时将不会进行检测（视为非敏感媒体）。
          */
         "externalServiceInfo": string;
         /**
-         * 判定サービスの接続先URL
+         * 检测服务的连接 URL
          */
         "apiUrl": string;
         /**
-         * sensitive-detector サービスのベースURL (例: http://localhost:3009)。プライベートネットワーク上のサービスに接続する場合は、設定ファイルの allowedPrivateNetworks で接続先ネットワークを許可してください。プロキシを使用している場合は、proxyBypassHosts も設定してください。空欄の場合、センシティブ判定は行われません。
+         * sensitive-detector 服务的 base URL（如：http://localhost:3009）。若是连接至部署在专用网络上的服务，请在配置文件中的 allowedPrivateNetworks 里允许目标网络。若是使用了代理，请一并设置 proxyBypassHosts。留空则不进行敏感媒体检测。
          */
         "apiUrlDescription": string;
         /**
-         * APIキー
+         * API 密钥
          */
         "apiKey": string;
         /**
-         * 判定サービス側で認証 (Bearerトークン) を設定している場合に入力します。設定していない場合は空欄のままにしてください。
+         * 若服务端有设置验证（Bearer token）则填写，未设置则留空。
          */
         "apiKeyDescription": string;
         /**
-         * タイムアウト (ミリ秒)
+         * 超时（毫秒）
          */
         "timeout": string;
         /**
-         * 判定リクエスト1回あたりのタイムアウト時間です。
+         * 此为单次检测请求的超时时长。
          */
         "timeoutDescription": string;
         /**
-         * 1リクエストあたりの最大画像数
+         * 单次检测请求最大图像数量
          */
         "maxImagesPerRequest": string;
         /**
-         * 動画など複数フレームを判定する際、1回のリクエストにまとめて送る画像の最大枚数です。これを超える分は分割して順次送信されます。sensitive-detector 側の maxParts 設定（デフォルト: 10）を超えないように設定してください。超えた場合、そのチャンクは全件非センシティブ扱いとなります。
+         * 此为在检测动画等多帧图像时，单次请求中可发送的图像数量上限。超出此值时动画将被拆分并按序发送。请勿将此值设为超出 sensitive-detector 侧的 maxParts 的值（默认：10），否则对应的分块将全被视为非敏感媒体。
          */
         "maxImagesPerRequestDescription": string;
     };
     "_emailUnavailable": {
         /**
-         * 既に使用されています
+         * 已经被使用过
          */
         "used": string;
         /**
-         * 形式が正しくありません
+         * 无效的格式
          */
         "format": string;
         /**
-         * 恒久的に使用可能なアドレスではありません
+         * 不是永久可用的地址
          */
         "disposable": string;
         /**
-         * 正しいメールサーバーではありません
+         * 邮件服务器不正确
          */
         "mx": string;
         /**
-         * メールサーバーが応答しません
+         * 邮件服务器没有响应
          */
         "smtp": string;
         /**
-         * このメールアドレスでは登録できません
+         * 无法使用此邮件地址注册
          */
         "banned": string;
     };
     "_ffVisibility": {
         /**
-         * 公開
+         * 公开
          */
         "public": string;
         /**
-         * フォロワーだけに公開
+         * 仅关注者可见
          */
         "followers": string;
         /**
-         * 非公開
+         * 私密
          */
         "private": string;
     };
     "_signup": {
         /**
-         * ほとんど完了です
+         * 即将完成
          */
         "almostThere": string;
         /**
-         * あなたが使っているメールアドレスを入力してください。メールアドレスが公開されることはありません。
+         * 请输入您所使用的电子邮件地址
          */
         "emailAddressInfo": string;
         /**
-         * 入力されたメールアドレス({email})宛に確認のメールが送信されました。メールに記載されたリンクにアクセスすると、アカウントの作成が完了します。メールに記載されているリンクの有効期限は30分です。
+         * 已将确认邮件发送至您输入的电子邮件地址 ({email})。请访问电子邮件中的链接以完成帐户创建。
          */
         "emailSent": ParameterizedString<"email">;
     };
     "_accountDelete": {
         /**
-         * アカウントの削除
+         * 删除帐户
          */
         "accountDelete": string;
         /**
-         * アカウントの削除は負荷のかかる処理であるため、作成したコンテンツの数やアップロードしたファイルの数が多いと完了までに時間がかかることがあります。
+         * 删除账号是一个性能损耗较大的处理，如果账号持有的内容数量和上传的文件数量较多的话，完成需要花费一段时间。
          */
         "mayTakeTime": string;
         /**
-         * アカウントの削除が完了する際は、登録してあったメールアドレス宛に通知を送信します。
+         * 账户删除完成后，将向注册的电子邮件地址发送通知。
          */
         "sendEmail": string;
         /**
-         * アカウント削除をリクエスト
+         * 请求删除账户
          */
         "requestAccountDelete": string;
         /**
-         * 削除処理が開始されました。
+         * 账户删除过程已开始。
          */
         "started": string;
         /**
-         * 削除が進行中
+         * 正在删除
          */
         "inProgress": string;
     };
     "_ad": {
         /**
-         * 戻る
+         * 返回
          */
         "back": string;
         /**
-         * この広告の表示頻度を下げる
+         * 减少此广告的频率
          */
         "reduceFrequencyOfThisAd": string;
         /**
-         * 表示しない
+         * 不显示
          */
         "hide": string;
         /**
-         * 曜日はサーバーのタイムゾーンを元に指定されます。
+         * 星期几是根据服务器的时区确定的。
          */
         "timezoneinfo": string;
         /**
-         * 広告配信設定
+         * 广告设置
          */
         "adsSettings": string;
         /**
-         * リアルタイム更新中に広告を配信する間隔（ノートの個数）
+         * 实时更新时插入广告的间隔（每条帖文）
          */
         "notesPerOneAd": string;
         /**
-         * 0でリアルタイム更新時の広告配信を無効
+         * 设为 0 将不在实时更新时间线中投放广告
          */
         "setZeroToDisable": string;
         /**
-         * 広告の配信間隔が極めて短いため、ユーザー体験が著しく損われる可能性があります。
+         * 广告投放时间间隔过短将可能显著损害用户体验。
          */
         "adsTooClose": string;
     };
     "_forgotPassword": {
         /**
-         * アカウントに登録したメールアドレスを入力してください。そのアドレス宛てに、パスワードリセット用のリンクが送信されます。
+         * 请输入您设置的电子邮箱地址，密码重置链接将发送至该邮箱上。
          */
         "enterEmail": string;
         /**
-         * メールアドレスを登録していない場合は、管理者までお問い合わせください。
+         * 如果您没有设置电子邮件地址，请联系管理员。
          */
         "ifNoEmail": string;
         /**
-         * このサーバーではメールがサポートされていないため、パスワードリセットを行う場合は管理者までお問い合わせください。
+         * 该服务器不支持发送电子邮件。如果您想重设密码，请联系管理员。
          */
         "contactAdmin": string;
     };
     "_gallery": {
         /**
-         * 自分の投稿
+         * 我的相册
          */
         "my": string;
         /**
-         * いいねした投稿
+         * 喜欢的相册
          */
         "liked": string;
         /**
-         * いいね！
+         * 喜欢！
          */
         "like": string;
         /**
-         * いいね解除
+         * 取消喜欢
          */
         "unlike": string;
     };
     "_email": {
         "_follow": {
             /**
-             * フォローされました
+             * 你有新的关注者
              */
             "title": string;
         };
         "_receiveFollowRequest": {
             /**
-             * フォローリクエストを受け取りました
+             * 收到了关注请求
              */
             "title": string;
         };
     };
     "_plugin": {
         /**
-         * プラグインのインストール
+         * 安装插件
          */
         "install": string;
         /**
-         * 信頼できないプラグインはインストールしないでください。
+         * 请不要安装不可信的插件。
          */
         "installWarn": string;
         /**
-         * プラグインの管理
+         * 管理插件...
          */
         "manage": string;
         /**
-         * ソースを表示
+         * 查看源代码
          */
         "viewSource": string;
         /**
-         * ログを表示
+         * 显示日志
          */
         "viewLog": string;
     };
     "_preferencesBackups": {
         /**
-         * 作成したバックアップ
+         * 已创建的备份
          */
         "list": string;
         /**
-         * 新規保存
+         * 另存为
          */
         "saveNew": string;
         /**
-         * ファイルを読み込み
+         * 导入文件
          */
         "loadFile": string;
         /**
-         * このデバイスに適用
+         * 应用于本设备
          */
         "apply": string;
         /**
-         * 上書き保存
+         * 覆盖存档
          */
         "save": string;
         /**
-         * バックアップ名を入力
+         * 请输入备份的名称
          */
         "inputName": string;
         /**
-         * 保存できません
+         * 无法保存
          */
         "cannotSave": string;
         /**
-         * バックアップ名「{name}」は既に存在します。違う名前を指定してください。
+         * 备份名称 “{name}” 已经存在，请指定其他名称。
          */
         "nameAlreadyExists": ParameterizedString<"name">;
         /**
-         * バックアップ「{name}」を現在のデバイスに適用しますか？現在のデバイス設定は失われます。
+         * 您是否要将备份 "{name}" 应用到当前设备上？当前设备现有配置将被丢弃。
          */
         "applyConfirm": ParameterizedString<"name">;
         /**
-         * {name}に上書き保存しますか？
+         * 您确定要覆盖保存 {name} 吗？
          */
         "saveConfirm": ParameterizedString<"name">;
         /**
-         * {name}を削除しますか？
+         * 您确定要删除 {name} 吗？
          */
         "deleteConfirm": ParameterizedString<"name">;
         /**
-         * 「{old}」を「{new}」に変更しますか？
+         * 确定要把 “{old}” 改为 “{new}” 吗？
          */
         "renameConfirm": ParameterizedString<"old" | "new">;
         /**
-         * バックアップはありません。「新規保存」で現在のクライアント設定をサーバーに保存できます。
+         * 当前没有备份，“另存为” 允许您在服务器上保存当前客户端的配置。
          */
         "noBackups": string;
         /**
-         * 作成日時: {date} {time}
+         * 创建日期：{date} {time}
          */
         "createdAt": ParameterizedString<"date" | "time">;
         /**
-         * 更新日時: {date} {time}
+         * 更新日期：{date} {time}
          */
         "updatedAt": ParameterizedString<"date" | "time">;
         /**
-         * 読み込みできません
+         * 无法加载
          */
         "cannotLoad": string;
         /**
-         * ファイル形式が違います。
+         * 无效的的文件格式。
          */
         "invalidFile": string;
     };
     "_registry": {
         /**
-         * スコープ
+         * 范围
          */
         "scope": string;
         /**
-         * キー
+         * 键
          */
         "key": string;
         /**
-         * キー
+         * 键
          */
         "keys": string;
         /**
-         * ドメイン
+         * 域
          */
         "domain": string;
         /**
-         * キーを作成
+         * 创建键
          */
         "createKey": string;
     };
     "_aboutMisskey": {
         /**
-         * Misskeyはsyuiloによって2014年から開発されている、オープンソースのソフトウェアです。
+         * Misskey 是由 syuilo 于 2014 年开发的开源软件。
          */
         "about": string;
         /**
-         * コントリビューター
+         * 主要贡献者
          */
         "contributors": string;
         /**
-         * 全てのコントリビューター
+         * 全体贡献者
          */
         "allContributors": string;
         /**
-         * ソースコード
+         * 源代码
          */
         "source": string;
         /**
-         * オリジナル
+         * 原版
          */
         "original": string;
         /**
-         * {name}はオリジナルのMisskeyを改変したバージョンを使用しています。
+         * {name}正在使用修改后的 Misskey。
          */
         "thisIsModifiedVersion": ParameterizedString<"name">;
         /**
-         * Misskeyを翻訳
+         * 翻译 Misskey
          */
         "translation": string;
         /**
-         * Misskeyに寄付
+         * 赞助 Misskey
          */
         "donate": string;
         /**
-         * 他にも多くの方が支援してくれています。ありがとうございます🥰
+         * 还有很多其它的人也在支持我们，非常感谢🥰
          */
         "morePatrons": string;
         /**
-         * 支援者
+         * 支持者
          */
         "patrons": string;
         /**
-         * プロジェクトメンバー
+         * 项目成员
          */
         "projectMembers": string;
     };
     "_displayOfSensitiveMedia": {
         /**
-         * センシティブ設定されたメディアを隠す
+         * 隐藏敏感媒体
          */
         "respect": string;
         /**
-         * センシティブ設定されたメディアを隠さない
+         * 显示敏感媒体
          */
         "ignore": string;
         /**
-         * 常にメディアを隠す
+         * 隐藏所有媒体
          */
         "force": string;
     };
     "_instanceTicker": {
         /**
-         * 表示しない
+         * 不显示
          */
         "none": string;
         /**
-         * リモートユーザーに表示
+         * 仅远程用户
          */
         "remote": string;
         /**
-         * 常に表示
+         * 始终显示
          */
         "always": string;
     };
     "_serverDisconnectedBehavior": {
         /**
-         * 自動でリロード
+         * 自动重载
          */
         "reload": string;
         /**
-         * ダイアログで警告
+         * 对话框警告
          */
         "dialog": string;
         /**
-         * 控えめに警告
+         * 静默警告
          */
         "quiet": string;
     };
     "_channel": {
         /**
-         * チャンネルを作成
+         * 创建频道
          */
         "create": string;
         /**
-         * チャンネルを編集
+         * 编辑频道
          */
         "edit": string;
         /**
-         * バナーを設定
+         * 设置横幅
          */
         "setBanner": string;
         /**
-         * バナーを削除
+         * 删除横幅
          */
         "removeBanner": string;
         /**
-         * トレンド
+         * 热门
          */
         "featured": string;
         /**
-         * 管理中
+         * 我的频道
          */
         "owned": string;
         /**
-         * フォロー中
+         * 正在关注
          */
         "following": string;
         /**
-         * {n}人が参加中
+         * {n} 人参与
          */
         "usersCount": ParameterizedString<"n">;
         /**
-         * {n}投稿があります
+         * {n} 篇帖子
          */
         "notesCount": ParameterizedString<"n">;
         /**
-         * 名前と説明
+         * 名称与描述
          */
         "nameAndDescription": string;
         /**
-         * 名前のみ
+         * 仅名称
          */
         "nameOnly": string;
         /**
-         * チャンネル外へのリノートと引用リノートを許可する
+         * 允许转发至频道外及引用
          */
         "allowRenoteToExternal": string;
     };
     "_menuDisplay": {
         /**
-         * 横
+         * 横向
          */
         "sideFull": string;
         /**
-         * 横(アイコン)
+         * 横向（图标）
          */
         "sideIcon": string;
         /**
-         * 上部
+         * 顶部
          */
         "top": string;
         /**
-         * 隠す
+         * 隐藏
          */
         "hide": string;
     };
     "_wordMute": {
         /**
-         * ミュートするワード
+         * 要折叠的词
          */
         "muteWords": string;
         /**
-         * スペースで区切るとAND指定になり、改行で区切るとOR指定になります。
+         * AND 条件用空格分隔，OR 条件用换行符分隔。
          */
         "muteWordsDescription": string;
         /**
-         * キーワードをスラッシュで囲むと正規表現になります。
+         * 正则表达式用斜线包裹
          */
         "muteWordsDescription2": string;
     };
     "_instanceMute": {
         /**
-         * ミュートしたサーバーのユーザーへの返信を含めて、設定したサーバーの全てのノートとRenoteをミュートします。
+         * 隐藏来自这些服务器的所有帖子和转贴，包括这些服务器上用户的回复。
          */
         "instanceMuteDescription": string;
         /**
-         * 改行で区切って設定します
+         * 通过换行符分隔进行设置
          */
         "instanceMuteDescription2": string;
         /**
-         * 設定したサーバーのノートを隠します。
+         * 以下服务器中的帖子将被隐藏。
          */
         "title": string;
         /**
-         * ミュートするサーバー
+         * 已隐藏的服务器
          */
         "heading": string;
     };
     "_theme": {
         /**
-         * テーマを探す
+         * 寻找主题
          */
         "explore": string;
         /**
-         * テーマのインストール
+         * 安装主题
          */
         "install": string;
         /**
-         * テーマの管理
+         * 主题管理
          */
         "manage": string;
         /**
-         * テーマコード
+         * 主题代码
          */
         "code": string;
         /**
-         * テーマコードをコピー
+         * 复制主题代码
          */
         "copyThemeCode": string;
         /**
-         * 説明
+         * 描述
          */
         "description": string;
         /**
-         * {name}をインストールしました
+         * {name} 已安装
          */
         "installed": ParameterizedString<"name">;
         /**
-         * インストールされたテーマ
+         * 已安装的主题
          */
         "installedThemes": string;
         /**
-         * 標準のテーマ
+         * 标准主题
          */
         "builtinThemes": string;
         /**
-         * サーバーのテーマ
+         * 服务器主题
          */
         "instanceTheme": string;
         /**
-         * そのテーマは既にインストールされています
+         * 此主题已经安装
          */
         "alreadyInstalled": string;
         /**
-         * テーマの形式が間違っています
+         * 主题格式错误
          */
         "invalid": string;
         /**
-         * テーマを作る
+         * 制作主题
          */
         "make": string;
         /**
-         * ベース
+         * 基于
          */
         "base": string;
         /**
-         * 定数を追加
+         * 添加常量
          */
         "addConstant": string;
         /**
-         * 定数
+         * 常量
          */
         "constant": string;
         /**
-         * デフォルト値
+         * 默认值
          */
         "defaultValue": string;
         /**
-         * 色
+         * 颜色
          */
         "color": string;
         /**
-         * プロパティを参照
+         * 查看属性
          */
         "refProp": string;
         /**
-         * 定数を参照
+         * 查看常量
          */
         "refConst": string;
         /**
-         * キー
+         * 主要
          */
         "key": string;
         /**
-         * 関数
+         * 函数
          */
         "func": string;
         /**
-         * 関数の種類
+         * 功能类型
          */
         "funcKind": string;
         /**
-         * 引数
+         * 参数
          */
         "argument": string;
         /**
-         * 元にするプロパティの名前
+         * 基于的属性名称
          */
         "basedProp": string;
         /**
@@ -9090,28 +9094,28 @@ export interface Locale extends ILocale {
          */
         "alpha": string;
         /**
-         * 暗さ
+         * 深色
          */
         "darken": string;
         /**
-         * 明るさ
+         * 浅色
          */
         "lighten": string;
         /**
-         * 定数名を入力してください
+         * 请输入常量名称
          */
         "inputConstantName": string;
         /**
-         * ここにテーマコードを貼り付けて、エディターにインポートできます
+         * 您可以在此处粘贴主题代码，将其导入到编辑器中
          */
         "importInfo": string;
         /**
-         * 定数 {const} を削除しても良いですか？
+         * 确定要删除常量 {const} 吗?
          */
         "deleteConstantConfirm": ParameterizedString<"const">;
         "keys": {
             /**
-             * アクセント
+             * 强调色
              */
             "accent": string;
             /**
@@ -9119,142 +9123,142 @@ export interface Locale extends ILocale {
              */
             "bg": string;
             /**
-             * 文字
+             * 文本
              */
             "fg": string;
             /**
-             * フォーカス
+             * 聚焦
              */
             "focus": string;
             /**
-             * インジケーター
+             * 标记
              */
             "indicator": string;
             /**
-             * パネル
+             * 面板
              */
             "panel": string;
             /**
-             * 影
+             * 阴影
              */
             "shadow": string;
             /**
-             * ヘッダー
+             * 顶栏
              */
             "header": string;
             /**
-             * ナビゲーションバーの背景
+             * 侧边栏背景
              */
             "navBg": string;
             /**
-             * ナビゲーションバーの文字
+             * 侧栏文本
              */
             "navFg": string;
             /**
-             * ナビゲーションバー文字(アクティブ)
+             * 侧栏文本（活动）
              */
             "navActive": string;
             /**
-             * ナビゲーションバーのインジケーター
+             * 侧栏标记
              */
             "navIndicator": string;
             /**
-             * リンク
+             * 链接
              */
             "link": string;
             /**
-             * ハッシュタグ
+             * 话题标签
              */
             "hashtag": string;
             /**
-             * メンション
+             * 提及
              */
             "mention": string;
             /**
-             * あなた宛てメンション
+             * 提及
              */
             "mentionMe": string;
             /**
-             * リノート
+             * 转发
              */
             "renote": string;
             /**
-             * モーダルの背景
+             * 发帖背景
              */
             "modalBg": string;
             /**
-             * 分割線
+             * 分割线
              */
             "divider": string;
             /**
-             * スクロールバーの取っ手
+             * 滚动条
              */
             "scrollbarHandle": string;
             /**
-             * スクロールバーの取っ手（ホバー)
+             * 滚动条（悬停）
              */
             "scrollbarHandleHover": string;
             /**
-             * 日付ラベルの文字
+             * 日期标签文字
              */
             "dateLabelFg": string;
             /**
-             * 情報の背景
+             * 信息背景
              */
             "infoBg": string;
             /**
-             * 情報の文字
+             * 信息文本
              */
             "infoFg": string;
             /**
-             * 警告の背景
+             * 警告背景
              */
             "infoWarnBg": string;
             /**
-             * 警告の文字
+             * 警告文本
              */
             "infoWarnFg": string;
             /**
-             * 通知トーストの背景
+             * Toast 通知背景
              */
             "toastBg": string;
             /**
-             * 通知トーストの文字
+             * Toast 通知文本
              */
             "toastFg": string;
             /**
-             * ボタンの背景
+             * 按钮背景
              */
             "buttonBg": string;
             /**
-             * ボタンの背景 (ホバー)
+             * 按钮背景（悬停）
              */
             "buttonHoverBg": string;
             /**
-             * 入力ボックスの縁取り
+             * 输入框边框
              */
             "inputBorder": string;
             /**
-             * バッジ
+             * 徽章
              */
             "badge": string;
             /**
-             * メッセージの背景
+             * 聊天背景
              */
             "messageBg": string;
             /**
-             * 強調された文字
+             * 高亮显示文本
              */
             "fgHighlighted": string;
         };
     };
     "_sfx": {
         /**
-         * ノート
+         * 帖子
          */
         "note": string;
         /**
-         * ノート(自分)
+         * 发帖
          */
         "noteMy": string;
         /**
@@ -9262,41 +9266,41 @@ export interface Locale extends ILocale {
          */
         "notification": string;
         /**
-         * リアクション選択時
+         * 添加回应
          */
         "reaction": string;
         /**
-         * ダイレクトメッセージ
+         * 私信
          */
         "chatMessage": string;
     };
     "_soundSettings": {
         /**
-         * ドライブの音声を使用
+         * 使用网盘内的音频
          */
         "driveFile": string;
         /**
-         * ドライブのファイルを選択してください
+         * 选择网盘上的文件
          */
         "driveFileWarn": string;
         /**
-         * このファイルは対応していません
+         * 不支持此文件
          */
         "driveFileTypeWarn": string;
         /**
-         * 音声ファイルを選択してください
+         * 请选择音频文件
          */
         "driveFileTypeWarnDescription": string;
         /**
-         * 音声が長すぎます
+         * 音频过长
          */
         "driveFileDurationWarn": string;
         /**
-         * 長い音声を使用するとMisskeyの使用に支障をきたす可能性があります。それでも続行しますか？
+         * 使用长音频可能会影响 Misskey 的使用。即使这样也要继续吗？
          */
         "driveFileDurationWarnDescription": string;
         /**
-         * 音声が読み込めませんでした。設定を変更してください
+         * 无法读取声音。请更改设置。
          */
         "driveFileError": string;
     };
@@ -9306,7 +9310,7 @@ export interface Locale extends ILocale {
          */
         "future": string;
         /**
-         * たった今
+         * 刚刚
          */
         "justNow": string;
         /**
@@ -9314,23 +9318,23 @@ export interface Locale extends ILocale {
          */
         "secondsAgo": ParameterizedString<"n">;
         /**
-         * {n}分前
+         * {n}分钟前
          */
         "minutesAgo": ParameterizedString<"n">;
         /**
-         * {n}時間前
+         * {n}小时前
          */
         "hoursAgo": ParameterizedString<"n">;
         /**
-         * {n}日前
+         * {n}天前
          */
         "daysAgo": ParameterizedString<"n">;
         /**
-         * {n}週間前
+         * {n}周前
          */
         "weeksAgo": ParameterizedString<"n">;
         /**
-         * {n}ヶ月前
+         * {n}个月前
          */
         "monthsAgo": ParameterizedString<"n">;
         /**
@@ -9338,37 +9342,37 @@ export interface Locale extends ILocale {
          */
         "yearsAgo": ParameterizedString<"n">;
         /**
-         * 日時の解析に失敗
+         * 没有
          */
         "invalid": string;
     };
     "_timeIn": {
         /**
-         * {n}秒後
+         * {n}秒后
          */
         "seconds": ParameterizedString<"n">;
         /**
-         * {n}分後
+         * {n}分钟后
          */
         "minutes": ParameterizedString<"n">;
         /**
-         * {n}時間後
+         * {n}小时后
          */
         "hours": ParameterizedString<"n">;
         /**
-         * {n}日後
+         * {n}天后
          */
         "days": ParameterizedString<"n">;
         /**
-         * {n}週間後
+         * {n}周后
          */
         "weeks": ParameterizedString<"n">;
         /**
-         * {n}ヶ月後
+         * {n}个月后
          */
         "months": ParameterizedString<"n">;
         /**
-         * {n}年後
+         * {n}年后
          */
         "years": ParameterizedString<"n">;
     };
@@ -9378,603 +9382,603 @@ export interface Locale extends ILocale {
          */
         "second": string;
         /**
-         * 分
+         * 分钟
          */
         "minute": string;
         /**
-         * 時間
+         * 小时
          */
         "hour": string;
         /**
-         * 日
+         * 天
          */
         "day": string;
         /**
-         * ヶ月
+         * 个月
          */
         "month": string;
     };
     "_2fa": {
         /**
-         * 既に設定は完了しています。
+         * 此设备已被注册
          */
         "alreadyRegistered": string;
         /**
-         * 認証アプリの設定を開始
+         * 开始设置验证器
          */
         "registerTOTP": string;
         /**
-         * まず、{a}や{b}などの認証アプリをお使いのデバイスにインストールします。
+         * 首先，在您的设备上安装验证应用，例如 {a} 或 {b}。
          */
         "step1": ParameterizedString<"a" | "b">;
         /**
-         * 次に、表示されているQRコードをアプリでスキャンするか、ボタンをクリックして端末上でアプリを開きます。
+         * 然后，扫描屏幕上显示的二维码。
          */
         "step2": string;
         /**
-         * デスクトップアプリを使用する場合は次のURIを入力します
+         * 如果使用桌面应用程序的话，请输入下面的 URI
          */
         "step2Uri": string;
         /**
-         * 確認コードを入力
+         * 输入验证码
          */
         "step3Title": string;
         /**
-         * アプリに表示されている確認コード（トークン）を入力します。
+         * 输入您的应用提供的动态口令以完成设置。
          */
         "step3": string;
         /**
-         * 設定が完了しました
+         * 设置完成
          */
         "setupCompleted": string;
         /**
-         * これからログインするときも、同じようにコードを入力します。
+         * 从现在开始，任何登录操作都将要求您提供动态口令。
          */
         "step4": string;
         /**
-         * お使いのブラウザはセキュリティキーに対応していません。
+         * 您的浏览器不支持安全密钥。
          */
         "securityKeyNotSupported": string;
         /**
-         * セキュリティキー・パスキーを登録するには、まず認証アプリの設定を行なってください。
+         * 要注册安全密钥或 Passkey，请先设置验证器。
          */
         "registerTOTPBeforeKey": string;
         /**
-         * FIDO2をサポートするハードウェアセキュリティキー、端末の生体認証やPINロック、パスキーといった、WebAuthn由来の鍵を登録します。
+         * 注册兼容 WebAuthn 的密钥，例如支持 FIDO2 的硬件安全密钥、设备上的生物识别功能、PIN 以及 Passkey 等。
          */
         "securityKeyInfo": string;
         /**
-         * セキュリティキー・パスキーを登録する
+         * 注册安全密钥或 Passkey
          */
         "registerSecurityKey": string;
         /**
-         * キーの名前を入力
+         * 输入密钥名称
          */
         "securityKeyName": string;
         /**
-         * ブラウザの指示に従い、セキュリティキーやパスキーを登録してください
+         * 请按照浏览器说明操作来注册安全密钥或 Passkey。
          */
         "tapSecurityKey": string;
         /**
-         * セキュリティキーを削除
+         * 删除安全密钥
          */
         "removeKey": string;
         /**
-         * {name}を削除しますか？
+         * 确定要删除 {name} 吗？
          */
         "removeKeyConfirm": ParameterizedString<"name">;
         /**
-         * セキュリティキーが登録されている場合、認証アプリの設定は解除できません。
+         * 当注册了安全密钥时，无法取消使用验证器。
          */
         "whyTOTPOnlyRenew": string;
         /**
-         * 認証アプリを再設定
+         * 重置验证器
          */
         "renewTOTP": string;
         /**
-         * 今までの認証アプリの確認コードおよびバックアップコードは使用できなくなります
+         * 当前验证器的验证码及备用代码已失效
          */
         "renewTOTPConfirm": string;
         /**
-         * 再設定する
+         * 重新配置
          */
         "renewTOTPOk": string;
         /**
-         * やめておく
+         * 不用，谢谢
          */
         "renewTOTPCancel": string;
         /**
-         * このウィザードを閉じる前に、以下のバックアップコードを確認してください。
+         * 在关闭此窗口前，请确认下面的备用代码
          */
         "checkBackupCodesBeforeCloseThisWizard": string;
         /**
-         * バックアップコード
+         * 备用代码
          */
         "backupCodes": string;
         /**
-         * 認証アプリが使用できなくなった場合、以下のバックアップコードを使ってアカウントにアクセスできます。これらのコードは必ず安全な場所に保管してください。各コードは一回だけ使用できます。
+         * 如果无法使用验证器，可以使用以下的备用代码来访问账户。请务必将这些代码保存在安全的地方。每个代码仅可使用一次。
          */
         "backupCodesDescription": string;
         /**
-         * バックアップコードが使用されました。認証アプリが使えなくなっている場合、なるべく早く認証アプリを再設定してください。
+         * 已使用备用代码。若验证器无法使用，请尽快重置验证器。
          */
         "backupCodeUsedWarning": string;
         /**
-         * バックアップコードが全て使用されました。認証アプリを利用できない場合、これ以上アカウントにアクセスできなくなります。認証アプリを再登録してください。
+         * 已使用完所有的备用代码。若验证器无法使用，则无法再访问您的账户。请重置验证器。
          */
         "backupCodesExhaustedWarning": string;
         /**
-         * 詳細なガイドはこちら
+         * 此处为详细指南
          */
         "moreDetailedGuideHere": string;
     };
     "_permissions": {
         /**
-         * アカウントの情報を見る
+         * 查看账户信息
          */
         "read:account": string;
         /**
-         * アカウントの情報を変更する
+         * 更改帐户信息
          */
         "write:account": string;
         /**
-         * ブロックを見る
+         * 查看屏蔽列表
          */
         "read:blocks": string;
         /**
-         * ブロックを操作する
+         * 编辑屏蔽列表
          */
         "write:blocks": string;
         /**
-         * ドライブを見る
+         * 查看网盘
          */
         "read:drive": string;
         /**
-         * ドライブを操作する
+         * 管理网盘文件
          */
         "write:drive": string;
         /**
-         * お気に入りを見る
+         * 查看收藏夹
          */
         "read:favorites": string;
         /**
-         * お気に入りを操作する
+         * 编辑收藏夹
          */
         "write:favorites": string;
         /**
-         * フォローの情報を見る
+         * 查看关注信息
          */
         "read:following": string;
         /**
-         * フォロー・フォロー解除する
+         * 关注/取消关注
          */
         "write:following": string;
         /**
-         * ダイレクトメッセージを見る
+         * 查看私信
          */
         "read:messaging": string;
         /**
-         * ダイレクトメッセージを操作する
+         * 撰写或删除消息
          */
         "write:messaging": string;
         /**
-         * ミュートを見る
+         * 查看已隐藏用户列表
          */
         "read:mutes": string;
         /**
-         * ミュートを操作する
+         * 编辑已隐藏用户列表
          */
         "write:mutes": string;
         /**
-         * ノートを作成・削除する
+         * 撰写或删除帖子
          */
         "write:notes": string;
         /**
-         * 通知を見る
+         * 查看通知
          */
         "read:notifications": string;
         /**
-         * 通知を操作する
+         * 管理通知
          */
         "write:notifications": string;
         /**
-         * リアクションを見る
+         * 查看回应
          */
         "read:reactions": string;
         /**
-         * リアクションを操作する
+         * 编辑回应
          */
         "write:reactions": string;
         /**
-         * 投票する
+         * 投票
          */
         "write:votes": string;
         /**
-         * ページを見る
+         * 查看页面
          */
         "read:pages": string;
         /**
-         * ページを操作する
+         * 编辑页面
          */
         "write:pages": string;
         /**
-         * ページのいいねを見る
+         * 查看喜欢的页面
          */
         "read:page-likes": string;
         /**
-         * ページのいいねを操作する
+         * 管理喜欢的页面
          */
         "write:page-likes": string;
         /**
-         * ユーザーグループを見る
+         * 查看用户组
          */
         "read:user-groups": string;
         /**
-         * ユーザーグループを操作する
+         * 编辑用户组
          */
         "write:user-groups": string;
         /**
-         * チャンネルを見る
+         * 查看频道
          */
         "read:channels": string;
         /**
-         * チャンネルを操作する
+         * 管理频道
          */
         "write:channels": string;
         /**
-         * ギャラリーを見る
+         * 浏览相册
          */
         "read:gallery": string;
         /**
-         * ギャラリーを操作する
+         * 管理相册
          */
         "write:gallery": string;
         /**
-         * ギャラリーのいいねを見る
+         * 浏览喜欢的相册
          */
         "read:gallery-likes": string;
         /**
-         * ギャラリーのいいねを操作する
+         * 管理喜欢的相册
          */
         "write:gallery-likes": string;
         /**
-         * Playを見る
+         * 查看 Play
          */
         "read:flash": string;
         /**
-         * Playを操作する
+         * 编辑 Play
          */
         "write:flash": string;
         /**
-         * Playのいいねを見る
+         * 查看喜欢的 Play
          */
         "read:flash-likes": string;
         /**
-         * Playのいいねを操作する
+         * 编辑 Play 的点赞列表
          */
         "write:flash-likes": string;
         /**
-         * ユーザーからの通報を見る
+         * 查看来自用户的举报
          */
         "read:admin:abuse-user-reports": string;
         /**
-         * ユーザーアカウントを削除する
+         * 删除用户账户
          */
         "write:admin:delete-account": string;
         /**
-         * ユーザーのすべてのファイルを削除する
+         * 删除用户所有的文件
          */
         "write:admin:delete-all-files-of-a-user": string;
         /**
-         * データベースインデックスに関する情報を見る
+         * 查看数据库索引相关的信息
          */
         "read:admin:index-stats": string;
         /**
-         * データベーステーブルに関する情報を見る
+         * 查看数据库表相关的信息
          */
         "read:admin:table-stats": string;
         /**
-         * ユーザーのIPアドレスを見る
+         * 查看用户 IP 地址
          */
         "read:admin:user-ips": string;
         /**
-         * インスタンスのメタデータを見る
+         * 查看实例的元数据
          */
         "read:admin:meta": string;
         /**
-         * ユーザーのパスワードをリセットする
+         * 重置用户密码
          */
         "write:admin:reset-password": string;
         /**
-         * ユーザーからの通報を解決する
+         * 处理来自用户的举报
          */
         "write:admin:resolve-abuse-user-report": string;
         /**
-         * メールを送る
+         * 发送邮件
          */
         "write:admin:send-email": string;
         /**
-         * サーバーの情報を見る
+         * 查看服务器信息
          */
         "read:admin:server-info": string;
         /**
-         * モデレーションログを見る
+         * 查看管理日志
          */
         "read:admin:show-moderation-log": string;
         /**
-         * ユーザーのプライベートな情報を見る
+         * 查看用户的非公开信息
          */
         "read:admin:show-user": string;
         /**
-         * ユーザーを凍結する
+         * 冻结用户
          */
         "write:admin:suspend-user": string;
         /**
-         * ユーザーの二要素認証を解除する
+         * 解除用户的双重认证
          */
         "write:admin:unset-mfa": string;
         /**
-         * ユーザーのアバターを削除する
+         * 删除用户头像
          */
         "write:admin:unset-user-avatar": string;
         /**
-         * ユーザーのバーナーを削除する
+         * 删除用户横幅
          */
         "write:admin:unset-user-banner": string;
         /**
-         * ユーザーの凍結を解除する
+         * 解除用户冻结
          */
         "write:admin:unsuspend-user": string;
         /**
-         * インスタンスのメタデータを操作する
+         * 编辑实例元数据
          */
         "write:admin:meta": string;
         /**
-         * モデレーションノートを操作する
+         * 编辑管理笔记
          */
         "write:admin:user-note": string;
         /**
-         * ロールを操作する
+         * 管理角色
          */
         "write:admin:roles": string;
         /**
-         * ロールを見る
+         * 查看角色
          */
         "read:admin:roles": string;
         /**
-         * リレーを操作する
+         * 编辑中继
          */
         "write:admin:relays": string;
         /**
-         * リレーを見る
+         * 查看中继
          */
         "read:admin:relays": string;
         /**
-         * 招待コードを操作する
+         * 管理邀请码
          */
         "write:admin:invite-codes": string;
         /**
-         * 招待コードを見る
+         * 查看邀请码
          */
         "read:admin:invite-codes": string;
         /**
-         * お知らせを操作する
+         * 管理公告
          */
         "write:admin:announcements": string;
         /**
-         * お知らせを見る
+         * 查看公告
          */
         "read:admin:announcements": string;
         /**
-         * アバターデコレーションを操作する
+         * 编辑头像挂件
          */
         "write:admin:avatar-decorations": string;
         /**
-         * アバターデコレーションを見る
+         * 查看头像挂件
          */
         "read:admin:avatar-decorations": string;
         /**
-         * 連合に関する情報を操作する
+         * 编辑联邦相关信息
          */
         "write:admin:federation": string;
         /**
-         * ユーザーアカウントを操作する
+         * 管理用户账户
          */
         "write:admin:account": string;
         /**
-         * ユーザーに関する情報を見る
+         * 查看用户相关情报
          */
         "read:admin:account": string;
         /**
-         * 絵文字を操作する
+         * 编辑表情符号
          */
         "write:admin:emoji": string;
         /**
-         * 絵文字を見る
+         * 查看表情符号
          */
         "read:admin:emoji": string;
         /**
-         * ジョブキューを操作する
+         * 编辑作业队列
          */
         "write:admin:queue": string;
         /**
-         * ジョブキューに関する情報を見る
+         * 查看作业队列相关情报
          */
         "read:admin:queue": string;
         /**
-         * プロモーションノートを操作する
+         * 编辑推广帖文
          */
         "write:admin:promo": string;
         /**
-         * ユーザーのドライブを操作する
+         * 管理用户网盘
          */
         "write:admin:drive": string;
         /**
-         * ユーザーのドライブの関する情報を見る
+         * 查看用户网盘的相关信息
          */
         "read:admin:drive": string;
         /**
-         * 管理者用のWebsocket APIを使う
+         * 使用管理员用的 Websocket API
          */
         "read:admin:stream": string;
         /**
-         * 広告を操作する
+         * 管理广告
          */
         "write:admin:ad": string;
         /**
-         * 広告を見る
+         * 查看广告
          */
         "read:admin:ad": string;
         /**
-         * 招待コードを作成する
+         * 生成邀请码
          */
         "write:invite-codes": string;
         /**
-         * 招待コードを取得する
+         * 获取已发行的邀请码
          */
         "read:invite-codes": string;
         /**
-         * クリップのいいねを操作する
+         * 管理喜欢的便签
          */
         "write:clip-favorite": string;
         /**
-         * クリップのいいねを見る
+         * 查看收藏的便签
          */
         "read:clip-favorite": string;
         /**
-         * 連合に関する情報を取得する
+         * 查看联邦相关信息
          */
         "read:federation": string;
         /**
-         * 違反を報告する
+         * 举报用户
          */
         "write:report-abuse": string;
         /**
-         * ダイレクトメッセージを操作する
+         * 撰写或删除消息
          */
         "write:chat": string;
         /**
-         * ダイレクトメッセージを閲覧する
+         * 查看私信
          */
         "read:chat": string;
     };
     "_auth": {
         /**
-         * アプリへのアクセス許可
+         * 应用程序授权许可
          */
         "shareAccessTitle": string;
         /**
-         * 「{name}」がアカウントにアクセスすることを許可しますか？
+         * 您要授权允许 “{name}” 访问您的帐户吗？
          */
         "shareAccess": ParameterizedString<"name">;
         /**
-         * アカウントへのアクセスを許可しますか？
+         * 您确定要授权此应用程序访问您的帐户吗？
          */
         "shareAccessAsk": string;
         /**
-         * {name}は次の権限を要求しています
+         * {name} 需要以下权限
          */
         "permission": ParameterizedString<"name">;
         /**
-         * このアプリは次の権限を要求しています
+         * 这个应用程序需要以下权限
          */
         "permissionAsk": string;
         /**
-         * アプリケーションに戻ってやっていってください
+         * 请返回到应用程序
          */
         "pleaseGoBack": string;
         /**
-         * アプリケーションに戻っています
+         * 回到应用程序
          */
         "callback": string;
         /**
-         * アクセスを許可しました
+         * 已允许访问
          */
         "accepted": string;
         /**
-         * アクセスを拒否しました
+         * 拒绝访问
          */
         "denied": string;
         /**
-         * 以下のユーザーとして操作しています
+         * 以下面的用户进行操作
          */
         "scopeUser": string;
         /**
-         * アプリケーションにアクセス許可を与えるには、ログインが必要です。
+         * 在对应用进行授权许可之前，请先登录
          */
         "pleaseLogin": string;
         /**
-         * アクセスを許可すると、自動で以下のURLに遷移します
+         * 允许访问后将会自动重定向到以下 URL
          */
         "byClickingYouWillBeRedirectedToThisUrl": string;
         /**
-         * このアプリケーションは既にアクセスが許可されています。
+         * 此应用已有访问许可。
          */
         "alreadyAuthorized": string;
     };
     "_antennaSources": {
         /**
-         * 全てのノート
+         * 所有帖子
          */
         "all": string;
         /**
-         * フォローしているユーザーのノート
+         * 已关注用户的帖子
          */
         "homeTimeline": string;
         /**
-         * 指定した一人または複数のユーザーのノート
+         * 来自指定用户的帖子
          */
         "users": string;
         /**
-         * 指定したリストのユーザーのノート
+         * 来自指定列表中的帖子
          */
         "userList": string;
         /**
-         * 指定した一人または複数のユーザーを除いた全てのノート
+         * 过滤指定用户后的所有帖子
          */
         "userBlacklist": string;
     };
     "_weekday": {
         /**
-         * 日曜日
+         * 星期日
          */
         "sunday": string;
         /**
-         * 月曜日
+         * 星期一
          */
         "monday": string;
         /**
-         * 火曜日
+         * 星期二
          */
         "tuesday": string;
         /**
-         * 水曜日
+         * 星期三
          */
         "wednesday": string;
         /**
-         * 木曜日
+         * 星期四
          */
         "thursday": string;
         /**
-         * 金曜日
+         * 星期五
          */
         "friday": string;
         /**
-         * 土曜日
+         * 星期六
          */
         "saturday": string;
     };
     "_widgets": {
         /**
-         * プロフィール
+         * 个人资料
          */
         "profile": string;
         /**
-         * サーバー情報
+         * 服务器信息
          */
         "instanceInfo": string;
         /**
-         * 付箋
+         * 便签
          */
         "memo": string;
         /**
@@ -9982,79 +9986,79 @@ export interface Locale extends ILocale {
          */
         "notifications": string;
         /**
-         * タイムライン
+         * 时间线
          */
         "timeline": string;
         /**
-         * カレンダー
+         * 日历
          */
         "calendar": string;
         /**
-         * トレンド
+         * 趋势
          */
         "trends": string;
         /**
-         * 時計
+         * 时钟
          */
         "clock": string;
         /**
-         * RSSリーダー
+         * RSS 阅读器
          */
         "rss": string;
         /**
-         * RSSティッカー
+         * RSS Ticker
          */
         "rssTicker": string;
         /**
-         * アクティビティ
+         * 活动
          */
         "activity": string;
         /**
-         * フォト
+         * 照片
          */
         "photos": string;
         /**
-         * デジタル時計
+         * 数字时钟
          */
         "digitalClock": string;
         /**
-         * UNIX時計
+         * UNIX 时钟
          */
         "unixClock": string;
         /**
-         * 連合
+         * 联邦
          */
         "federation": string;
         /**
-         * サーバークラウド
+         * 服务器球状列表
          */
         "instanceCloud": string;
         /**
-         * 投稿フォーム
+         * 发帖窗口
          */
         "postForm": string;
         /**
-         * スライドショー
+         * 幻灯片展示
          */
         "slideshow": string;
         /**
-         * ボタン
+         * 按钮
          */
         "button": string;
         /**
-         * オンラインユーザー
+         * 在线用户数
          */
         "onlineUsers": string;
         /**
-         * ジョブキュー
+         * 作业队列
          */
         "jobQueue": string;
         /**
-         * サーバーメトリクス
+         * 服务器指标
          */
         "serverMetric": string;
         /**
-         * AiScriptコンソール
+         * AiScript 控制台
          */
         "aiscript": string;
         /**
@@ -10062,62 +10066,62 @@ export interface Locale extends ILocale {
          */
         "aiscriptApp": string;
         /**
-         * 藍
+         * 小蓝
          */
         "aichan": string;
         /**
-         * ユーザーリスト
+         * 用户列表
          */
         "userList": string;
         "_userList": {
             /**
-             * リストを選択
+             * 选择列表
              */
             "chooseList": string;
         };
         /**
-         * クリッカー
+         * 点击器
          */
         "clicker": string;
         /**
-         * もうすぐ誕生日のユーザー
+         * 今天是他们的生日
          */
         "birthdayFollowings": string;
         /**
-         * ダイレクトメッセージ
+         * 私信
          */
         "chat": string;
     };
     "_widgetOptions": {
         /**
-         * ヘッダーを表示
+         * 显示标题
          */
         "showHeader": string;
         /**
-         * 背景を透明にする
+         * 使背景透明
          */
         "transparent": string;
         /**
-         * 高さ
+         * 高度
          */
         "height": string;
         "_button": {
             /**
-             * 色付き
+             * 彩色
              */
             "colored": string;
         };
         "_clock": {
             /**
-             * サイズ
+             * 大小
              */
             "size": string;
             /**
-             * 針の太さ
+             * 指针宽度
              */
             "thickness": string;
             /**
-             * 細い
+             * 细
              */
             "thicknessThin": string;
             /**
@@ -10125,168 +10129,168 @@ export interface Locale extends ILocale {
              */
             "thicknessMedium": string;
             /**
-             * 太い
+             * 粗
              */
             "thicknessThick": string;
             /**
-             * 文字盤の目盛り
+             * 表盘刻度
              */
             "graduations": string;
             /**
-             * ドット
+             * 点
              */
             "graduationDots": string;
             /**
-             * アラビア数字
+             * 阿拉伯数字
              */
             "graduationArabic": string;
             /**
-             * 目盛りをフェード
+             * 淡化表盘
              */
             "fadeGraduations": string;
             /**
-             * 秒針のアニメーション
+             * 秒针动效
              */
             "sAnimation": string;
             /**
-             * リアル
+             * 跳动
              */
             "sAnimationElastic": string;
             /**
-             * 滑らか
+             * 平滑
              */
             "sAnimationEaseOut": string;
             /**
-             * 24時間表示
+             * 24 小时制
              */
             "twentyFour": string;
             /**
-             * 時刻
+             * 时间
              */
             "labelTime": string;
             /**
-             * タイムゾーン
+             * 时区
              */
             "labelTz": string;
             /**
-             * 時刻とタイムゾーン
+             * 时间和时区
              */
             "labelTimeAndTz": string;
             /**
-             * タイムゾーン
+             * 时区
              */
             "timezone": string;
             /**
-             * ミリ秒を表示
+             * 显示毫秒
              */
             "showMs": string;
             /**
-             * ラベルを表示
+             * 显示标签
              */
             "showLabel": string;
         };
         "_jobQueue": {
             /**
-             * 音を鳴らす
+             * 播放音效
              */
             "sound": string;
         };
         "_rss": {
             /**
-             * RSSフィードのURL
+             * RSS 订阅源网址
              */
             "url": string;
             /**
-             * 更新間隔(秒)
+             * 更新间隔（秒）
              */
             "refreshIntervalSec": string;
             /**
-             * 最大表示件数
+             * 最大显示个数
              */
             "maxEntries": string;
         };
         "_rssTicker": {
             /**
-             * 表示順をシャッフル
+             * 随机顺序
              */
             "shuffle": string;
             /**
-             * ティッカーのスクロール速度(秒)
+             * 滚动速度（秒）
              */
             "duration": string;
             /**
-             * 逆方向にスクロール
+             * 反方向滚动
              */
             "reverse": string;
         };
         "_birthdayFollowings": {
             /**
-             * 期間
+             * 期限
              */
             "period": string;
         };
     };
     "_cw": {
         /**
-         * 隠す
+         * 隐藏
          */
         "hide": string;
         /**
-         * もっと見る
+         * 查看更多
          */
         "show": string;
         /**
-         * {count}文字
+         * {count} 个字符
          */
         "chars": ParameterizedString<"count">;
         /**
-         * {count}ファイル
+         * {count} 个文件
          */
         "files": ParameterizedString<"count">;
     };
     "_poll": {
         /**
-         * 選択肢は最低2つ必要です
+         * 需要至少两个选项
          */
         "noOnlyOneChoice": string;
         /**
-         * 選択肢{n}
+         * 选项{n}
          */
         "choiceN": ParameterizedString<"n">;
         /**
-         * これ以上追加できません
+         * 无法再添加更多了
          */
         "noMore": string;
         /**
-         * 複数回答可
+         * 允许多选
          */
         "canMultipleVote": string;
         /**
-         * 期限
+         * 截止时间
          */
         "expiration": string;
         /**
-         * 無期限
+         * 永久
          */
         "infinite": string;
         /**
-         * 日時指定
+         * 指定日期
          */
         "at": string;
         /**
-         * 経過指定
+         * 指定时长
          */
         "after": string;
         /**
-         * 期日
+         * 截止日期
          */
         "deadlineDate": string;
         /**
-         * 時間
+         * 时间
          */
         "deadlineTime": string;
         /**
-         * 期間
+         * 期限
          */
         "duration": string;
         /**
@@ -10294,217 +10298,217 @@ export interface Locale extends ILocale {
          */
         "votesCount": ParameterizedString<"n">;
         /**
-         * 計{n}票
+         * 总计{n}票
          */
         "totalVotes": ParameterizedString<"n">;
         /**
-         * 投票する
+         * 投票
          */
         "vote": string;
         /**
-         * 結果を見る
+         * 查看结果
          */
         "showResult": string;
         /**
-         * 投票済み
+         * 已投票
          */
         "voted": string;
         /**
-         * 終了済み
+         * 已截止
          */
         "closed": string;
         /**
-         * 終了まであと{d}日{h}時間
+         * {d}天{h}小时后截止
          */
         "remainingDays": ParameterizedString<"d" | "h">;
         /**
-         * 終了まであと{h}時間{m}分
+         * {h}小时{m}分后截止
          */
         "remainingHours": ParameterizedString<"h" | "m">;
         /**
-         * 終了まであと{m}分{s}秒
+         * {m}分{s}秒后截止
          */
         "remainingMinutes": ParameterizedString<"m" | "s">;
         /**
-         * 終了まであと{s}秒
+         * {s}秒后截止
          */
         "remainingSeconds": ParameterizedString<"s">;
     };
     "_visibility": {
         /**
-         * パブリック
+         * 公开
          */
         "public": string;
         /**
-         * 全てのユーザーに公開
+         * 所有用户均可见
          */
         "publicDescription": string;
         /**
-         * ホーム
+         * 首页
          */
         "home": string;
         /**
-         * ホームタイムラインのみに公開
+         * 仅发布至首页
          */
         "homeDescription": string;
         /**
-         * フォロワー
+         * 仅关注者
          */
         "followers": string;
         /**
-         * 自分のフォロワーのみに公開
+         * 仅关注者可见
          */
         "followersDescription": string;
         /**
-         * 指名
+         * 指定用户
          */
         "specified": string;
         /**
-         * 指定したユーザーのみに公開
+         * 仅发送至指定用户
          */
         "specifiedDescription": string;
         /**
-         * 連合なし
+         * 仅限本地
          */
         "disableFederation": string;
         /**
-         * 他サーバーへの配信を行いません
+         * 不发送到其他服务器
          */
         "disableFederationDescription": string;
     };
     "_postForm": {
         /**
-         * アップロードされていないファイルがありますが、破棄してフォームを閉じますか？
+         * 还有一些文件尚未上传，要放弃上传并关闭窗口吗？
          */
         "quitInspiteOfThereAreUnuploadedFilesConfirm": string;
         /**
-         * ファイルはまだアップロードされていません。ファイルのメニューから、リネームや画像のクロップ、ウォーターマークの付与、圧縮の有無などを設定できます。ファイルはノート投稿時に自動でアップロードされます。
+         * 文件尚未上传。您可以在文件菜单中设置重命名、裁剪图片、添加水印以及是否压缩等功能。文件将在帖子发布时自动上传。
          */
         "uploaderTip": string;
         /**
-         * このノートに返信...
+         * 回复该帖…
          */
         "replyPlaceholder": string;
         /**
-         * このノートを引用...
+         * 引用该贴…
          */
         "quotePlaceholder": string;
         /**
-         * チャンネルに投稿...
+         * 发布到频道…
          */
         "channelPlaceholder": string;
         /**
-         * フォームの説明を表示
+         * 显示窗口说明
          */
         "showHowToUse": string;
         "_howToUse": {
             /**
-             * 本文
+             * 正文
              */
             "content_title": string;
             /**
-             * 投稿する内容を入力します。
+             * 在此输入要发布的内容。
              */
             "content_description": string;
             /**
-             * ツールバー
+             * 工具栏
              */
             "toolbar_title": string;
             /**
-             * ファイルやアンケートの添付、注釈やハッシュタグの設定、絵文字やメンションの挿入などが行えます。
+             * 可在此添加文件和投票、设置注释和话题标签、插入表情符号和提及等。
              */
             "toolbar_description": string;
             /**
-             * アカウントメニュー
+             * 账号菜单
              */
             "account_title": string;
             /**
-             * 投稿するアカウントを切り替えたり、アカウントに保存した下書き・予約投稿を一覧できます。
+             * 可在此切换发帖用的账号、查看账户下保存的草稿及定时发送帖。
              */
             "account_description": string;
             /**
-             * 公開範囲
+             * 可见性
              */
             "visibility_title": string;
             /**
-             * ノートを公開する範囲の設定が行えます。
+             * 可在此设置帖子的公开范围。
              */
             "visibility_description": string;
             /**
-             * メニュー
+             * 菜单
              */
             "menu_title": string;
             /**
-             * 下書きへの保存、投稿の予約、リアクションの設定など、その他のアクションが行えます。
+             * 可在此进行保存草稿、设置定时发帖、设置回应等其它操作。
              */
             "menu_description": string;
             /**
-             * 投稿ボタン
+             * 发帖按钮
              */
             "submit_title": string;
             /**
-             * ノートを投稿します。Ctrl + Enter / Cmd + Enter でも投稿できます。
+             * 发布帖子。也可用 Ctrl + Enter / Cmd + Enter 来发帖。
              */
             "submit_description": string;
         };
         "_placeholders": {
             /**
-             * いまどうしてる？
+             * 最近怎么样？
              */
             "a": string;
             /**
-             * 何かありましたか？
+             * 有什么新鲜事吗？
              */
             "b": string;
             /**
-             * 何をお考えですか？
+             * 在想些什么呢？
              */
             "c": string;
             /**
-             * 言いたいことは？
+             * 想说些什么？
              */
             "d": string;
             /**
-             * ここに書いてください
+             * 写些什么吧
              */
             "e": string;
             /**
-             * あなたが書くのを待っています...
+             * 期待您的发文…
              */
             "f": string;
         };
     };
     "_profile": {
         /**
-         * 名前
+         * 昵称
          */
         "name": string;
         /**
-         * ユーザー名
+         * 用户名
          */
         "username": string;
         /**
-         * 自己紹介
+         * 个人简介
          */
         "description": string;
         /**
-         * ハッシュタグを含めることができます。
+         * 可以在个人简介中包含 #标签。
          */
         "youCanIncludeHashtags": string;
         /**
-         * 追加情報
+         * 附加信息
          */
         "metadata": string;
         /**
-         * 追加情報を編集
+         * 附加信息编辑
          */
         "metadataEdit": string;
         /**
-         * プロフィールに表として追加情報を表示することができます。
+         * 最多可以在个人资料中以表格形式显示四条其他信息。
          */
         "metadataDescription": string;
         /**
-         * ラベル
+         * 标签
          */
         "metadataLabel": string;
         /**
@@ -10512,391 +10516,391 @@ export interface Locale extends ILocale {
          */
         "metadataContent": string;
         /**
-         * アイコン画像を変更
+         * 更换头像
          */
         "changeAvatar": string;
         /**
-         * バナー画像を変更
+         * 更换横幅
          */
         "changeBanner": string;
         /**
-         * 内容にURLを設定すると、リンク先のWebサイトに自分のプロフィールへのリンクが含まれている場合に所有者確認済みアイコンを表示させることができます。
+         * 如果将内容设置为 URL，当链接所指向的网页内包含自己的个人资料链接时，可以显示一个已验证图标。
          */
         "verifiedLinkDescription": string;
         /**
-         * 最大{max}つまでデコレーションを付けられます。
+         * 最多可添加 {max} 个挂件
          */
         "avatarDecorationMax": ParameterizedString<"max">;
         /**
-         * フォローされた時のメッセージ
+         * 被关注时的信息
          */
         "followedMessage": string;
         /**
-         * フォローされた時に相手に表示する短いメッセージを設定できます。
+         * 被关注时，可设置向关注者显示的信息。
          */
         "followedMessageDescription": string;
         /**
-         * フォローを承認制にしている場合、フォローリクエストを許可した時に表示されます。
+         * 需要批准才能关注的情况下，消息会在请求被批准后显示。
          */
         "followedMessageDescriptionForLockedAccount": string;
     };
     "_exportOrImport": {
         /**
-         * 全てのノート
+         * 所有帖子
          */
         "allNotes": string;
         /**
-         * お気に入りにしたノート
+         * 收藏的帖子
          */
         "favoritedNotes": string;
         /**
-         * クリップ
+         * 便签
          */
         "clips": string;
         /**
-         * フォロー
+         * 关注中
          */
         "followingList": string;
         /**
-         * ミュート
+         * 隐藏
          */
         "muteList": string;
         /**
-         * ブロック
+         * 屏蔽列表
          */
         "blockingList": string;
         /**
-         * リスト
+         * 列表
          */
         "userLists": string;
         /**
-         * ミュートしているユーザーを除外
+         * 排除已隐藏用户
          */
         "excludeMutingUsers": string;
         /**
-         * 使われていないアカウントを除外
+         * 排除不活跃用户
          */
         "excludeInactiveUsers": string;
         /**
-         * 返信をTLに含むかの情報がファイルにない場合に、インポートした人による返信をTLに含むようにする
+         * 在时间线中包含导入用户的回复
          */
         "withReplies": string;
     };
     "_charts": {
         /**
-         * 連合
+         * 联邦
          */
         "federation": string;
         /**
-         * リクエスト
+         * 请求
          */
         "apRequest": string;
         /**
-         * ユーザーの増減
+         * 用户数量：增加/减少
          */
         "usersIncDec": string;
         /**
-         * ユーザーの合計
+         * 用户总数
          */
         "usersTotal": string;
         /**
-         * アクティブユーザー数
+         * 活跃用户数
          */
         "activeUsers": string;
         /**
-         * ノートの増減
+         * 帖子：增加/减少
          */
         "notesIncDec": string;
         /**
-         * ローカルのノートの増減
+         * 本地帖子量增减
          */
         "localNotesIncDec": string;
         /**
-         * リモートのノートの増減
+         * 远程帖子量增减
          */
         "remoteNotesIncDec": string;
         /**
-         * ノートの合計
+         * 帖子总数
          */
         "notesTotal": string;
         /**
-         * ファイルの増減
+         * 文件总数增减
          */
         "filesIncDec": string;
         /**
-         * ファイルの合計
+         * 合计文件总数
          */
         "filesTotal": string;
         /**
-         * ストレージ使用量の増減
+         * 存储空间用量增减
          */
         "storageUsageIncDec": string;
         /**
-         * ストレージ使用量の合計
+         * 合计存储空间用量
          */
         "storageUsageTotal": string;
     };
     "_instanceCharts": {
         /**
-         * リクエスト
+         * 请求
          */
         "requests": string;
         /**
-         * ユーザーの増減
+         * 用户数量：增加/减少
          */
         "users": string;
         /**
-         * ユーザーの累積
+         * 用户总计
          */
         "usersTotal": string;
         /**
-         * ノートの増減
+         * 帖子：增加/减少
          */
         "notes": string;
         /**
-         * ノートの累積
+         * 帖子总计
          */
         "notesTotal": string;
         /**
-         * フォロー/フォロワーの増減
+         * 关注/被关注：数量变化
          */
         "ff": string;
         /**
-         * フォロー/フォロワーの累積
+         * 关注/被关注者总计
          */
         "ffTotal": string;
         /**
-         * キャッシュサイズの増減
+         * 缓存大小：增加/减少
          */
         "cacheSize": string;
         /**
-         * キャッシュサイズの累積
+         * 缓存大小总计
          */
         "cacheSizeTotal": string;
         /**
-         * ファイル数の増減
+         * 文件总数增减
          */
         "files": string;
         /**
-         * ファイル数の累積
+         * 文件数总计
          */
         "filesTotal": string;
     };
     "_timelines": {
         /**
-         * ホーム
+         * 首页
          */
         "home": string;
         /**
-         * ローカル
+         * 本地
          */
         "local": string;
         /**
-         * ソーシャル
+         * 社交
          */
         "social": string;
         /**
-         * グローバル
+         * 全局
          */
         "global": string;
     };
     "_play": {
         /**
-         * Playの作成
+         * 创建 Play
          */
         "new": string;
         /**
-         * Playの編集
+         * 编辑 Play
          */
         "edit": string;
         /**
-         * Playを作成しました
+         * 创建了一个 Play
          */
         "created": string;
         /**
-         * Playを更新しました
+         * 更新了 Play
          */
         "updated": string;
         /**
-         * Playを削除しました
+         * 删除了 Play
          */
         "deleted": string;
         /**
-         * Play設定
+         * Play 设置
          */
         "pageSetting": string;
         /**
-         * このPlayを編集
+         * 编辑此 Play
          */
         "editThisPage": string;
         /**
-         * ソースを表示
+         * 查看源代码
          */
         "viewSource": string;
         /**
-         * 自分のPlay
+         * 我的 Play
          */
         "my": string;
         /**
-         * いいねしたPlay
+         * 喜欢的 Play
          */
         "liked": string;
         /**
-         * 人気
+         * 热门
          */
         "featured": string;
         /**
-         * タイトル
+         * 标题
          */
         "title": string;
         /**
-         * スクリプト
+         * 脚本
          */
         "script": string;
         /**
-         * 説明
+         * 描述
          */
         "summary": string;
         /**
-         * 非公開に設定するとプロフィールに表示されなくなりますが、URLを知っている人は引き続きアクセスできます。
+         * 设置为不公开后资料将不再显示，但知道 URL 的人仍可继续访问。
          */
         "visibilityDescription": string;
     };
     "_pages": {
         /**
-         * ページの作成
+         * 创建页面
          */
         "newPage": string;
         /**
-         * ページの編集
+         * 编辑页面
          */
         "editPage": string;
         /**
-         * ソースを表示中
+         * 查看页面
          */
         "readPage": string;
         /**
-         * ページ設定
+         * 页面设置
          */
         "pageSetting": string;
         /**
-         * 指定されたページURLは既に存在しています
+         * 该页面 URL 已存在
          */
         "nameAlreadyExists": string;
         /**
-         * 不正なページURLです
+         * 无效的页面 URL
          */
         "invalidNameTitle": string;
         /**
-         * 空白でないか確認してください
+         * 请确认该项不为空
          */
         "invalidNameText": string;
         /**
-         * このページを編集
+         * 编辑此页面
          */
         "editThisPage": string;
         /**
-         * ソースを表示
+         * 查看源代码
          */
         "viewSource": string;
         /**
-         * ページを見る
+         * 查看页面
          */
         "viewPage": string;
         /**
-         * いいね
+         * 喜欢
          */
         "like": string;
         /**
-         * いいね解除
+         * 取消喜欢
          */
         "unlike": string;
         /**
-         * 自分のページ
+         * 我的页面
          */
         "my": string;
         /**
-         * いいねしたページ
+         * 喜欢的页面
          */
         "liked": string;
         /**
-         * 人気
+         * 热门
          */
         "featured": string;
         /**
-         * インスペクター
+         * 检查器
          */
         "inspector": string;
         /**
-         * コンテンツ
+         * 内容
          */
         "contents": string;
         /**
-         * ページブロック
+         * 页面内容
          */
         "content": string;
         /**
-         * 変数
+         * 变量
          */
         "variables": string;
         /**
-         * タイトル
+         * 标题
          */
         "title": string;
         /**
-         * ページURL
+         * 页面 URL
          */
         "url": string;
         /**
-         * ページの要約
+         * 页面摘要
          */
         "summary": string;
         /**
-         * 中央寄せ
+         * 居中
          */
         "alignCenter": string;
         /**
-         * ピン留めされているときにタイトルを非表示
+         * 置顶时隐藏标题
          */
         "hideTitleWhenPinned": string;
         /**
-         * フォント
+         * 字体
          */
         "font": string;
         /**
-         * セリフ
+         * 衬线字体
          */
         "fontSerif": string;
         /**
-         * サンセリフ
+         * 无衬线字体
          */
         "fontSansSerif": string;
         /**
-         * アイキャッチ画像を設定
+         * 设置封面图片
          */
         "eyeCatchingImageSet": string;
         /**
-         * アイキャッチ画像を削除
+         * 删除封面图片
          */
         "eyeCatchingImageRemove": string;
         /**
-         * ブロックを追加
+         * 添加内容块
          */
         "chooseBlock": string;
         /**
-         * セクションタイトルを入力
+         * 输入会话标题
          */
         "enterSectionTitle": string;
         /**
-         * 種類を選択
+         * 选择类型
          */
         "selectType": string;
         /**
-         * コンテンツ
+         * 内容
          */
         "contentBlocks": string;
         /**
-         * 入力
+         * 输入
          */
         "inputBlocks": string;
         /**
@@ -10905,48 +10909,48 @@ export interface Locale extends ILocale {
         "specialBlocks": string;
         "blocks": {
             /**
-             * テキスト
+             * 文本
              */
             "text": string;
             /**
-             * テキストエリア
+             * 文本区域
              */
             "textarea": string;
             /**
-             * セクション
+             * 章节
              */
             "section": string;
             /**
-             * 画像
+             * 图片
              */
             "image": string;
             /**
-             * ボタン
+             * 按钮
              */
             "button": string;
             /**
-             * 動的ブロック
+             * 动态内容块
              */
             "dynamic": string;
             /**
-             * このブロックは廃止されています。今後は{play}を利用してください。
+             * 这个内容块已经废弃。以后请使用{play}。
              */
             "dynamicDescription": ParameterizedString<"play">;
             /**
-             * ノート埋め込み
+             * 嵌入的帖子
              */
             "note": string;
             "_note": {
                 /**
-                 * ノートID
+                 * 帖子 ID
                  */
                 "id": string;
                 /**
-                 * ノートURLをペーストして設定することもできます。
+                 * 您也可以通过粘贴帖子的URL来进行设置。
                  */
                 "idDescription": string;
                 /**
-                 * 詳細な表示
+                 * 显示详细信息
                  */
                 "detailed": string;
             };
@@ -10954,162 +10958,162 @@ export interface Locale extends ILocale {
     };
     "_relayStatus": {
         /**
-         * 承認待ち
+         * 待批准
          */
         "requesting": string;
         /**
-         * 承認済み
+         * 已批准
          */
         "accepted": string;
         /**
-         * 拒否済み
+         * 已拒绝
          */
         "rejected": string;
     };
     "_notification": {
         /**
-         * ファイルがアップロードされました
+         * 文件已上传
          */
         "fileUploaded": string;
         /**
-         * {name}からのメンション
+         * 来自{name}的提及
          */
         "youGotMention": ParameterizedString<"name">;
         /**
-         * {name}からのリプライ
+         * 来自{name}的回复
          */
         "youGotReply": ParameterizedString<"name">;
         /**
-         * {name}による引用
+         * {name} 引用了您
          */
         "youGotQuote": ParameterizedString<"name">;
         /**
-         * {name}がリノートしました
+         * {name} 转发你的帖子
          */
         "youRenoted": ParameterizedString<"name">;
         /**
-         * フォローされました
+         * 关注了你
          */
         "youWereFollowed": string;
         /**
-         * フォローリクエストが来ました
+         * 您有新的关注请求
          */
         "youReceivedFollowRequest": string;
         /**
-         * フォローリクエストが承認されました
+         * 您的关注请求已通过
          */
         "yourFollowRequestAccepted": string;
         /**
-         * アンケートの結果が出ました
+         * 问卷调查结果已生成。
          */
         "pollEnded": string;
         /**
-         * 予約ノートが投稿されました
+         * 定时帖子已发布
          */
         "scheduledNotePosted": string;
         /**
-         * 予約ノートの投稿に失敗しました
+         * 定时帖子发布失败
          */
         "scheduledNotePostFailed": string;
         /**
-         * 新しい投稿
+         * 新的帖子
          */
         "newNote": string;
         /**
-         * アンテナ {name}
+         * 天线 {name}
          */
         "unreadAntennaNote": ParameterizedString<"name">;
         /**
-         * ロールが付与されました
+         * 授予的角色
          */
         "roleAssigned": string;
         /**
-         * ダイレクトメッセージのグループへ招待されました
+         * 您已被邀请加入群聊
          */
         "chatRoomInvitationReceived": string;
         /**
-         * プッシュ通知の更新をしました
+         * 推送通知已更新
          */
         "emptyPushNotificationMessage": string;
         /**
-         * 実績を獲得
+         * 获得成就
          */
         "achievementEarned": string;
         /**
-         * 通知テスト
+         * 测试通知
          */
         "testNotification": string;
         /**
-         * 通知の表示を確かめる
+         * 检查通知显示
          */
         "checkNotificationBehavior": string;
         /**
-         * テスト通知を送信する
+         * 发送测试通知
          */
         "sendTestNotification": string;
         /**
-         * 通知はこのように表示されます
+         * 通知将会这样表示
          */
         "notificationWillBeDisplayedLikeThis": string;
         /**
-         * {n}人がリアクションしました
+         * {n} 人回应了
          */
         "reactedBySomeUsers": ParameterizedString<"n">;
         /**
-         * {n}人がいいねしました
+         * {n}人赞了你的帖子
          */
         "likedBySomeUsers": ParameterizedString<"n">;
         /**
-         * {n}人がリノートしました
+         * {n} 人转发了
          */
         "renotedBySomeUsers": ParameterizedString<"n">;
         /**
-         * {n}人にフォローされました
+         * 被 {n} 人关注
          */
         "followedBySomeUsers": ParameterizedString<"n">;
         /**
-         * 通知の履歴をリセットする
+         * 重置通知历史
          */
         "flushNotification": string;
         /**
-         * {x}のエクスポートが完了しました
+         * 已完成 {x} 的导出
          */
         "exportOfXCompleted": ParameterizedString<"x">;
         /**
-         * ログインがありました
+         * 有新的登录
          */
         "login": string;
         /**
-         * アクセストークンが作成されました
+         * 访问令牌已创建
          */
         "createToken": string;
         /**
-         * 心当たりがない場合は「{text}」を通じてアクセストークンを削除してください。
+         * 如果不明白其用途，请遵循 “{text}” 的指示删除访问令牌。
          */
         "createTokenDescription": ParameterizedString<"text">;
         "_types": {
             /**
-             * すべて
+             * 全部
              */
             "all": string;
             /**
-             * ユーザーの新規投稿
+             * 用户的新帖子
              */
             "note": string;
             /**
-             * フォロー
+             * 关注中
              */
             "follow": string;
             /**
-             * メンション
+             * 提及
              */
             "mention": string;
             /**
-             * リプライ
+             * 回复
              */
             "reply": string;
             /**
-             * リノート
+             * 转贴
              */
             "renote": string;
             /**
@@ -11117,211 +11121,211 @@ export interface Locale extends ILocale {
              */
             "quote": string;
             /**
-             * リアクション
+             * 回应
              */
             "reaction": string;
             /**
-             * アンケートが終了
+             * 问卷调查结束
              */
             "pollEnded": string;
             /**
-             * 予約投稿が成功した
+             * 定时发送成功
              */
             "scheduledNotePosted": string;
             /**
-             * 予約投稿が失敗した
+             * 定时发送失败
              */
             "scheduledNotePostFailed": string;
             /**
-             * フォロー申請を受け取った
+             * 收到关注请求
              */
             "receiveFollowRequest": string;
             /**
-             * フォローが受理された
+             * 关注请求已通过
              */
             "followRequestAccepted": string;
             /**
-             * ロールが付与された
+             * 授予的角色
              */
             "roleAssigned": string;
             /**
-             * ダイレクトメッセージのグループへ招待された
+             * 您已被邀请加入群聊
              */
             "chatRoomInvitationReceived": string;
             /**
-             * 実績の獲得
+             * 取得的成就
              */
             "achievementEarned": string;
             /**
-             * エクスポートが完了した
+             * 已完成导出
              */
             "exportCompleted": string;
             /**
-             * ログイン
+             * 登录
              */
             "login": string;
             /**
-             * アクセストークンの作成
+             * 创建访问令牌
              */
             "createToken": string;
             /**
-             * 通知のテスト
+             * 测试通知
              */
             "test": string;
             /**
-             * 連携アプリからの通知
+             * 关联应用的通知
              */
             "app": string;
         };
         "_actions": {
             /**
-             * フォローバック
+             * 回关
              */
             "followBack": string;
             /**
-             * 返信
+             * 回复
              */
             "reply": string;
             /**
-             * リノート
+             * 转发
              */
             "renote": string;
         };
     };
     "_deck": {
         /**
-         * 常にメインカラムを表示
+         * 总是显示主列
          */
         "alwaysShowMainColumn": string;
         /**
-         * カラムの寄せ
+         * 列对齐
          */
         "columnAlign": string;
         /**
-         * カラム間のマージン
+         * 列间距
          */
         "columnGap": string;
         /**
-         * デッキメニューの位置
+         * Deck 菜单位置
          */
         "deckMenuPosition": string;
         /**
-         * ナビゲーションバーの位置
+         * 导航栏位置
          */
         "navbarPosition": string;
         /**
-         * カラムを追加
+         * 添加列
          */
         "addColumn": string;
         /**
-         * 新着ノート通知の設定
+         * 新帖子通知设定
          */
         "newNoteNotificationSettings": string;
         /**
-         * カラムの設定
+         * 列设置
          */
         "configureColumn": string;
         /**
-         * 左に移動
+         * 向左移动
          */
         "swapLeft": string;
         /**
-         * 右に移動
+         * 向右移动
          */
         "swapRight": string;
         /**
-         * 上に移動
+         * 向上移动
          */
         "swapUp": string;
         /**
-         * 下に移動
+         * 向下移动
          */
         "swapDown": string;
         /**
-         * 左にスタック
+         * 向左折叠
          */
         "stackLeft": string;
         /**
-         * 右に出す
+         * 向右弹出
          */
         "popRight": string;
         /**
-         * プロファイル
+         * 配置文件
          */
         "profile": string;
         /**
-         * 新規プロファイル
+         * 新建配置文件
          */
         "newProfile": string;
         /**
-         * プロファイルを削除
+         * 删除配置文件
          */
         "deleteProfile": string;
         /**
-         * カラムを組み合わせて自分だけのインターフェイスを作りましょう！
+         * 将各列进行组合以创建您自己的界面！
          */
         "introduction": string;
         /**
-         * カラムを追加するには、画面の + をクリックします。
+         * 可以随时通过屏幕右侧的 + 来添加列
          */
         "introduction2": string;
         /**
-         * カラムのメニューから、「ウィジェットの編集」を選択してウィジェットを追加してください
+         * 从列菜单中，选择 “小工具编辑” 来添加小工具
          */
         "widgetsIntroduction": string;
         /**
-         * 非ルートページは簡易UIで表示
+         * 使用简易UI显示导航页面
          */
         "useSimpleUiForNonRootPages": string;
         /**
-         * 「幅を自動調整」が有効の場合、これが幅の最小値となります
+         * 如果启用 “自适应宽度”，此为最小宽度
          */
         "usedAsMinWidthWhenFlexible": string;
         /**
-         * 幅を自動調整
+         * 自适应宽度
          */
         "flexible": string;
         /**
-         * プロファイル情報のデバイス間同期を有効にする
+         * 启用配置文件跨设备同步
          */
         "enableSyncBetweenDevicesForProfiles": string;
         /**
-         * UIの説明を見る
+         * 查看用户界面说明
          */
         "showHowToUse": string;
         "_howToUse": {
             /**
-             * カラム追加
+             * 添加列
              */
             "addColumn_title": string;
             /**
-             * カラムの種類を選んで追加できます。
+             * 可以选择要添加的列的类型。
              */
             "addColumn_description": string;
             /**
-             * UI設定
+             * 用户界面设置
              */
             "settings_title": string;
             /**
-             * デッキUIの詳細設定を行えます。
+             * 可以配置 Deck UI 的详细设置，
              */
             "settings_description": string;
             /**
-             * プロファイル切り替え
+             * 切换配置文件
              */
             "switchProfile_title": string;
             /**
-             * UIのレイアウトをプロファイルとして保存し、いつでも切り替えられるようにできます。
+             * 将用户界面布局保存为配置文件，以便随时切换。
              */
             "switchProfile_description": string;
         };
         "_columns": {
             /**
-             * メイン
+             * 主列
              */
             "main": string;
             /**
-             * ウィジェット
+             * 小工具
              */
             "widgets": string;
             /**
@@ -11329,176 +11333,176 @@ export interface Locale extends ILocale {
              */
             "notifications": string;
             /**
-             * タイムライン
+             * 时间线
              */
             "tl": string;
             /**
-             * アンテナ
+             * 天线
              */
             "antenna": string;
             /**
-             * リスト
+             * 列表
              */
             "list": string;
             /**
-             * チャンネル
+             * 频道
              */
             "channel": string;
             /**
-             * クリップ
+             * 便签
              */
             "clip": string;
             /**
-             * メンション
+             * 提及
              */
             "mentions": string;
             /**
-             * 指名
+             * 指定用户
              */
             "direct": string;
             /**
-             * ロールタイムライン
+             * 角色时间线
              */
             "roleTimeline": string;
             /**
-             * ダイレクトメッセージ
+             * 私信
              */
             "chat": string;
         };
     };
     "_dialog": {
         /**
-         * 最大文字数を超えています！ 現在 {current} / 制限 {max}
+         * 已经超过了最大字符数! 当前字符数 {current} / 限制字符数 {max}
          */
         "charactersExceeded": ParameterizedString<"current" | "max">;
         /**
-         * 最小文字数を下回っています！ 現在 {current} / 制限 {min}
+         * 低于最小字符数！当前字符数 {current} / 限制字符数 {min}
          */
         "charactersBelow": ParameterizedString<"current" | "min">;
     };
     "_disabledTimeline": {
         /**
-         * 無効化されたタイムライン
+         * 时间线已禁用
          */
         "title": string;
         /**
-         * 現在のロールでは、このタイムラインを使用することはできません。
+         * 您不能在当前角色使用时间线。
          */
         "description": string;
     };
     "_drivecleaner": {
         /**
-         * サイズが大きい順
+         * 按大小降序排列
          */
         "orderBySizeDesc": string;
         /**
-         * 追加日が古い順
+         * 按添加日期降序排列
          */
         "orderByCreatedAtAsc": string;
     };
     "_webhookSettings": {
         /**
-         * Webhookを作成
+         * 创建 Webhook
          */
         "createWebhook": string;
         /**
-         * Webhookを編集
+         * 编辑 webhook
          */
         "modifyWebhook": string;
         /**
-         * 名前
+         * 名称
          */
         "name": string;
         /**
-         * シークレット
+         * 密钥
          */
         "secret": string;
         /**
-         * トリガー
+         * 触发
          */
         "trigger": string;
         /**
-         * 有効
+         * 已启用
          */
         "active": string;
         "_events": {
             /**
-             * フォローしたとき
+             * 关注时
              */
             "follow": string;
             /**
-             * フォローされたとき
+             * 被关注时
              */
             "followed": string;
             /**
-             * ノートを投稿したとき
+             * 发布帖文时
              */
             "note": string;
             /**
-             * 返信されたとき
+             * 收到回复时
              */
             "reply": string;
             /**
-             * Renoteされたとき
+             * 被转发时
              */
             "renote": string;
             /**
-             * リアクションがあったとき
+             * 被回应时
              */
             "reaction": string;
             /**
-             * メンションされたとき
+             * 被提及时
              */
             "mention": string;
         };
         "_systemEvents": {
             /**
-             * ユーザーから通報があったとき
+             * 当收到举报时
              */
             "abuseReport": string;
             /**
-             * ユーザーからの通報を処理したとき
+             * 当举报被处理时
              */
             "abuseReportResolved": string;
             /**
-             * ユーザーが作成されたとき
+             * 当用户被创建时
              */
             "userCreated": string;
             /**
-             * モデレーターが一定期間非アクティブになったとき
+             * 当管理员在一段时间内不活跃时
              */
             "inactiveModeratorsWarning": string;
             /**
-             * モデレーターが一定期間非アクティブだったため、システムにより招待制へと変更されたとき
+             * 当因为管理员在一段时间内不活跃，导致服务器变为邀请制时
              */
             "inactiveModeratorsInvitationOnlyChanged": string;
         };
         /**
-         * Webhookを削除しますか？
+         * 要删除 webhook 吗？
          */
         "deleteConfirm": string;
         /**
-         * スイッチの右にあるボタンをクリックするとダミーのデータを使用したテスト用Webhookを送信できます。
+         * 点击开关右侧的按钮，可以发送使用假数据的测试 Webhook。
          */
         "testRemarks": string;
     };
     "_abuseReport": {
         "_notificationRecipient": {
             /**
-             * 通報の通知先を追加
+             * 新建举报通知
              */
             "createRecipient": string;
             /**
-             * 通報の通知先を編集
+             * 编辑举报通知
              */
             "modifyRecipient": string;
             /**
-             * 通知先の種類
+             * 通知类型
              */
             "recipientType": string;
             "_recipientType": {
                 /**
-                 * メール
+                 * 邮箱
                  */
                 "mail": string;
                 /**
@@ -11507,258 +11511,258 @@ export interface Locale extends ILocale {
                 "webhook": string;
                 "_captions": {
                     /**
-                     * モデレーター権限を持つユーザーのメールアドレスに通知を送ります(通報を受けた時のみ)
+                     * 当收到新举报时，向持有监察员权限的用户发送通知邮件
                      */
                     "mail": string;
                     /**
-                     * 指定したSystemWebhookに通知を送ります(通報を受けた時と通報を解決した時にそれぞれ発信)
+                     * 当收到新举报及举报被处理时，使用指定的 SystemWebhook 发送通知
                      */
                     "webhook": string;
                 };
             };
             /**
-             * キーワード
+             * 关键字
              */
             "keywords": string;
             /**
-             * 通知先ユーザー
+             * 通知的用户
              */
             "notifiedUser": string;
             /**
-             * 使用するWebhook
+             * 使用的 webhook
              */
             "notifiedWebhook": string;
             /**
-             * 通知先を削除しますか？
+             * 要删除通知吗？
              */
             "deleteConfirm": string;
         };
     };
     "_moderationLogTypes": {
         /**
-         * ジョブキューをクリア
+         * 清除队列
          */
         "clearQueue": string;
         /**
-         * キューのジョブを再試行
+         * 重新执行队列中的任务
          */
         "promoteQueue": string;
         /**
-         * ロールを作成
+         * 创建角色
          */
         "createRole": string;
         /**
-         * ロールを削除
+         * 删除角色
          */
         "deleteRole": string;
         /**
-         * ロールを更新
+         * 更新角色
          */
         "updateRole": string;
         /**
-         * ロールへアサイン
+         * 分配角色
          */
         "assignRole": string;
         /**
-         * ロールのアサイン解除
+         * 取消分配角色
          */
         "unassignRole": string;
         /**
-         * 凍結
+         * 冻结
          */
         "suspend": string;
         /**
-         * 凍結解除
+         * 解除冻结
          */
         "unsuspend": string;
         /**
-         * カスタム絵文字追加
+         * 添加自定义表情符号
          */
         "addCustomEmoji": string;
         /**
-         * カスタム絵文字更新
+         * 更新自定义表情符号
          */
         "updateCustomEmoji": string;
         /**
-         * カスタム絵文字削除
+         * 删除自定义表情符号
          */
         "deleteCustomEmoji": string;
         /**
-         * サーバー設定更新
+         * 更新服务器设置
          */
         "updateServerSettings": string;
         /**
-         * ユーザーのモデレーションノート更新
+         * 更新管理笔记
          */
         "updateUserNote": string;
         /**
-         * ファイルを削除
+         * 删除文件
          */
         "deleteDriveFile": string;
         /**
-         * ノートを削除
+         * 删除帖子
          */
         "deleteNote": string;
         /**
-         * 全体のお知らせを作成
+         * 创建全体通知
          */
         "createGlobalAnnouncement": string;
         /**
-         * ユーザーへお知らせを作成
+         * 创建用户通知
          */
         "createUserAnnouncement": string;
         /**
-         * 全体のお知らせを更新
+         * 更新全体通知
          */
         "updateGlobalAnnouncement": string;
         /**
-         * ユーザーのお知らせを更新
+         * 更新用户通知
          */
         "updateUserAnnouncement": string;
         /**
-         * 全体のお知らせを削除
+         * 删除全体通知
          */
         "deleteGlobalAnnouncement": string;
         /**
-         * ユーザーのお知らせを削除
+         * 删除用户通知
          */
         "deleteUserAnnouncement": string;
         /**
-         * パスワードをリセット
+         * 重置密码
          */
         "resetPassword": string;
         /**
-         * リモートサーバーを停止
+         * 停止远程服务器
          */
         "suspendRemoteInstance": string;
         /**
-         * リモートサーバーを再開
+         * 恢复远程服务器
          */
         "unsuspendRemoteInstance": string;
         /**
-         * リモートサーバーのモデレーションノート更新
+         * 更新远程服务器的管理笔记
          */
         "updateRemoteInstanceNote": string;
         /**
-         * ファイルをセンシティブ付与
+         * 标记为敏感内容
          */
         "markSensitiveDriveFile": string;
         /**
-         * ファイルをセンシティブ解除
+         * 取消标记为敏感内容
          */
         "unmarkSensitiveDriveFile": string;
         /**
-         * 通報を解決
+         * 处理举报
          */
         "resolveAbuseReport": string;
         /**
-         * 通報を転送
+         * 转发举报
          */
         "forwardAbuseReport": string;
         /**
-         * 通報のモデレーションノート更新
+         * 更新举报用管理笔记
          */
         "updateAbuseReportNote": string;
         /**
-         * 招待コードを作成
+         * 生成邀请码
          */
         "createInvitation": string;
         /**
-         * 広告を作成
+         * 创建了广告
          */
         "createAd": string;
         /**
-         * 広告を削除
+         * 删除了广告
          */
         "deleteAd": string;
         /**
-         * 広告を更新
+         * 更新了广告
          */
         "updateAd": string;
         /**
-         * アイコンデコレーションを作成
+         * 新建头像挂件
          */
         "createAvatarDecoration": string;
         /**
-         * アイコンデコレーションを更新
+         * 更新头像挂件
          */
         "updateAvatarDecoration": string;
         /**
-         * アイコンデコレーションを削除
+         * 删除头像挂件
          */
         "deleteAvatarDecoration": string;
         /**
-         * ユーザーの二要素認証を解除
+         * 解除用户的双重认证
          */
         "unsetMfa": string;
         /**
-         * ユーザーのアイコンを解除
+         * 清除用户头像
          */
         "unsetUserAvatar": string;
         /**
-         * ユーザーのバナーを解除
+         * 清除用户横幅
          */
         "unsetUserBanner": string;
         /**
-         * SystemWebhookを作成
+         * 新建了 SystemWebhook
          */
         "createSystemWebhook": string;
         /**
-         * SystemWebhookを更新
+         * 更新了 SystemWebhook
          */
         "updateSystemWebhook": string;
         /**
-         * SystemWebhookを削除
+         * 删除了 SystemWebhook
          */
         "deleteSystemWebhook": string;
         /**
-         * 通報の通知先を作成
+         * 新建了举报通知
          */
         "createAbuseReportNotificationRecipient": string;
         /**
-         * 通報の通知先を更新
+         * 更新了举报通知
          */
         "updateAbuseReportNotificationRecipient": string;
         /**
-         * 通報の通知先を削除
+         * 删除了举报通知
          */
         "deleteAbuseReportNotificationRecipient": string;
         /**
-         * アカウントを削除
+         * 删除帐户
          */
         "deleteAccount": string;
         /**
-         * ページを削除
+         * 删除页面
          */
         "deletePage": string;
         /**
-         * Playを削除
+         * 删除 Play
          */
         "deleteFlash": string;
         /**
-         * ギャラリーの投稿を削除
+         * 删除相册内容
          */
         "deleteGalleryPost": string;
         /**
-         * ダイレクトメッセージのグループを削除
+         * 删除群聊
          */
         "deleteChatRoom": string;
         /**
-         * プロキシアカウントの説明を更新
+         * 更新代理账户的简介
          */
         "updateProxyAccountDescription": string;
     };
     "_fileViewer": {
         /**
-         * ファイルの詳細
+         * 文件信息
          */
         "title": string;
         /**
-         * ファイルタイプ
+         * 文件类型
          */
         "type": string;
         /**
-         * ファイルサイズ
+         * 文件大小
          */
         "size": string;
         /**
@@ -11766,145 +11770,145 @@ export interface Locale extends ILocale {
          */
         "url": string;
         /**
-         * 追加日
+         * 添加日期
          */
         "uploadedAt": string;
         /**
-         * 添付されているノート
+         * 附加到的帖子
          */
         "attachedNotes": string;
         /**
-         * 利用
+         * 使用
          */
         "usage": string;
         /**
-         * このページは、このファイルをアップロードしたユーザーしか閲覧できません。
+         * 此页只能被该文件的上传者查看。
          */
         "thisPageCanBeSeenFromTheAuthor": string;
     };
     "_externalResourceInstaller": {
         /**
-         * 外部サイトからインストール
+         * 从外部站点安装
          */
         "title": string;
         /**
-         * 配布元が信頼できるかを確認した上でインストールしてください。
+         * 请在安装前确保来源可靠
          */
         "checkVendorBeforeInstall": string;
         "_plugin": {
             /**
-             * このプラグインをインストールしますか？
+             * 要安装此插件吗？
              */
             "title": string;
         };
         "_theme": {
             /**
-             * このテーマをインストールしますか？
+             * 要安装此主题吗？
              */
             "title": string;
         };
         "_meta": {
             /**
-             * 基本のカラースキーム
+             * 基本配色方案
              */
             "base": string;
         };
         "_vendorInfo": {
             /**
-             * 配布元情報
+             * 来源信息
              */
             "title": string;
             /**
-             * 参照したエンドポイント
+             * 参考端点
              */
             "endpoint": string;
             /**
-             * ファイル整合性の確認
+             * 确认文件完整性
              */
             "hashVerify": string;
         };
         "_errors": {
             "_invalidParams": {
                 /**
-                 * パラメータが不足しています
+                 * 缺少参数
                  */
                 "title": string;
                 /**
-                 * 外部サイトからデータを取得するために必要な情報が不足しています。URLをお確かめください。
+                 * 缺少从外部站点获取数据所需的信息。请检查 URL。
                  */
                 "description": string;
             };
             "_resourceTypeNotSupported": {
                 /**
-                 * この外部リソースには対応していません
+                 * 不支持此外部资源
                  */
                 "title": string;
                 /**
-                 * この外部サイトから取得したリソースの種別には対応していません。サイト管理者にお問い合わせください。
+                 * 不支持从此外部站点获取的资源类型。请联系站点管理员。
                  */
                 "description": string;
             };
             "_failedToFetch": {
                 /**
-                 * データの取得に失敗しました
+                 * 获取数据失败
                  */
                 "title": string;
                 /**
-                 * 外部サイトとの通信に失敗しました。もう一度試しても改善しない場合、サイト管理者にお問い合わせください。
+                 * 与外部站点的通信失败。 如果重试后问题仍然存在，请联系站点管理员。
                  */
                 "fetchErrorDescription": string;
                 /**
-                 * 外部サイトから取得したデータが読み取れませんでした。サイト管理者にお問い合わせください。
+                 * 无法读取从外部站点取得的数据。请联系站点管理员。
                  */
                 "parseErrorDescription": string;
             };
             "_hashUnmatched": {
                 /**
-                 * 正しいデータが取得できませんでした
+                 * 无法获取正确数据
                  */
                 "title": string;
                 /**
-                 * 提供されたデータの整合性の確認に失敗しました。セキュリティ上、インストールは続行できません。サイト管理者にお問い合わせください。
+                 * 无法验证数据的完整性。安全起见，无法继续安装。请联系站点管理员。
                  */
                 "description": string;
             };
             "_pluginParseFailed": {
                 /**
-                 * AiScript エラー
+                 * AiScript 错误
                  */
                 "title": string;
                 /**
-                 * データは取得できたものの、AiScriptの解析時にエラーがあったため読み込めませんでした。プラグインの作者にお問い合わせください。エラーの詳細はJavascriptコンソールをご確認ください。
+                 * 虽然取得了数据，但是由于 AiScript 解析时出现错误，无法读取数据。请联系插件的作者。可在 Javascript 控制台查看错误详情。
                  */
                 "description": string;
             };
             "_pluginInstallFailed": {
                 /**
-                 * プラグインのインストールに失敗しました
+                 * 插件安装失败
                  */
                 "title": string;
                 /**
-                 * プラグインのインストール中に問題が発生しました。もう一度お試しください。エラーの詳細はJavascriptコンソールをご覧ください。
+                 * 安装插件时出现错误。请再试一次。可在 Javascript 控制台查看错误详情。
                  */
                 "description": string;
             };
             "_themeParseFailed": {
                 /**
-                 * テーマ解析エラー
+                 * 主题解析错误
                  */
                 "title": string;
                 /**
-                 * データは取得できたものの、テーマファイルの解析時にエラーがあったため読み込めませんでした。テーマの作者にお問い合わせください。エラーの詳細はJavascriptコンソールをご確認ください。
+                 * 虽然取得了主题文件，但是由于解析时出现错误，无法加载主题。请联系主题的作者。可在 Javascript 控制台查看错误详情。
                  */
                 "description": string;
             };
             "_themeInstallFailed": {
                 /**
-                 * テーマのインストールに失敗しました
+                 * 安装主题失败
                  */
                 "title": string;
                 /**
-                 * テーマのインストール中に問題が発生しました。もう一度お試しください。エラーの詳細はJavascriptコンソールをご覧ください。
+                 * 安装主题时出错。请再试一次。可在 Javascript 控制台查看错误详情。
                  */
                 "description": string;
             };
@@ -11913,51 +11917,52 @@ export interface Locale extends ILocale {
     "_dataSaver": {
         "_media": {
             /**
-             * メディアの読み込みを無効化
+             * 加载媒体
              */
             "title": string;
             /**
-             * 画像・動画が自動で読み込まれるのを防止します。隠れている画像・動画はタップすると読み込まれます。
+             * 防止自动加载图像和视频。 点击隐藏的图像/视频即可加载它们。
+             *
              */
             "description": string;
         };
         "_avatar": {
             /**
-             * アイコン画像のアニメーションを無効化
+             * 头像
              */
             "title": string;
             /**
-             * アイコン画像のアニメーションが停止します。アニメーション画像は通常の画像よりファイルサイズが大きいことがあるので、データ通信量をさらに削減できます。
+             * 不播放动态头像。 动态图像的文件大小远大于一般图像，不播放能够节省更多数据流量。
              */
             "description": string;
         };
         "_urlPreviewThumbnail": {
             /**
-             * URLプレビューのサムネイルを非表示
+             * 隐藏 URL 预览图
              */
             "title": string;
             /**
-             * URLプレビューのサムネイル画像が読み込まれなくなります。
+             * 不再加载 URL 预览图。
              */
             "description": string;
         };
         "_disableUrlPreview": {
             /**
-             * URLプレビューを無効化
+             * 禁用 URL 预览
              */
             "title": string;
             /**
-             * URLプレビュー機能を無効化します。サムネイル画像だけと違い、リンク先の情報の読み込み自体を削減できます。
+             * 关闭 URL 预览功能。与预览缩略图不同，减少了链接信息的加载。
              */
             "description": string;
         };
         "_code": {
             /**
-             * コードハイライトを非表示
+             * 代码高亮
              */
             "title": string;
             /**
-             * MFMなどでコードハイライト記法が使われている場合、タップするまで読み込まれなくなります。コードハイライトではハイライトする言語ごとにその定義ファイルを読み込む必要がありますが、それらが自動で読み込まれなくなるため、通信量の削減が見込めます。
+             * 如果使用了代码高亮标记，例如在 MFM 中，则在点击之前不会加载。 代码高亮要求加载每种高亮语言的定义文件，由于这些文件不再自动加载，因此有望减少数据传输量。
              */
             "description": string;
         };
@@ -11972,97 +11977,97 @@ export interface Locale extends ILocale {
          */
         "S": string;
         /**
-         * 一部のクライアント設定で、季節を判定するために使用します。
+         * 在某些客户端设置中用来确定季节
          */
         "caption": string;
     };
     "_reversi": {
         /**
-         * リバーシ
+         * 黑白棋
          */
         "reversi": string;
         /**
-         * 対局の設定
+         * 对局设置
          */
         "gameSettings": string;
         /**
-         * ボードを選択
+         * 选择棋盘
          */
         "chooseBoard": string;
         /**
-         * 先行/後攻
+         * 先手/后手
          */
         "blackOrWhite": string;
         /**
-         * {name}が黒(先行)
+         * {name}执黑（先手）
          */
         "blackIs": ParameterizedString<"name">;
         /**
-         * ルール
+         * 规则
          */
         "rules": string;
         /**
-         * 対局はまもなく開始されます
+         * 对局即将开始
          */
         "thisGameIsStartedSoon": string;
         /**
-         * 相手の準備が完了するのを待っています
+         * 等待对手准备
          */
         "waitingForOther": string;
         /**
-         * あなたの準備が完了するのを待っています
+         * 等待你的准备
          */
         "waitingForMe": string;
         /**
-         * 準備してください
+         * 请准备
          */
         "waitingBoth": string;
         /**
-         * 準備完了
+         * 准备就绪
          */
         "ready": string;
         /**
-         * 準備を再開
+         * 重新准备
          */
         "cancelReady": string;
         /**
-         * 相手のターンです
+         * 对手的回合
          */
         "opponentTurn": string;
         /**
-         * あなたのターンです
+         * 你的回合
          */
         "myTurn": string;
         /**
-         * {name}のターンです
+         * {name}的回合
          */
         "turnOf": ParameterizedString<"name">;
         /**
-         * {name}のターン
+         * {name}的回合
          */
         "pastTurnOf": ParameterizedString<"name">;
         /**
-         * 投了
+         * 认输
          */
         "surrender": string;
         /**
-         * 投了により
+         * 已认输
          */
         "surrendered": string;
         /**
-         * 時間切れ
+         * 超时
          */
         "timeout": string;
         /**
-         * 引き分け
+         * 平局
          */
         "drawn": string;
         /**
-         * {name}の勝ち
+         * {name} 获胜
          */
         "won": ParameterizedString<"name">;
         /**
-         * 黒
+         * 黑
          */
         "black": string;
         /**
@@ -12070,135 +12075,135 @@ export interface Locale extends ILocale {
          */
         "white": string;
         /**
-         * 合計
+         * 总计
          */
         "total": string;
         /**
-         * {count}ターン目
+         * 第{count}回合
          */
         "turnCount": ParameterizedString<"count">;
         /**
-         * 自分の対局
+         * 我的对局
          */
         "myGames": string;
         /**
-         * みんなの対局
+         * 所有对局
          */
         "allGames": string;
         /**
-         * 終了
+         * 结束
          */
         "ended": string;
         /**
-         * 対局中
+         * 对局中
          */
         "playing": string;
         /**
-         * 石の少ない方が勝ち(ロセオ)
+         * 落子少的一方获胜（黑白棋规则）
          */
         "isLlotheo": string;
         /**
-         * ループマップ
+         * 循环棋盘
          */
         "loopedMap": string;
         /**
-         * どこでも置けるモード
+         * 无限制放置模式
          */
         "canPutEverywhere": string;
         /**
-         * 1ターンの時間制限
+         * 1回合的时间限制
          */
         "timeLimitForEachTurn": string;
         /**
-         * フリーマッチ
+         * 自由匹配
          */
         "freeMatch": string;
         /**
-         * 対戦相手を探しています
+         * 正在寻找对手
          */
         "lookingForPlayer": string;
         /**
-         * 対局がキャンセルされました
+         * 对局被取消了
          */
         "gameCanceled": string;
         /**
-         * 開始時に対局をタイムラインに投稿
+         * 开始时在时间线发布对局
          */
         "shareToTlTheGameWhenStart": string;
         /**
-         * 対局を開始しました！ #MisskeyReversi
+         * 对局开始！#MisskeyReversi
          */
         "iStartedAGame": string;
         /**
-         * 相手が設定を変更しました
+         * 对手更改了设定
          */
         "opponentHasSettingsChanged": string;
         /**
-         * 変則許可 (完全フリー)
+         * 允许特殊规则（完全自由）
          */
         "allowIrregularRules": string;
         /**
-         * 変則なし
+         * 禁止特殊规则
          */
         "disallowIrregularRules": string;
         /**
-         * 盤面に行・列番号を表示
+         * 显示行号和列号
          */
         "showBoardLabels": string;
         /**
-         * 石をアイコンにする
+         * 用头像作为棋子
          */
         "useAvatarAsStone": string;
     };
     "_offlineScreen": {
         /**
-         * オフライン - サーバーに接続できません
+         * 离线——无法连接到服务器
          */
         "title": string;
         /**
-         * サーバーに接続できません
+         * 无法连接到服务器
          */
         "header": string;
     };
     "_urlPreviewSetting": {
         /**
-         * URLプレビューの設定
+         * 设置 URL 预览
          */
         "title": string;
         /**
-         * URLプレビューを有効にする
+         * 启用 URL 预览
          */
         "enable": string;
         /**
-         * プレビュー先のリダイレクトを許可
+         * 允许预览目标的重定向
          */
         "allowRedirect": string;
         /**
-         * 入力されたURLがリダイレクトされる場合に、そのリダイレクト先をたどってプレビューを表示するかどうかを設定します。無効にするとサーバーリソースの節約になりますが、リダイレクト先の内容は表示されなくなります。
+         * 如果输入的 URL 被重定向，可设置是否跟随重定向目标并显示预览。禁用此选项将节省服务器资源，但重定向目标的内容将不会显示。
          */
         "allowRedirectDescription": string;
         /**
-         * プレビュー取得時のタイムアウト(ms)
+         * 超时阈值（ms）
          */
         "timeout": string;
         /**
-         * プレビュー取得の所要時間がこの値を超えた場合、プレビューは生成されません。
+         * 如果获取预览所用时间超过这个值，则不生成预览。
          */
         "timeoutDescription": string;
         /**
-         * Content-Lengthの最大値(byte)
+         * Content-Length 的最大值（byte）
          */
         "maximumContentLength": string;
         /**
-         * Content-Lengthがこの値を超えた場合、プレビューは生成されません。
+         * 如果 Content-Length 超过这个值，则不生成预览。
          */
         "maximumContentLengthDescription": string;
         /**
-         * Content-Lengthが取得できた場合のみプレビューを生成
+         * 仅在能取得 Content-Length 时生成预览
          */
         "requireContentLength": string;
         /**
-         * 相手サーバがContent-Lengthを返さない場合、プレビューは生成されません。
+         * 如果目标服务器不返回 Content-Length，则不生成预览。
          */
         "requireContentLengthDescription": string;
         /**
@@ -12206,254 +12211,254 @@ export interface Locale extends ILocale {
          */
         "userAgent": string;
         /**
-         * プレビュー取得時に使用されるUser-Agentを設定します。空欄の場合、デフォルトのUser-Agentが使用されます。
+         * 设定获取预览时使用的 User-Agent。留空时将使用默认的 User-Agent。
          */
         "userAgentDescription": string;
         /**
-         * プレビューを生成するプロキシのエンドポイント
+         * 用来生成预览的代理的 endpoint。
          */
         "summaryProxy": string;
         /**
-         * Misskey本体ではなく、サマリープロキシを使用してプレビューを生成します。
+         * 不使用 Misskey 本体，而是通过 Summaly Proxy 生成预览。
          */
         "summaryProxyDescription": string;
         /**
-         * プロキシには下記パラメータがクエリ文字列として連携されます。プロキシ側がこれらをサポートしない場合、設定値は無視されます。
+         * 下面的参数将作为查询字符串发送至代理。代理侧如果不支持此设置，则忽略设定值。
          */
         "summaryProxyDescription2": string;
     };
     "_mediaControls": {
         /**
-         * ピクチャインピクチャ
+         * 画中画
          */
         "pip": string;
         /**
-         * 再生速度
+         * 播放速度
          */
         "playbackRate": string;
         /**
-         * ループ再生
+         * 循环播放
          */
         "loop": string;
     };
     "_contextMenu": {
         /**
-         * コンテキストメニュー
+         * 右键菜单
          */
         "title": string;
         /**
-         * アプリケーション
+         * 使用
          */
         "app": string;
         /**
-         * Shiftキーでアプリケーション
+         * 按住 Shift 键使用
          */
         "appWithShift": string;
         /**
-         * ブラウザのUI
+         * 浏览器的原生界面
          */
         "native": string;
     };
     "_gridComponent": {
         "_error": {
             /**
-             * この値は必須項目です
+             * 此值为必填项
              */
             "requiredValue": string;
             /**
-             * 正規表現によるバリデーションはtype:textのカラムのみサポートします。
+             * 正则表达式验证仅支持 type:text 列。
              */
             "columnTypeNotSupport": string;
             /**
-             * この値は{pattern}のパターンに一致しません
+             * 此值与 {pattern} 的模式不一致
              */
             "patternNotMatch": ParameterizedString<"pattern">;
             /**
-             * この値は一意である必要があります
+             * 此值必须唯一
              */
             "notUnique": string;
         };
     };
     "_roleSelectDialog": {
         /**
-         * 選択されていません
+         * 未选中
          */
         "notSelected": string;
     };
     "_customEmojisManager": {
         "_gridCommon": {
             /**
-             * 選択行をコピー
+             * 复制所选行
              */
             "copySelectionRows": string;
             /**
-             * 選択範囲をコピー
+             * 复制所选范围
              */
             "copySelectionRanges": string;
             /**
-             * 選択行を削除
+             * 删除所选行
              */
             "deleteSelectionRows": string;
             /**
-             * 選択範囲の値をクリア
+             * 删除所选范围的行
              */
             "deleteSelectionRanges": string;
             /**
-             * 検索設定
+             * 搜索设置
              */
             "searchSettings": string;
             /**
-             * 検索条件を詳細に設定します。
+             * 设置详细的搜索条件。
              */
             "searchSettingCaption": string;
             /**
-             * 表示件数
+             * 显示项目数
              */
             "searchLimit": string;
             /**
-             * 並び順
+             * 排序方式
              */
             "sortOrder": string;
             /**
-             * 登録ログ
+             * 注册日志
              */
             "registrationLogs": string;
             /**
-             * 絵文字更新・削除時のログが表示されます。更新・削除操作を行ったり、ページを遷移・リロードすると消えます。
+             * 将显示更新和删除表情符号的日志。执行更新或删除操作，又或者更改或重新加载页面时会消失。
              */
             "registrationLogsCaption": string;
             /**
-             * 絵文字の更新・削除に失敗しました。詳細は登録ログをご確認ください。
+             * 更新或删除表情符号失败。详情请确认注册日志。
              */
             "alertEmojisRegisterFailedDescription": string;
         };
         "_logs": {
             /**
-             * 成功ログを表示
+             * 显示成功日志
              */
             "showSuccessLogSwitch": string;
             /**
-             * 失敗ログはありません。
+             * 没有失败日志。
              */
             "failureLogNothing": string;
             /**
-             * ログはありません。
+             * 没有日志
              */
             "logNothing": string;
         };
         "_remote": {
             /**
-             * 選択行の詳細
+             * 所选行的详细信息
              */
             "selectionRowDetail": string;
             /**
-             * 選択行をインポート
+             * 导入所选行
              */
             "importSelectionRows": string;
             /**
-             * 選択範囲の行をインポート
+             * 导入所选范围的行
              */
             "importSelectionRangesRows": string;
             /**
-             * チェックされた絵文字をインポート
+             * 导入已选择的表情符号
              */
             "importEmojisButton": string;
             /**
-             * 絵文字のインポート
+             * 导入表情符号
              */
             "confirmImportEmojisTitle": string;
             /**
-             * リモートから受信した{count}個の絵文字のインポートを行います。絵文字のライセンスに十分な注意を払ってください。実行しますか？
+             * 是否导入从远程服务器接收的 {count} 个表情符号？请密切关注表情符号的许可协议。
              */
             "confirmImportEmojisDescription": ParameterizedString<"count">;
         };
         "_local": {
             /**
-             * 登録済み絵文字一覧
+             * 已注册的表情符号列表
              */
             "tabTitleList": string;
             /**
-             * 絵文字の登録
+             * 注册表情符号
              */
             "tabTitleRegister": string;
             "_list": {
                 /**
-                 * 登録された絵文字はありません。
+                 * 没有已注册的表情符号。
                  */
                 "emojisNothing": string;
                 /**
-                 * 選択行を削除対象にする
+                 * 将所选行标记为删除对象
                  */
                 "markAsDeleteTargetRows": string;
                 /**
-                 * 選択範囲の行を削除対象にする
+                 * 将所选范围的行标记为删除对象
                  */
                 "markAsDeleteTargetRanges": string;
                 /**
-                 * 変更された絵文字はありません。
+                 * 没有已更改的表情符号。
                  */
                 "alertUpdateEmojisNothingDescription": string;
                 /**
-                 * 削除対象の絵文字はありません。
+                 * 没有被标记为删除对象的表情符号。
                  */
                 "alertDeleteEmojisNothingDescription": string;
                 /**
-                 * ページを移動しますか？
+                 * 要离开此页吗？
                  */
                 "confirmMovePage": string;
                 /**
-                 * 表示を変更しますか？
+                 * 要更改显示吗？
                  */
                 "confirmChangeView": string;
                 /**
-                 * {count}個の絵文字を更新します。実行しますか？
+                 * 要更新 {count} 个表情符号吗？
                  */
                 "confirmUpdateEmojisDescription": ParameterizedString<"count">;
                 /**
-                 * チェックがつけられた{count}個の絵文字を削除します。実行しますか？
+                 * 要删除已选择的 {count} 个表情符号吗？
                  */
                 "confirmDeleteEmojisDescription": ParameterizedString<"count">;
                 /**
-                 * 今までに加えた変更がすべてリセットされます。
+                 * 至今为止所做的所有修改都将被重置。
                  */
                 "confirmResetDescription": string;
                 /**
-                 * このページの絵文字に変更が加えられています。
-                 * 保存せずにこのままページを移動すると、このページで加えた変更はすべて破棄されます。
+                 * 此页面上的表情符号已更改。
+                 * 若不保存就离开此页，此页面上所有的更改都将丢失。
                  */
                 "confirmMovePageDesciption": string;
                 /**
-                 * 絵文字に設定されたロールで検索
+                 * 按角色搜索表情符号
                  */
                 "dialogSelectRoleTitle": string;
             };
             "_register": {
                 /**
-                 * アップロード設定
+                 * 上传设置
                  */
                 "uploadSettingTitle": string;
                 /**
-                 * この画面で絵文字アップロードを行う際の動作を設定できます。
+                 * 可以在此页面设置上传表情符号时的行为。
                  */
                 "uploadSettingDescription": string;
                 /**
-                 * ディレクトリ名を"category"に入力する
+                 * 将目录名设为 “category”
                  */
                 "directoryToCategoryLabel": string;
                 /**
-                 * ディレクトリをドラッグ・ドロップした時に、ディレクトリ名を"category"に入力します。
+                 * 拖放目录时，将目录名设置为 “category”。
                  */
                 "directoryToCategoryCaption": string;
                 /**
-                 * リストに表示されている絵文字を新たなカスタム絵文字として登録します。よろしいですか？（負荷を避けるため、一度の操作で登録可能な絵文字は{count}件までです）
+                 * 要将列表内显示的表情符号替换为新的自定义表情符号吗？（为降低服务器负载，一次操作最多只能注册 {count} 个表情符号）
                  */
                 "confirmRegisterEmojisDescription": ParameterizedString<"count">;
                 /**
-                 * 編集内容を破棄し、リストに表示されている絵文字をクリアします。よろしいですか？
+                 * 要放弃编辑并将列表内表示的表情符号清空吗？
                  */
                 "confirmClearEmojisDescription": string;
                 /**
-                 * ドラッグ＆ドロップされた{count}個のファイルをドライブにアップロードします。実行しますか？
+                 * 要将拖放的 {count} 个文件上传到网盘上吗？
                  */
                 "confirmUploadEmojisDescription": ParameterizedString<"count">;
             };
@@ -12461,55 +12466,55 @@ export interface Locale extends ILocale {
     };
     "_embedCodeGen": {
         /**
-         * 埋め込みコードをカスタマイズ
+         * 自定义嵌入代码
          */
         "title": string;
         /**
-         * ヘッダーを表示
+         * 显示标题
          */
         "header": string;
         /**
-         * 自動で続きを読み込む（非推奨）
+         * 连续加载（不推荐）
          */
         "autoload": string;
         /**
-         * 高さの最大値
+         * 最大高度
          */
         "maxHeight": string;
         /**
-         * 0で最大値の設定が無効になります。ウィジェットが縦に伸び続けるのを防ぐために、何らかの値に指定してください。
+         * 若将最大值设为 0 则不限制最大高度。为防止小工具无限增高，建议设置一下。
          */
         "maxHeightDescription": string;
         /**
-         * 高さの最大値制限が無効（0）になっています。これが意図した変更ではない場合は、高さの最大値を何らかの値に設定してください。
+         * 最大高度限制已禁用（0）。若这不是您想要的效果，请将最大高度设一个值。
          */
         "maxHeightWarn": string;
         /**
-         * プレビュー画面で表示可能な範囲を超えたため、実際に埋め込んだ際とは表示が異なります。
+         * 由于超出了预览画面可显示的范围，因此显示内容会与实际嵌入时有所不同。
          */
         "previewIsNotActual": string;
         /**
-         * 角丸にする
+         * 圆角
          */
         "rounded": string;
         /**
-         * 外枠に枠線をつける
+         * 外边框
          */
         "border": string;
         /**
-         * プレビューに反映
+         * 应用预览
          */
         "applyToPreview": string;
         /**
-         * 埋め込みコードを作成
+         * 生成嵌入代码
          */
         "generateCode": string;
         /**
-         * コードが生成されました
+         * 已生成代码
          */
         "codeGenerated": string;
         /**
-         * 生成されたコードをウェブサイトに貼り付けてご利用ください。
+         * 将生成的代码贴到网站上来使用。
          */
         "codeGeneratedDescription": string;
     };
@@ -12519,123 +12524,123 @@ export interface Locale extends ILocale {
          */
         "warning": string;
         /**
-         * 「この画面に何か貼り付けろ」はすべて詐欺です。
+         * 任何要求 “在屏幕上贴些什么吧” 的都是诈骗。
          */
         "title": string;
         /**
-         * ここに何かを貼り付けると、悪意のあるユーザーにアカウントを乗っ取られたり、個人情報を盗まれたりする可能性があります。
+         * 如果在此处粘贴了什么，恶意用户可能会接管账户或者盗取个人资料。
          */
         "description1": string;
         /**
-         * 貼り付けようとしているものが何なのかを正確に理解していない場合は、%c今すぐ作業を中止してこのウィンドウを閉じてください。
+         * 如果不能完全理解将要粘贴的内容，%c 请立即停止操作并关闭这个窗口。
          */
         "description2": string;
         /**
-         * 詳しくはこちらをご確認ください。 {link}
+         * 详情请看这里。{link}
          */
         "description3": ParameterizedString<"link">;
     };
     "_followRequest": {
         /**
-         * 受け取った申請
+         * 收到的请求
          */
         "recieved": string;
         /**
-         * 送った申請
+         * 发送的请求
          */
         "sent": string;
     };
     "_remoteLookupErrors": {
         "_federationNotAllowed": {
             /**
-             * このサーバーとは通信できません
+             * 无法与此服务器通信
              */
             "title": string;
             /**
-             * このサーバーとの通信が無効化されているか、このサーバーをブロックしている・ブロックされている可能性があります。
-             * サーバー管理者にお問い合わせください。
+             * 与此服务器的通信可能被禁用，又或者是屏蔽了此服务器或被此服务器屏蔽了。
+             * 请联系服务器的管理者。
              */
             "description": string;
         };
         "_uriInvalid": {
             /**
-             * URIが不正です
+             * URI 有误
              */
             "title": string;
             /**
-             * 入力されたURIに問題があります。URIに使用できない文字を入力していないか確認してください。
+             * 输入的 URI 有问题。请确认是否输入了 URI 中无法使用的字符。
              */
             "description": string;
         };
         "_requestFailed": {
             /**
-             * リクエストに失敗しました
+             * 请求失败
              */
             "title": string;
             /**
-             * このサーバーとの通信に失敗しました。相手サーバーがダウンしている可能性があります。また、不正なURIや存在しないURIを入力していないか確認してください。
+             * 与该服务器的通信失败。对面服务器可能不可用。另外，请确认是否输入了无效或不存在的 URI。
              */
             "description": string;
         };
         "_responseInvalid": {
             /**
-             * レスポンスが不正です
+             * 响应无效
              */
             "title": string;
             /**
-             * このサーバーと通信することはできましたが、得られたデータが不正なものでした。第三者のサーバーを介してリモートのコンテンツを照会している場合は、発信元のサーバーで取得できるURIを使用して照会し直してください。
+             * 成功与该服务器建立通信，但获取的数据有误。
              */
             "description": string;
         };
         "_noSuchObject": {
             /**
-             * 見つかりません
+             * 未找到
              */
             "title": string;
             /**
-             * 要求されたリソースは見つかりませんでした。URIをもう一度お確かめください。
+             * 未找到请求的资源。请再次检查 URI。
              */
             "description": string;
         };
     };
     "_captcha": {
         /**
-         * CAPTCHAを通過してください
+         * 请通过 CAPTCHA 验证
          */
         "verify": string;
         /**
-         * サイトキーとシークレットキーにテスト用の値を入力することでプレビューを確認できます。
-         * 詳細は下記ページをご確認ください。
+         * 输入测试用的网站密钥及私密密钥后可以生成预览并检查，
+         * 详情请看以下页面。
          */
         "testSiteKeyMessage": string;
         "_error": {
             "_requestFailed": {
                 /**
-                 * CAPTCHAのリクエストに失敗しました
+                 * 请求 CAPTCHA 失败
                  */
                 "title": string;
                 /**
-                 * しばらく後に実行するか、設定をもう一度ご確認ください。
+                 * 请稍后再试，又或者再检查一次设置。
                  */
                 "text": string;
             };
             "_verificationFailed": {
                 /**
-                 * CAPTCHAの検証に失敗しました
+                 * 验证 CAPTCHA 失败
                  */
                 "title": string;
                 /**
-                 * 設定が正しいかどうかもう一度確認ください。
+                 * 请再次确认设置是否正确。
                  */
                 "text": string;
             };
             "_unknown": {
                 /**
-                 * CAPTCHAエラー
+                 * CAPTCHA 错误
                  */
                 "title": string;
                 /**
-                 * 想定外のエラーが発生しました。
+                 * 发生意外错误。
                  */
                 "text": string;
             };
@@ -12643,375 +12648,375 @@ export interface Locale extends ILocale {
     };
     "_bootErrors": {
         /**
-         * 読み込みに失敗しました
+         * 加载失败
          */
         "title": string;
         /**
-         * 少し待ってからリロードしてもまだ問題が解決されない場合、以下のError IDを添えてサーバー管理者に連絡してください。
+         * 请稍等片刻再重试。若问题仍无法解决，请将以下 Error ID 一起发送给管理员。
          */
         "serverError": string;
         /**
-         * 以下を行うと解決する可能性があります。
+         * 以下方法或许可以解决问题：
          */
         "solution": string;
         /**
-         * ブラウザおよびOSを最新バージョンに更新する
+         * 将浏览器及操作系统更新到最新版本
          */
         "solution1": string;
         /**
-         * アドブロッカーを無効にする
+         * 禁用广告拦截插件
          */
         "solution2": string;
         /**
-         * ブラウザのキャッシュをクリアする
+         * 清除浏览器缓存
          */
         "solution3": string;
         /**
-         * (Tor Browser) dom.webaudio.enabledをtrueに設定する
+         * （Tor Browser）将 dom.webaudio.enabled 设定为 true
          */
         "solution4": string;
         /**
-         * その他のオプション
+         * 其它选项
          */
         "otherOption": string;
         /**
-         * クライアント設定とキャッシュを削除
+         * 清除客户端设定与缓存
          */
         "otherOption1": string;
         /**
-         * 簡易クライアントを起動
+         * 使用简易客户端
          */
         "otherOption2": string;
         /**
-         * 修復ツールを起動
+         * 启动修复工具
          */
         "otherOption3": string;
         /**
-         * Misskeyをセーフモードで起動
+         * 以安全模式启动 Misskey
          */
         "otherOption4": string;
     };
     "_search": {
         /**
-         * 全て
+         * 全部
          */
         "searchScopeAll": string;
         /**
-         * ローカル
+         * 本地
          */
         "searchScopeLocal": string;
         /**
-         * サーバー指定
+         * 指定服务器
          */
         "searchScopeServer": string;
         /**
-         * ユーザー指定
+         * 指定用户
          */
         "searchScopeUser": string;
         /**
-         * サーバーのホストを入力してください
+         * 请填写服务器的主机名称
          */
         "pleaseEnterServerHost": string;
         /**
-         * ユーザーを選択してください
+         * 请选择用户
          */
         "pleaseSelectUser": string;
         /**
-         * 例: misskey.example.com
+         * 如：misskey.example.com
          */
         "serverHostPlaceholder": string;
         /**
-         * 投稿日時from
+         * 起始日期
          */
         "postFrom": string;
         /**
-         * 投稿日時to
+         * 终止日期
          */
         "postTo": string;
     };
     "_serverSetupWizard": {
         /**
-         * Misskeyのインストールが完了しました！
+         * Misskey 安装完成！
          */
         "installCompleted": string;
         /**
-         * まずは、管理者アカウントを作成しましょう。
+         * 首先，创建一个管理员帐户。
          */
         "firstCreateAccount": string;
         /**
-         * 管理者アカウントが作成されました！
+         * 管理员账号已创建！
          */
         "accountCreated": string;
         /**
-         * サーバーの設定
+         * 服务器设置
          */
         "serverSetting": string;
         /**
-         * このウィザードで簡単に最適なサーバーの設定が行えます。
+         * 用此向导来轻松地以最佳方式配置服务器。
          */
         "youCanEasilyConfigureOptimalServerSettingsWithThisWizard": string;
         /**
-         * ここでの設定は、あとからでも変更できます。
+         * 这里的设置在之后也能更改。
          */
         "settingsYouMakeHereCanBeChangedLater": string;
         /**
-         * Misskeyをどのように使いますか？
+         * 打算怎样使用 Misskey？
          */
         "howWillYouUseMisskey": string;
         "_use": {
             /**
-             * お一人様サーバー
+             * 单用户服务器
              */
             "single": string;
             /**
-             * 自分専用のサーバーとして、一人で使う
+             * 仅供自己使用的单人服务器
              */
             "single_description": string;
             /**
-             * お一人様サーバーとして運用する場合でも、アカウントは必要に応じて複数作成可能です。
+             * 使用单用户服务器模式使用时，也可以根据需要创建多个账号。
              */
             "single_youCanCreateMultipleAccounts": string;
             /**
-             * グループサーバー
+             * 群组服务器
              */
             "group": string;
             /**
-             * 信頼できる他の利用者を招待して、複数人で使う
+             * 邀请其他可信用户一起使用的多人服务器
              */
             "group_description": string;
             /**
-             * オープンサーバー
+             * 开放服务器
              */
             "open": string;
             /**
-             * 不特定多数の利用者を受け入れる運営を行う
+             * 以容纳不限定数量的用户的模式运行
              */
             "open_description": string;
         };
         /**
-         * 不特定多数の利用者を受け入れることはリスクが伴います。トラブルに対処できるよう、確実なモデレーション体制で運営することを推奨します。
+         * 容纳不限定数量的用户有风险。推荐建立能应对各种问题的强大的管理体制来运营。
          */
         "openServerAdvice": string;
         /**
-         * 自サーバーがスパムの踏み台にならないように、reCAPTCHAといったアンチボット機能を有効にするなど、セキュリティについても細心の注意が必要です。
+         * 为防止自己的服务器成为广告发信基地，请打开如 reCAPTCHA 等 Bot 防御功能，并谨慎关注安全性。
          */
         "openServerAntiSpamAdvice": string;
         /**
-         * どれくらいの人数を想定していますか？
+         * 预计会有多少用户？
          */
         "howManyUsersDoYouExpect": string;
         "_scale": {
             /**
-             * 100人以下 (小規模)
+             * 100 人以下（小规模）
              */
             "small": string;
             /**
-             * 100人以上1000人以下 (中規模)
+             * 100 人以上 1000 人以下（中规模）
              */
             "medium": string;
             /**
-             * 1000人以上 (大規模)
+             * 1000 人以上（大规模）
              */
             "large": string;
         };
         /**
-         * 大規模なサーバーでは、ロードバランシングやデータベースのレプリケーションなど、高度なインフラストラクチャーの知識が必要になる場合があります。
+         * 运营大规模服务器可能需要高级基础设施知识，如负载均衡和数据库复制。
          */
         "largeScaleServerAdvice": string;
         /**
-         * Fediverseと接続しますか？
+         * 要加入 Fediverse 吗？
          */
         "doYouConnectToFediverse": string;
         /**
-         * 分散型サーバーで構成されるネットワーク(Fediverse)に接続すると、他のサーバーと相互にコンテンツのやり取りが可能です。
+         * 若加入由分散性服务器所构成的网络（Fediverse），将能与其它服务器交换内容。
          */
         "doYouConnectToFediverse_description1": string;
         /**
-         * Fediverseと接続することは「連合」とも呼ばれます。
+         * 接入 Fediverse 被称为 “联邦”。
          */
         "doYouConnectToFediverse_description2": string;
         /**
-         * 連合可能なサーバーの指定など、高度な設定も後ほど可能です。
+         * 可在之后进行如哪些服务器允许进行联邦交互等高级设置。
          */
         "youCanConfigureMoreFederationSettingsLater": string;
         /**
-         * リモートコンテンツの自動クリーニング
+         * 自动清理传入内容
          */
         "remoteContentsCleaning": string;
         /**
-         * 連合を行うと、継続して多くのコンテンツを受信します。自動クリーニングを有効にすると、一定期間経過したリモートコンテンツを自動でサーバーから削除し、ストレージを節約できます。
+         * 开启联邦互通后，服务器将持续接收大量内容。打开自动清理后，将自动删除无法找到的旧内容，可节省存储空间。
          */
         "remoteContentsCleaning_description": string;
         /**
-         * 管理者情報
+         * 管理员信息
          */
         "adminInfo": string;
         /**
-         * 問い合わせを受け付けるために使用される管理者情報を設定します。
+         * 设置用于接受询问的管理员信息。
          */
         "adminInfo_description": string;
         /**
-         * オープンサーバー、または連合がオンの場合は必ず入力が必要です。
+         * 开放服务器或启用了联邦的情况下必须输入。
          */
         "adminInfo_mustBeFilled": string;
         /**
-         * 以下の設定が推奨されます
+         * 推荐以下设置
          */
         "followingSettingsAreRecommended": string;
         /**
-         * この設定を適用
+         * 使用此设置
          */
         "applyTheseSettings": string;
         /**
-         * 設定をスキップ
+         * 跳过设置
          */
         "skipSettings": string;
         /**
-         * 設定が完了しました！
+         * 设置完成！
          */
         "settingsCompleted": string;
         /**
-         * お疲れ様でした。準備が整ったので、さっそくサーバーの使用を開始できます。
+         * 辛苦了。设置已完成，可以立即开始使用服务器了。
          */
         "settingsCompleted_description": string;
         /**
-         * 詳細なサーバー設定は、「コントロールパネル」から行えます。
+         * 服务器的详细设置可在 “控制面板” 进行。
          */
         "settingsCompleted_description2": string;
         /**
-         * 寄付のお願い
+         * 请求捐助
          */
         "donationRequest": string;
         "_donationRequest": {
             /**
-             * Misskeyは有志によって開発されている無料のソフトウェアです。
+             * Misskey 是由志愿者开发的免费软件。
              */
             "text1": string;
             /**
-             * 今後も開発を続けられるように、よろしければぜひカンパをお願いいたします。
+             * 为了今后也能继续开发，如果可以的话，请考虑一下捐助。
              */
             "text2": string;
             /**
-             * 支援者向け特典もあります！
+             * 也有面向支援者的特典！
              */
             "text3": string;
         };
     };
     "_uploader": {
         /**
-         * 画像の編集
+         * 编辑图像
          */
         "editImage": string;
         /**
-         * {x}に圧縮
+         * 压缩 {x}
          */
         "compressedToX": ParameterizedString<"x">;
         /**
-         * {x}%節約
+         * 节省了 {x}% 的空间
          */
         "savedXPercent": ParameterizedString<"x">;
         /**
-         * アップロードされていないファイルがありますが、中止しますか？
+         * 还有未上传的文件，要中止吗？
          */
         "abortConfirm": string;
         /**
-         * アップロードされていないファイルがありますが、完了しますか？
+         * 部分文件尚未上传，是否继续？
          */
         "doneConfirm": string;
         /**
-         * アップロード可能な最大ファイルサイズは{x}です。
+         * 可上传最大 {x} 的文件。
          */
         "maxFileSizeIsX": ParameterizedString<"x">;
         /**
-         * アップロード可能なファイル種別
+         * 可上传的文件类型
          */
         "allowedTypes": string;
         /**
-         * ファイルはまだアップロードされていません。このダイアログで、アップロード前の確認・リネーム・圧縮・クロッピングなどが行えます。準備が出来たら、「アップロード」ボタンを押してアップロードを開始できます。
+         * 文件尚未上传。在此对话框中，您可以进行上传前的确认、重命名、压缩和裁剪等操作。准备就绪后，点击 “上传” 按钮即可开始上传。
          */
         "tip": string;
     };
     "_clientPerformanceIssueTip": {
         /**
-         * バッテリー消費が多いと感じたら
+         * 如果觉得电池耗电过高
          */
         "title": string;
         /**
-         * アドブロッカーを無効にしてください
+         * 请关闭广告拦截器
          */
         "makeSureDisabledAdBlocker": string;
         /**
-         * アドブロッカーはパフォーマンスに影響を及ぼすことがあります。OSの機能やブラウザの機能・アドオンなどでアドブロッカーが有効になっていないか確認してください。
+         * 广告拦截器会影响性能。请检查操作系统功能、浏览器功能或附加组件是否启用了广告拦截器。
          */
         "makeSureDisabledAdBlocker_description": string;
         /**
-         * カスタムCSSを無効にしてください
+         * 请关闭自定义 CSS
          */
         "makeSureDisabledCustomCss": string;
         /**
-         * スタイルを上書きするとパフォーマンスに影響を及ぼすことがあります。カスタムCSSや、スタイルを上書きする拡張機能が有効になっていないか確認してください。
+         * 覆盖样式可能会影响性能。请确保没有启用任何自定义 CSS 或覆盖样式的扩展。
          */
         "makeSureDisabledCustomCss_description": string;
         /**
-         * 拡張機能を無効にしてください
+         * 请关闭扩展
          */
         "makeSureDisabledAddons": string;
         /**
-         * 一部の拡張機能はクライアントの動作に干渉しパフォーマンスに影響を及ぼすことがあります。ブラウザの拡張機能を無効にして改善するか確認してください。
+         * 某些扩展可能会干扰客户端的运行并影响性能。尝试禁用浏览器扩展并查看是否有改善。
          */
         "makeSureDisabledAddons_description": string;
     };
     "_clip": {
         /**
-         * クリップは、ノートをまとめることができる機能です。
+         * 便签功能可以将帖子合并在一起。
          */
         "tip": string;
     };
     "_userLists": {
         /**
-         * 任意のユーザーが含まれるリストを作成できます。作成したリストはタイムラインとして表示可能です。
+         * 可创建包含任意用户的列表。已创建的列表可作为时间线查看。
          */
         "tip": string;
     };
     /**
-     * ウォーターマーク
+     * 水印
      */
     "watermark": string;
     /**
-     * デフォルトのプリセット
+     * 默认预设
      */
     "defaultPreset": string;
     "_watermarkEditor": {
         /**
-         * 画像にクレジット情報などのウォーターマークを追加できます。
+         * 可在图像内增加包含作者等信息的水印。
          */
         "tip": string;
         /**
-         * 保存せずに終了しますか？
+         * 放弃未保存的更改？
          */
         "quitWithoutSaveConfirm": string;
         /**
-         * このファイルは対応していません
+         * 不支持此文件
          */
         "driveFileTypeWarn": string;
         /**
-         * 画像ファイルを選択してください
+         * 请选择图像文件
          */
         "driveFileTypeWarnDescription": string;
         /**
-         * ウォーターマークの編集
+         * 编辑水印
          */
         "title": string;
         /**
-         * 全体に被せる
+         * 覆盖所有
          */
         "cover": string;
         /**
-         * 敷き詰める
+         * 平铺
          */
         "repeat": string;
         /**
-         * 回転時はみ出ないように調整する
+         * 调整为旋转时不超出范围
          */
         "preserveBoundingRect": string;
         /**
@@ -13019,15 +13024,15 @@ export interface Locale extends ILocale {
          */
         "opacity": string;
         /**
-         * サイズ
+         * 大小
          */
         "scale": string;
         /**
-         * テキスト
+         * 文本
          */
         "text": string;
         /**
-         * 二次元コード
+         * 二维码
          */
         "qr": string;
         /**
@@ -13035,19 +13040,19 @@ export interface Locale extends ILocale {
          */
         "position": string;
         /**
-         * マージン
+         * 边距
          */
         "margin": string;
         /**
-         * タイプ
+         * 类型
          */
         "type": string;
         /**
-         * 画像
+         * 图片
          */
         "image": string;
         /**
-         * 高度
+         * 高级
          */
         "advanced": string;
         /**
@@ -13055,146 +13060,146 @@ export interface Locale extends ILocale {
          */
         "angle": string;
         /**
-         * ストライプ
+         * 条纹
          */
         "stripe": string;
         /**
-         * ラインの幅
+         * 线条宽度
          */
         "stripeWidth": string;
         /**
-         * ラインの数
+         * 线条数量
          */
         "stripeFrequency": string;
         /**
-         * ポルカドット
+         * 波点
          */
         "polkadot": string;
         /**
-         * チェッカー
+         * 检查
          */
         "checker": string;
         /**
-         * メインドットの不透明度
+         * 主波点的不透明度
          */
         "polkadotMainDotOpacity": string;
         /**
-         * メインドットの大きさ
+         * 主波点的大小
          */
         "polkadotMainDotRadius": string;
         /**
-         * サブドットの不透明度
+         * 副波点的不透明度
          */
         "polkadotSubDotOpacity": string;
         /**
-         * サブドットの大きさ
+         * 副波点的大小
          */
         "polkadotSubDotRadius": string;
         /**
-         * サブドットの数
+         * 副波点的数量
          */
         "polkadotSubDotDivisions": string;
         /**
-         * 空欄にするとアカウントのURLになります
+         * 留空则为账户 URL
          */
         "leaveBlankToAccountUrl": string;
         /**
-         * 画像の読み込みに失敗しました
+         * 图片加载失败
          */
         "failedToLoadImage": string;
     };
     "_imageEffector": {
         /**
-         * エフェクト
+         * 效果
          */
         "title": string;
         /**
-         * エフェクトを追加
+         * 添加效果
          */
         "addEffect": string;
         /**
-         * 変更を破棄して終了しますか？
+         * 丢弃当前设置并退出？
          */
         "discardChangesConfirm": string;
         /**
-         * 画像の読み込みに失敗しました
+         * 图片加载失败
          */
         "failedToLoadImage": string;
         "_fxs": {
             /**
-             * 色収差
+             * 色差
              */
             "chromaticAberration": string;
             /**
-             * グリッチ
+             * 故障
              */
             "glitch": string;
             /**
-             * ミラー
+             * 镜像
              */
             "mirror": string;
             /**
-             * 色の反転
+             * 反转颜色
              */
             "invert": string;
             /**
-             * 白黒
+             * 黑白
              */
             "grayscale": string;
             /**
-             * ぼかし
+             * 模糊
              */
             "blur": string;
             /**
-             * モザイク
+             * 马赛克
              */
             "pixelate": string;
             /**
-             * 色調補正
+             * 色彩校正
              */
             "colorAdjust": string;
             /**
-             * 色の圧縮
+             * 颜色限制
              */
             "colorClamp": string;
             /**
-             * 色の圧縮(高度)
+             * 颜色限制（高级）
              */
             "colorClampAdvanced": string;
             /**
-             * 歪み
+             * 失真
              */
             "distort": string;
             /**
-             * 二値化
+             * 二值化
              */
             "threshold": string;
             /**
-             * 集中線
+             * 集中线
              */
             "zoomLines": string;
             /**
-             * ストライプ
+             * 条纹
              */
             "stripe": string;
             /**
-             * ポルカドット
+             * 波点
              */
             "polkadot": string;
             /**
-             * チェッカー
+             * 检查
              */
             "checker": string;
             /**
-             * ブロックノイズ
+             * 块状噪点
              */
             "blockNoise": string;
             /**
-             * ティアリング
+             * 撕裂
              */
             "tearing": string;
             /**
-             * 塗りつぶし
+             * 填充
              */
             "fill": string;
         };
@@ -13204,11 +13209,11 @@ export interface Locale extends ILocale {
              */
             "angle": string;
             /**
-             * サイズ
+             * 大小
              */
             "scale": string;
             /**
-             * サイズ
+             * 大小
              */
             "size": string;
             /**
@@ -13216,7 +13221,7 @@ export interface Locale extends ILocale {
              */
             "radius": string;
             /**
-             * サンプル数
+             * 采样数
              */
             "samples": string;
             /**
@@ -13224,7 +13229,7 @@ export interface Locale extends ILocale {
              */
             "offset": string;
             /**
-             * 色
+             * 颜色
              */
             "color": string;
             /**
@@ -13232,39 +13237,39 @@ export interface Locale extends ILocale {
              */
             "opacity": string;
             /**
-             * 正規化
+             * 标准化
              */
             "normalize": string;
             /**
-             * 量
+             * 数量
              */
             "amount": string;
             /**
-             * 明るさ
+             * 浅色
              */
             "lightness": string;
             /**
-             * コントラスト
+             * 对比度
              */
             "contrast": string;
             /**
-             * 色相
+             * 色调
              */
             "hue": string;
             /**
-             * 輝度
+             * 亮度
              */
             "brightness": string;
             /**
-             * 彩度
+             * 饱和度
              */
             "saturation": string;
             /**
-             * 最大値
+             * 最大值
              */
             "max": string;
             /**
-             * 最小値
+             * 最小值
              */
             "min": string;
             /**
@@ -13272,47 +13277,47 @@ export interface Locale extends ILocale {
              */
             "direction": string;
             /**
-             * 位相
+             * 相位
              */
             "phase": string;
             /**
-             * 頻度
+             * 频率
              */
             "frequency": string;
             /**
-             * 強さ
+             * 强度
              */
             "strength": string;
             /**
-             * ズレ
+             * 错位
              */
             "glitchChannelShift": string;
             /**
-             * シード値
+             * 种子
              */
             "seed": string;
             /**
-             * 赤色成分
+             * 红色成分
              */
             "redComponent": string;
             /**
-             * 緑色成分
+             * 绿色成分
              */
             "greenComponent": string;
             /**
-             * 青色成分
+             * 蓝色成分
              */
             "blueComponent": string;
             /**
-             * しきい値
+             * 阈值
              */
             "threshold": string;
             /**
-             * 中心X
+             * 中心 X
              */
             "centerX": string;
             /**
-             * 中心Y
+             * 中心 Y
              */
             "centerY": string;
             /**
@@ -13320,100 +13325,100 @@ export interface Locale extends ILocale {
              */
             "density": string;
             /**
-             * 線の影の太さ
+             * 线条阴影粗细
              */
             "zoomLinesOutlineThickness": string;
             /**
-             * 中心径
+             * 中心直径
              */
             "zoomLinesMaskSize": string;
             /**
-             * 円形
+             * 圆形
              */
             "circle": string;
         };
     };
     /**
-     * 下書き
+     * 草稿
      */
     "drafts": string;
     "_drafts": {
         /**
-         * 下書きを選択
+         * 选择草稿
          */
         "select": string;
         /**
-         * 下書きの作成可能数を超えています。
+         * 已超过可创建的草稿数量。
          */
         "cannotCreateDraftAnymore": string;
         /**
-         * この内容では下書きを作成できません。
+         * 此内容无法创建草稿。
          */
         "cannotCreateDraft": string;
         /**
-         * 下書きを削除
+         * 删除草稿
          */
         "delete": string;
         /**
-         * 下書きを削除しますか？
+         * 确认删除草稿吗？
          */
         "deleteAreYouSure": string;
         /**
-         * 下書きはありません
+         * 没有草稿
          */
         "noDrafts": string;
         /**
-         * {user}への返信
+         * 回复给 {user}
          */
         "replyTo": ParameterizedString<"user">;
         /**
-         * {user}のノートへの引用
+         * 引用自 {user} 的帖子
          */
         "quoteOf": ParameterizedString<"user">;
         /**
-         * {channel}への投稿
+         * 向 {channel} 的投稿
          */
         "postTo": ParameterizedString<"channel">;
         /**
-         * 下書きへ保存
+         * 保存到草稿
          */
         "saveToDraft": string;
         /**
-         * 下書きから復元
+         * 从草稿恢复
          */
         "restoreFromDraft": string;
         /**
-         * 復元
+         * 恢复
          */
         "restore": string;
         /**
-         * 下書き一覧
+         * 草稿列表
          */
         "listDrafts": string;
         /**
-         * 投稿予約
+         * 定时发布
          */
         "schedule": string;
         /**
-         * 予約投稿一覧
+         * 定时发布列表
          */
         "listScheduledNotes": string;
         /**
-         * 予約解除
+         * 取消定时
          */
         "cancelSchedule": string;
     };
     /**
-     * 二次元コード
+     * 二维码
      */
     "qr": string;
     "_qr": {
         /**
-         * 表示
+         * 显示
          */
         "showTabTitle": string;
         /**
-         * 読み取る
+         * 扫描
          */
         "readTabTitle": string;
         /**
@@ -13421,43 +13426,43 @@ export interface Locale extends ILocale {
          */
         "shareTitle": ParameterizedString<"name" | "acct">;
         /**
-         * Fediverseで私をフォローしてください！
+         * 请在 Fediverse 上关注我！
          */
         "shareText": string;
         /**
-         * カメラを選択
+         * 切换镜头
          */
         "chooseCamera": string;
         /**
-         * ライト選択不可
+         * 无法开关闪光灯
          */
         "cannotToggleFlash": string;
         /**
-         * ライトをオンにする
+         * 开启闪光灯
          */
         "turnOnFlash": string;
         /**
-         * ライトをオフにする
+         * 关闭闪光灯
          */
         "turnOffFlash": string;
         /**
-         * コードリーダーを再開
+         * 重新打开二维码扫描器
          */
         "startQr": string;
         /**
-         * コードリーダーを停止
+         * 关闭扫码器
          */
         "stopQr": string;
         /**
-         * QRコードが見つかりません
+         * 未找到二维码
          */
         "noQrCodeFound": string;
         /**
-         * 端末の画像をスキャン
+         * 从设备扫描图像
          */
         "scanFile": string;
         /**
-         * テキスト
+         * 文本
          */
         "raw": string;
         /**

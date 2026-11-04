@@ -3,6 +3,8 @@
  * SPDX-License-Identifier: AGPL-3.0-only
  */
 
+import { defaultLanguage } from '../src/const.js';
+
 let valid = true;
 
 interface LocaleRecord {
@@ -55,8 +57,8 @@ function verify(expected: LocaleRecord, actual: LocaleRecord, lang: string, trac
 
 // index.tsはtsのまま動かすことを想定していない（ビルド成果物を外部に公開する）.
 // よってビルド後のものを検証する
-const locales = await import('../built/index.js');
-const { 'ja-JP': original, ...verifiees } = locales as unknown as Record<string, LocaleRecord>;
+const { locales } = await import('../built/index.js');
+const { [defaultLanguage]: original, ...verifiees } = locales as unknown as Record<string, LocaleRecord>;
 
 for (const lang in verifiees) {
 	if (!Object.prototype.hasOwnProperty.call(locales, lang)) {

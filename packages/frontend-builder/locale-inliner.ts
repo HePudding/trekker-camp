@@ -110,7 +110,7 @@ export class LocaleInliner {
 	async saveLocale(localeName: string, localeJson: Locale) {
 		// create directory
 		await fs.mkdir(path.join(this.outputDir, localeName), { recursive: true });
-		const localeLogger = localeName === 'ja-JP' ? this.logger : blankLogger; // we want to log for single locale only
+		const localeLogger = localeName === 'zh-CN' ? this.logger : blankLogger; // we want to log for single locale only
 		for (const chunk of this.chunks) {
 			if (chunk.sourceCode == null || !chunk.modifications) {
 				throw new Error(`Source code or modifications for ${chunk.fileName} is not available.`);

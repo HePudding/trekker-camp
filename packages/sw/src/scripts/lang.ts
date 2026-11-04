@@ -7,6 +7,7 @@
  * Language manager for SW
  */
 import { get, set } from 'idb-keyval';
+import { defaultLanguage, languages } from 'i18n/const';
 import { I18n } from '@@/js/i18n.js';
 import { FETCH_TIMEOUT_MS } from '@/const.js';
 import type { Locale } from 'i18n';
@@ -14,14 +15,12 @@ import type { Locale } from 'i18n';
 class SwLang {
 	public cacheName = `mk-cache-${_VERSION_}`;
 
-	public lang: Promise<string> = get('lang').then(async prelang => {
-		if (!prelang) return 'en-US';
-		return prelang;
-	});
+	public lang: Promise<string> = get<string>('lang').then(prelang => languages.find(lang => lang === prelang) ?? defaultLanguage);
 
 	public setLang(newLang: string): Promise<I18n<Locale>> {
-		this.lang = Promise.resolve(newLang);
-		set('lang', newLang);
+		const lang = languages.find(lang => lang === newLang) ?? defaultLanguage;
+		this.lang = Promise.resolve(lang);
+		set('lang', lang);
 		return this.fetchLocale();
 	}
 
