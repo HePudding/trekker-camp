@@ -315,6 +315,9 @@ importers:
       diagnostics-shared:
         specifier: workspace:*
         version: link:../diagnostics-shared
+      i18n:
+        specifier: workspace:*
+        version: link:../../packages/i18n
     devDependencies:
       '@types/node':
         specifier: 26.6.5
