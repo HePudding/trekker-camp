@@ -91,7 +91,7 @@ import { i18n } from '@/i18n.js';
 import * as os from '@/os.js';
 import { deviceKind } from '@/utility/device-kind.js';
 import MkButton from '@/components/MkButton.vue';
-import { transformPlayerUrl } from '@/utility/url-preview.js';
+import { getBilibiliPlayer, transformPlayerUrl } from '@/utility/url-preview.js';
 import { store } from '@/store.js';
 import { prefer } from '@/preferences.js';
 import { maybeMakeRelative } from '@@/js/url.js';
@@ -122,7 +122,10 @@ const thumbnail = computed(() => summalyResult.value?.thumbnail ?? null);
 const icon = computed(() => summalyResult.value?.icon ?? null);
 const sitename = computed(() => summalyResult.value?.sitename ?? null);
 const sensitive = computed(() => summalyResult.value?.sensitive ?? false);
-const player = computed(() => summalyResult.value?.player ?? { url: null, width: null, height: null });
+const player = computed(() => getBilibiliPlayer(props.url)
+	?? (summalyResult.value ? getBilibiliPlayer(summalyResult.value.url) : null)
+	?? summalyResult.value?.player
+	?? { url: null, width: null, height: null, allow: [] });
 const playerEnabled = ref(false);
 const tweetId = ref<string | null>(null);
 const tweetExpanded = ref(props.detail);
@@ -170,6 +173,10 @@ window.fetch(`/url?url=${encodeURIComponent(requestUrl.href)}&lang=${versatileLa
 		unknownUrl.value = false;
 
 		summalyResult.value = info;
+	})
+	.catch(() => {
+		fetching.value = false;
+		unknownUrl.value = true;
 	});
 
 function adjustTweetHeight(message: MessageEvent) {
@@ -182,10 +189,14 @@ function adjustTweetHeight(message: MessageEvent) {
 }
 
 function openPlayer(): void {
-	if (!summalyResult.value) return;
+	if (!player.value.url) return;
 
 	const { dispose } = os.popup(defineAsyncComponent(() => import('@/components/MkYouTubePlayer.vue')), {
-		urlOrSummalyResult: summalyResult.value,
+		urlOrSummalyResult: {
+			url: props.url,
+			title: title.value ?? props.url,
+			player: player.value,
+		},
 	}, {
 		closed: () => {
 			dispose();
