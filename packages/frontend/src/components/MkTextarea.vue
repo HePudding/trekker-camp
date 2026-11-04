@@ -15,6 +15,7 @@ SPDX-License-Identifier: AGPL-3.0-only
 			:disabled="disabled"
 			:required="required"
 			:readonly="readonly"
+			:aria-label="ariaLabel"
 			:placeholder="placeholder"
 			:pattern="pattern"
 			:autocomplete="autocomplete"
@@ -50,6 +51,7 @@ const props = defineProps<{
 	disabled?: boolean;
 	pattern?: string;
 	placeholder?: string;
+	ariaLabel?: string;
 	autofocus?: boolean;
 	autocomplete?: string;
 	mfmAutocomplete?: boolean | SuggestionType[],

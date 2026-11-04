@@ -39,7 +39,7 @@ export interface Locale extends ILocale {
      */
     "notifications": string;
     /**
-     * 用户名
+     * 魔王昵称
      */
     "username": string;
     /**
@@ -85,7 +85,7 @@ export interface Locale extends ILocale {
      */
     "noThankYou": string;
     /**
-     * 输入用户名
+     * 输入昵称
      */
     "enterUsername": string;
     /**
@@ -133,7 +133,7 @@ export interface Locale extends ILocale {
      */
     "timeline": string;
     /**
-     * 此用户尚无自我介绍
+     * 此魔王尚无自我介绍
      */
     "noAccountDescription": string;
     /**
@@ -149,7 +149,7 @@ export interface Locale extends ILocale {
      */
     "logout": string;
     /**
-     * 新用户注册
+     * 新魔王注册
      */
     "signup": string;
     /**
@@ -161,11 +161,11 @@ export interface Locale extends ILocale {
      */
     "save": string;
     /**
-     * 用户
+     * 魔王
      */
     "users": string;
     /**
-     * 添加用户
+     * 添加其他魔王
      */
     "addUser": string;
     /**
@@ -237,7 +237,7 @@ export interface Locale extends ILocale {
      */
     "addToAntenna": string;
     /**
-     * 发送消息
+     * 发送心链
      */
     "sendMessage": string;
     /**
@@ -245,11 +245,11 @@ export interface Locale extends ILocale {
      */
     "copyRSS": string;
     /**
-     * 复制用户名
+     * 复制魔王昵称
      */
     "copyUsername": string;
     /**
-     * 复制用户 ID
+     * 复制魔王 ID
      */
     "copyUserId": string;
     /**
@@ -269,11 +269,11 @@ export interface Locale extends ILocale {
      */
     "copyProfileUrl": string;
     /**
-     * 搜索用户
+     * 搜索其他魔王
      */
     "searchUser": string;
     /**
-     * 搜索用户帖子
+     * 搜索魔王帖子
      */
     "searchThisUsersNotes": string;
     /**
@@ -313,7 +313,7 @@ export interface Locale extends ILocale {
      */
     "mentions": string;
     /**
-     * 私信
+     * 心链
      */
     "directNotes": string;
     /**
@@ -749,7 +749,7 @@ export interface Locale extends ILocale {
      */
     "flagShowTimelineReplies": string;
     /**
-     * 启用时，时间线除了显示用户的帖子外，还会显示其他用户对帖子的回复。
+     * 启用时，时间线除了显示魔王的帖子外，还会显示其他魔王对帖子的回复。
      */
     "flagShowTimelineRepliesDescription": string;
     /**
@@ -833,7 +833,7 @@ export interface Locale extends ILocale {
      */
     "selectSelf": string;
     /**
-     * 选择用户
+     * 选择其他魔王
      */
     "selectUser": string;
     /**
@@ -1005,15 +1005,15 @@ export interface Locale extends ILocale {
      */
     "muteAndBlock": string;
     /**
-     * 已隐藏的用户
+     * 已隐藏的魔王
      */
     "mutedUsers": string;
     /**
-     * 已屏蔽的用户
+     * 已屏蔽的魔王
      */
     "blockedUsers": string;
     /**
-     * 无用户
+     * 无魔王
      */
     "noUsers": string;
     /**
@@ -1137,15 +1137,15 @@ export interface Locale extends ILocale {
      */
     "featured": string;
     /**
-     * 用户名或用户 ID
+     * 魔王昵称或魔王 ID
      */
     "usernameOrUserId": string;
     /**
-     * 未找到该用户
+     * 未找到该魔王
      */
     "noSuchUser": string;
     /**
-     * 查找用户
+     * 查找其他魔王
      */
     "lookup": string;
     /**
@@ -1233,7 +1233,7 @@ export interface Locale extends ILocale {
      */
     "messageRead": string;
     /**
-     * 将所有消息标记为已读
+     * 将所有心链标记为已读
      */
     "readAllChatMessages": string;
     /**
@@ -1277,7 +1277,7 @@ export interface Locale extends ILocale {
      */
     "home": string;
     /**
-     * 由于此用户来自其它服务器，显示的信息可能不完整。
+     * 由于此魔王来自其它服务器，显示的信息可能不完整。
      */
     "remoteUserCaution": string;
     /**
@@ -1754,7 +1754,7 @@ export interface Locale extends ILocale {
      */
     "enableServiceworker": string;
     /**
-     * 指定用户名，用换行符进行分隔
+     * 指定魔王昵称，用换行符进行分隔
      */
     "antennaUsersDescription": string;
     /**
@@ -1794,23 +1794,23 @@ export interface Locale extends ILocale {
      */
     "unsilenceConfirm": string;
     /**
-     * 热门用户
+     * 热门魔王
      */
     "popularUsers": string;
     /**
-     * 最近投稿的用户
+     * 最近投稿的魔王
      */
     "recentlyUpdatedUsers": string;
     /**
-     * 最近登录的用户
+     * 最近登录的魔王
      */
     "recentlyRegisteredUsers": string;
     /**
-     * 最近发现的用户
+     * 最近发现的魔王
      */
     "recentlyDiscoveredUsers": string;
     /**
-     * 有 {count} 个用户
+     * 有 {count} 个魔王
      */
     "exploreUsersCount": ParameterizedString<"count">;
     /**
@@ -1950,7 +1950,7 @@ export interface Locale extends ILocale {
      */
     "markAsReadAllUnreadNotes": string;
     /**
-     * 将所有私信标记为已读
+     * 将所有心链标记为已读
      */
     "markAsReadAllTalkMessages": string;
     /**
@@ -2082,7 +2082,7 @@ export interface Locale extends ILocale {
      */
     "signinWith": ParameterizedString<"x">;
     /**
-     * 无法登录，请检查您的用户名和密码是否正确。
+     * 无法登录，请检查您的魔王昵称和密码是否正确。
      */
     "signinFailed": string;
     /**
@@ -2346,7 +2346,7 @@ export interface Locale extends ILocale {
      */
     "showFixedPostFormInChannel": string;
     /**
-     * 在时间线中默认包含新关注用户的回复
+     * 在时间线中默认包含新关注魔王的回复
      */
     "withRepliesByDefaultForNewlyFollowed": string;
     /**
@@ -2534,11 +2534,11 @@ export interface Locale extends ILocale {
      */
     "removeAllFollowingDescription": ParameterizedString<"host">;
     /**
-     * 该用户已被冻结。
+     * 该魔王已被冻结。
      */
     "userSuspended": string;
     /**
-     * 该用户已被禁言。
+     * 该魔王已被禁言。
      */
     "userSilenced": string;
     /**
@@ -3262,7 +3262,7 @@ export interface Locale extends ILocale {
      */
     "onlineUsersCount": ParameterizedString<"n">;
     /**
-     * {n} 位用户
+     * {n} 位魔王
      */
     "nUsers": ParameterizedString<"n">;
     /**
@@ -3446,7 +3446,7 @@ export interface Locale extends ILocale {
      */
     "info": string;
     /**
-     * 用户信息
+     * 魔王信息
      */
     "userInfo": string;
     /**
@@ -3510,7 +3510,7 @@ export interface Locale extends ILocale {
      */
     "quickAction": string;
     /**
-     * 用户
+     * 魔王
      */
     "user": string;
     /**
@@ -3674,7 +3674,7 @@ export interface Locale extends ILocale {
      */
     "accountDeletionInProgress": string;
     /**
-     * 在服务器上唯一标识您的帐户的名称。您可以使用字母 (a ~ z, A ~ Z)、数字 (0 ~ 9) 和下划线 (_)。用户名以后不能更改。
+     * 在服务器上唯一标识您的帐户的名称。您可以使用字母 (a ~ z, A ~ Z)、数字 (0 ~ 9) 和下划线 (_)。魔王昵称以后不能更改。
      */
     "usernameInfo": string;
     /**
@@ -3990,7 +3990,7 @@ export interface Locale extends ILocale {
      */
     "numberOfPageCache": string;
     /**
-     * 设置较高的值会更方便用户，但设备的负载和内存使用量会增加。
+     * 设置较高的值会更方便使用，但设备的负载和内存使用量会增加。
      */
     "numberOfPageCacheDescription": string;
     /**
@@ -4114,23 +4114,23 @@ export interface Locale extends ILocale {
      */
     "pushNotification": string;
     /**
-     * 启用推送通知消息
+     * 启用推送通知心链
      */
     "subscribePushNotification": string;
     /**
-     * 停用推送通知消息
+     * 停用推送通知心链
      */
     "unsubscribePushNotification": string;
     /**
-     * 推送通知消息已启用
+     * 推送通知心链已启用
      */
     "pushNotificationAlreadySubscribed": string;
     /**
-     * 浏览器或服务器不支持推送通知消息
+     * 浏览器或服务器不支持推送通知心链
      */
     "pushNotificationNotSupported": string;
     /**
-     * 删除已读推送通知消息
+     * 删除已读推送通知心链
      */
     "sendPushNotificationReadMessage": string;
     /**
@@ -4454,7 +4454,7 @@ export interface Locale extends ILocale {
      */
     "notesSearchNotAvailable": string;
     /**
-     * 用户检索不可用
+     * 魔王检索不可用
      */
     "usersSearchNotAvailable": string;
     /**
@@ -4538,7 +4538,7 @@ export interface Locale extends ILocale {
      */
     "accountMigration": string;
     /**
-     * 此用户已迁移账户
+     * 此魔王已迁移账户
      */
     "accountMoved": string;
     /**
@@ -4682,7 +4682,7 @@ export interface Locale extends ILocale {
      */
     "options": string;
     /**
-     * 指定用户
+     * 指定魔王
      */
     "specifyUser": string;
     /**
@@ -4754,7 +4754,7 @@ export interface Locale extends ILocale {
      */
     "enableIdenticonGeneration": string;
     /**
-     * 显示远程用户的角色徽章
+     * 显示远程魔王的角色徽章
      */
     "showRoleBadgesOfRemoteUsers": string;
     /**
@@ -4906,7 +4906,7 @@ export interface Locale extends ILocale {
      */
     "unnotifyNotes": string;
     /**
-     * 已开启发帖通知的用户
+     * 已开启发帖通知的魔王
      */
     "notifyUsers": string;
     /**
@@ -5262,7 +5262,7 @@ export interface Locale extends ILocale {
      */
     "genEmbedCode": string;
     /**
-     * 此用户的帖子
+     * 此魔王的帖子
      */
     "noteOfThisUser": string;
     /**
@@ -5302,7 +5302,7 @@ export interface Locale extends ILocale {
      */
     "passkeyVerificationSucceededButPasswordlessLoginDisabled": string;
     /**
-     * 给关注者的消息
+     * 给关注者的心链
      */
     "messageToFollower": string;
     /**
@@ -5322,11 +5322,11 @@ export interface Locale extends ILocale {
      */
     "prohibitedWordsForNameOfUserDescription": string;
     /**
-     * 目标用户名包含违禁词
+     * 目标魔王昵称包含违禁词
      */
     "yourNameContainsProhibitedWords": string;
     /**
-     * 用户名内含有违禁词。若想使用此用户名，请联系服务器管理员。
+     * 魔王昵称内含有违禁词。若想使用此魔王昵称，请联系服务器管理员。
      */
     "yourNameContainsProhibitedWordsDescription": string;
     /**
@@ -5354,7 +5354,7 @@ export interface Locale extends ILocale {
      */
     "federationSpecified": string;
     /**
-     * 此服务器已禁用联邦功能。无法与其它服务器上的用户通信。
+     * 此服务器已禁用联邦功能。无法与其它服务器上的魔王通信。
      */
     "federationDisabled": string;
     /**
@@ -5470,15 +5470,15 @@ export interface Locale extends ILocale {
      */
     "information": string;
     /**
-     * 聊天
+     * 心链
      */
     "chat": string;
     /**
-     * 私信
+     * 心链
      */
     "directMessage": string;
     /**
-     * 消息
+     * 心链
      */
     "directMessage_short": string;
     /**
@@ -5617,7 +5617,7 @@ export interface Locale extends ILocale {
      */
     "thankYouForTestingBeta": string;
     /**
-     * 提及该用户并发帖
+     * 提及该魔王并发帖
      */
     "createUserSpecifiedNote": string;
     /**
@@ -5916,23 +5916,23 @@ export interface Locale extends ILocale {
     };
     "_chat": {
         /**
-         * 消息
+         * 心链
          */
         "messages": string;
         /**
-         * 还没有消息
+         * 还没有心链
          */
         "noMessagesYet": string;
         /**
-         * 新消息
+         * 新心链
          */
         "newMessage": string;
         /**
-         * 私聊
+         * 心链
          */
         "individualChat": string;
         /**
-         * 与特定的用户单独聊天。
+         * 与其他魔王单独交流。
          */
         "individualChat_description": string;
         /**
@@ -5940,8 +5940,8 @@ export interface Locale extends ILocale {
          */
         "roomChat": string;
         /**
-         * 支持多人同时聊天。
-         * 即使对方不允许私聊，只要接受邀请也能加入。
+         * 支持多人同时交流。
+         * 即使对方不允许心链，只要接受邀请也能加入。
          */
         "roomChat_description": string;
         /**
@@ -5949,7 +5949,7 @@ export interface Locale extends ILocale {
          */
         "createRoom": string;
         /**
-         * 邀请用户来聊天吧
+         * 邀请其他魔王加入心链吧
          */
         "inviteUserToChat": string;
         /**
@@ -5981,7 +5981,7 @@ export interface Locale extends ILocale {
          */
         "noRooms": string;
         /**
-         * 邀请用户
+         * 邀请其他魔王
          */
         "inviteUser": string;
         /**
@@ -6005,7 +6005,7 @@ export interface Locale extends ILocale {
          */
         "members": string;
         /**
-         * 搜索消息
+         * 搜索心链
          */
         "searchMessages": string;
         /**
@@ -6021,7 +6021,7 @@ export interface Locale extends ILocale {
          */
         "newline": string;
         /**
-         * 消息免打扰
+         * 心链免打扰
          */
         "muteThisRoom": string;
         /**
@@ -6029,23 +6029,23 @@ export interface Locale extends ILocale {
          */
         "deleteRoom": string;
         /**
-         * 此服务器或者账户还未开启聊天功能。
+         * 此服务器或者账户还未开启心链功能。
          */
         "chatNotAvailableForThisAccountOrServer": string;
         /**
-         * 此服务器或者账户内的聊天为只读。无法发布新信息或创建及加入群聊。
+         * 此服务器或者账户内的心链为只读。无法发布新信息或创建及加入群聊。
          */
         "chatIsReadOnlyForThisAccountOrServer": string;
         /**
-         * 对方的账户当前无法使用私信。
+         * 对方的账户当前无法使用心链。
          */
         "chatNotAvailableInOtherAccount": string;
         /**
-         * 无法私信该用户
+         * 无法向该魔王发送心链
          */
         "cannotChatWithTheUser": string;
         /**
-         * 可能现在无法使用聊天，或者对方未开启聊天。
+         * 可能现在无法使用心链，或者对方未开启心链。
          */
         "cannotChatWithTheUser_description": string;
         /**
@@ -6057,31 +6057,31 @@ export interface Locale extends ILocale {
          */
         "doYouAcceptInvitation": string;
         /**
-         * 私信
+         * 心链
          */
         "chatWithThisUser": string;
         /**
-         * 此用户仅接受关注者发起的聊天。
+         * 此魔王仅接受关注者发起的心链。
          */
         "thisUserAllowsChatOnlyFromFollowers": string;
         /**
-         * 此用户仅接受关注的人发起的聊天。
+         * 此魔王仅接受关注的人发起的心链。
          */
         "thisUserAllowsChatOnlyFromFollowing": string;
         /**
-         * 此用户仅接受互相关注的人发起的聊天。
+         * 此魔王仅接受互相关注的人发起的心链。
          */
         "thisUserAllowsChatOnlyFromMutualFollowing": string;
         /**
-         * 此用户不接受任何人发起的聊天。
+         * 此魔王不接受任何人发起的心链。
          */
         "thisUserNotAllowedChatAnyone": string;
         /**
-         * 谁可以发起聊天
+         * 谁可以发起心链
          */
         "chatAllowedUsers": string;
         /**
-         * 主动发起聊天时，对方将不受此设置限制。
+         * 主动发起心链时，对方将不受此设置限制。
          */
         "chatAllowedUsers_note": string;
         "_chatAllowedUsers": {
@@ -6163,7 +6163,7 @@ export interface Locale extends ILocale {
          */
         "accountDataBanner": string;
         /**
-         * 可在此设置隐藏内容，或限制指定用户能进行的操作。
+         * 可在此设置隐藏内容，或限制指定魔王能进行的操作。
          */
         "muteAndBlockBanner": string;
         /**
@@ -6199,11 +6199,11 @@ export interface Locale extends ILocale {
          */
         "makeEveryTextElementsSelectable": string;
         /**
-         * 若开启，在某些情况下可能降低用户体验。
+         * 若开启，在某些情况下可能降低使用体验。
          */
         "makeEveryTextElementsSelectable_description": string;
         /**
-         * 用户头像跟随页面滚动
+         * 魔王头像跟随页面滚动
          */
         "useStickyIcons": string;
         /**
@@ -6383,7 +6383,7 @@ export interface Locale extends ILocale {
          */
         "description": string;
         /**
-         * 从本地用户发来的关注
+         * 从本地魔王发来的关注
          */
         "local": string;
         /**
@@ -6391,7 +6391,7 @@ export interface Locale extends ILocale {
          */
         "localDescription": string;
         /**
-         * 从远程用户发来的关注
+         * 从远程魔王发来的关注
          */
         "remote": string;
         /**
@@ -6620,7 +6620,7 @@ export interface Locale extends ILocale {
          */
         "end": string;
         /**
-         * 若有大量活动公告，可能会造成用户体验下降。请考虑归档已完成的公告。
+         * 若有大量活动公告，可能会造成使用体验下降。请考虑归档已完成的公告。
          */
         "tooManyActiveAnnouncementDescription": string;
         /**
@@ -6636,7 +6636,7 @@ export interface Locale extends ILocale {
          */
         "shouldNotBeUsedToPresentPermanentInfo": string;
         /**
-         * 同时存在 2 个或以上的对话框公告极有可能对用户体验产生负面的影响，建议谨慎使用。
+         * 同时存在 2 个或以上的对话框公告极有可能对使用体验产生负面的影响，建议谨慎使用。
          */
         "dialogAnnouncementUxWarn": string;
         /**
@@ -6650,15 +6650,15 @@ export interface Locale extends ILocale {
     };
     "_initialAccountSetting": {
         /**
-         * 账户创建完成了！
+         * 魔王大人，账户创建完成了！
          */
         "accountCreated": string;
         /**
-         * 马上来进行账户的初始设定吧。
+         * 魔王大人，马上来进行账户的初始设定吧。
          */
         "letsStartAccountSetup": string;
         /**
-         * 首先，设置一下您的个人资料吧！
+         * 首先，设置一下魔王大人的个人资料吧！
          */
         "letsFillYourProfile": string;
         /**
@@ -6678,7 +6678,7 @@ export interface Locale extends ILocale {
          */
         "youCanEditMoreSettingsInSettingsPageLater": string;
         /**
-         * 为了建立属于你自己的时间线，试着去关注你感兴趣的用户吧。
+         * 为了建立属于魔王大人自己的时间线，试着去关注感兴趣的其他魔王吧。
          */
         "followUsers": string;
         /**
@@ -6690,11 +6690,11 @@ export interface Locale extends ILocale {
          */
         "initialAccountSettingCompleted": string;
         /**
-         * 希望 {name} 在这里玩得开心！
+         * 希望魔王大人在 {name} 玩得开心！
          */
         "haveFun": ParameterizedString<"name">;
         /**
-         * 您可以继续了解 {name}(Misskey) 的使用教程，也可以在此停止教程并立即开始使用它。
+         * 魔王大人可以继续了解 {name}(Misskey) 的使用教程，也可以在此停止教程并立即开始使用它。
          *
          */
         "youCanContinueTutorial": ParameterizedString<"name">;
@@ -6730,11 +6730,11 @@ export interface Locale extends ILocale {
         "skipAreYouSure": string;
         "_landing": {
             /**
-             * 欢迎来到教学
+             * 魔王大人，欢迎来到教学
              */
             "title": string;
             /**
-             * 在这里，您可以查看 Misskey 的基本使用方法和功能。
+             * 在这里，魔王大人可以查看 Misskey 的基本使用方法和功能。
              */
             "description": string;
         };
@@ -6770,7 +6770,7 @@ export interface Locale extends ILocale {
              */
             "title": string;
             /**
-             * 您可以在帖子中添加 “回应”。 使用回应可以轻松地表达 “点赞” 无法传达的心情。
+             * 魔王大人可以在帖子中添加 “回应”。 使用回应可以轻松地表达 “点赞” 无法传达的心情。
              */
             "description": string;
             /**
@@ -6782,7 +6782,7 @@ export interface Locale extends ILocale {
              */
             "reactToContinue": string;
             /**
-             * 当您的帖子被某人添加了回应时，将实时收到通知。
+             * 当魔王大人的帖子被某人添加了回应时，将实时收到通知。
              */
             "reactNotification": string;
             /**
@@ -6800,11 +6800,11 @@ export interface Locale extends ILocale {
              */
             "description1": string;
             /**
-             * 可以查看您关注的账户的帖子。
+             * 可以查看魔王大人关注的账户的帖子。
              */
             "home": string;
             /**
-             * 可以查看这个服务器上所有用户发表的帖子。
+             * 可以查看这个服务器上所有魔王发表的帖子。
              */
             "local": string;
             /**
@@ -6830,30 +6830,30 @@ export interface Locale extends ILocale {
              */
             "title": string;
             /**
-             * 在 Misskey 发布帖子时，您可以设置各种选项。发帖窗口看起来是这样的。
+             * 在 Misskey 发布帖子时，魔王大人可以设置各种选项。发帖窗口看起来是这样的。
              *
              */
             "description1": string;
             "_visibility": {
                 /**
-                 * 您可以限制谁可以看到您的帖子。
+                 * 魔王大人可以限制谁可以看到魔王大人的帖子。
                  */
                 "description": string;
                 /**
-                 * 向所有用户公开。
+                 * 向所有魔王公开。
                  *
                  */
                 "public": string;
                 /**
-                 * 仅发布至首页时间线。 仅您的关注者，以及从个人资料页、通过转帖，其他用户才能够看到。
+                 * 仅发布至首页时间线。 仅魔王大人的关注者，以及从个人资料页、通过转帖，其他魔王才能够看到。
                  */
                 "home": string;
                 /**
-                 * 仅关注者可见。 除了您自己，其他人无法转贴。
+                 * 仅关注者可见。 除了魔王大人自己，其他人无法转贴。
                  */
                 "followers": string;
                 /**
-                 * 仅对指定用户公开，且收件人将收到通知。
+                 * 仅对指定魔王公开，且收件人将收到通知。
                  */
                 "direct": string;
                 /**
@@ -6862,11 +6862,11 @@ export interface Locale extends ILocale {
                  */
                 "doNotSendConfidencialOnDirect1": string;
                 /**
-                 * 目标服务器的管理员可以看到发布的内容，因此如果您向不受信任的服务器上的用户发送私信，则在处理敏感信息时需要小心。
+                 * 目标服务器的管理员可以看到发布的内容，因此如果魔王大人向不受信任的服务器上的魔王发送心链，则在处理敏感信息时需要小心。
                  */
                 "doNotSendConfidencialOnDirect2": string;
                 /**
-                 * 不将帖子通过联邦推送到其它服务器。 无论上述公开范围如何，其它服务器的用户将无法看到附加了此设定的帖子。
+                 * 不将帖子通过联邦推送到其它服务器。 无论上述公开范围如何，其它服务器的魔王将无法看到附加了此设定的帖子。
                  *
                  */
                 "localOnly": string;
@@ -6930,7 +6930,7 @@ export interface Locale extends ILocale {
         };
         "_done": {
             /**
-             * 恭喜您，已经完成了教程🎉
+             * 恭喜魔王大人，已经完成了教程🎉
              *
              */
             "title": string;
@@ -6942,15 +6942,15 @@ export interface Locale extends ILocale {
     };
     "_timelineDescription": {
         /**
-         * 首页时间线可以查看您关注的账户的帖子。
+         * 查看您自己、关注的账户及关注频道的帖子。
          */
         "home": string;
         /**
-         * 本地时间线可以查看这个服务器上所有用户发表的帖子。
+         * 查看营地内所有魔王发表的公开帖子。
          */
         "local": string;
         /**
-         * 社交时间线将同时显示首页时间线和本地时间线的内容。
+         * 同时查看关注动态与营地内的公开帖子。
          */
         "social": string;
         /**
@@ -7206,6 +7206,40 @@ export interface Locale extends ILocale {
          */
         "movedTo": string;
     };
+    "_achievementSettings": {
+        /**
+         * 成就设置
+         */
+        "title": string;
+        /**
+         * 维护“旋律无处不在”的音乐名单。每行填写一项，保存后对新发帖立即生效，无需重启或刷新页面；已获得的成就会保留。
+         */
+        "description": string;
+        /**
+         * B站音乐 BV 号
+         */
+        "musicBilibiliIds": string;
+        /**
+         * 填写完整 BV 号。帖子正文含任一指定 BV 号即可达成，分享链接中的 BV 号也有效。
+         */
+        "musicBilibiliIdsDescription": string;
+        /**
+         * 网易云音乐歌曲 ID
+         */
+        "musicNeteaseIds": string;
+        /**
+         * 填写歌曲链接中 id= 后的纯数字 ID。支持网页和手机版歌曲链接；短链接请先展开为含歌曲 ID 的链接。
+         */
+        "musicNeteaseIdsDescription": string;
+        /**
+         * 其他音乐链接
+         */
+        "musicUrls": string;
+        /**
+         * 填写完整 HTTP(S) 链接，帖子正文包含任一链接即可达成。可维护 YouTube、Spotify 或其他音乐平台的链接。
+         */
+        "musicUrlsDescription": string;
+    };
     "_achievements": {
         /**
          * 达成时间
@@ -7214,175 +7248,231 @@ export interface Locale extends ILocale {
         "_types": {
             "_notes1": {
                 /**
-                 * 初来乍到
+                 * 初来报到
                  */
                 "title": string;
                 /**
-                 * 第一次发帖
+                 * 发布第 1 篇帖子
                  */
                 "description": string;
                 /**
-                 * 祝您在 Misskey 玩的愉快～
+                 * 欢迎来到旅人营地，魔王大人！今天想聊点什么？
                  */
                 "flavor": string;
             };
             "_notes10": {
                 /**
-                 * 一些帖子
+                 * 随手小记
                  */
                 "title": string;
                 /**
-                 * 发布了 10 篇帖子
+                 * 发帖数达到 10 篇
                  */
                 "description": string;
+                /**
+                 * 旅途中的零星见闻，随手记下来才不会忘。
+                 */
+                "flavor": string;
             };
             "_notes100": {
                 /**
-                 * 很多帖子
+                 * 畅所欲言
                  */
                 "title": string;
                 /**
-                 * 发布了 100 篇帖子
+                 * 发帖数达到 100 篇
                  */
                 "description": string;
+                /**
+                 * 营地篝火烧得正旺，魔王的话匣子也彻底打开了。
+                 */
+                "flavor": string;
             };
             "_notes500": {
                 /**
-                 * 满是帖子
+                 * 琳琅满目
                  */
                 "title": string;
                 /**
-                 * 发布了 500 篇帖子
+                 * 发帖数达到 500 篇
                  */
                 "description": string;
+                /**
+                 * 翻开个人主页上下一扫，满满当当全是魔王留下的足迹。
+                 */
+                "flavor": string;
             };
             "_notes1000": {
                 /**
-                 * 积帖成山
+                 * 积帖成塔
                  */
                 "title": string;
                 /**
-                 * 发布了 1,000 篇帖子
+                 * 发帖数达到 1,000 篇
                  */
                 "description": string;
+                /**
+                 * 一帖一瓦慢慢垒起来，高度都快赶上灰城区的小楼了。
+                 */
+                "flavor": string;
             };
             "_notes5000": {
                 /**
-                 * 帖如泉涌
+                 * 妙语如泉
                  */
                 "title": string;
                 /**
-                 * 发布了 5,000 篇帖子
+                 * 发帖数达到 5,000 篇
                  */
                 "description": string;
+                /**
+                 * 灵感像刚拧开的汽水瓶，咕嘟咕嘟往外冒个不停。
+                 */
+                "flavor": string;
             };
             "_notes10000": {
                 /**
-                 * 超级帖
+                 * 万言成卷
                  */
                 "title": string;
                 /**
-                 * 发布了 10,000 篇帖子
+                 * 发帖数达到 10,000 篇
                  */
                 "description": string;
+                /**
+                 * 整整一万篇！装订成册的话，星塔事典的书架都要不够放了。
+                 */
+                "flavor": string;
             };
             "_notes20000": {
                 /**
-                 * 还想要更多帖子
+                 * 意犹未尽
                  */
                 "title": string;
                 /**
-                 * 发布了 20,000 篇帖子
+                 * 发帖数达到 20,000 篇
                  */
                 "description": string;
+                /**
+                 * 指尖才刚刚热身完毕，魔王似乎还有一肚子话想聊。
+                 */
+                "flavor": string;
             };
             "_notes30000": {
                 /**
-                 * 帖子帖子帖子
+                 * 三句不离发帖
                  */
                 "title": string;
                 /**
-                 * 发布了 30,000 篇帖子
+                 * 发帖数达到 30,000 篇
                  */
                 "description": string;
+                /**
+                 * 睡前发一帖，醒来发一帖，进塔探险前还要再发一帖。
+                 */
+                "flavor": string;
             };
             "_notes40000": {
                 /**
-                 * 帖子工厂
+                 * 全自动印帖机
                  */
                 "title": string;
                 /**
-                 * 发布了 40,000 篇帖子
+                 * 发帖数达到 40,000 篇
                  */
                 "description": string;
+                /**
+                 * 就算把星塔里的强化机改成打字机，产能怕是也追不上你。
+                 */
+                "flavor": string;
             };
             "_notes50000": {
                 /**
-                 * 帖子星球
+                 * 自成星塔
                  */
                 "title": string;
                 /**
-                 * 发布了 50,000 篇帖子
+                 * 发帖数达到 50,000 篇
                  */
                 "description": string;
+                /**
+                 * 五万篇帖子层层耸立，魔王硬是在营地里盖起了一座新星塔。
+                 */
+                "flavor": string;
             };
             "_notes60000": {
                 /**
-                 * 帖子类星体
+                 * 辉光超新星
                  */
                 "title": string;
                 /**
-                 * 发布了 60,000 篇帖子
+                 * 发帖数达到 60,000 篇
                  */
                 "description": string;
+                /**
+                 * 耀眼的发帖量在时间线上迸发，连诺瓦的夜空都被照亮了。
+                 */
+                "flavor": string;
             };
             "_notes70000": {
                 /**
-                 * 帖子黑洞
+                 * 话题引力场
                  */
                 "title": string;
                 /**
-                 * 发布了 70,000 篇帖子
+                 * 发帖数达到 70,000 篇
                  */
                 "description": string;
+                /**
+                 * 无论什么日常碎碎念，靠近你都会被卷进深不见底的帖海。
+                 */
+                "flavor": string;
             };
             "_notes80000": {
                 /**
-                 * 帖子星系
+                 * 漫天星河
                  */
                 "title": string;
                 /**
-                 * 发布了 80,000 篇帖子
+                 * 发帖数达到 80,000 篇
                  */
                 "description": string;
+                /**
+                 * 在营地抬头望去，每一颗闪烁的星辰都是你曾写下的字句。
+                 */
+                "flavor": string;
             };
             "_notes90000": {
                 /**
-                 * 帖子起源
+                 * 原初纪元
                  */
                 "title": string;
                 /**
-                 * 发布了 90,000 篇帖子
+                 * 发帖数达到 90,000 篇
                  */
                 "description": string;
+                /**
+                 * 在第一座星塔诞生之前，空气里大概就已经回荡着你敲字的声音了。
+                 */
+                "flavor": string;
             };
             "_notes100000": {
                 /**
-                 * ALL YOUR NOTE ARE BELONG TO US
+                 * 时间线支配者
                  */
                 "title": string;
                 /**
-                 * 发布了 100,000 篇帖子
+                 * 发帖数达到 100,000 篇
                  */
                 "description": string;
                 /**
-                 * 真的有那么多可以写的东西吗？
+                 * 十万篇帖子……原来魔王征服世界靠的是发帖吗？！
                  */
                 "flavor": string;
             };
             "_login3": {
                 /**
-                 * 初学者 I
+                 * 安营扎寨 I
                  */
                 "title": string;
                 /**
@@ -7390,13 +7480,13 @@ export interface Locale extends ILocale {
                  */
                 "description": string;
                 /**
-                 * 今天开始我就是 Misskist！
+                 * 帐篷搭好啦！从今天起，魔王大人也是旅人营地的一员了。
                  */
                 "flavor": string;
             };
             "_login7": {
                 /**
-                 * 初学者 II
+                 * 安营扎寨 II
                  */
                 "title": string;
                 /**
@@ -7404,87 +7494,111 @@ export interface Locale extends ILocale {
                  */
                 "description": string;
                 /**
-                 * 您开始习惯了吗？
+                 * 在营地住满一周啦，魔王大人睡得还习惯吗？
                  */
                 "flavor": string;
             };
             "_login15": {
                 /**
-                 * 初学者 III
+                 * 安营扎寨 III
                  */
                 "title": string;
                 /**
                  * 累计登录 15 天
                  */
                 "description": string;
+                /**
+                 * 半个月下来，连篝火边的座位都挑好最顺眼的那个了。
+                 */
+                "flavor": string;
             };
             "_login30": {
                 /**
-                 * Misskist Ⅰ
+                 * 日行一善 I
                  */
                 "title": string;
                 /**
                  * 累计登录 30 天
                  */
                 "description": string;
+                /**
+                 * 每天顺路来营地转一圈，已经成了自然而然的日常。
+                 */
+                "flavor": string;
             };
             "_login60": {
                 /**
-                 * Misskist Ⅱ
+                 * 日行一善 II
                  */
                 "title": string;
                 /**
                  * 累计登录 60 天
                  */
                 "description": string;
+                /**
+                 * 两个月的点滴打卡，营地考勤表上全是你的小红花。
+                 */
+                "flavor": string;
             };
             "_login100": {
                 /**
-                 * Misskist Ⅲ
+                 * 日行一善 III
                  */
                 "title": string;
                 /**
-                 * 累计登入 100 天
+                 * 累计登录 100 天
                  */
                 "description": string;
                 /**
-                 * 那个用户，是 Misskist 喔
+                 * “看，那位魔王已经是百日全勤的营地标兵了喔。”
                  */
                 "flavor": string;
             };
             "_login200": {
                 /**
-                 * 定期联系Ⅰ
+                 * 营地常客 I
                  */
                 "title": string;
                 /**
                  * 累计登录 200 天
                  */
                 "description": string;
+                /**
+                 * 还没掀开帐篷门帘，大家都猜到今天又是你来串门了。
+                 */
+                "flavor": string;
             };
             "_login300": {
                 /**
-                 * 定期联系Ⅱ
+                 * 营地常客 II
                  */
                 "title": string;
                 /**
                  * 累计登录 300 天
                  */
                 "description": string;
+                /**
+                 * 三百个日子来来往往，吧台边早就给你留好了专属茶杯。
+                 */
+                "flavor": string;
             };
             "_login400": {
                 /**
-                 * 定期联系Ⅲ
+                 * 营地常客 III
                  */
                 "title": string;
                 /**
                  * 累计登录 400 天
                  */
                 "description": string;
+                /**
+                 * 不管星塔外的风吹向哪边，回营地看看总归是雷打不动的习惯。
+                 */
+                "flavor": string;
             };
             "_login500": {
                 /**
-                 * 老熟人Ⅰ
+                 * 别来无恙 I
                  */
                 "title": string;
                 /**
@@ -7492,563 +7606,735 @@ export interface Locale extends ILocale {
                  */
                 "description": string;
                 /**
-                 * 诸君，我喜欢帖文
+                 * 五百次重逢化作一句寒暄——看来魔王是真的很喜欢逛营地呢。
                  */
                 "flavor": string;
             };
             "_login600": {
                 /**
-                 * 老熟人Ⅱ
+                 * 别来无恙 II
                  */
                 "title": string;
                 /**
                  * 累计登录 600 天
                  */
                 "description": string;
+                /**
+                 * 六百天过去，营地换了几茬新布景，熟悉的面孔依然还在。
+                 */
+                "flavor": string;
             };
             "_login700": {
                 /**
-                 * 老熟人Ⅲ
+                 * 别来无恙 III
                  */
                 "title": string;
                 /**
                  * 累计登录 700 天
                  */
                 "description": string;
+                /**
+                 * 不必多言的默契，大概就是推门进来时彼此相视一笑吧。
+                 */
+                "flavor": string;
             };
             "_login800": {
                 /**
-                 * 帖子大师 Ⅰ
+                 * 营地元老 I
                  */
                 "title": string;
                 /**
                  * 累计登录 800 天
                  */
                 "description": string;
+                /**
+                 * 八百天的营地记忆，随便讲两段都能让新来的魔王听入迷。
+                 */
+                "flavor": string;
             };
             "_login900": {
                 /**
-                 * 帖子大师 Ⅱ
+                 * 营地元老 II
                  */
                 "title": string;
                 /**
                  * 累计登录 900 天
                  */
                 "description": string;
+                /**
+                 * 九百次晨昏交替，你早已是营地里定海神针般的存在。
+                 */
+                "flavor": string;
             };
             "_login1000": {
                 /**
-                 * 帖子大师 Ⅲ
+                 * 营地元老 III
                  */
                 "title": string;
                 /**
-                 * 累计登录 1000 天
+                 * 累计登录 1,000 天
                  */
                 "description": string;
                 /**
-                 * 感谢您使用 Misskey！
+                 * 一千个日夜的长情陪伴——由衷感谢你一直在旅人营地，魔王大人！
                  */
                 "flavor": string;
             };
             "_noteClipped1": {
                 /**
-                 * 忍不住想加入便签
+                 * 珍藏精选集
                  */
                 "title": string;
                 /**
-                 * 第一次将帖子加入便签
+                 * 首次将帖子加入便签
                  */
                 "description": string;
+                /**
+                 * 分门别类贴好便签，这可是魔王私藏的精华合集。
+                 */
+                "flavor": string;
             };
             "_noteFavorited1": {
                 /**
-                 * 观星者
+                 * 拾光者
                  */
                 "title": string;
                 /**
-                 * 第一次将帖子加入收藏
+                 * 首次将帖子加入收藏
                  */
                 "description": string;
+                /**
+                 * 把时间线里闪闪发亮的句子拾起来，悄悄收进自己的口袋。
+                 */
+                "flavor": string;
             };
             "_myNoteFavorited1": {
                 /**
-                 * 想要星星
+                 * 星光回响
                  */
                 "title": string;
                 /**
-                 * 自己的帖子被其他人收藏了
+                 * 自己发布的帖子被其他魔王收藏
                  */
                 "description": string;
+                /**
+                 * 原来随手写下的心声，也能成为其他魔王眼里的星光。
+                 */
+                "flavor": string;
             };
             "_profileFilled": {
                 /**
-                 * 整装待发
+                 * 魔王名片
                  */
                 "title": string;
                 /**
-                 * 设置了个人资料
+                 * 保存个人资料或更换头像
                  */
                 "description": string;
+                /**
+                 * 换上得意的头像，写好自我介绍——体面的魔王总得有张漂亮名片。
+                 */
+                "flavor": string;
             };
             "_markedAsCat": {
                 /**
-                 * 我是猫
+                 * 吾辈是猫
                  */
                 "title": string;
                 /**
-                 * 将账户设定为一只猫
+                 * 在个人资料中将账号设定为猫
                  */
                 "description": string;
                 /**
-                 * 还没有名字
+                 * 名字倒是早就有了，只是今天想竖起耳朵用喵星语说话喵～
                  */
                 "flavor": string;
             };
             "_following1": {
                 /**
-                 * 首次关注
+                 * 萍水相逢
                  */
                 "title": string;
                 /**
-                 * 第一次关注别人
+                 * 首次关注其他魔王
                  */
                 "description": string;
+                /**
+                 * 在诺瓦的漫长旅途中，每一次结缘都始于轻轻一点的关注。
+                 */
+                "flavor": string;
             };
             "_following10": {
                 /**
-                 * 关注，跟随
+                 * 广结良缘 I
                  */
                 "title": string;
                 /**
-                 * 关注超过 10 人
+                 * 关注其他魔王达到 10 人
                  */
                 "description": string;
+                /**
+                 * 关注列表热闹起来了，营地里到处都是眼熟的伙伴。
+                 */
+                "flavor": string;
             };
             "_following50": {
                 /**
-                 * 我的朋友很多
+                 * 广结良缘 II
                  */
                 "title": string;
                 /**
-                 * 关注超过 50 人
+                 * 关注其他魔王达到 50 人
                  */
                 "description": string;
+                /**
+                 * 五十位不同风格的魔王齐聚首页，每天刷时间线都像逛集市。
+                 */
+                "flavor": string;
             };
             "_following100": {
                 /**
-                 * 胜友如云
+                 * 广结良缘 III
                  */
                 "title": string;
                 /**
-                 * 关注超过 100 人
+                 * 关注其他魔王达到 100 人
                  */
                 "description": string;
+                /**
+                 * 交游广阔到这个程度，走到哪座星塔下都能碰见熟人吧！
+                 */
+                "flavor": string;
             };
             "_following300": {
                 /**
-                 * 朋友成群
+                 * 广结良缘 IV
                  */
                 "title": string;
                 /**
-                 * 关注数超过 300
+                 * 关注其他魔王达到 300 人
                  */
                 "description": string;
+                /**
+                 * 三百份动态汇入眼底，营地百态尽在魔王掌握之中。
+                 */
+                "flavor": string;
             };
             "_followers1": {
                 /**
-                 * 最初的关注者
+                 * 初逢知音
                  */
                 "title": string;
                 /**
-                 * 第一次被关注
+                 * 关注你的其他魔王达到 1 人
                  */
                 "description": string;
+                /**
+                 * 有其他魔王驻足关注你啦，快挥挥手打个招呼吧！
+                 */
+                "flavor": string;
             };
             "_followers10": {
                 /**
-                 * 关注我吧！
+                 * 崭露头角
                  */
                 "title": string;
                 /**
-                 * 拥有超过 10 名关注者
+                 * 关注你的其他魔王达到 10 人
                  */
                 "description": string;
+                /**
+                 * 十双眼睛投来好奇的目光，你在营地里也算混出点名堂了。
+                 */
+                "flavor": string;
             };
             "_followers50": {
                 /**
-                 * 三五成群
+                 * 小有名气
                  */
                 "title": string;
                 /**
-                 * 拥有超过 50 名关注者
+                 * 关注你的其他魔王达到 50 人
                  */
                 "description": string;
+                /**
+                 * 五十位其他魔王围坐在你的帐篷外，聊什么都有人热情捧场。
+                 */
+                "flavor": string;
             };
             "_followers100": {
                 /**
-                 * 胜友如云
+                 * 高朋满座
                  */
                 "title": string;
                 /**
-                 * 拥有超过 100 名关注者
+                 * 关注你的其他魔王达到 100 人
                  */
                 "description": string;
+                /**
+                 * 百位同好齐聚一堂，帐篷外得再多搬几条长椅才坐得下了。
+                 */
+                "flavor": string;
             };
             "_followers300": {
                 /**
-                 * 排列成行
+                 * 一呼百应
                  */
                 "title": string;
                 /**
-                 * 拥有超过 300 名关注者
+                 * 关注你的其他魔王达到 300 人
                  */
                 "description": string;
+                /**
+                 * 随手发一句感慨，转眼就能引来一整排热热闹闹的回应。
+                 */
+                "flavor": string;
             };
             "_followers500": {
                 /**
-                 * 信号塔
+                 * 星塔信标
                  */
                 "title": string;
                 /**
-                 * 拥有超过 500 名关注者
+                 * 关注你的其他魔王达到 500 人
                  */
                 "description": string;
+                /**
+                 * 就像矗立在荒野中的星塔灯火，五百位魔王正循着你的讯号聚拢。
+                 */
+                "flavor": string;
             };
             "_followers1000": {
                 /**
-                 * 大影响家
+                 * 光芒万丈
                  */
                 "title": string;
                 /**
-                 * 拥有超过 1000 名关注者
+                 * 关注你的其他魔王达到 1,000 人
                  */
                 "description": string;
+                /**
+                 * 上千位魔王共同瞩目的焦点——这人气，简直比彩色秘纹还要耀眼！
+                 */
+                "flavor": string;
             };
             "_collectAchievements30": {
                 /**
-                 * 成就收藏家
+                 * 万事大吉
                  */
                 "title": string;
                 /**
-                 * 获得超过 30 个成就
+                 * 累计达成 30 项成就
                  */
                 "description": string;
+                /**
+                 * 胸前的徽章叮当作响，魔王的营地履历已经相当漂亮了。
+                 */
+                "flavor": string;
             };
             "_viewAchievements3min": {
                 /**
-                 * 成就爱好者
+                 * 擦拭勋章
                  */
                 "title": string;
                 /**
-                 * 盯着成就看三分钟
+                 * 在自己的成就页面连续停留满 3 分钟
                  */
                 "description": string;
+                /**
+                 * 盯着成就栏看了足足三分钟，徽章都快被魔王擦出反光啦。
+                 */
+                "flavor": string;
             };
             "_iLoveMisskey": {
                 /**
-                 * I Love Misskey
+                 * 热爱宣言
                  */
                 "title": string;
                 /**
-                 * 发布 "I ❤ #Misskey" 帖子
+                 * 发布同时包含“旅人营地”或“星塔旅人”，以及“爱”“喜欢”“love”或“❤”的帖子；也支持“Misskey”搭配“love”或“❤”
                  */
                 "description": string;
                 /**
-                 * 感谢您使用 Misskey ！ by 开发团队
+                 * 收到魔王大人的心意啦！旅人营地也很喜欢你～
                  */
                 "flavor": string;
             };
             "_foundTreasure": {
                 /**
-                 * 寻宝
+                 * 稀世珍宝
                  */
                 "title": string;
                 /**
-                 * 发现了隐藏的宝藏
+                 * 发现了营地里隐藏的宝藏
                  */
                 "description": string;
+                /**
+                 * 角落里居然藏着闪闪发光的好东西，不愧是眼尖的魔王！
+                 */
+                "flavor": string;
             };
             "_client30min": {
                 /**
-                 * 休息一下！
+                 * 休息片刻
                  */
                 "title": string;
                 /**
-                 * 启动客户端超过 30 分钟
+                 * 单次打开营地页面保持在线满 30 分钟
                  */
                 "description": string;
+                /**
+                 * 已经在营地逛了半小时啦，喝口水伸个懒腰再继续吧。
+                 */
+                "flavor": string;
             };
             "_client60min": {
                 /**
-                 * Misskey 重度依赖
+                 * 流连忘返
                  */
                 "title": string;
                 /**
-                 * 启动客户端超过 60 分钟
+                 * 单次打开营地页面保持在线满 60 分钟
                  */
                 "description": string;
+                /**
+                 * 不知不觉就泡满一整小时了，营地的沙发真有这么舒服吗？
+                 */
+                "flavor": string;
             };
             "_noteDeletedWithin1min": {
                 /**
-                 * 欲言又止
+                 * 再思考
                  */
                 "title": string;
                 /**
-                 * 发帖后一分钟内就将其删除
+                 * 在发帖后 1 分钟内将该帖删除或撤回重编
                  */
                 "description": string;
+                /**
+                 * 刚才那句不算数！只要手速够快，就当无事发生过。
+                 */
+                "flavor": string;
             };
             "_postedAtLateNight": {
                 /**
-                 * 夜猫子
+                 * 星夜未眠
                  */
                 "title": string;
                 /**
-                 * 深夜发布帖子
+                 * 在深夜（00:00～03:59）发布帖子
                  */
                 "description": string;
                 /**
-                 * 差不多该去睡了喔。
+                 * 营地的篝火都快熄啦，魔王大人也早点钻进睡袋休息吧。
                  */
                 "flavor": string;
             };
             "_postedAt0min0sec": {
                 /**
-                 * 报时
+                 * 整点报时
                  */
                 "title": string;
                 /**
-                 * 在 0 点发布一篇帖子
+                 * 在任意整点（0 分 0 秒）成功发布帖子
                  */
                 "description": string;
                 /**
-                 * 嘟 · 嘟 · 嘟 · 哔——
+                 * 嘀、嘀、嘀——哔！营地标准时间，分秒不差。
                  */
                 "flavor": string;
             };
             "_selfQuote": {
                 /**
-                 * 自我引用
+                 * 自问自答
                  */
                 "title": string;
                 /**
-                 * 引用了自己的帖子
+                 * 附上内容引用自己的帖子
                  */
                 "description": string;
+                /**
+                 * 自己给自己捧场，只要不尴尬，气氛就十分融洽。
+                 */
+                "flavor": string;
             };
             "_htl20npm": {
                 /**
-                 * 流动的时间线
+                 * 川流不息
                  */
                 "title": string;
                 /**
-                 * 首页时间线中，帖子加载速度超过每分钟20篇
+                 * 浏览首页或关注时间线时，在 60 秒内实时收到 20 篇不同的帖子
                  */
                 "description": string;
+                /**
+                 * 时间线热闹得像庆典街市，眼睛都快看不过来啦！
+                 */
+                "flavor": string;
             };
             "_viewInstanceChart": {
                 /**
-                 * 分析师
+                 * 情报分析官
                  */
                 "title": string;
                 /**
-                 * 查看了服务器信息中的图表
+                 * 在服务器信息页面切换查看统计图表
                  */
                 "description": string;
+                /**
+                 * 盯着起伏的折线图若有所思，颇有运筹帷幄的魔王风范。
+                 */
+                "flavor": string;
             };
             "_outputHelloWorldOnScratchpad": {
                 /**
-                 * Hello, world!
+                 * 你好，诺瓦！
                  */
                 "title": string;
                 /**
-                 * 在 AiScript 控制台中输出 hello world
+                 * 在 AiScript 控制台中输出“Hello, world!”
                  */
                 "description": string;
+                /**
+                 * 终端屏幕闪过一行字符，向这片大陆发出了第一声问候。
+                 */
+                "flavor": string;
             };
             "_open3windows": {
                 /**
-                 * 多窗口
+                 * 全栈业务
                  */
                 "title": string;
                 /**
-                 * 打开了三个或更多的窗口
+                 * 同时打开至少 3 个站内窗口
                  */
                 "description": string;
+                /**
+                 * 左看时间线，右开通知栏，魔王处理公务讲究的就是多线程并行。
+                 */
+                "flavor": string;
             };
             "_driveFolderCircularReference": {
                 /**
-                 * 循环引用
+                 * 套娃迷宫
                  */
                 "title": string;
                 /**
-                 * 试图对网盘中的文件夹进行循环嵌套
+                 * 尝试在网盘中将文件夹移入自身或其子文件夹
                  */
                 "description": string;
+                /**
+                 * 想把收纳袋装进它自己里面——就算是星塔的空间魔法也会报错的吧！
+                 */
+                "flavor": string;
             };
             "_reactWithoutRead": {
                 /**
-                 * 有好好读过吗？
+                 * 一目十行
                  */
                 "title": string;
                 /**
-                 * 在含有100字以上的帖子被发出三秒内做出回应
+                 * 在超过 100 字的帖子发布后 3 秒内添加表情回应
                  */
                 "description": string;
+                /**
+                 * 墨迹还没干就点上回应了……魔王确定每个字都看清了吗？
+                 */
+                "flavor": string;
             };
             "_clickedClickHere": {
                 /**
-                 * 点这里
+                 * 好奇一戳
                  */
                 "title": string;
                 /**
-                 * 点了这里
+                 * 在成就页面点中了这张神秘卡片
                  */
                 "description": string;
+                /**
+                 * 在一排问号里精准戳中隐藏开关，这就是魔王的直觉吗？
+                 */
+                "flavor": string;
             };
             "_justPlainLucky": {
                 /**
-                 * 超高校级的幸运
+                 * 天选魔王
                  */
                 "title": string;
                 /**
-                 * 每 10 秒有 0.005% 的概率自动获得
+                 * 浏览营地时，每 10 秒有 0.005% 的概率随机获得
                  */
                 "description": string;
+                /**
+                 * 两万分之一的奇迹突然降临——今天不进星塔摸两把潜能吗？
+                 */
+                "flavor": string;
             };
             "_setNameToSyuilo": {
                 /**
-                 * 上帝情结
+                 * 造物主之名
                  */
                 "title": string;
                 /**
-                 * 将名称设定为 syuilo
+                 * 将魔王昵称设为“syuilo”或“しゅいろ”并保存
                  */
                 "description": string;
+                /**
+                 * 借用了 Misskey 缔造者的名讳——这算不算一种跨次元致敬？
+                 */
+                "flavor": string;
             };
             "_passedSinceAccountCreated1": {
                 /**
-                 * 一周年
+                 * 相伴一周年
                  */
                 "title": string;
                 /**
-                 * 账户创建时间超过 1 年
+                 * 账号注册满 1 年
                  */
                 "description": string;
+                /**
+                 * 春去秋来一整年，感谢魔王大人一直留在旅人营地。
+                 */
+                "flavor": string;
             };
             "_passedSinceAccountCreated2": {
                 /**
-                 * 二周年
+                 * 相伴二周年
                  */
                 "title": string;
                 /**
-                 * 账户创建时间超过 2 年
+                 * 账号注册满 2 年
                  */
                 "description": string;
+                /**
+                 * 第二个四季也并肩走过了，帐篷外的风景又换了一轮呢，魔王大人。
+                 */
+                "flavor": string;
             };
             "_passedSinceAccountCreated3": {
                 /**
-                 * 三周年
+                 * 相伴三周年
                  */
                 "title": string;
                 /**
-                 * 账户创建时间超过 3 年
+                 * 账号注册满 3 年
                  */
                 "description": string;
+                /**
+                 * 三年时光足以让迷途变成故乡，今后也请多多指教，魔王大人！
+                 */
+                "flavor": string;
             };
             "_loggedInOnBirthday": {
                 /**
-                 * 生日快乐
+                 * 今日寿星
                  */
                 "title": string;
                 /**
-                 * 在生日当天登录
+                 * 在个人资料设定的生日当天登录
                  */
                 "description": string;
+                /**
+                 * 蛋糕与蜡烛都准备好了——祝你生日快乐，魔王大人！
+                 */
+                "flavor": string;
             };
             "_loggedInOnNewYearsDay": {
                 /**
-                 * 恭贺新禧
+                 * 新岁启封
                  */
                 "title": string;
                 /**
-                 * 在元旦登入
+                 * 在元旦（1 月 1 日）当天登录
                  */
                 "description": string;
                 /**
-                 * 今年也请对本服务器多多指教！
+                 * 新的一年翻开第一页啦，今年也祝魔王大人旅途顺遂！
                  */
                 "flavor": string;
             };
             "_cookieClicked": {
                 /**
-                 * 饼干点点乐
+                 * 第一块饼干
                  */
                 "title": string;
                 /**
-                 * 点击了饼干
+                 * 在饼干小游戏中点击获得第 1 块饼干
                  */
                 "description": string;
                 /**
-                 * 穿越了？
+                 * 咔嚓一声脆响——等等，我们没走错片场玩成点饼干游戏吧？
                  */
                 "flavor": string;
             };
             "_brainDiver": {
                 /**
-                 * Brain Diver
+                 * 旋律无处不在
                  */
                 "title": string;
                 /**
-                 * 发布了包含 Brain Diver 链接的帖子
+                 * 发布包含营地音乐名单中的 B站 BV 号、网易云歌曲链接或其他指定音乐链接的帖子
                  */
                 "description": string;
                 /**
-                 * Misskey-Misskey La-Tu-Ma
+                 * 戴上耳机按下播放键，让奇妙的电波顺着时间线蔓延开来。
                  */
                 "flavor": string;
             };
             "_smashTestNotificationButton": {
                 /**
-                 * 过度测试
+                 * 连环呼叫
                  */
                 "title": string;
                 /**
-                 * 短时间内连续测试通知
+                 * 在设置中极速连点“测试通知”按钮至少 10 次
                  */
                 "description": string;
+                /**
+                 * 叮叮叮叮——收到啦收到啦，通知铃铛都快被魔王按冒烟了！
+                 */
+                "flavor": string;
             };
             "_tutorialCompleted": {
                 /**
-                 * Misskey 初学者课程 结业证书
+                 * 开业大吉
                  */
                 "title": string;
                 /**
-                 * 完成了教学
+                 * 完成旅人营地的新手引导教程
                  */
                 "description": string;
+                /**
+                 * 新手引导顺利结业！欢迎正式入驻旅人营地，魔王大人～
+                 */
+                "flavor": string;
             };
             "_bubbleGameExplodingHead": {
                 /**
-                 * 🤯
+                 * 至臻化境
                  */
                 "title": string;
                 /**
-                 * 你合成出了游戏里最大的Emoji
+                 * 在泡泡合成小游戏中合成出最大等级的 Emoji
                  */
                 "description": string;
+                /**
+                 * 层层碰撞合出终极形态，大脑仿佛也在这一刻轰然顿悟🤯！
+                 */
+                "flavor": string;
             };
             "_bubbleGameDoubleExplodingHead": {
                 /**
-                 * 两个🤯
+                 * 双倍震撼
                  */
                 "title": string;
                 /**
-                 * 你合成出了2个游戏里最大的Emoji
+                 * 在泡泡合成小游戏中让场上同时存在 2 个最大等级的 Emoji
                  */
                 "description": string;
                 /**
-                 * 大约能　装满　这些便当盒　🤯　🤯　（比划）
+                 * 一个已经够撑了，居然同时挤下两个🤯🤯——盒子快装不下啦！
                  */
                 "flavor": string;
             };
@@ -8353,7 +8639,7 @@ export interface Locale extends ILocale {
              */
             "canImportUserLists": string;
             /**
-             * 允许私信
+             * 允许心链
              */
             "chatAvailability": string;
             /**
@@ -8636,7 +8922,7 @@ export interface Locale extends ILocale {
          */
         "setZeroToDisable": string;
         /**
-         * 广告投放时间间隔过短将可能显著损害用户体验。
+         * 广告投放时间间隔过短将可能显著损害使用体验。
          */
         "adsTooClose": string;
     };
@@ -8866,7 +9152,7 @@ export interface Locale extends ILocale {
          */
         "none": string;
         /**
-         * 仅远程用户
+         * 仅远程魔王
          */
         "remote": string;
         /**
@@ -8972,7 +9258,7 @@ export interface Locale extends ILocale {
     };
     "_instanceMute": {
         /**
-         * 隐藏来自这些服务器的所有帖子和转贴，包括这些服务器上用户的回复。
+         * 隐藏来自这些服务器的所有帖子和转贴，包括这些服务器上魔王的回复。
          */
         "instanceMuteDescription": string;
         /**
@@ -9243,7 +9529,7 @@ export interface Locale extends ILocale {
              */
             "badge": string;
             /**
-             * 聊天背景
+             * 心链背景
              */
             "messageBg": string;
             /**
@@ -9270,7 +9556,7 @@ export interface Locale extends ILocale {
          */
         "reaction": string;
         /**
-         * 私信
+         * 心链
          */
         "chatMessage": string;
     };
@@ -9554,19 +9840,19 @@ export interface Locale extends ILocale {
          */
         "write:following": string;
         /**
-         * 查看私信
+         * 查看心链
          */
         "read:messaging": string;
         /**
-         * 撰写或删除消息
+         * 撰写或删除心链
          */
         "write:messaging": string;
         /**
-         * 查看已隐藏用户列表
+         * 查看已隐藏魔王列表
          */
         "read:mutes": string;
         /**
-         * 编辑已隐藏用户列表
+         * 编辑已隐藏魔王列表
          */
         "write:mutes": string;
         /**
@@ -9610,11 +9896,11 @@ export interface Locale extends ILocale {
          */
         "write:page-likes": string;
         /**
-         * 查看用户组
+         * 查看魔王组
          */
         "read:user-groups": string;
         /**
-         * 编辑用户组
+         * 编辑魔王组
          */
         "write:user-groups": string;
         /**
@@ -9850,15 +10136,15 @@ export interface Locale extends ILocale {
          */
         "read:federation": string;
         /**
-         * 举报用户
+         * 举报魔王
          */
         "write:report-abuse": string;
         /**
-         * 撰写或删除消息
+         * 撰写或删除心链
          */
         "write:chat": string;
         /**
-         * 查看私信
+         * 查看心链
          */
         "read:chat": string;
     };
@@ -9900,7 +10186,7 @@ export interface Locale extends ILocale {
          */
         "denied": string;
         /**
-         * 以下面的用户进行操作
+         * 以下面的魔王进行操作
          */
         "scopeUser": string;
         /**
@@ -9922,11 +10208,11 @@ export interface Locale extends ILocale {
          */
         "all": string;
         /**
-         * 已关注用户的帖子
+         * 已关注魔王的帖子
          */
         "homeTimeline": string;
         /**
-         * 来自指定用户的帖子
+         * 来自指定魔王的帖子
          */
         "users": string;
         /**
@@ -9934,7 +10220,7 @@ export interface Locale extends ILocale {
          */
         "userList": string;
         /**
-         * 过滤指定用户后的所有帖子
+         * 过滤指定魔王后的所有帖子
          */
         "userBlacklist": string;
     };
@@ -10046,7 +10332,7 @@ export interface Locale extends ILocale {
          */
         "button": string;
         /**
-         * 在线用户数
+         * 在线魔王数
          */
         "onlineUsers": string;
         /**
@@ -10070,7 +10356,7 @@ export interface Locale extends ILocale {
          */
         "aichan": string;
         /**
-         * 用户列表
+         * 魔王列表
          */
         "userList": string;
         "_userList": {
@@ -10088,7 +10374,7 @@ export interface Locale extends ILocale {
          */
         "birthdayFollowings": string;
         /**
-         * 私信
+         * 心链
          */
         "chat": string;
     };
@@ -10340,7 +10626,7 @@ export interface Locale extends ILocale {
          */
         "public": string;
         /**
-         * 所有用户均可见
+         * 所有魔王均可见
          */
         "publicDescription": string;
         /**
@@ -10360,11 +10646,11 @@ export interface Locale extends ILocale {
          */
         "followersDescription": string;
         /**
-         * 指定用户
+         * 指定魔王
          */
         "specified": string;
         /**
-         * 仅发送至指定用户
+         * 仅发送至指定魔王
          */
         "specifiedDescription": string;
         /**
@@ -10480,11 +10766,11 @@ export interface Locale extends ILocale {
     };
     "_profile": {
         /**
-         * 昵称
+         * 魔王昵称
          */
         "name": string;
         /**
-         * 用户名
+         * 魔王昵称
          */
         "username": string;
         /**
@@ -10540,7 +10826,7 @@ export interface Locale extends ILocale {
          */
         "followedMessageDescription": string;
         /**
-         * 需要批准才能关注的情况下，消息会在请求被批准后显示。
+         * 需要批准才能关注的情况下，心链会在请求被批准后显示。
          */
         "followedMessageDescriptionForLockedAccount": string;
     };
@@ -10574,15 +10860,15 @@ export interface Locale extends ILocale {
          */
         "userLists": string;
         /**
-         * 排除已隐藏用户
+         * 排除已隐藏魔王
          */
         "excludeMutingUsers": string;
         /**
-         * 排除不活跃用户
+         * 排除不活跃魔王
          */
         "excludeInactiveUsers": string;
         /**
-         * 在时间线中包含导入用户的回复
+         * 在时间线中包含导入魔王的回复
          */
         "withReplies": string;
     };
@@ -11097,7 +11383,7 @@ export interface Locale extends ILocale {
              */
             "all": string;
             /**
-             * 用户的新帖子
+             * 魔王的新帖子
              */
             "note": string;
             /**
@@ -11153,7 +11439,7 @@ export interface Locale extends ILocale {
              */
             "chatRoomInvitationReceived": string;
             /**
-             * 取得的成就
+             * 达成的成就
              */
             "achievementEarned": string;
             /**
@@ -11290,7 +11576,7 @@ export interface Locale extends ILocale {
          */
         "enableSyncBetweenDevicesForProfiles": string;
         /**
-         * 查看用户界面说明
+         * 查看界面说明
          */
         "showHowToUse": string;
         "_howToUse": {
@@ -11303,7 +11589,7 @@ export interface Locale extends ILocale {
              */
             "addColumn_description": string;
             /**
-             * 用户界面设置
+             * 界面设置
              */
             "settings_title": string;
             /**
@@ -11315,7 +11601,7 @@ export interface Locale extends ILocale {
              */
             "switchProfile_title": string;
             /**
-             * 将用户界面布局保存为配置文件，以便随时切换。
+             * 将界面布局保存为配置文件，以便随时切换。
              */
             "switchProfile_description": string;
         };
@@ -11357,7 +11643,7 @@ export interface Locale extends ILocale {
              */
             "mentions": string;
             /**
-             * 指定用户
+             * 指定魔王
              */
             "direct": string;
             /**
@@ -11365,7 +11651,7 @@ export interface Locale extends ILocale {
              */
             "roleTimeline": string;
             /**
-             * 私信
+             * 心链
              */
             "chat": string;
         };
@@ -12710,7 +12996,7 @@ export interface Locale extends ILocale {
          */
         "searchScopeServer": string;
         /**
-         * 指定用户
+         * 指定魔王
          */
         "searchScopeUser": string;
         /**
@@ -12718,7 +13004,7 @@ export interface Locale extends ILocale {
          */
         "pleaseEnterServerHost": string;
         /**
-         * 请选择用户
+         * 请选择魔王
          */
         "pleaseSelectUser": string;
         /**
@@ -12974,7 +13260,7 @@ export interface Locale extends ILocale {
     };
     "_userLists": {
         /**
-         * 可创建包含任意用户的列表。已创建的列表可作为时间线查看。
+         * 可创建包含任意魔王的列表。已创建的列表可作为时间线查看。
          */
         "tip": string;
     };

@@ -25,6 +25,7 @@ import { join } from 'node:path';
 import { execaSync } from 'execa';
 
 import { DEFAULT_INTEGRATION_REFS, findClosestMergeBase, gitLines, gitMergeBase, gitPaths } from './lib/git.mjs';
+import { runLocaleSafety } from './check-locales.mjs';
 
 const LINT_TARGETS = [
 	{ root: 'packages/backend', pattern: /^packages\/backend\/(src|test-federation)\/.*\.ts$/ },
@@ -182,26 +183,6 @@ function runSpdx(base, repoRoot) {
 		console.error(`SPDX: 検査不能 — ${message}`);
 		return 2;
 	}
-}
-
-/**
- * ja-JP.yml 以外の locale YAML 変更がないかを検査する。
- *
- * @param {string[]} changedFiles
- * @returns {0 | 1}
- */
-function runLocaleSafety(changedFiles) {
-	const badLocales = changedFiles.filter((file) => (
-		file.startsWith('locales/') &&
-		file.endsWith('.yml') &&
-		file !== 'locales/ja-JP.yml'
-	));
-	if (badLocales.length === 0) {
-		console.log('Locale safety: PASS');
-		return 0;
-	}
-	for (const file of badLocales) console.error(`forbidden locale change: ${file}`);
-	return 1;
 }
 
 /**

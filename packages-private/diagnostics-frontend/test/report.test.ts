@@ -5,7 +5,7 @@
 
 import { mkdtemp, mkdir, readFile, rm, writeFile } from 'node:fs/promises';
 import { tmpdir } from 'node:os';
-import { dirname, join } from 'node:path';
+import { basename, dirname, join, resolve } from 'node:path';
 import { afterAll, beforeAll, expect, test } from 'vitest';
 import { collectBundleReport } from '../src/bundle/manifest';
 import { renderFrontendDiagnosticsMarkdown } from '../src/report';
@@ -25,7 +25,7 @@ const browserFixturesDir = join(import.meta.dirname, 'browser/fixtures');
 const manifest = {
 	'src/_boot_.ts': { file: 'assets/boot-a1.js', src: 'src/_boot_.ts', name: 'boot', isEntry: true, imports: ['_vue.js', '_i18n.js'] },
 	'_vue.js': { file: 'assets/vue-b2.js', name: 'vue' },
-	// `scripts/` 配下はロケール別に出力されるので ja-JP/ に解決される
+	// `scripts/` 配下はロケール別に出力されるので zh-CN/ に解決される
 	'_i18n.js': { file: 'scripts/i18n-c3.js', name: 'i18n' },
 	'src/pages/foo.vue': { file: 'assets/foo-d4.js', src: 'src/pages/foo.vue', name: 'foo' },
 	// .js 以外はチャンクとして数えない
@@ -38,8 +38,8 @@ const fileSizes = {
 		'assets/vue-b2.js': 90_000,
 		'assets/foo-d4.js': 5_000,
 		'assets/style-e5.css': 100,
-		'ja-JP/i18n-c3.js': 4_000,
-		'ja-JP/orphan.js': 1_200,
+		'zh-CN/i18n-c3.js': 4_000,
+		'zh-CN/orphan.js': 1_200,
 	},
 	head: {
 		// 差が小さすぎる (閾値5バイト以下) ので「(other)」に集約される
@@ -48,17 +48,18 @@ const fileSizes = {
 		'assets/vue-b2.js': 96_000,
 		'assets/foo-d4.js': 5_000,
 		'assets/style-e5.css': 100,
-		'ja-JP/i18n-c3.js': 4_000,
+		'zh-CN/i18n-c3.js': 4_000,
 		// manifestに載らない出力なので「(other generated chunks)」に集約される
-		'ja-JP/orphan.js': 1_500,
+		'zh-CN/orphan.js': 1_500,
 	},
 } as const satisfies Record<'base' | 'head', Record<string, number>>;
 
 let repoDirs: { base: string; head: string };
+const tempRoot = resolve(tmpdir());
 let workDir: string;
 
 beforeAll(async () => {
-	workDir = await mkdtemp(join(tmpdir(), 'diagnostics-frontend-report-test-'));
+	workDir = await mkdtemp(join(tempRoot, 'diagnostics-frontend-report-test-'));
 
 	for (const label of ['base', 'head'] as const) {
 		const outDir = join(workDir, label, 'built/_frontend_vite_');
@@ -79,7 +80,10 @@ beforeAll(async () => {
 });
 
 afterAll(async () => {
-	await rm(workDir, { recursive: true, force: true });
+	const cleanupPath = resolve(workDir);
+	expect(dirname(cleanupPath)).toBe(tempRoot);
+	expect(basename(cleanupPath)).toMatch(/^diagnostics-frontend-report-test-/);
+	await rm(cleanupPath, { recursive: true, force: true });
 });
 
 async function loadBundleStats(name: 'base' | 'head') {

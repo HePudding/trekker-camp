@@ -4,6 +4,8 @@
  */
 
 import { Entity, Column, PrimaryColumn, ManyToOne } from 'typeorm';
+import { DEFAULT_ACHIEVEMENT_SETTINGS } from '@/misc/achievement-rules.js';
+import type { AchievementSettings } from '@/misc/achievement-rules.js';
 import { id } from './util/id.js';
 import { MiUser } from './User.js';
 
@@ -41,6 +43,11 @@ export class MiMeta {
 		length: 1024, nullable: true,
 	})
 	public description: string | null;
+
+	@Column('jsonb', {
+		default: DEFAULT_ACHIEVEMENT_SETTINGS,
+	})
+	public achievementSettings: AchievementSettings;
 
 	/**
 	 * メンテナの名前

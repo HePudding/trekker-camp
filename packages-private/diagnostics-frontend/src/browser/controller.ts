@@ -5,6 +5,7 @@
 
 import { writeFile } from 'node:fs/promises';
 import { chromium } from 'playwright';
+import { defaultLanguage } from 'i18n/const';
 import { enableNetworkTracking, type NetworkTracker } from './network';
 import type { Browser, BrowserContext, CDPSession, Page } from 'playwright';
 import type { BrowserDiagnostics, BrowserMeasurement, NetworkRequest, TabMemory, WebSocketConnection } from './types';
@@ -77,7 +78,7 @@ export class HeadlessChromeController {
 		try {
 			const context = await browser.newContext({
 				baseURL: options.baseUrl,
-				locale: 'en-US',
+				locale: defaultLanguage,
 			});
 			await context.addInitScript(() => {
 				// @ts-expect-error Test-only runtime hint consumed by Misskey frontend code.

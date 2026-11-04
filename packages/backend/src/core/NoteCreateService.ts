@@ -58,6 +58,8 @@ import { CollapsedQueue } from '@/misc/collapsed-queue.js';
 import { CacheService } from '@/core/CacheService.js';
 import { isQuote, isRenote } from '@/misc/is-renote.js';
 import { extractUrlsForKeyWordCheck } from '@/misc/extract-urls-for-keyword-check.js';
+import { AchievementService } from '@/core/AchievementService.js';
+import { matchesCommunityLoveAchievement, matchesMusicAchievement } from '@/misc/achievement-rules.js';
 
 type NotificationType = 'reply' | 'renote' | 'quote' | 'mention';
 
@@ -247,6 +249,7 @@ export class NoteCreateService implements OnApplicationShutdown {
 
 		private userEntityService: UserEntityService,
 		private noteEntityService: NoteEntityService,
+		private achievementService: AchievementService,
 		private idService: IdService,
 		private globalEventService: GlobalEventService,
 		private queueService: QueueService,
@@ -952,6 +955,15 @@ export class NoteCreateService implements OnApplicationShutdown {
 
 		// Register to search database
 		this.index(note);
+
+		if (user.host === null && note.text) {
+			if (matchesMusicAchievement(note.text, this.meta.achievementSettings)) {
+				await this.achievementService.create(user.id, 'brainDiver');
+			}
+			if (matchesCommunityLoveAchievement(note.text)) {
+				await this.achievementService.create(user.id, 'iLoveMisskey');
+			}
+		}
 	}
 
 	@bindThis
