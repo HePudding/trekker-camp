@@ -9,13 +9,11 @@
 
 import * as fs from 'node:fs';
 import { load as loadYaml } from 'js-yaml';
-import { languages, primaries } from './const.js';
+import { defaultLanguage, languages } from './const.js';
 import type { Locale } from './autogen/locale.js';
 import type { ILocale, ParameterizedString } from './types.js';
 
 type Language = typeof languages[number];
-
-type PrimaryLang = keyof typeof primaries;
 
 type Locales = Record<Language, ILocale>;
 
@@ -69,29 +67,8 @@ function build(): Record<Language, Locale> {
 	removeEmpty(locales);
 
 	return Object.entries(locales).reduce<Record<Language, Locale>>((a, [k, v]) => {
-		const lang = k.split('-')[0];
 		const key = k as Language;
-
-		switch (key) {
-			case 'ja-JP':
-				a[key] = v as Locale;
-				break;
-			case 'ja-KS':
-			case 'en-US':
-				a[key] = merge<Locale>(locales['ja-JP'] as Locale, v);
-				break;
-			default: {
-				const primaryLang = lang as PrimaryLang;
-				const primaryKey = (lang in primaries ? `${lang}-${primaries[primaryLang]}` : undefined) as Language | undefined;
-				a[key] = merge<Locale>(
-					locales['ja-JP'] as Locale,
-					locales['en-US'],
-					primaryKey ? locales[primaryKey] : {},
-					v,
-				);
-				break;
-			}
-		}
+		a[key] = merge<Locale>(locales[defaultLanguage], v);
 
 		return a;
 	}, {} as Record<Language, Locale>);

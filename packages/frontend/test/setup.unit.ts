@@ -40,12 +40,12 @@ const { default: locales } = await import('i18n');
 fetchMocker.mockIf(/^\/assets\/locales\/.*\.json$/, async () => {
 	return {
 		status: 200,
-		body: JSON.stringify(locales['en-US']),
+		body: JSON.stringify(locales['zh-CN']),
 	};
 });
 
 const { updateI18n } = await import('@/i18n.js');
-updateI18n(locales['en-US']);
+updateI18n(locales['zh-CN']);
 
 export const preferState: Record<string, unknown> = {
 

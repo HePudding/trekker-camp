@@ -11,6 +11,7 @@ import * as esbuild from 'esbuild';
 import { build } from 'esbuild';
 import { execa } from 'execa';
 import { generateLocaleInterface } from './scripts/generateLocaleInterface.js';
+import { languages } from './src/const.js';
 import type { BuildOptions, BuildResult, Plugin, PluginBuild } from 'esbuild';
 
 const _filename = fileURLToPath(import.meta.url);
@@ -54,7 +55,7 @@ function copyLocales(): void {
 
 	fs.mkdirSync(destDir, { recursive: true });
 
-	const files = fs.readdirSync(srcDir).filter(f => f.endsWith('.yml'));
+	const files = languages.map(lang => `${lang}.yml`);
 	for (const file of files) {
 		fs.copyFileSync(resolve(srcDir, file), resolve(destDir, file));
 	}
@@ -68,6 +69,7 @@ function copyLocales(): void {
 async function writeFrontendLocalesJson(): Promise<void> {
 	// 動的 import でビルド済みモジュールから読み込み（循環参照回避）
 	const { writeFrontendLocalesJson: write } = await import('./built/index.js');
+	fs.rmSync(_frontendLocalesDir, { recursive: true, force: true });
 	await write(_frontendLocalesDir, _rootPackage.version);
 	console.log(`[${_package.name}] frontend locales JSON written to ${_frontendLocalesDir}`);
 }

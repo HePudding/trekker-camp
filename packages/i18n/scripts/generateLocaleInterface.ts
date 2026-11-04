@@ -8,6 +8,7 @@ import { fileURLToPath } from 'node:url';
 import { dirname, resolve } from 'node:path';
 import { load as loadYaml } from 'js-yaml';
 import ts from 'typescript';
+import { defaultLanguage } from '../src/const.js';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
@@ -62,7 +63,7 @@ function createMembers(record: LocaleRecord): ts.TypeElement[] {
 }
 
 export async function generateLocaleInterface(localesDir: string): Promise<void> {
-	const locale = loadYaml(fs.readFileSync(`${localesDir}/ja-JP.yml`, 'utf-8').toString()) as LocaleRecord;
+	const locale = loadYaml(fs.readFileSync(`${localesDir}/${defaultLanguage}.yml`, 'utf-8').toString()) as LocaleRecord;
 	const members = createMembers(locale);
 
 	const elements: ts.Statement[] = [
