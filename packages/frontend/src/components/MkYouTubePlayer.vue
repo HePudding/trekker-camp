@@ -6,7 +6,7 @@ SPDX-License-Identifier: AGPL-3.0-only
 <template>
 <MkWindow :initialWidth="640" :initialHeight="402" :canResize="true" :closeButton="true" @closed="emit('closed')">
 	<template #header>
-		<i class="icon ti ti-brand-youtube" style="margin-right: 0.5em;"></i>
+		<i class="icon ti" :class="isBilibili ? 'ti-brand-bilibili' : 'ti-brand-youtube'" style="margin-right: 0.5em;"></i>
 		<span>{{ title ?? 'YouTube' }}</span>
 	</template>
 
@@ -28,14 +28,14 @@ SPDX-License-Identifier: AGPL-3.0-only
 </template>
 
 <script lang="ts" setup>
-import { ref } from 'vue';
+import { computed, ref } from 'vue';
 import { versatileLang } from '@@/js/intl-const.js';
 import MkWindow from '@/components/MkWindow.vue';
 import { transformPlayerUrl } from '@/utility/url-preview.js';
 import type { SummalyResult } from '@misskey-dev/summaly';
 
 const props = defineProps<{
-	urlOrSummalyResult: string | SummalyResult;
+	urlOrSummalyResult: string | Pick<SummalyResult, 'url' | 'title' | 'player'>;
 }>();
 
 const emit = defineEmits<{
@@ -46,6 +46,7 @@ const fetching = ref(true);
 const iframeLoaded = ref(false);
 const title = ref<string | null>(null);
 const player = ref<SummalyResult['player'] | null>(null);
+const isBilibili = computed(() => player.value?.url?.startsWith('https://player.bilibili.com/'));
 
 async function ytFetch() {
 	title.value = null;
@@ -53,7 +54,7 @@ async function ytFetch() {
 	fetching.value = true;
 	iframeLoaded.value = false;
 
-	let info: SummalyResult;
+	let info: Pick<SummalyResult, 'url' | 'title' | 'player'>;
 
 	if (typeof props.urlOrSummalyResult === 'string') {
 		const requestUrl = new URL(props.urlOrSummalyResult, window.location.href);
