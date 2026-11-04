@@ -450,6 +450,17 @@ export class NoteCreateService implements OnApplicationShutdown {
 		isBot: MiUser['isBot'];
 		isCat: MiUser['isCat'];
 	}, data: Option, silent = false): Promise<MiNote> {
+		if (user.host != null || data.visibleUsers?.some(visibleUser => visibleUser.host != null)) {
+			throw new IdentifiableError('f68530fb-2932-4aa7-b188-2dfb2d9580e7', 'Federation is disabled.');
+		}
+		if (data.reply?.userHost != null) {
+			throw new IdentifiableError('60142edb-1519-408e-926d-4f108d27bee0', 'No such reply target');
+		}
+		if (data.renote?.userHost != null) {
+			throw new IdentifiableError('53983c56-e163-45a6-942f-4ddc485d4290', 'No such renote target');
+		}
+		data.localOnly = true;
+
 		// チャンネル外にリプライしたら対象のスコープに合わせる
 		// (クライアントサイドでやっても良い処理だと思うけどとりあえずサーバーサイドで)
 		if (data.reply && data.channel && data.reply.channelId !== data.channel.id) {

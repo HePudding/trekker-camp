@@ -4,7 +4,7 @@ SPDX-License-Identifier: AGPL-3.0-only
 -->
 
 <template>
-<div :class="{ [$style.done]: closed || isVoted }">
+<div :class="{ [$style.done]: isReadOnly || closed || isVoted }">
 	<ul :class="$style.choices">
 		<li v-for="(choice, i) in choices" :key="i" :class="$style.choice" @click="vote(i)">
 			<div :class="$style.bg" :style="{ 'width': `${showResult ? (choice.votes / total * 100) : 0}%` }"></div>
@@ -15,7 +15,7 @@ SPDX-License-Identifier: AGPL-3.0-only
 			</span>
 		</li>
 	</ul>
-	<p v-if="!readOnly" :class="$style.info">
+	<p v-if="!isReadOnly" :class="$style.info">
 		<span>{{ i18n.tsx._poll.totalVotes({ n: total }) }}</span>
 		<span> · </span>
 		<a v-if="!closed && !isVoted" style="color: inherit;" @click="showResult = !showResult">{{ showResult ? i18n.ts._poll.vote : i18n.ts._poll.showResult }}</a>
@@ -36,6 +36,7 @@ import { pleaseLogin } from '@/utility/please-login.js';
 import * as os from '@/os.js';
 import { misskeyApi } from '@/utility/misskey-api.js';
 import { i18n } from '@/i18n.js';
+import { instance } from '@/instance.js';
 import { useLowresTime } from '@@/js/use-lowres-time.js';
 
 const props = defineProps<{
@@ -49,6 +50,7 @@ const props = defineProps<{
 }>();
 
 const now = useLowresTime();
+const isReadOnly = computed(() => props.readOnly || (props.author?.host != null && instance.federation === 'none'));
 
 const expiresAtTime = computed(() => props.expiresAt ? new Date(props.expiresAt).getTime() : null);
 
@@ -71,7 +73,7 @@ const timer = computed(() => i18n.tsx._poll[
 	d: Math.floor(remaining.value / 86400),
 }));
 
-const showResult = ref(props.readOnly || isVoted.value || closed.value);
+const showResult = ref(isReadOnly.value || isVoted.value || closed.value);
 
 if (!closed.value) {
 	const closedWatchStop = watch(closed, (isNowClosed) => {
@@ -88,7 +90,7 @@ const pleaseLoginContext = computed<OpenOnRemoteOptions>(() => ({
 }));
 
 const vote = async (id: number) => {
-	if (props.readOnly || closed.value || isVoted.value) return;
+	if (isReadOnly.value || closed.value || isVoted.value) return;
 
 	const isLoggedIn = await pleaseLogin({ openOnRemote: pleaseLoginContext.value });
 	if (!isLoggedIn) return;

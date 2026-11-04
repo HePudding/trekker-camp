@@ -36,10 +36,6 @@ SPDX-License-Identifier: AGPL-3.0-only
 					<template #value>{{ emoji.isSensitive ? i18n.ts.yes : i18n.ts.no }}</template>
 				</MkKeyValue>
 				<MkKeyValue>
-					<template #key>{{ i18n.ts.localOnly }}</template>
-					<template #value>{{ emoji.localOnly ? i18n.ts.yes : i18n.ts.no }}</template>
-				</MkKeyValue>
-				<MkKeyValue>
 					<template #key>{{ i18n.ts.license }}</template>
 					<template #value><Mfm :text="emoji.license ?? i18n.ts.none"/></template>
 				</MkKeyValue>

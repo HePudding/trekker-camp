@@ -71,7 +71,7 @@ Windows：请在 **WSL** 里 clone；Git for Windows 的换行会把仓库弄坏
 
 - 简中文案改 `locales/zh-CN.yml`（见 [locales/README.md](locales/README.md)）
 - AI 硬规矩：[AGENTS.md](AGENTS.md)；改 frontend / backend 前读读 `.claude/skills/` 对应 skill
-- 联邦 / ActivityPub 默认不做
+- 营地固定使用本地社区模式：联邦 / ActivityPub、远程账号解析与互动、中继和跨站迁移均已停用，界面隐藏对应入口。后台设置无法重新开启联邦；已有数据保留。
 
 ## 和生产相关的提醒
 

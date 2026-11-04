@@ -3,6 +3,7 @@
  * SPDX-License-Identifier: AGPL-3.0-only
  */
 
+import locales from 'i18n';
 import { test } from './fixtures.js';
 import {
 	// const
@@ -149,7 +150,7 @@ test.describe('After user signup', () => {
 		await locateMkInput(page, 'signin-username').fill('alice');
 		await page.keyboard.press('Enter');
 
-		await page.getByText('This account has been suspended due to').waitFor({ timeout: 10000 });
+		await page.getByText(locales['zh-CN'].yourAccountSuspendedDescription).waitFor({ timeout: 10000 });
 	});
 });
 

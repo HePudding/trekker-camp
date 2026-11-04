@@ -16,7 +16,6 @@ SPDX-License-Identifier: AGPL-3.0-only
 						<template #label><SearchLabel>{{ i18n.ts.sensitiveMediaDetection }}</SearchLabel></template>
 						<template v-if="sensitiveMediaDetectionForm.savedState.sensitiveMediaDetection === 'all'" #suffix>{{ i18n.ts.all }}</template>
 						<template v-else-if="sensitiveMediaDetectionForm.savedState.sensitiveMediaDetection === 'local'" #suffix>{{ i18n.ts.localOnly }}</template>
-						<template v-else-if="sensitiveMediaDetectionForm.savedState.sensitiveMediaDetection === 'remote'" #suffix>{{ i18n.ts.remoteOnly }}</template>
 						<template v-else #suffix>{{ i18n.ts.none }}</template>
 						<template v-if="sensitiveMediaDetectionForm.modified.value" #footer>
 							<MkFormFooter :form="sensitiveMediaDetectionForm"/>
@@ -33,7 +32,6 @@ SPDX-License-Identifier: AGPL-3.0-only
 									{ value: 'none', label: i18n.ts.none },
 									{ value: 'all', label: i18n.ts.all },
 									{ value: 'local', label: i18n.ts.localOnly },
-									{ value: 'remote', label: i18n.ts.remoteOnly },
 								]"
 							>
 							</MkRadios>
@@ -213,7 +211,7 @@ import MkFormFooter from '@/components/MkFormFooter.vue';
 const meta = await misskeyApi('admin/meta');
 
 const sensitiveMediaDetectionForm = useForm({
-	sensitiveMediaDetection: meta.sensitiveMediaDetection,
+	sensitiveMediaDetection: meta.sensitiveMediaDetection === 'remote' ? 'none' : meta.sensitiveMediaDetection,
 	sensitiveMediaDetectionSensitivity: meta.sensitiveMediaDetectionSensitivity === 'veryLow' ? 0 :
 	meta.sensitiveMediaDetectionSensitivity === 'low' ? 1 :
 	meta.sensitiveMediaDetectionSensitivity === 'medium' ? 2 :

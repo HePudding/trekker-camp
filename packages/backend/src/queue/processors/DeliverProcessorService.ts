@@ -51,6 +51,8 @@ export class DeliverProcessorService {
 
 	@bindThis
 	public async process(job: Bull.Job<DeliverJobData>): Promise<string> {
+		if (this.meta.federation === 'none') return 'skip (federation disabled)';
+
 		const { host } = new URL(job.data.to);
 
 		if (!this.utilityService.isFederationAllowedUri(job.data.to)) {

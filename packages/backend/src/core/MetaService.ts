@@ -53,6 +53,7 @@ export class MetaService implements OnApplicationShutdown {
 				case 'metaUpdated': {
 					this.cache = { // TODO: このあたりのデシリアライズ処理は各modelファイル内に関数としてexportしたい
 						...(body.after),
+						federation: 'none',
 						rootUser: null, // joinなカラムは通常取ってこないので
 					};
 					break;
@@ -78,6 +79,7 @@ export class MetaService implements OnApplicationShutdown {
 			const meta = metas[0];
 
 			if (meta) {
+				meta.federation = 'none';
 				this.cache = meta;
 				return meta;
 			} else {
@@ -87,11 +89,13 @@ export class MetaService implements OnApplicationShutdown {
 						MiMeta,
 						{
 							id: 'x',
+							federation: 'none',
 						},
 						['id'],
 					)
 					.then((x) => transactionalEntityManager.findOneByOrFail(MiMeta, x.identifiers[0]));
 
+				saved.federation = 'none';
 				this.cache = saved;
 				return saved;
 			}
@@ -100,6 +104,7 @@ export class MetaService implements OnApplicationShutdown {
 
 	@bindThis
 	public async update(data: Partial<MiMeta>): Promise<MiMeta> {
+		data = { ...data, federation: 'none' };
 		let before: MiMeta | undefined;
 
 		const updated = await this.db.transaction(async transactionalEntityManager => {
@@ -144,6 +149,7 @@ export class MetaService implements OnApplicationShutdown {
 			});
 		}
 
+		this.cache = updated;
 		this.globalEventService.publishInternalEvent('metaUpdated', { before, after: updated });
 
 		return updated;

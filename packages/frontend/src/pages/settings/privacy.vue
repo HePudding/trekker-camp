@@ -287,13 +287,6 @@ const followApprovalSettings = ref<FollowApprovalSetting[]>([
 		label: i18n.ts._followApproval.local,
 		caption: i18n.ts._followApproval.localDescription,
 	},
-	{
-		key: 'followApprovalRemoteSeconds',
-		mode: $i.followApprovalRemoteSeconds == null ? 'default' : $i.followApprovalRemoteSeconds === 0 ? 'disabled' : 'custom',
-		...followApprovalPeriodFromSeconds($i.followApprovalRemoteSeconds || 7 * 86400),
-		label: i18n.ts._followApproval.remote,
-		caption: i18n.ts._followApproval.remoteDescription,
-	},
 ]);
 
 const followApprovalModes = [

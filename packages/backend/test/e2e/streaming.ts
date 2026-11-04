@@ -11,6 +11,7 @@ import { WebSocket } from 'ws';
 import { api, connectStream, createAppToken, initTestDb, port, post, signup, waitFire } from '../utils.js';
 import type * as misskey from 'misskey-js';
 import { MiFollowing } from '@/models/Following.js';
+import { MiNote } from '@/models/Note.js';
 
 describe('Streaming', () => {
 	let Followings: any;
@@ -63,7 +64,8 @@ describe('Streaming', () => {
 
 			kyokoNote = await post(kyoko, { text: 'foo' });
 			kanakoNote = await post(kanako, { text: 'hoge' });
-			takumiNote = await post(takumi, { text: 'piyo' });
+			takumiNote = await post(kyoko, { text: 'Archived remote post' });
+			await connection.getRepository(MiNote).update(takumiNote.id, { userId: takumi.id, userHost: 'example.com' });
 
 			// Follow: ayano => kyoko
 			await api('following/create', { userId: kyoko.id, withReplies: false }, ayano);
@@ -149,7 +151,7 @@ describe('Streaming', () => {
 
 			test('フォローしているユーザーの投稿が流れる', async () => {
 				const fired = await waitFire(
-					ayano, 'homeTimeline',		// ayano:home
+					ayano, 'homeTimeline', // ayano:home
 					() => api('notes/create', { text: 'foo' }, kyoko),	// kyoko posts
 					msg => msg.type === 'note' && msg.body.userId === kyoko.id,	// wait kyoko
 				);
@@ -159,7 +161,7 @@ describe('Streaming', () => {
 
 			test('フォローしているユーザーの visibility: followers な投稿が流れる', async () => {
 				const fired = await waitFire(
-					ayano, 'homeTimeline',		// ayano:home
+					ayano, 'homeTimeline', // ayano:home
 					() => api('notes/create', { text: 'foo', visibility: 'followers' }, kyoko),	// kyoko posts
 					msg => msg.type === 'note' && msg.body.userId === kyoko.id,	// wait kyoko
 				);
@@ -171,7 +173,7 @@ describe('Streaming', () => {
 				const note = await post(kyoko, { text: 'foo', visibility: 'followers' });
 
 				const fired = await waitFire(
-					ayano, 'homeTimeline',		// ayano:home
+					ayano, 'homeTimeline', // ayano:home
 					() => api('notes/create', { text: 'bar', visibility: 'followers', replyId: note.id }, kyoko),	// kyoko posts
 					msg => msg.type === 'note' && msg.body.userId === kyoko.id && msg.body.replyId === note.id,
 				);
@@ -544,27 +546,15 @@ describe('Streaming', () => {
 		});
 
 		describe('Global Timeline', () => {
-			test('フォローしていないローカルユーザーの投稿が流れる', async () => {
+			test('連合無効時はローカルユーザーの投稿も流れない', async () => {
 				const fired = await waitFire(
 					ayano, 'globalTimeline',	// ayano:Global
 					() => api('notes/create', { text: 'foo' }, chitose),	// chitose posts
 					msg => msg.type === 'note' && msg.body.userId === chitose.id,	// wait chitose
 				);
 
-				assert.strictEqual(fired, true);
+				assert.strictEqual(fired, false);
 			});
-
-			/* TODO
-			test('フォローしていないリモートユーザーの投稿が流れる', async () => {
-				const fired = await waitFire(
-					ayano, 'globalTimeline',	// ayano:Global
-					() => api('notes/create', { text: 'foo' }, chinatsu),	// chinatsu posts
-					msg => msg.type === 'note' && msg.body.userId === chinatsu.id,	// wait chinatsu
-				);
-
-				assert.strictEqual(fired, true);
-			});
-			*/
 
 			test('ホーム投稿は流れない', async () => {
 				const fired = await waitFire(
@@ -576,14 +566,14 @@ describe('Streaming', () => {
 				assert.strictEqual(fired, false);
 			});
 
-			test('withReplies = falseでフォローしてる人によるリプライが流れてくる', async () => {
+			test('連合無効時はフォローしている人のリプライも流れない', async () => {
 				const fired = await waitFire(
-					ayano, 'globalTimeline',		// ayano:Global
+					ayano, 'globalTimeline', // ayano:Global
 					() => api('notes/create', { text: 'foo', replyId: kanakoNote.id }, kyoko),	// kyoko posts
 					msg => msg.type === 'note' && msg.body.userId === kyoko.id,	// wait kyoko
 				);
 
-				assert.strictEqual(fired, true);
+				assert.strictEqual(fired, false);
 			});
 		});
 
@@ -673,16 +663,13 @@ describe('Streaming', () => {
 				assert.strictEqual(fired, false);
 			});
 
-			// #10443
-			test('ミュートしているサーバのノートがリストTLに流れない', async () => {
-				await api('i/update', {
-					mutedInstances: ['example.com'],
-				}, chitose);
-
-				// chitose が example.com をミュートしている状態で、リスインしている takumi が ノートした時の動きを見たい
+			test('rejects remote posts without publishing to user lists', async () => {
 				const fired = await waitFire(
 					chitose, 'userList',
-					() => api('notes/create', { text: 'foo' }, takumi),
+					async () => {
+						const response = await api('notes/create', { text: 'foo' }, takumi);
+						assert.strictEqual(response.status, 403);
+					},
 					msg => msg.type === 'note' && msg.body.userId === takumi.id,
 					{ listId: list.id },
 				);
@@ -690,16 +677,13 @@ describe('Streaming', () => {
 				assert.strictEqual(fired, false);
 			});
 
-			// #10443
-			test('ミュートしているサーバのノートに対するリプライがリストTLに流れない', async () => {
-				await api('i/update', {
-					mutedInstances: ['example.com'],
-				}, chitose);
-
-				// chitose が example.com をミュートしている状態で、リスインしている kyoko が takumi のノートにリプライした時の動きを見たい
+			test('rejects replies to archived remote posts without publishing to user lists', async () => {
 				const fired = await waitFire(
 					chitose, 'userList',
-					() => api('notes/create', { text: 'foo', replyId: takumiNote.id }, kyoko),
+					async () => {
+						const response = await api('notes/create', { text: 'foo', replyId: takumiNote.id }, kyoko);
+						assert.strictEqual(response.status, 400);
+					},
 					msg => msg.type === 'note' && msg.body.userId === kyoko.id,
 					{ listId: list.id },
 				);
@@ -707,16 +691,13 @@ describe('Streaming', () => {
 				assert.strictEqual(fired, false);
 			});
 
-			// #10443
-			test('ミュートしているサーバのノートに対するリノートがリストTLに流れない', async () => {
-				await api('i/update', {
-					mutedInstances: ['example.com'],
-				}, chitose);
-
-				// chitose が example.com をミュートしている状態で、リスインしている kyoko が takumi のノートをリノートした時の動きを見たい
+			test('rejects renotes of archived remote posts without publishing to user lists', async () => {
 				const fired = await waitFire(
 					chitose, 'userList',
-					() => api('notes/create', { renoteId: takumiNote.id }, kyoko),
+					async () => {
+						const response = await api('notes/create', { renoteId: takumiNote.id }, kyoko);
+						assert.strictEqual(response.status, 400);
+					},
 					msg => msg.type === 'note' && msg.body.userId === kyoko.id,
 					{ listId: list.id },
 				);

@@ -60,7 +60,7 @@ if (props.id) {
 		color: null,
 		iconUrl: null,
 		target: 'manual',
-		condFormula: { id: genId(), type: 'isRemote' },
+		condFormula: { id: genId(), type: 'isLocal' },
 		isPublic: false,
 		isExplorable: false,
 		asBadge: false,

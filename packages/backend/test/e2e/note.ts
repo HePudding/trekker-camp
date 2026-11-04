@@ -763,7 +763,7 @@ describe('Note', () => {
 			assert.strictEqual(castAsError(note2.body).error.code, 'CONTAINS_PROHIBITED_WORDS');
 		});
 
-		test('禁止ワードを含んでるリモートノートもエラーになる', async () => {
+		test('リモートユーザーの投稿は内容にかかわらず拒否される', async () => {
 			const prohibited = await api('admin/update-meta', {
 				prohibitedWords: [
 					'test',
@@ -778,7 +778,8 @@ describe('Note', () => {
 				text: 'hogetesthuge',
 			}, tom);
 
-			assert.strictEqual(note1.status, 400);
+			assert.strictEqual(note1.status, 403);
+			assert.strictEqual(castAsError(note1.body).error.code, 'FEDERATION_DISABLED');
 		});
 
 		test('禁止ワードに指定したドメインはURL中でパーセントエンコードされていてもエラーになる', async () => {

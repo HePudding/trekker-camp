@@ -64,6 +64,8 @@ export class InboxProcessorService implements OnApplicationShutdown {
 
 	@bindThis
 	public async process(job: Bull.Job<InboxJobData>): Promise<string> {
+		if (this.meta.federation === 'none') return 'skip (federation disabled)';
+
 		const signature = job.data.signature;	// HTTP-signature
 		let activity = job.data.activity;
 

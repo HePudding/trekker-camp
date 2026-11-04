@@ -32,7 +32,7 @@ export class GetterService {
 	public async getNote(noteId: MiNote['id']) {
 		const note = await this.notesRepository.findOneBy({ id: noteId });
 
-		if (note == null) {
+		if (note == null || note.userHost != null) {
 			throw new IdentifiableError('9725d0ce-ba28-4dde-95a7-2cbb2c15de24', 'No such note.');
 		}
 
@@ -54,7 +54,7 @@ export class GetterService {
 			},
 		});
 
-		if (note == null) {
+		if (note == null || note.userHost != null) {
 			throw new IdentifiableError('9725d0ce-ba28-4dde-95a7-2cbb2c15de24', 'No such note.');
 		}
 
@@ -68,7 +68,7 @@ export class GetterService {
 	public async getUser(userId: MiUser['id']) {
 		const user = await this.usersRepository.findOneBy({ id: userId });
 
-		if (user == null) {
+		if (user == null || user.host != null) {
 			throw new IdentifiableError('15348ddd-432d-49c2-8a5a-8069753becff', 'No such user.');
 		}
 

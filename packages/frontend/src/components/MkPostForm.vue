@@ -32,10 +32,6 @@ SPDX-License-Identifier: AGPL-3.0-only
 					<span :class="$style.headerRightButtonText">{{ targetChannel.name }}</span>
 				</button>
 			</template>
-			<button v-if="visibility !== 'specified'" v-tooltip="i18n.ts._visibility.disableFederation" class="_button" :class="[$style.headerRightItem, { [$style.danger]: localOnly }]" :disabled="targetChannel != null" @click="toggleLocalOnly">
-				<span v-if="!localOnly"><i class="ti ti-rocket"></i></span>
-				<span v-else><i class="ti ti-rocket-off"></i></span>
-			</button>
 			<button ref="otherSettingsButton" v-tooltip="i18n.ts.other" class="_button" :class="$style.headerRightItem" @click="showOtherSettings"><i class="ti ti-dots"></i></button>
 			<button ref="submitButtonEl" v-click-anime class="_button" :class="$style.submit" :disabled="!canPost" data-testid="post-form-submit" @click="post">
 				<div :class="$style.submitInner">
@@ -204,7 +200,7 @@ watch(showPreview, () => store.set('showPreview', showPreview.value));
 const showAddMfmFunction = ref(prefer.s.enableQuickAddMfmFunction);
 watch(showAddMfmFunction, () => prefer.commit('enableQuickAddMfmFunction', showAddMfmFunction.value));
 const cw = ref<string | null>(props.initialCw ?? null);
-const localOnly = ref(props.initialLocalOnly ?? (prefer.s.rememberNoteVisibility ? store.s.localOnly : prefer.s.defaultNoteLocalOnly));
+const localOnly = ref(true);
 const visibility = ref(props.initialVisibility ?? (prefer.s.rememberNoteVisibility ? store.s.visibility : prefer.s.defaultNoteVisibility));
 const visibleUsers = ref<Misskey.entities.UserDetailed[]>([]);
 if (props.initialVisibleUsers) {
@@ -546,62 +542,15 @@ function setVisibility() {
 	});
 }
 
-async function toggleLocalOnly() {
-	if (targetChannel.value) {
-		visibility.value = 'public';
-		localOnly.value = true; // TODO: チャンネルが連合するようになった折には消す
-		return;
-	}
-
-	const neverShowInfo = miLocalStorage.getItem('neverShowLocalOnlyInfo');
-
-	if (!localOnly.value && neverShowInfo !== 'true') {
-		const confirm = await os.actions({
-			type: 'question',
-			title: i18n.ts.disableFederationConfirm,
-			text: i18n.ts.disableFederationConfirmWarn,
-			actions: [
-				{
-					value: 'yes' as const,
-					text: i18n.ts.disableFederationOk,
-					primary: true,
-				},
-				{
-					value: 'neverShow' as const,
-					text: `${i18n.ts.disableFederationOk} (${i18n.ts.neverShow})`,
-					danger: true,
-				},
-				{
-					value: 'no' as const,
-					text: i18n.ts.cancel,
-				},
-			],
-		});
-		if (confirm.canceled) return;
-		if (confirm.result === 'no') return;
-
-		if (confirm.result === 'neverShow') {
-			miLocalStorage.setItem('neverShowLocalOnlyInfo', 'true');
-		}
-	}
-
-	localOnly.value = !localOnly.value;
-	if (prefer.s.rememberNoteVisibility) {
-		store.set('localOnly', localOnly.value);
-	}
-}
-
 async function toggleReactionAcceptance() {
 	const select = await os.select({
 		title: i18n.ts.reactionAcceptance,
 		items: [
 			{ value: null, label: i18n.ts.all },
-			{ value: 'likeOnlyForRemote' as const, label: i18n.ts.likeOnlyForRemote },
 			{ value: 'nonSensitiveOnly' as const, label: i18n.ts.nonSensitiveOnly },
-			{ value: 'nonSensitiveOnlyForLocalLikeOnlyForRemote' as const, label: i18n.ts.nonSensitiveOnlyForLocalLikeOnlyForRemote },
 			{ value: 'likeOnly' as const, label: i18n.ts.likeOnly },
 		],
-		default: reactionAcceptance.value,
+		default: reactionAcceptance.value === 'likeOnlyForRemote' ? null : reactionAcceptance.value === 'nonSensitiveOnlyForLocalLikeOnlyForRemote' ? 'nonSensitiveOnly' : reactionAcceptance.value,
 	});
 	if (select.canceled) return;
 	reactionAcceptance.value = select.result;
@@ -620,7 +569,7 @@ function showOtherSettings() {
 
 		case 'likeOnlyForRemote':
 			reactionAcceptanceIcon = 'ti ti-heart-plus';
-			reactionAcceptanceCaption = i18n.ts.likeOnlyForRemote;
+			reactionAcceptanceCaption = i18n.ts.all;
 			break;
 
 		case 'nonSensitiveOnly':
@@ -628,7 +577,7 @@ function showOtherSettings() {
 			break;
 
 		case 'nonSensitiveOnlyForLocalLikeOnlyForRemote':
-			reactionAcceptanceCaption = i18n.ts.nonSensitiveOnlyForLocalLikeOnlyForRemote;
+			reactionAcceptanceCaption = i18n.ts.nonSensitiveOnly;
 			break;
 
 		default:
@@ -1027,7 +976,7 @@ async function post(ev?: PointerEvent) {
 		channelId: targetChannel.value ? targetChannel.value.id : undefined,
 		poll: poll.value,
 		cw: useCw.value ? cw.value ?? '' : null,
-		localOnly: visibility.value === 'specified' ? false : localOnly.value,
+		localOnly: true,
 		visibility: visibility.value,
 		visibleUserIds: visibility.value === 'specified' ? visibleUsers.value.map(u => u.id) : undefined,
 		reactionAcceptance: reactionAcceptance.value,
@@ -1145,7 +1094,7 @@ function cancel() {
 }
 
 function insertMention() {
-	os.selectUser({ localOnly: localOnly.value, includeSelf: true }).then(user => {
+	os.selectUser({ localOnly: true, includeSelf: true }).then(user => {
 		if (textareaEl.value == null) return;
 		insertTextAtCursor(textareaEl.value, '@' + Misskey.acct.toString(user) + ' ');
 	});

@@ -135,6 +135,10 @@ export class NodeinfoServerService {
 		const cache = new MemorySingleCache<Awaited<ReturnType<typeof nodeinfo2>>>(1000 * 60 * 10); // 10m
 
 		fastify.get(nodeinfo2_1path, async (request, reply) => {
+			if ((await this.metaService.fetch()).federation === 'none') {
+				return reply.code(404).send();
+			}
+
 			const base = await cache.fetch(() => nodeinfo2(21));
 
 			reply
@@ -150,6 +154,10 @@ export class NodeinfoServerService {
 		});
 
 		fastify.get(nodeinfo2_0path, async (request, reply) => {
+			if ((await this.metaService.fetch()).federation === 'none') {
+				return reply.code(404).send();
+			}
+
 			const base = await cache.fetch(() => nodeinfo2(20));
 
 			delete (base as any).software.repository;

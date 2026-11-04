@@ -11,7 +11,7 @@ import { Endpoint } from '@/server/api/endpoint-base.js';
 import { NoteEntityService } from '@/core/entities/NoteEntityService.js';
 import { NoteCreateService } from '@/core/NoteCreateService.js';
 import { IdentifiableError } from '@/misc/identifiable-error.js';
-import { ApiError } from '../../error.js';
+import { ApiError, federationDisabled } from '../../error.js';
 
 export const meta = {
 	tags: ['notes'],
@@ -40,6 +40,7 @@ export const meta = {
 	},
 
 	errors: {
+		federationDisabled,
 		noSuchRenoteTarget: {
 			message: 'No such renote target.',
 			code: 'NO_SUCH_RENOTE_TARGET',
@@ -253,6 +254,8 @@ export default class extends Endpoint<typeof meta, typeof paramDef> { // eslint-
 						throw new ApiError(meta.errors.containsProhibitedWords);
 					} else if (err.id === '9f466dab-c856-48cd-9e65-ff90ff750580') {
 						throw new ApiError(meta.errors.containsTooManyMentions);
+					} else if (err.id === 'f68530fb-2932-4aa7-b188-2dfb2d9580e7') {
+						throw new ApiError(meta.errors.federationDisabled);
 					} else if (err.id === '801c046c-5bf5-4234-ad2b-e78fc20a2ac7') {
 						throw new ApiError(meta.errors.noSuchFile);
 					} else if (err.id === '53983c56-e163-45a6-942f-4ddc485d4290') {
