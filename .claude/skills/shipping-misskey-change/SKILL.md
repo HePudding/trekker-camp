@@ -33,7 +33,9 @@ node scripts/check-shipping.mjs
 
 - 以 NUL 分隔安全枚举已提交、未提交和未跟踪的改动，仅对改动文件从所属包根目录运行 `eslint --quiet`。
 - SPDX 检查失败时，仅对本地改动中缺失的头运行 `check-spdx.mjs --fix`，然后重新执行常规检查。
-- 无论 SPDX 结果如何，都检查是否修改了 `locales/ja-JP.yml` 之外的语言 YAML 文件。
+- 无论 SPDX 结果如何，都检查语言 YAML 改动：允许产品文案源 `locales/zh-CN.yml` 和上游同步源 `locales/ja-JP.yml`，其余语言禁止修改。
+
+语言检查与 GitHub Actions 的 `Locale safety` 共用 `scripts/check-locales.mjs`；也可单独运行 `node scripts/check-locales.mjs --base <ref>`。
 
 得到 `SPDX: OK` 后无需重复检查。
 其他常设规则遵循 AGENTS.md。
