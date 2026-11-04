@@ -69,9 +69,6 @@ export const ROUTE_DEF = [{
 	component: chatPage(() => import('@/pages/chat/message.vue')),
 	loginRequired: true,
 }, {
-	path: '/instance-info/:host',
-	component: page(() => import('@/pages/instance-info.vue')),
-}, {
 	name: 'settings',
 	path: '/settings',
 	component: page(() => import('@/pages/settings/index.vue')),
@@ -407,10 +404,6 @@ export const ROUTE_DEF = [{
 		name: 'avatarDecorations',
 		component: page(() => import('@/pages/avatar-decorations.vue')),
 	}, {
-		path: '/federation-job-queue',
-		name: 'federationJobQueue',
-		component: page(() => import('@/pages/admin/federation-job-queue.vue')),
-	}, {
 		path: '/job-queue',
 		name: 'jobQueue',
 		component: page(() => import('@/pages/admin/job-queue.vue')),
@@ -418,10 +411,6 @@ export const ROUTE_DEF = [{
 		path: '/files',
 		name: 'files',
 		component: page(() => import('@/pages/admin/files.vue')),
-	}, {
-		path: '/federation',
-		name: 'federation',
-		component: page(() => import('@/pages/admin/federation.vue')),
 	}, {
 		path: '/announcements',
 		name: 'announcements',
@@ -482,10 +471,6 @@ export const ROUTE_DEF = [{
 		path: '/security',
 		name: 'security',
 		component: page(() => import('@/pages/admin/security.vue')),
-	}, {
-		path: '/relays',
-		name: 'relays',
-		component: page(() => import('@/pages/admin/relays.vue')),
 	}, {
 		path: '/external-services',
 		name: 'external-services',

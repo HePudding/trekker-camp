@@ -84,10 +84,20 @@ describe('鍵解除時のフォローリクエスト承認', () => {
 
 		await service.acceptAllFollowRequests(receiver);
 
-		expect(accept).toHaveBeenCalledExactlyOnceWith(receiver, followed);
+		if (remote) {
+			expect(accept).not.toHaveBeenCalled();
+		} else {
+			expect(accept).toHaveBeenCalledExactlyOnceWith(receiver, followed);
+		}
 		expect(requests.find).toHaveBeenCalledTimes(1);
 		expect(followings.find).toHaveBeenCalledTimes(1);
 		expect(followings.exists).not.toHaveBeenCalled();
 		expect(users.findOneBy).not.toHaveBeenCalled();
+	});
+
+	test('keeps historical remote follow requests pending', async () => {
+		await service.acceptFollowRequest(receiver, { ...follower, host: 'remote.example' });
+		expect(requests.findOneBy).not.toHaveBeenCalled();
+		expect(followings.insert).not.toHaveBeenCalled();
 	});
 });

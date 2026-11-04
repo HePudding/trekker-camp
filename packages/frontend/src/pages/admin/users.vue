@@ -17,18 +17,11 @@ SPDX-License-Identifier: AGPL-3.0-only
 				<MkSelect v-model="state" :items="stateDef" style="flex: 1;">
 					<template #label>{{ i18n.ts.state }}</template>
 				</MkSelect>
-				<MkSelect v-model="origin" :items="originDef" style="flex: 1;">
-					<template #label>{{ i18n.ts.instance }}</template>
-				</MkSelect>
 			</div>
 			<div :class="$style.inputs">
 				<MkInput v-model="searchUsername" style="flex: 1;" type="text" :spellcheck="false">
 					<template #prefix>@</template>
 					<template #label>{{ i18n.ts.username }}</template>
-				</MkInput>
-				<MkInput v-model="searchHost" style="flex: 1;" type="text" :spellcheck="false" :disabled="paginator.computedParams?.value?.origin === 'local'">
-					<template #prefix>@</template>
-					<template #label>{{ i18n.ts.host }}</template>
 				</MkInput>
 			</div>
 
@@ -96,27 +89,15 @@ const {
 	],
 	initialValue: storedQuery.state ?? 'all',
 });
-const {
-	model: origin,
-	def: originDef,
-} = useMkSelect({
-	items: [
-		{ label: i18n.ts.all, value: 'combined' },
-		{ label: i18n.ts.local, value: 'local' },
-		{ label: i18n.ts.remote, value: 'remote' },
-	],
-	initialValue: storedQuery.origin ?? 'local',
-});
 const searchUsername = ref(storedQuery.username ?? '');
-const searchHost = ref(storedQuery.hostname ?? '');
 const paginator = markRaw(new Paginator('admin/show-users', {
 	limit: 10,
 	computedParams: computed(() => ({
 		sort: sort.value,
 		state: state.value,
-		origin: origin.value,
+		origin: 'local',
 		username: searchUsername.value,
-		hostname: searchHost.value,
+		hostname: null,
 	})),
 	offsetMode: true,
 }));
@@ -154,9 +135,7 @@ function show(user: Misskey.entities.UserDetailed) {
 function resetQuery() {
 	sort.value = '+createdAt';
 	state.value = 'all';
-	origin.value = 'local';
 	searchUsername.value = '';
-	searchHost.value = '';
 }
 
 const headerActions = computed(() => [{
@@ -181,9 +160,9 @@ watchEffect(() => {
 	defaultMemoryStorage.setItem('admin-users-query', JSON.stringify({
 		sort: sort.value,
 		state: state.value,
-		origin: origin.value,
+		origin: 'local',
 		username: searchUsername.value,
-		hostname: searchHost.value,
+		hostname: null,
 	}));
 });
 

@@ -50,6 +50,7 @@ export class RelationshipProcessorService {
 			this.usersRepository.findOneByOrFail({ id: job.data.from.id }),
 			this.usersRepository.findOneByOrFail({ id: job.data.to.id }),
 		]) as [MiLocalUser | MiRemoteUser, MiLocalUser | MiRemoteUser];
+		if ([follower, followee].some(user => user.host != null)) return 'skip (federation disabled)';
 		await this.userFollowingService.unfollow(follower, followee, job.data.silent);
 		return 'ok';
 	}
@@ -61,6 +62,7 @@ export class RelationshipProcessorService {
 			this.usersRepository.findOneByOrFail({ id: job.data.from.id }),
 			this.usersRepository.findOneByOrFail({ id: job.data.to.id }),
 		]);
+		if ([blockee, blocker].some(user => user.host != null)) return 'skip (federation disabled)';
 		await this.userBlockingService.block(blockee, blocker, job.data.silent);
 		return 'ok';
 	}
@@ -72,6 +74,7 @@ export class RelationshipProcessorService {
 			this.usersRepository.findOneByOrFail({ id: job.data.from.id }),
 			this.usersRepository.findOneByOrFail({ id: job.data.to.id }),
 		]);
+		if ([blockee, blocker].some(user => user.host != null)) return 'skip (federation disabled)';
 		await this.userBlockingService.unblock(blockee, blocker);
 		return 'ok';
 	}

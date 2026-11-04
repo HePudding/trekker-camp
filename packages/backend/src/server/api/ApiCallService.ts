@@ -18,7 +18,7 @@ import { bindThis } from '@/decorators.js';
 import { RoleService } from '@/core/RoleService.js';
 import { TelemetryService } from '@/core/telemetry/TelemetryService.js';
 import type { Config } from '@/config.js';
-import { ApiError } from './error.js';
+import { ApiError, federationDisabled } from './error.js';
 import { RateLimiterService } from './RateLimiterService.js';
 import { ApiLoggerService } from './ApiLoggerService.js';
 import { AuthenticateService, AuthenticationError } from './AuthenticateService.js';
@@ -360,6 +360,12 @@ export class ApiCallService implements OnApplicationShutdown {
 		request: FastifyRequest<{ Body: Record<string, unknown> | undefined, Querystring: Record<string, unknown> }>,
 	) {
 		const isSecure = user != null && token == null;
+		if (ep.name.startsWith('ap/') || ep.name.startsWith('federation/') ||
+			ep.name.startsWith('admin/federation/') || ep.name.startsWith('admin/relays/') ||
+			ep.name === 'admin/emoji/copy' || ep.name === 'admin/emoji/list-remote' ||
+			ep.name === 'i/move' || (ep.name === 'i/update' && data.alsoKnownAs !== undefined)) {
+			throw new ApiError(federationDisabled);
+		}
 
 		if (ep.meta.secure && !isSecure) {
 			throw new ApiError(accessDenied);

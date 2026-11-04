@@ -11,6 +11,8 @@ import { GlobalModule } from '@/GlobalModule.js';
 import { DI } from '@/di-symbols.js';
 import { MetaService } from '@/core/MetaService.js';
 import { CoreModule } from '@/core/CoreModule.js';
+import { MiMeta } from '@/models/Meta.js';
+import type { Redis } from 'ioredis';
 import type { TestingModule } from '@nestjs/testing';
 import type { DataSource } from 'typeorm';
 
@@ -56,5 +58,27 @@ describe('MetaService', () => {
 
 		expect(result.id).toBe('x');
 		expect(spy).toHaveBeenCalledTimes(1);
+	});
+
+	test('keeps legacy database settings and updates in local mode', async () => {
+		const db = app.get<DataSource>(DI.db);
+		await db.getRepository(MiMeta).update('x', { federation: 'all' });
+
+		expect((await metaService.fetch(true)).federation).toBe('none');
+		expect(app.get<MiMeta>(DI.meta).federation).toBe('none');
+		expect((await metaService.update({ federation: 'specified' })).federation).toBe('none');
+		expect((await db.getRepository(MiMeta).findOneByOrFail({ id: 'x' })).federation).toBe('none');
+		expect((await metaService.fetch()).federation).toBe('none');
+	});
+
+	test('ignores federation settings received from other processes', async () => {
+		const meta = await metaService.fetch();
+		app.get<Redis>(DI.redisForSub).emit('message', 'test', JSON.stringify({
+			channel: 'internal',
+			message: { type: 'metaUpdated', body: { before: meta, after: { ...meta, federation: 'all' } } },
+		}));
+
+		expect((await metaService.fetch()).federation).toBe('none');
+		expect(app.get<MiMeta>(DI.meta).federation).toBe('none');
 	});
 });

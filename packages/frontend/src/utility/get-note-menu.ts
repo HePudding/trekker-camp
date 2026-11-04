@@ -384,7 +384,7 @@ export function getNoteMenu(props: {
 			action: copyContent,
 		}, getCopyNoteLinkMenu(appearNote, i18n.ts.copyLink));
 
-		if (link) {
+		if (instance.federation !== 'none' && link) {
 			menuItems.push({
 				icon: 'ti ti-link',
 				text: i18n.ts.copyRemoteLink,
@@ -561,7 +561,7 @@ export function getNoteMenu(props: {
 			action: copyContent,
 		}, getCopyNoteLinkMenu(appearNote, i18n.ts.copyLink));
 
-		if (link != null) {
+		if (instance.federation !== 'none' && link != null) {
 			menuItems.push({
 				icon: 'ti ti-link',
 				text: i18n.ts.copyRemoteLink,

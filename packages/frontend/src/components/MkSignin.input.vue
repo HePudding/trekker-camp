@@ -16,7 +16,7 @@ SPDX-License-Identifier: AGPL-3.0-only
 		</MkInfo>
 
 		<!-- 外部サーバーへの転送 -->
-		<div v-if="openOnRemote" class="_gaps_m">
+		<div v-if="openOnRemote && instance.federation !== 'none'" class="_gaps_m">
 			<div class="_gaps_s">
 				<MkButton type="button" rounded primary style="margin: 0 auto;" @click="openRemote(openOnRemote)">
 					{{ i18n.ts.continueOnRemote }} <i class="ti ti-external-link"></i>
@@ -58,6 +58,7 @@ import { toUnicode } from 'punycode.js';
 
 import { query, extractDomain } from '@@/js/url.js';
 import { host as configHost } from '@@/js/config.js';
+import { instance } from '@/instance.js';
 import type { OpenOnRemoteOptions } from '@/utility/please-login.js';
 import { i18n } from '@/i18n.js';
 import * as os from '@/os.js';

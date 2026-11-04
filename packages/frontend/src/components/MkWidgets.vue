@@ -14,7 +14,7 @@ SPDX-License-Identifier: AGPL-3.0-only
 			<MkButton inline @click="emit('exit')">{{ i18n.ts.close }}</MkButton>
 		</header>
 		<MkDraggable
-			:modelValue="props.widgets"
+			:modelValue="_widgets"
 			direction="vertical"
 			withGaps
 			group="MkWidgets"

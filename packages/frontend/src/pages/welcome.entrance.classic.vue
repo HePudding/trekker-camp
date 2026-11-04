@@ -16,7 +16,7 @@ SPDX-License-Identifier: AGPL-3.0-only
 	<div :class="$style.contents">
 		<MkVisitorDashboard/>
 	</div>
-	<div v-if="instances && instances.length > 0" :class="$style.federation">
+	<div v-if="meta.federation !== 'none' && instances && instances.length > 0" :class="$style.federation">
 		<MkMarqueeText :duration="40">
 			<MkA v-for="instance in instances" :key="instance.id" :class="$style.federationInstance" :to="`/instance-info/${instance.host}`" behavior="window">
 				<!--<MkInstanceCardMini :instance="instance"/>-->
@@ -50,7 +50,7 @@ function getInstanceIcon(instance: Misskey.entities.FederationInstance): string 
 	return getProxiedImageUrl(instance.iconUrl, 'preview');
 }
 
-misskeyApiGet('federation/instances', {
+if (meta.federation !== 'none') misskeyApiGet('federation/instances', {
 	sort: '+pubSub',
 	limit: 20,
 	blocked: false,

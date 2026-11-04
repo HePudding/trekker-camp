@@ -27,42 +27,6 @@ SPDX-License-Identifier: AGPL-3.0-only
 				</SearchMarker>
 
 				<SearchMarker>
-					<div class="_panel" style="padding: 16px;">
-						<MkSwitch v-model="enableChartsForRemoteUser" @change="onChange_enableChartsForRemoteUser">
-							<template #label><SearchLabel>{{ i18n.ts.enableChartsForRemoteUser }}</SearchLabel></template>
-							<template #caption>{{ i18n.ts.turnOffToImprovePerformance }}</template>
-						</MkSwitch>
-					</div>
-				</SearchMarker>
-
-				<SearchMarker>
-					<div class="_panel" style="padding: 16px;">
-						<MkSwitch v-model="enableStatsForFederatedInstances" @change="onChange_enableStatsForFederatedInstances">
-							<template #label><SearchLabel>{{ i18n.ts.enableStatsForFederatedInstances }}</SearchLabel></template>
-							<template #caption>{{ i18n.ts.turnOffToImprovePerformance }}</template>
-						</MkSwitch>
-					</div>
-				</SearchMarker>
-
-				<SearchMarker>
-					<div class="_panel" style="padding: 16px;">
-						<MkSwitch v-model="enableChartsForFederatedInstances" @change="onChange_enableChartsForFederatedInstances">
-							<template #label><SearchLabel>{{ i18n.ts.enableChartsForFederatedInstances }}</SearchLabel></template>
-							<template #caption>{{ i18n.ts.turnOffToImprovePerformance }}</template>
-						</MkSwitch>
-					</div>
-				</SearchMarker>
-
-				<SearchMarker>
-					<div class="_panel" style="padding: 16px;">
-						<MkSwitch v-model="showRoleBadgesOfRemoteUsers" @change="onChange_showRoleBadgesOfRemoteUsers">
-							<template #label><SearchLabel>{{ i18n.ts.showRoleBadgesOfRemoteUsers }}</SearchLabel></template>
-							<template #caption>{{ i18n.ts.turnOffToImprovePerformance }}</template>
-						</MkSwitch>
-					</div>
-				</SearchMarker>
-
-				<SearchMarker>
 					<MkFolder :defaultOpen="true">
 						<template #icon><SearchIcon><i class="ti ti-bolt"></i></SearchIcon></template>
 						<template #label><SearchLabel>Misskey® Fan-out Timeline Technology™ (FTT)</SearchLabel></template>
@@ -94,12 +58,6 @@ SPDX-License-Identifier: AGPL-3.0-only
 								<SearchMarker>
 									<MkInput v-model="fttForm.state.perLocalUserUserTimelineCacheMax" type="number">
 										<template #label><SearchLabel>perLocalUserUserTimelineCacheMax</SearchLabel><span v-if="fttForm.modifiedStates.perLocalUserUserTimelineCacheMax" class="_modified">{{ i18n.ts.modified }}</span></template>
-									</MkInput>
-								</SearchMarker>
-
-								<SearchMarker>
-									<MkInput v-model="fttForm.state.perRemoteUserUserTimelineCacheMax" type="number">
-										<template #label><SearchLabel>perRemoteUserUserTimelineCacheMax</SearchLabel><span v-if="fttForm.modifiedStates.perRemoteUserUserTimelineCacheMax" class="_modified">{{ i18n.ts.modified }}</span></template>
 									</MkInput>
 								</SearchMarker>
 
@@ -140,36 +98,6 @@ SPDX-License-Identifier: AGPL-3.0-only
 					</MkFolder>
 				</SearchMarker>
 
-				<SearchMarker>
-					<MkFolder :defaultOpen="true">
-						<template #icon><SearchIcon><i class="ti ti-recycle"></i></SearchIcon></template>
-						<template #label><SearchLabel>Remote Notes Cleaning (仮)</SearchLabel></template>
-						<template v-if="remoteNotesCleaningForm.savedState.enableRemoteNotesCleaning" #suffix>Enabled</template>
-						<template v-else #suffix>Disabled</template>
-						<template v-if="remoteNotesCleaningForm.modified.value" #footer>
-							<MkFormFooter :form="remoteNotesCleaningForm"/>
-						</template>
-
-						<div class="_gaps_m">
-							<MkSwitch v-model="remoteNotesCleaningForm.state.enableRemoteNotesCleaning">
-								<template #label><SearchLabel>{{ i18n.ts.enable }}</SearchLabel><span v-if="remoteNotesCleaningForm.modifiedStates.enableRemoteNotesCleaning" class="_modified">{{ i18n.ts.modified }}</span></template>
-								<template #caption><SearchText>{{ i18n.ts._serverSettings.remoteNotesCleaning_description }}</SearchText></template>
-							</MkSwitch>
-
-							<template v-if="remoteNotesCleaningForm.state.enableRemoteNotesCleaning">
-								<MkInput v-model="remoteNotesCleaningForm.state.remoteNotesCleaningExpiryDaysForEachNotes" type="number">
-									<template #label><SearchLabel>{{ i18n.ts._serverSettings.remoteNotesCleaningExpiryDaysForEachNotes }}</SearchLabel> ({{ i18n.ts.inDays }})<span v-if="remoteNotesCleaningForm.modifiedStates.remoteNotesCleaningExpiryDaysForEachNotes" class="_modified">{{ i18n.ts.modified }}</span></template>
-									<template #suffix>{{ i18n.ts._time.day }}</template>
-								</MkInput>
-
-								<MkInput v-model="remoteNotesCleaningForm.state.remoteNotesCleaningMaxProcessingDurationInMinutes" type="number">
-									<template #label><SearchLabel>{{ i18n.ts._serverSettings.remoteNotesCleaningMaxProcessingDuration }}</SearchLabel> ({{ i18n.ts.inMinutes }})<span v-if="remoteNotesCleaningForm.modifiedStates.remoteNotesCleaningMaxProcessingDurationInMinutes" class="_modified">{{ i18n.ts.modified }}</span></template>
-									<template #suffix>{{ i18n.ts._time.minute }}</template>
-								</MkInput>
-							</template>
-						</div>
-					</MkFolder>
-				</SearchMarker>
 			</div>
 		</SearchMarker>
 	</div>
@@ -194,10 +122,6 @@ const meta = await misskeyApi('admin/meta');
 
 const enableServerMachineStats = ref(meta.enableServerMachineStats);
 const enableIdenticonGeneration = ref(meta.enableIdenticonGeneration);
-const enableChartsForRemoteUser = ref(meta.enableChartsForRemoteUser);
-const enableStatsForFederatedInstances = ref(meta.enableStatsForFederatedInstances);
-const enableChartsForFederatedInstances = ref(meta.enableChartsForFederatedInstances);
-const showRoleBadgesOfRemoteUsers = ref(meta.showRoleBadgesOfRemoteUsers);
 
 function onChange_enableServerMachineStats(value: boolean) {
 	os.apiWithDialog('admin/update-meta', {
@@ -215,43 +139,10 @@ function onChange_enableIdenticonGeneration(value: boolean) {
 	});
 }
 
-function onChange_enableChartsForRemoteUser(value: boolean) {
-	os.apiWithDialog('admin/update-meta', {
-		enableChartsForRemoteUser: value,
-	}).then(() => {
-		fetchInstance(true);
-	});
-}
-
-function onChange_enableStatsForFederatedInstances(value: boolean) {
-	os.apiWithDialog('admin/update-meta', {
-		enableStatsForFederatedInstances: value,
-	}).then(() => {
-		fetchInstance(true);
-	});
-}
-
-function onChange_enableChartsForFederatedInstances(value: boolean) {
-	os.apiWithDialog('admin/update-meta', {
-		enableChartsForFederatedInstances: value,
-	}).then(() => {
-		fetchInstance(true);
-	});
-}
-
-function onChange_showRoleBadgesOfRemoteUsers(value: boolean) {
-	os.apiWithDialog('admin/update-meta', {
-		showRoleBadgesOfRemoteUsers: value,
-	}).then(() => {
-		fetchInstance(true);
-	});
-}
-
 const fttForm = useForm({
 	enableFanoutTimeline: meta.enableFanoutTimeline,
 	enableFanoutTimelineDbFallback: meta.enableFanoutTimelineDbFallback,
 	perLocalUserUserTimelineCacheMax: meta.perLocalUserUserTimelineCacheMax,
-	perRemoteUserUserTimelineCacheMax: meta.perRemoteUserUserTimelineCacheMax,
 	perUserHomeTimelineCacheMax: meta.perUserHomeTimelineCacheMax,
 	perUserListTimelineCacheMax: meta.perUserListTimelineCacheMax,
 }, async (state) => {
@@ -259,7 +150,6 @@ const fttForm = useForm({
 		enableFanoutTimeline: state.enableFanoutTimeline,
 		enableFanoutTimelineDbFallback: state.enableFanoutTimelineDbFallback,
 		perLocalUserUserTimelineCacheMax: state.perLocalUserUserTimelineCacheMax,
-		perRemoteUserUserTimelineCacheMax: state.perRemoteUserUserTimelineCacheMax,
 		perUserHomeTimelineCacheMax: state.perUserHomeTimelineCacheMax,
 		perUserListTimelineCacheMax: state.perUserListTimelineCacheMax,
 	});
@@ -271,19 +161,6 @@ const rbtForm = useForm({
 }, async (state) => {
 	await os.apiWithDialog('admin/update-meta', {
 		enableReactionsBuffering: state.enableReactionsBuffering,
-	});
-	fetchInstance(true);
-});
-
-const remoteNotesCleaningForm = useForm({
-	enableRemoteNotesCleaning: meta.enableRemoteNotesCleaning,
-	remoteNotesCleaningExpiryDaysForEachNotes: meta.remoteNotesCleaningExpiryDaysForEachNotes,
-	remoteNotesCleaningMaxProcessingDurationInMinutes: meta.remoteNotesCleaningMaxProcessingDurationInMinutes,
-}, async (state) => {
-	await os.apiWithDialog('admin/update-meta', {
-		enableRemoteNotesCleaning: state.enableRemoteNotesCleaning,
-		remoteNotesCleaningExpiryDaysForEachNotes: state.remoteNotesCleaningExpiryDaysForEachNotes,
-		remoteNotesCleaningMaxProcessingDurationInMinutes: state.remoteNotesCleaningMaxProcessingDurationInMinutes,
 	});
 	fetchInstance(true);
 });

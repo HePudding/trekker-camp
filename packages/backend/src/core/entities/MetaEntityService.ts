@@ -127,7 +127,7 @@ export class MetaEntityService {
 
 			serverRules: instance.serverRules,
 
-			policies: { ...DEFAULT_POLICIES, ...instance.policies },
+			policies: { ...DEFAULT_POLICIES, ...instance.policies, gtlAvailable: false },
 
 			sentryForFrontend: this.config.sentryForFrontend ?? null,
 			mediaProxy: this.config.mediaProxy,
@@ -160,7 +160,7 @@ export class MetaEntityService {
 			proxyAccountName: proxyAccount.username,
 			features: {
 				localTimeline: instance.policies.ltlAvailable,
-				globalTimeline: instance.policies.gtlAvailable,
+				globalTimeline: false,
 				registration: !instance.disableRegistration,
 				emailRequiredForSignup: instance.emailRequiredForSignup,
 				hcaptcha: instance.enableHcaptcha,

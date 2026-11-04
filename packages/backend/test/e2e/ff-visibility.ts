@@ -17,7 +17,6 @@ describe('FF visibility', () => {
 	beforeAll(async () => {
 		alice = await signup({ username: 'alice' });
 		bob = await signup({ username: 'bob' });
-		await api('admin/update-meta', { federation: 'all' }, alice as misskey.entities.SignupResponse);
 	}, 1000 * 60 * 2);
 
 	test('followingVisibility, followersVisibility がともに public なユーザーのフォロー/フォロワーを誰でも見れる', async () => {
@@ -609,14 +608,14 @@ describe('FF visibility', () => {
 	});
 
 	describe('AP', () => {
-		test('followingVisibility が public 以外ならばAPからはフォローを取得できない', async () => {
+		test('does not expose following through ActivityPub at any visibility', async () => {
 			{
 				await api('i/update', {
 					followingVisibility: 'public',
 				}, alice);
 
 				const followingRes = await simpleGet(`/users/${alice.id}/following`, 'application/activity+json');
-				assert.strictEqual(followingRes.status, 200);
+				assert.strictEqual(followingRes.status, 403);
 			}
 			{
 				await api('i/update', {
@@ -636,14 +635,14 @@ describe('FF visibility', () => {
 			}
 		});
 
-		test('followersVisibility が public 以外ならばAPからはフォロワーを取得できない', async () => {
+		test('does not expose followers through ActivityPub at any visibility', async () => {
 			{
 				await api('i/update', {
 					followersVisibility: 'public',
 				}, alice);
 
 				const followersRes = await simpleGet(`/users/${alice.id}/followers`, 'application/activity+json');
-				assert.strictEqual(followersRes.status, 200);
+				assert.strictEqual(followersRes.status, 403);
 			}
 			{
 				await api('i/update', {

@@ -19,12 +19,6 @@ SPDX-License-Identifier: AGPL-3.0-only
 				<MkSelect v-model="state" :items="stateDef" style="margin: 0; flex: 1;">
 					<template #label>{{ i18n.ts.state }}</template>
 				</MkSelect>
-				<MkSelect v-model="targetUserOrigin" :items="targetUserOriginDef" style="margin: 0; flex: 1;">
-					<template #label>{{ i18n.ts.reporteeOrigin }}</template>
-				</MkSelect>
-				<MkSelect v-model="reporterOrigin" :items="reporterOriginDef" style="margin: 0; flex: 1;">
-					<template #label>{{ i18n.ts.reporterOrigin }}</template>
-				</MkSelect>
 			</div>
 
 			<!-- TODO

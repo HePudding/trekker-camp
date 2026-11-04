@@ -22,8 +22,6 @@ SPDX-License-Identifier: AGPL-3.0-only
 
 			<MkInfo v-if="isSystem">{{ i18n.ts.isSystemAccount }}</MkInfo>
 
-			<FormLink v-if="user.host" :to="`/instance-info/${user.host}`">{{ i18n.ts.instanceInfo }}</FormLink>
-
 			<div style="display: flex; flex-direction: column; gap: 1em;">
 				<MkKeyValue :copy="user.id" oneline>
 					<template #key>ID</template>
@@ -79,8 +77,6 @@ SPDX-License-Identifier: AGPL-3.0-only
 								<template #value><span class="_monospace">{{ ap.type }}</span></template>
 							</MkKeyValue>
 						</div>
-
-						<MkButton v-if="user.host != null" @click="updateRemoteUser"><i class="ti ti-refresh"></i> {{ i18n.ts.updateRemoteUser }}</MkButton>
 
 						<MkFolder>
 							<template #label>Raw</template>

@@ -12,7 +12,7 @@ import { describe, beforeAll, afterAll, test, expect, vi } from 'vitest';
 import { Blob } from 'node-fetch';
 import { api, castAsError, initTestDb, post, role, signup, simpleGet, uploadFile } from '../utils.js';
 import type * as misskey from 'misskey-js';
-import { MiUser } from '@/models/_.js';
+import { MiDriveFile, MiUser } from '@/models/_.js';
 import type { AchievementSettings } from '@/misc/achievement-rules.js';
 
 const waitForPushToTlOptions = { timeout: 3000, interval: 25 };
@@ -28,7 +28,6 @@ describe('Endpoints', () => {
 		bob = await signup({ username: 'bob' });
 		carol = await signup({ username: 'carol' });
 		dave = await signup({ username: 'dave' });
-		await api('admin/update-meta', { federation: 'all' }, alice as misskey.entities.SignupResponse);
 	}, 1000 * 60 * 2);
 
 	describe('Achievement localization', () => {
@@ -758,16 +757,14 @@ describe('Endpoints', () => {
 		for (const type of ['webp', 'avif']) {
 			const mediaType = `image/${type}`;
 
-			const getWebpublicType = async (user: misskey.entities.SignupResponse, fileId: string): Promise<string> => {
-				// drive/files/create does not expose webpublicType directly, so get it by posting it
-				const res = await post(user, {
-					text: mediaType,
-					fileIds: [fileId],
-				});
-				const apRes = await simpleGet(`notes/${res.id}`, 'application/activity+json');
-				assert.strictEqual(apRes.status, 200);
-				assert.ok(Array.isArray(apRes.body.attachment));
-				return apRes.body.attachment[0].mediaType;
+			const getWebpublicType = async (fileId: string): Promise<string | null> => {
+				const db = await initTestDb(true);
+				try {
+					const file = await db.getRepository(MiDriveFile).findOneByOrFail({ id: fileId });
+					return file.webpublicType;
+				} finally {
+					await db.destroy();
+				}
 			};
 
 			test(`透明な${type}ファイルを作成できる`, async () => {
@@ -778,7 +775,7 @@ describe('Endpoints', () => {
 				assert.strictEqual(res.body!.name, path);
 				assert.strictEqual(res.body!.type, mediaType);
 
-				const webpublicType = await getWebpublicType(alice, res.body!.id);
+				const webpublicType = await getWebpublicType(res.body!.id);
 				assert.strictEqual(webpublicType, 'image/webp');
 			});
 
@@ -789,7 +786,7 @@ describe('Endpoints', () => {
 				assert.strictEqual(res.body!.name, path);
 				assert.strictEqual(res.body!.type, mediaType);
 
-				const webpublicType = await getWebpublicType(alice, res.body!.id);
+				const webpublicType = await getWebpublicType(res.body!.id);
 				assert.strictEqual(webpublicType, 'image/webp');
 			});
 		}

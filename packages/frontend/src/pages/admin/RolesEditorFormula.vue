@@ -6,7 +6,7 @@ SPDX-License-Identifier: AGPL-3.0-only
 <template>
 <div class="_gaps">
 	<div :class="$style.header">
-		<MkSelect v-model="typeModelForMkSelect" :items="typeDef" :class="$style.typeSelect">
+		<MkSelect v-model="typeModelForMkSelect" :items="typeDef.filter(item => !['isRemote'].includes(item.value))" :class="$style.typeSelect">
 		</MkSelect>
 		<button v-if="draggable" class="_button" :class="$style.dragHandle" :draggable="true" @dragstart.stop="dragStartCallback">
 			<i class="ti ti-menu-2"></i>
@@ -129,7 +129,7 @@ const typeModelForMkSelect = computed<GetMkSelectValueTypesFromDef<typeof typeDe
 		switch (t) {
 			case 'and': newValue = { type: 'and', values: [] }; break;
 			case 'or': newValue = { type: 'or', values: [] }; break;
-			case 'not': newValue = { type: 'not', value: { id: genId(), type: 'isRemote' } }; break;
+			case 'not': newValue = { type: 'not', value: { id: genId(), type: 'isLocal' } }; break;
 			case 'roleAssignedTo': newValue = { type: 'roleAssignedTo', roleId: '' }; break;
 			case 'createdLessThan': newValue = { type: 'createdLessThan', sec: 86400 }; break;
 			case 'createdMoreThan': newValue = { type: 'createdMoreThan', sec: 86400 }; break;
@@ -149,7 +149,7 @@ const assignedToDef = computed(() => roles.filter(r => r.target === 'manual').ma
 
 function addChildValue() {
 	if (v.value.type !== 'and' && v.value.type !== 'or') return;
-	v.value.values.push({ id: genId(), type: 'isRemote' });
+	v.value.values.push({ id: genId(), type: 'isLocal' });
 }
 
 function childValuesItemUpdated(item: Misskey.entities.Role['condFormula']) {

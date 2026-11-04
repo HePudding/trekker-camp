@@ -21,6 +21,7 @@ on:
 jobs:
   test:
     name: Federation test
+    if: github.repository == 'misskey-dev/misskey'
     runs-on: ubuntu-latest
     strategy:
       matrix:

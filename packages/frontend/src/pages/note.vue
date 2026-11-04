@@ -18,7 +18,6 @@ SPDX-License-Identifier: AGPL-3.0-only
 						<MkButton rounded :class="$style.loadButton" @click="showNext = 'user'"><i class="ti ti-chevron-up"></i> <i class="ti ti-user"></i></MkButton>
 					</div>
 					<div class="_margin _gaps_s">
-						<MkRemoteCaution v-if="note.user.host != null" :href="note.url ?? note.uri"/>
 						<MkNoteDetailed :key="note.id" v-model:note="note" :initialTab="initialTab" :class="$style.note"/>
 					</div>
 					<div v-if="clips && clips.length > 0" class="_margin">
@@ -50,7 +49,6 @@ import * as Misskey from 'misskey-js';
 import { host } from '@@/js/config.js';
 import MkNoteDetailed from '@/components/MkNoteDetailed.vue';
 import MkNotesTimeline from '@/components/MkNotesTimeline.vue';
-import MkRemoteCaution from '@/components/MkRemoteCaution.vue';
 import MkButton from '@/components/MkButton.vue';
 import { misskeyApi } from '@/utility/misskey-api.js';
 import { definePage } from '@/page.js';
@@ -145,7 +143,7 @@ function fetchNote() {
 		if (['fbcc002d-37d9-4944-a6b0-d9e29f2d33ab', '145f88d2-b03d-4087-8143-a78928883c4b'].includes(err.id)) {
 			pleaseLogin({
 				path: '/',
-				message: err.id === 'fbcc002d-37d9-4944-a6b0-d9e29f2d33ab' ? i18n.ts.thisContentsAreMarkedAsSigninRequiredByAuthor : i18n.ts.signinOrContinueOnRemote,
+				message: err.id === 'fbcc002d-37d9-4944-a6b0-d9e29f2d33ab' ? i18n.ts.thisContentsAreMarkedAsSigninRequiredByAuthor : i18n.ts.signinRequired,
 				openOnRemote: {
 					type: 'lookup',
 					url: `https://${host}/notes/${props.noteId}`,

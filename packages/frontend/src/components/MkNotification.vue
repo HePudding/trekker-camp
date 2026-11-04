@@ -142,7 +142,7 @@ SPDX-License-Identifier: AGPL-3.0-only
 			</template>
 			<template v-else-if="notification.type === 'receiveFollowRequest'">
 				<span :class="$style.text" style="opacity: 0.6;">{{ i18n.ts.receiveFollowRequest }}</span>
-				<div v-if="full && !followRequestDone" :class="$style.followRequestCommands">
+				<div v-if="full && !followRequestDone && notification.user.host == null" :class="$style.followRequestCommands">
 					<MkButton :class="$style.followRequestCommandButton" rounded primary @click="acceptFollowRequest()"><i class="ti ti-check"></i> {{ i18n.ts.accept }}</MkButton>
 					<MkButton :class="$style.followRequestCommandButton" rounded danger @click="rejectFollowRequest()"><i class="ti ti-x"></i> {{ i18n.ts.reject }}</MkButton>
 				</div>
@@ -217,13 +217,13 @@ const exportEntityName = {
 const followRequestDone = ref(false);
 
 const acceptFollowRequest = () => {
-	if (!('user' in props.notification)) return;
+	if (!('user' in props.notification) || props.notification.user.host != null) return;
 	followRequestDone.value = true;
 	misskeyApi('following/requests/accept', { userId: props.notification.user.id });
 };
 
 const rejectFollowRequest = () => {
-	if (!('user' in props.notification)) return;
+	if (!('user' in props.notification) || props.notification.user.host != null) return;
 	followRequestDone.value = true;
 	misskeyApi('following/requests/reject', { userId: props.notification.user.id });
 };

@@ -109,7 +109,6 @@ SPDX-License-Identifier: AGPL-3.0-only
 											<i v-else-if="draft.visibility === 'followers'" class="ti ti-lock"></i>
 											<i v-else-if="draft.visibility === 'specified'" class="ti ti-mail"></i>
 										</span>
-										<span v-if="draft.localOnly" :title="i18n.ts._visibility['disableFederation']"><i class="ti ti-rocket-off"></i></span>
 									</div>
 									<MkTime :time="draft.createdAt" :class="$style.draftCreatedAt" mode="detail" colored/>
 								</div>

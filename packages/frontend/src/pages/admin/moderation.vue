@@ -106,47 +106,6 @@ SPDX-License-Identifier: AGPL-3.0-only
 					</MkFolder>
 				</SearchMarker>
 
-				<SearchMarker :keywords="['silenced', 'servers', 'hosts']">
-					<MkFolder>
-						<template #icon><SearchIcon><i class="ti ti-eye-off"></i></SearchIcon></template>
-						<template #label><SearchLabel>{{ i18n.ts.silencedInstances }}</SearchLabel></template>
-
-						<div class="_gaps">
-							<MkTextarea v-model="silencedHosts">
-								<template #caption>{{ i18n.ts.silencedInstancesDescription }}</template>
-							</MkTextarea>
-							<MkButton primary @click="save_silencedHosts">{{ i18n.ts.save }}</MkButton>
-						</div>
-					</MkFolder>
-				</SearchMarker>
-
-				<SearchMarker :keywords="['media', 'silenced', 'servers', 'hosts']">
-					<MkFolder>
-						<template #icon><SearchIcon><i class="ti ti-eye-off"></i></SearchIcon></template>
-						<template #label><SearchLabel>{{ i18n.ts.mediaSilencedInstances }}</SearchLabel></template>
-
-						<div class="_gaps">
-							<MkTextarea v-model="mediaSilencedHosts">
-								<template #caption>{{ i18n.ts.mediaSilencedInstancesDescription }}</template>
-							</MkTextarea>
-							<MkButton primary @click="save_mediaSilencedHosts">{{ i18n.ts.save }}</MkButton>
-						</div>
-					</MkFolder>
-				</SearchMarker>
-
-				<SearchMarker :keywords="['blocked', 'servers', 'hosts']">
-					<MkFolder>
-						<template #icon><SearchIcon><i class="ti ti-ban"></i></SearchIcon></template>
-						<template #label><SearchLabel>{{ i18n.ts.blockedInstances }}</SearchLabel></template>
-
-						<div class="_gaps">
-							<MkTextarea v-model="blockedHosts">
-								<template #caption>{{ i18n.ts.blockedInstancesDescription }}</template>
-							</MkTextarea>
-							<MkButton primary @click="save_blockedHosts">{{ i18n.ts.save }}</MkButton>
-						</div>
-					</MkFolder>
-				</SearchMarker>
 			</div>
 		</SearchMarker>
 	</div>

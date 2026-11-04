@@ -51,33 +51,7 @@ SPDX-License-Identifier: AGPL-3.0-only
 		</div>
 	</MkFolder>
 
-	<MkFolder :defaultOpen="true">
-		<template #label>{{ i18n.ts._serverSetupWizard.doYouConnectToFediverse }}</template>
-		<template #icon><i class="ti ti-planet"></i></template>
-
-		<div class="_gaps_s">
-			<div>{{ i18n.ts._serverSetupWizard.doYouConnectToFediverse_description1 }}<br>{{ i18n.ts._serverSetupWizard.doYouConnectToFediverse_description2 }}<br><MkLink target="_blank" url="https://wikipedia.org/wiki/Fediverse">{{ i18n.ts.learnMore }}</MkLink></div>
-
-			<MkRadios
-				v-model="q_federation"
-				:options="[
-					{ value: 'yes', label: i18n.ts.yes },
-					{ value: 'no', label: i18n.ts.no },
-				]"
-				vertical
-			>
-			</MkRadios>
-
-			<MkInfo v-if="q_federation === 'yes'">{{ i18n.ts._serverSetupWizard.youCanConfigureMoreFederationSettingsLater }}</MkInfo>
-
-			<MkSwitch v-if="q_federation === 'yes'" v-model="q_remoteContentsCleaning">
-				<template #label>{{ i18n.ts._serverSetupWizard.remoteContentsCleaning }}</template>
-				<template #caption>{{ i18n.ts._serverSetupWizard.remoteContentsCleaning_description }}</template>
-			</MkSwitch>
-		</div>
-	</MkFolder>
-
-	<MkFolder v-if="q_use === 'open' || q_federation === 'yes'" :defaultOpen="true">
+	<MkFolder v-if="q_use === 'open'" :defaultOpen="true">
 		<template #label>{{ i18n.ts._serverSetupWizard.adminInfo }}</template>
 		<template #icon><i class="ti ti-mail"></i></template>
 
@@ -116,14 +90,6 @@ SPDX-License-Identifier: AGPL-3.0-only
 			<div>
 				<div><b>Log IP:</b></div>
 				<div>{{ serverSettings.enableIpLogging ? i18n.ts.yes : i18n.ts.no }}</div>
-			</div>
-			<div>
-				<div><b>{{ i18n.ts.federation }}:</b></div>
-				<div>{{ serverSettings.federation === 'none' ? i18n.ts.no : i18n.ts.all }}</div>
-			</div>
-			<div>
-				<div><b>{{ i18n.ts._serverSettings.remoteNotesCleaning }}:</b></div>
-				<div>{{ serverSettings.enableRemoteNotesCleaning ? i18n.ts.yes : i18n.ts.no }}</div>
 			</div>
 			<div>
 				<div><b>FTT:</b></div>
@@ -220,8 +186,6 @@ const props = withDefaults(defineProps<{
 const q_name = ref('');
 const q_use = ref<'single' | 'group' | 'open'>('single');
 const q_scale = ref<'small' | 'medium' | 'large'>('small');
-const q_federation = ref<'yes' | 'no'>('no');
-const q_remoteContentsCleaning = ref(true);
 const q_adminName = ref('');
 const q_adminEmail = ref('');
 
@@ -238,8 +202,8 @@ const serverSettings = computed<Misskey.entities.AdminUpdateMetaRequest>(() => {
 		disableRegistration: q_use.value !== 'open',
 		emailRequiredForSignup: q_use.value === 'open',
 		enableIpLogging: q_use.value === 'open',
-		federation: q_federation.value === 'yes' ? 'all' : 'none',
-		enableRemoteNotesCleaning: q_remoteContentsCleaning.value,
+		federation: 'none',
+		enableRemoteNotesCleaning: false,
 		enableFanoutTimeline: true,
 		enableFanoutTimelineDbFallback: q_use.value === 'single',
 		enableReactionsBuffering,

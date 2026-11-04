@@ -77,7 +77,7 @@ import { themeManager } from '@/theme.js';
 
 initChart();
 
-const shouldShowFederation = computed(() => instance.federation !== 'none' || $i?.isModerator);
+const shouldShowFederation = computed(() => instance.federation !== 'none');
 
 const chartLimit = 500;
 const {
@@ -234,6 +234,7 @@ function createDoughnut(chartEl: HTMLCanvasElement, tooltip: ReturnType<typeof u
 }
 
 onMounted(() => {
+	if (!shouldShowFederation.value) return;
 	misskeyApiGet('federation/stats', { limit: 30 }).then(fedStats => {
 		const subs: ChartData = fedStats.topSubInstances.map(x => ({
 			name: x.host,

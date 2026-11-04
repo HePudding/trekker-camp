@@ -165,7 +165,6 @@ function setupGrid(): GridSetting {
 			{ bindTo: 'aliases', title: 'aliases', type: 'text', editable: true, width: 140 },
 			{ bindTo: 'license', title: 'license', type: 'text', editable: true, width: 140 },
 			{ bindTo: 'isSensitive', title: 'sensitive', type: 'boolean', editable: true, width: 90 },
-			{ bindTo: 'localOnly', title: 'localOnly', type: 'boolean', editable: true, width: 90 },
 			{
 				bindTo: 'roleIdsThatCanBeUsedThisEmojiAsReaction', title: 'role', type: 'text', editable: true, width: 140,
 				valueTransformer: (row) => {

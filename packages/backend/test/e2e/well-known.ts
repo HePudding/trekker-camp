@@ -6,90 +6,31 @@
 process.env.NODE_ENV = 'test';
 
 import * as assert from 'assert';
-import { beforeAll, describe, test } from 'vitest';
-import { api, host, origin, relativeFetch, signup } from '../utils.js';
-import type * as misskey from 'misskey-js';
+import { describe, test } from 'vitest';
+import { host, origin, relativeFetch } from '../utils.js';
 
 describe('.well-known', () => {
-	let alice: misskey.entities.User;
-
-	beforeAll(async () => {
-		alice = await signup({ username: 'alice' });
-		await api('admin/update-meta', { federation: 'all' }, alice as misskey.entities.SignupResponse);
-	}, 1000 * 60 * 2);
-
-	test('nodeinfo', async () => {
-		const res = await relativeFetch('.well-known/nodeinfo');
-		assert.ok(res.ok);
+	test.each([
+		'nodeinfo',
+		`webfinger?resource=acct:alice@${host}`,
+		'host-meta',
+		'host-meta.json',
+	])('rejects federation discovery at %s', async (path) => {
+		const res = await relativeFetch(`.well-known/${path}`);
+		assert.strictEqual(res.status, 403);
 		assert.strictEqual(res.headers.get('Access-Control-Allow-Origin'), '*');
-
-		const nodeInfo = await res.json();
-		assert.deepStrictEqual(nodeInfo, {
-			links: [{
-				rel: 'http://nodeinfo.diaspora.software/ns/schema/2.1',
-				href: `${origin}/nodeinfo/2.1`,
-			}, {
-				rel: 'http://nodeinfo.diaspora.software/ns/schema/2.0',
-				href: `${origin}/nodeinfo/2.0`,
-			}],
-		});
 	});
 
-	test('webfinger', async () => {
-		const preflight = await relativeFetch(`.well-known/webfinger?resource=acct:alice@${host}`, {
+	test('webfinger preflight', async () => {
+		const res = await relativeFetch(`.well-known/webfinger?resource=acct:alice@${host}`, {
 			method: 'options',
 			headers: {
 				'Access-Control-Request-Method': 'GET',
 				Origin: 'http://example.com',
 			},
 		});
-		assert.ok(preflight.ok);
-		assert.strictEqual(preflight.headers.get('Access-Control-Allow-Headers'), 'Accept');
-
-		const res = await relativeFetch(`.well-known/webfinger?resource=acct:alice@${host}`);
-		assert.ok(res.ok);
-		assert.strictEqual(res.headers.get('Access-Control-Allow-Origin'), '*');
-		assert.strictEqual(res.headers.get('Access-Control-Expose-Headers'), 'Vary');
-		assert.strictEqual(res.headers.get('Vary'), 'Accept');
-
-		const webfinger = await res.json();
-
-		assert.deepStrictEqual(webfinger, {
-			subject: `acct:alice@${host}`,
-			links: [{
-				rel: 'self',
-				type: 'application/activity+json',
-				href: `${origin}/users/${alice.id}`,
-			}, {
-				rel: 'http://webfinger.net/rel/profile-page',
-				type: 'text/html',
-				href: `${origin}/@alice`,
-			}, {
-				rel: 'http://ostatus.org/schema/1.0/subscribe',
-				template: `${origin}/authorize-follow?acct={uri}`,
-			}],
-		});
-	});
-
-	test('host-meta', async () => {
-		const res = await relativeFetch('.well-known/host-meta');
-		assert.ok(res.ok);
-		assert.strictEqual(res.headers.get('Access-Control-Allow-Origin'), '*');
-	});
-
-	test('host-meta.json', async () => {
-		const res = await relativeFetch('.well-known/host-meta.json');
-		assert.ok(res.ok);
-		assert.strictEqual(res.headers.get('Access-Control-Allow-Origin'), '*');
-
-		const hostMeta = await res.json();
-		assert.deepStrictEqual(hostMeta, {
-			links: [{
-				rel: 'lrdd',
-				type: 'application/jrd+json',
-				template: `${origin}/.well-known/webfinger?resource={uri}`,
-			}],
-		});
+		assert.strictEqual(res.status, 204);
+		assert.strictEqual(res.headers.get('Access-Control-Allow-Headers'), 'Accept');
 	});
 
 	test('oauth-authorization-server', async () => {
