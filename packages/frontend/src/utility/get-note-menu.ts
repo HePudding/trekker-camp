@@ -231,11 +231,16 @@ export function getNoteMenu(props: {
 		});
 	}
 
-	function toggleFavorite(favorite: boolean): void {
-		claimAchievement('noteFavorited1');
-		os.apiWithDialog(favorite ? 'notes/favorites/create' : 'notes/favorites/delete', {
-			noteId: appearNote.id,
-		});
+	async function toggleFavorite(favorite: boolean): Promise<void> {
+		try {
+			await os.apiWithDialog(favorite ? 'notes/favorites/create' : 'notes/favorites/delete', {
+				noteId: appearNote.id,
+			});
+		} catch {
+			// apiWithDialog already displays the request error.
+			return;
+		}
+		if (favorite) claimAchievement('noteFavorited1');
 	}
 
 	function toggleThreadMute(mute: boolean): void {

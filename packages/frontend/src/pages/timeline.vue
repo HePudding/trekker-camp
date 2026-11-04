@@ -6,15 +6,15 @@ SPDX-License-Identifier: AGPL-3.0-only
 <template>
 <PageWithHeader v-model:tab="src" :actions="headerActions" :tabs="$i ? headerTabs : headerTabsWhenNotLogin" :swipable="true" :displayMyAvatar="true" :canOmitTitle="true">
 	<div class="_spacer" style="--MI_SPACER-w: 800px;">
-		<MkTip v-if="isBasicTimeline(src)" :k="`tl.${src}`" style="margin-bottom: var(--MI-margin);">
-			{{ i18n.ts._timelineDescription[src] }}
+		<MkTip v-if="isBasicTimeline(timelineSrc)" :k="`tl.${timelineSrc}`" style="margin-bottom: var(--MI-margin);">
+			{{ i18n.ts._timelineDescription[timelineSrc as BasicTimelineType] }}
 		</MkTip>
 		<MkPostForm v-if="prefer.r.showFixedPostForm.value" :class="$style.postForm" class="_panel" fixed style="margin-bottom: var(--MI-margin);"/>
 		<MkStreamingNotesTimeline
 			ref="tlComponent"
 			:key="src + withRenotes + withReplies + onlyFiles + withSensitive"
 			:class="$style.tl"
-			:src="(src.split(':')[0] as (BasicTimelineType | 'list'))"
+			:src="(timelineSrc.split(':')[0] as (BasicTimelineType | 'list'))"
 			:list="src.split(':')[1]"
 			:withRenotes="withRenotes"
 			:withReplies="withReplies"
@@ -43,18 +43,21 @@ import { antennasCache, userListsCache, favoritedChannelsCache } from '@/cache.j
 import { deviceKind } from '@/utility/device-kind.js';
 import { deepMerge } from '@/utility/merge.js';
 import { miLocalStorage } from '@/local-storage.js';
-import { availableBasicTimelines, hasWithReplies, isAvailableBasicTimeline, isBasicTimeline, basicTimelineIconClass } from '@/timelines.js';
+import { hasWithReplies, isAvailableBasicTimeline, isBasicTimeline, basicTimelineIconClass } from '@/timelines.js';
 import { prefer } from '@/preferences.js';
 
 const tlComponent = useTemplateRef('tlComponent');
 
-type TimelinePageSrc = BasicTimelineType | `list:${string}`;
+type TimelinePageSrc = BasicTimelineType | 'following' | `list:${string}`;
 
-const srcWhenNotSignin = ref<'local' | 'global'>(isAvailableBasicTimeline('local') ? 'local' : 'global');
 const src = computed<TimelinePageSrc>({
-	get: () => ($i ? store.r.tl.value.src : srcWhenNotSignin.value),
+	get: () => {
+		const saved = $i ? store.r.tl.value.src : 'home';
+		return ['local', 'social', 'global'].includes(saved) ? 'home' : saved;
+	},
 	set: (x) => saveSrc(x),
 });
+const timelineSrc = computed(() => src.value === 'home' ? 'local' : src.value === 'following' ? 'home' : src.value);
 const withRenotes = computed<boolean>({
 	get: () => store.r.tl.value.filter.withRenotes,
 	set: (x) => saveTlFilter('withRenotes', x),
@@ -70,7 +73,7 @@ const localSocialTLFilterSwitchStore = ref<'withReplies' | 'onlyFiles' | false>(
 const withReplies = computed<boolean>({
 	get: () => {
 		if (!$i) return false;
-		if (['local', 'social'].includes(src.value) && localSocialTLFilterSwitchStore.value === 'onlyFiles') {
+		if (['local', 'social'].includes(timelineSrc.value) && localSocialTLFilterSwitchStore.value === 'onlyFiles') {
 			return false;
 		} else {
 			return store.r.tl.value.filter.withReplies;
@@ -80,7 +83,7 @@ const withReplies = computed<boolean>({
 });
 const onlyFiles = computed<boolean>({
 	get: () => {
-		if (['local', 'social'].includes(src.value) && localSocialTLFilterSwitchStore.value === 'withReplies') {
+		if (['local', 'social'].includes(timelineSrc.value) && localSocialTLFilterSwitchStore.value === 'withReplies') {
 			return false;
 		} else {
 			return store.r.tl.value.filter.onlyFiles;
@@ -179,9 +182,6 @@ function saveSrc(newSrc: TimelinePageSrc): void {
 	}
 
 	store.set('tl', out);
-	if (['local', 'global'].includes(newSrc)) {
-		srcWhenNotSignin.value = newSrc as 'local' | 'global';
-	}
 }
 
 function saveTlFilter(key: keyof typeof store.s.tl.filter, newValue: boolean) {
@@ -192,8 +192,8 @@ function saveTlFilter(key: keyof typeof store.s.tl.filter, newValue: boolean) {
 }
 
 function switchTlIfNeeded() {
-	if (isBasicTimeline(src.value) && !isAvailableBasicTimeline(src.value)) {
-		src.value = availableBasicTimelines()[0];
+	if (isBasicTimeline(timelineSrc.value) && !isAvailableBasicTimeline(timelineSrc.value)) {
+		if ($i && isAvailableBasicTimeline('home')) src.value = 'following';
 	}
 }
 
@@ -218,7 +218,7 @@ const headerActions = computed<PageHeaderItem[]>(() => {
 				ref: withRenotes,
 			});
 
-			if (isBasicTimeline(src.value) && hasWithReplies(src.value)) {
+			if (isBasicTimeline(timelineSrc.value) && hasWithReplies(timelineSrc.value)) {
 				menuItems.push({
 					type: 'switch',
 					icon: 'ti ti-messages',
@@ -238,7 +238,7 @@ const headerActions = computed<PageHeaderItem[]>(() => {
 				icon: 'ti ti-photo',
 				text: i18n.ts.fileAttachedOnly,
 				ref: onlyFiles,
-				disabled: isBasicTimeline(src.value) && hasWithReplies(src.value) ? withReplies : false,
+				disabled: isBasicTimeline(timelineSrc.value) && hasWithReplies(timelineSrc.value) ? withReplies : false,
 			}, {
 				type: 'divider',
 			}, {
@@ -264,17 +264,17 @@ const headerActions = computed<PageHeaderItem[]>(() => {
 	return items;
 });
 
+const basicHeaderTabs = computed(() => ([
+	...(isAvailableBasicTimeline('local') ? [{ key: 'home', title: i18n.ts._timelines.home, icon: 'ti ti-home', iconOnly: true }] : []),
+	...($i ? [{ key: 'following', title: i18n.ts.follow, icon: 'ti ti-users', iconOnly: true }] : []),
+] satisfies Tab[]));
+
 const headerTabs = computed(() => [...(prefer.r.pinnedUserLists.value.map(l => ({
 	key: 'list:' + l.id,
 	title: l.name,
 	icon: 'ti ti-star',
 	iconOnly: true,
-}))), ...availableBasicTimelines().map(tl => ({
-	key: tl,
-	title: i18n.ts._timelines[tl],
-	icon: basicTimelineIconClass(tl),
-	iconOnly: true,
-})), {
+}))), ...basicHeaderTabs.value, {
 	icon: 'ti ti-list',
 	title: i18n.ts.lists,
 	iconOnly: true,
@@ -291,16 +291,11 @@ const headerTabs = computed(() => [...(prefer.r.pinnedUserLists.value.map(l => (
 	onClick: chooseChannel,
 }] as Tab[]);
 
-const headerTabsWhenNotLogin = computed(() => [...availableBasicTimelines().map(tl => ({
-	key: tl,
-	title: i18n.ts._timelines[tl],
-	icon: basicTimelineIconClass(tl),
-	iconOnly: true,
-}))] as Tab[]);
+const headerTabsWhenNotLogin = basicHeaderTabs;
 
 definePage(() => ({
 	title: i18n.ts.timeline,
-	icon: isBasicTimeline(src.value) ? basicTimelineIconClass(src.value) : 'ti ti-home',
+	icon: src.value === 'following' ? 'ti ti-users' : isBasicTimeline(src.value) ? basicTimelineIconClass(src.value) : 'ti ti-home',
 }));
 </script>
 

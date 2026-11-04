@@ -22,6 +22,24 @@ export const meta = {
 		type: 'object',
 		optional: false, nullable: false,
 		properties: {
+			achievementSettings: {
+				type: 'object',
+				optional: false, nullable: false,
+				properties: {
+					musicBilibiliIds: {
+						type: 'array', optional: false, nullable: false,
+						items: { type: 'string', optional: false, nullable: false },
+					},
+					musicNeteaseIds: {
+						type: 'array', optional: false, nullable: false,
+						items: { type: 'string', optional: false, nullable: false },
+					},
+					musicUrls: {
+						type: 'array', optional: false, nullable: false,
+						items: { type: 'string', optional: false, nullable: false },
+					},
+				},
+			},
 			cacheRemoteFiles: {
 				type: 'boolean',
 				optional: false, nullable: false,
@@ -781,6 +799,7 @@ export default class extends Endpoint<typeof meta, typeof paramDef> { // eslint-
 				remoteNotesCleaningExpiryDaysForEachNotes: instance.remoteNotesCleaningExpiryDaysForEachNotes,
 				remoteNotesCleaningMaxProcessingDurationInMinutes: instance.remoteNotesCleaningMaxProcessingDurationInMinutes,
 				showRoleBadgesOfRemoteUsers: instance.showRoleBadgesOfRemoteUsers,
+				achievementSettings: instance.achievementSettings,
 			};
 		});
 	}

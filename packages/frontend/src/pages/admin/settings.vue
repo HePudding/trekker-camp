@@ -96,6 +96,38 @@ SPDX-License-Identifier: AGPL-3.0-only
 					</MkFolder>
 				</SearchMarker>
 
+				<SearchMarker v-slot="slotProps" :keywords="['achievements', 'music', 'bilibili', 'netease']">
+					<MkFolder :defaultOpen="slotProps.isParentOfTarget">
+						<template #icon><SearchIcon><i class="ti ti-award"></i></SearchIcon></template>
+						<template #label><SearchLabel>{{ i18n.ts._achievementSettings.title }}</SearchLabel></template>
+						<template v-if="achievementForm.modified.value" #footer>
+							<MkFormFooter :form="achievementForm"/>
+						</template>
+
+						<div class="_gaps">
+							<MkInfo><SearchText>{{ i18n.ts._achievementSettings.description }}</SearchText></MkInfo>
+							<SearchMarker :keywords="['bilibili', 'bv']">
+								<MkTextarea v-model="achievementForm.state.musicBilibiliIds" :ariaLabel="i18n.ts._achievementSettings.musicBilibiliIds">
+									<template #label><SearchLabel>{{ i18n.ts._achievementSettings.musicBilibiliIds }}</SearchLabel><span v-if="achievementForm.modifiedStates.musicBilibiliIds" class="_modified">{{ i18n.ts.modified }}</span></template>
+									<template #caption><SearchText>{{ i18n.ts._achievementSettings.musicBilibiliIdsDescription }}</SearchText></template>
+								</MkTextarea>
+							</SearchMarker>
+							<SearchMarker :keywords="['netease', 'song']">
+								<MkTextarea v-model="achievementForm.state.musicNeteaseIds" :ariaLabel="i18n.ts._achievementSettings.musicNeteaseIds">
+									<template #label><SearchLabel>{{ i18n.ts._achievementSettings.musicNeteaseIds }}</SearchLabel><span v-if="achievementForm.modifiedStates.musicNeteaseIds" class="_modified">{{ i18n.ts.modified }}</span></template>
+									<template #caption><SearchText>{{ i18n.ts._achievementSettings.musicNeteaseIdsDescription }}</SearchText></template>
+								</MkTextarea>
+							</SearchMarker>
+							<SearchMarker :keywords="['music', 'urls']">
+								<MkTextarea v-model="achievementForm.state.musicUrls" :ariaLabel="i18n.ts._achievementSettings.musicUrls">
+									<template #label><SearchLabel>{{ i18n.ts._achievementSettings.musicUrls }}</SearchLabel><span v-if="achievementForm.modifiedStates.musicUrls" class="_modified">{{ i18n.ts.modified }}</span></template>
+									<template #caption><SearchText>{{ i18n.ts._achievementSettings.musicUrlsDescription }}</SearchText></template>
+								</MkTextarea>
+							</SearchMarker>
+						</div>
+					</MkFolder>
+				</SearchMarker>
+
 				<SearchMarker v-slot="slotProps" :keywords="['pinned', 'users']">
 					<MkFolder :defaultOpen="slotProps.isParentOfTarget">
 						<template #icon><SearchIcon><i class="ti ti-user-star"></i></SearchIcon></template>
@@ -431,6 +463,24 @@ const infoForm = useForm({
 		impressumUrl: state.impressumUrl,
 	});
 	fetchInstance(true);
+});
+
+function parseLines(value: string): string[] {
+	return [...new Set(value.split('\n').map(line => line.trim()).filter(Boolean))];
+}
+
+const achievementForm = useForm({
+	musicBilibiliIds: meta.achievementSettings.musicBilibiliIds.join('\n'),
+	musicNeteaseIds: meta.achievementSettings.musicNeteaseIds.join('\n'),
+	musicUrls: meta.achievementSettings.musicUrls.join('\n'),
+}, async (state) => {
+	await os.apiWithDialog('admin/update-meta', {
+		achievementSettings: {
+			musicBilibiliIds: parseLines(state.musicBilibiliIds),
+			musicNeteaseIds: parseLines(state.musicNeteaseIds),
+			musicUrls: parseLines(state.musicUrls),
+		},
+	});
 });
 
 const pinnedUsersForm = useForm({

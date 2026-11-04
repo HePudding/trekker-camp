@@ -30,16 +30,18 @@ export class AchievementService {
 
 		const date = Date.now();
 
-		const profile = await this.userProfilesRepository.findOneByOrFail({ userId: userId });
+		const result = await this.userProfilesRepository.createQueryBuilder()
+			.update()
+			.set({ achievements: () => '"achievements" || CAST(:achievement AS jsonb)' })
+			.where('"userId" = :userId', { userId })
+			.andWhere('NOT ("achievements" @> CAST(:existing AS jsonb))')
+			.setParameters({
+				achievement: JSON.stringify([{ name: type, unlockedAt: date }]),
+				existing: JSON.stringify([{ name: type }]),
+			})
+			.execute();
 
-		if (profile.achievements.some(a => a.name === type)) return;
-
-		await this.userProfilesRepository.update(userId, {
-			achievements: [...profile.achievements, {
-				name: type,
-				unlockedAt: date,
-			}],
-		});
+		if (!result.affected) return;
 
 		this.notificationService.createNotification(userId, 'achievementEarned', {
 			achievement: type,

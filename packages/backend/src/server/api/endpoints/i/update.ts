@@ -32,6 +32,8 @@ import { DriveFileEntityService } from '@/core/entities/DriveFileEntityService.j
 import { HttpRequestService } from '@/core/HttpRequestService.js';
 import type { Config } from '@/config.js';
 import { AvatarDecorationService } from '@/core/AvatarDecorationService.js';
+import { AchievementService } from '@/core/AchievementService.js';
+import { matchesNicknameAchievement } from '@/misc/achievement-rules.js';
 import { notificationRecieveConfig } from '@/models/json-schema/user.js';
 import { ApiLoggerService } from '../../ApiLoggerService.js';
 import { ApiError } from '../../error.js';
@@ -282,6 +284,7 @@ export default class extends Endpoint<typeof meta, typeof paramDef> { // eslint-
 		private httpRequestService: HttpRequestService,
 		private avatarDecorationService: AvatarDecorationService,
 		private utilityService: UtilityService,
+		private achievementService: AchievementService,
 	) {
 		super(meta, paramDef, async (ps, _user, token) => {
 			const user = await this.usersRepository.findOneByOrFail({ id: _user.id }) as MiLocalUser;
@@ -553,6 +556,10 @@ export default class extends Endpoint<typeof meta, typeof paramDef> { // eslint-
 				...profileUpdates,
 				verifiedLinks: [],
 			});
+
+			if (ps.name !== undefined && newName && matchesNicknameAchievement(newName)) {
+				await this.achievementService.create(user.id, 'setNameToSyuilo');
+			}
 
 			const iObj = await this.userEntityService.pack(user.id, user, {
 				schema: 'MeDetailed',

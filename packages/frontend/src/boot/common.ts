@@ -238,7 +238,7 @@ export async function common(createVue: () => Promise<App<Element>>) {
 			console.log('account cache found. refreshing...');
 		}
 
-		refreshCurrentAccount();
+		await refreshCurrentAccount();
 	}
 	//#endregion
 
