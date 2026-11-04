@@ -53,16 +53,12 @@ export default class extends Endpoint<typeof meta, typeof paramDef> { // eslint-
 		super(meta, paramDef, async (ps, me) => {
 			const query = this.queryService.makePaginationQuery(this.notesRepository.createQueryBuilder('note'), ps.sinceId, ps.untilId, ps.sinceDate, ps.untilDate)
 				.andWhere('note.visibility = \'public\'')
-				.andWhere('note.localOnly = FALSE')
+				.andWhere('note.userHost IS NULL')
 				.innerJoinAndSelect('note.user', 'user')
 				.leftJoinAndSelect('note.reply', 'reply')
 				.leftJoinAndSelect('note.renote', 'renote')
 				.leftJoinAndSelect('reply.user', 'replyUser')
 				.leftJoinAndSelect('renote.user', 'renoteUser');
-
-			if (ps.local) {
-				query.andWhere('note.userHost IS NULL');
-			}
 
 			if (me == null) this.queryService.generateUgcVisibilityQueryForVisitor(query);
 

@@ -14,8 +14,10 @@ import { setTimeout } from 'node:timers/promises';
 import { entities } from 'misskey-js';
 import { Redis } from 'ioredis';
 import { SignupResponse, Note } from 'misskey-js/entities.js';
-import { api, initTestDb, post, randomString, sendEnvUpdateRequest, signup, uploadUrl, UserToken } from '../utils.js';
+import { api, castAsError, initTestDb, post, randomString, signup, uploadUrl, UserToken } from '../utils.js';
 import { loadConfig } from '@/config.js';
+import { MiFollowing, MiNote } from '@/models/_.js';
+import { genAidx } from '@/misc/id/aidx.js';
 
 function genHost() {
 	return randomString() + '.example.com';
@@ -76,6 +78,21 @@ async function assignRole(roleId: string, userId: string, user: UserToken) {
 	await api('admin/roles/assign', { userId, roleId }, user);
 }
 
+async function seedHistoricalFollowing(follower: SignupResponse, followee: SignupResponse) {
+	const db = await initTestDb(true);
+	try {
+		await db.getRepository(MiFollowing).insert({
+			id: genAidx(Date.now()),
+			followerId: follower.id,
+			followerHost: follower.host,
+			followeeId: followee.id,
+			followeeHost: followee.host,
+		});
+	} finally {
+		await db.destroy();
+	}
+}
+
 describe('Timelines', () => {
 	let root: UserToken;
 
@@ -96,6 +113,30 @@ describe('Timelines', () => {
 		{ enableFanoutTimeline: true },
 		{ enableFanoutTimeline: false },
 	])('Timelines (enableFanoutTimeline: $enableFanoutTimeline)', ({ enableFanoutTimeline }) => {
+		async function seedHistoricalRemoteNote(user: SignupResponse, data: { text: string; visibility?: 'public' | 'home' }, homeTimelineUserIds: string[] = []): Promise<Pick<Note, 'id'>> {
+			assert.ok(user.host);
+			const id = genAidx(Date.now());
+			const db = await initTestDb(true);
+			try {
+				await db.getRepository(MiNote).insert({
+					id,
+					userId: user.id,
+					userHost: user.host,
+					uri: `https://${user.host}/notes/${id}`,
+					visibility: data.visibility ?? 'public',
+					text: data.text,
+				});
+			} finally {
+				await db.destroy();
+			}
+			if (enableFanoutTimeline) {
+				for (const userId of homeTimelineUserIds) {
+					await redisForTimelines.lpush(`list:homeTimeline:${userId}`, id);
+				}
+			}
+			return { id };
+		}
+
 		function waitForPushToTl() {
 			return setTimeout(250);
 		}
@@ -491,13 +532,11 @@ describe('Timelines', () => {
 				assert.strictEqual(res.body.some(note => note.id === bobNote.id), false);
 			});
 
-			test('フォローしているリモートユーザーのノートが含まれる', async () => {
+			test('過去にフォローしたリモートユーザーの保存済みノートが含まれる', async () => {
 				const [alice, bob] = await Promise.all([signup(), signup({ host: genHost() })]);
 
-				await sendEnvUpdateRequest({ key: 'FORCE_FOLLOW_REMOTE_USER_FOR_TESTING', value: 'true' });
-				await api('following/create', { userId: bob.id }, alice);
-
-				const bobNote = await post(bob, { text: 'hi' });
+				await seedHistoricalFollowing(alice, bob);
+				const bobNote = await seedHistoricalRemoteNote(bob, { text: 'hi' }, [alice.id]);
 
 				await vi.waitFor(async () => {
 					const res = await api('notes/timeline', { limit: 100 }, alice);
@@ -506,13 +545,11 @@ describe('Timelines', () => {
 				}, waitForPushToTlOptions);
 			});
 
-			test('フォローしているリモートユーザーの visibility: home なノートが含まれる', async () => {
+			test('過去にフォローしたリモートユーザーの保存済み visibility: home ノートが含まれる', async () => {
 				const [alice, bob] = await Promise.all([signup(), signup({ host: genHost() })]);
 
-				await sendEnvUpdateRequest({ key: 'FORCE_FOLLOW_REMOTE_USER_FOR_TESTING', value: 'true' });
-				await api('following/create', { userId: bob.id }, alice);
-
-				const bobNote = await post(bob, { text: 'hi', visibility: 'home' });
+				await seedHistoricalFollowing(alice, bob);
+				const bobNote = await seedHistoricalRemoteNote(bob, { text: 'hi', visibility: 'home' }, [alice.id]);
 
 				await vi.waitFor(async () => {
 					const res = await api('notes/timeline', { limit: 100 }, alice);
@@ -956,12 +993,12 @@ describe('Timelines', () => {
 			test('FTT: リモートユーザーの HTL にはプッシュされない', async () => {
 				const [alice, bob] = await Promise.all([signup(), signup({ host: genHost() })]);
 
-				await api('following/create', {
-					userId: alice.id,
-				}, bob);
+				await seedHistoricalFollowing(bob, alice);
 
 				await post(alice, { text: 'I\'m Alice.' });
-				await post(bob, { text: 'I\'m Bob.' });
+				const remotePost = await api('notes/create', { text: 'I\'m Bob.' }, bob);
+				assert.strictEqual(remotePost.status, 403);
+				assert.strictEqual(castAsError(remotePost.body).error.code, 'FEDERATION_DISABLED');
 
 				await vi.waitFor(async () => {
 					// NOTE: notes/timeline だと DB へのフォールバックが効くので Redis を直接見て確かめる
@@ -1066,19 +1103,18 @@ describe('Timelines', () => {
 				});
 			});
 
-			describe('凍結(リモート)', () => {
+			describe('凍結(保存済みリモートノート)', () => {
 				let alice: SignupResponse, bob: SignupResponse, carol: SignupResponse;
-				let aliceNote: Note, bobNote: Note, carolNote: Note;
+				let aliceNote: Pick<Note, 'id'>, bobNote: Pick<Note, 'id'>, carolNote: Pick<Note, 'id'>;
 
 				beforeAll(async () => {
 					[alice, bob, carol] = await Promise.all([signup(), signup({ host: genHost() }), signup({ host: genHost() })]);
 
-					await sendEnvUpdateRequest({ key: 'FORCE_FOLLOW_REMOTE_USER_FOR_TESTING', value: 'true' });
-					await api('following/create', { userId: bob.id }, alice);
-					await api('following/create', { userId: carol.id }, alice);
+					await seedHistoricalFollowing(alice, bob);
+					await seedHistoricalFollowing(alice, carol);
 					aliceNote = await post(alice, { text: 'hi' });
-					bobNote = await post(bob, { text: 'yo' });
-					carolNote = await post(carol, { text: 'kon\'nichiwa' });
+					bobNote = await seedHistoricalRemoteNote(bob, { text: 'yo' }, [alice.id]);
+					carolNote = await seedHistoricalRemoteNote(carol, { text: 'kon\'nichiwa' }, [alice.id]);
 
 					await vi.waitFor(async () => {
 						const res = await api('notes/timeline', { limit: 100 }, alice);
@@ -1169,10 +1205,10 @@ describe('Timelines', () => {
 				assert.strictEqual(res.body.some(note => note.id === bobNote.id), false);
 			});
 
-			test('リモートユーザーのノートが含まれない', async () => {
+			test('保存済みのリモートユーザーのノートが含まれない', async () => {
 				const [alice, bob] = await Promise.all([signup(), signup({ host: genHost() })]);
 
-				const bobNote = await post(bob, { text: 'hi' });
+				const bobNote = await seedHistoricalRemoteNote(bob, { text: 'hi' });
 
 				await waitForPushToTl();
 
@@ -1744,10 +1780,10 @@ describe('Timelines', () => {
 				}, waitForPushToTlOptions);
 			});
 
-			test('リモートユーザーのノートが含まれない', async () => {
+			test('保存済みのリモートユーザーのノートが含まれない', async () => {
 				const [alice, bob] = await Promise.all([signup(), signup({ host: genHost() })]);
 
-				const bobNote = await post(bob, { text: 'hi' });
+				const bobNote = await seedHistoricalRemoteNote(bob, { text: 'hi' });
 
 				await waitForPushToTl();
 
@@ -1756,13 +1792,11 @@ describe('Timelines', () => {
 				assert.strictEqual(res.body.some(note => note.id === bobNote.id), false);
 			});
 
-			test('フォローしているリモートユーザーのノートが含まれる', async () => {
+			test('過去にフォローしたリモートユーザーの保存済みノートが含まれる', async () => {
 				const [alice, bob] = await Promise.all([signup(), signup({ host: genHost() })]);
 
-				await sendEnvUpdateRequest({ key: 'FORCE_FOLLOW_REMOTE_USER_FOR_TESTING', value: 'true' });
-				await api('following/create', { userId: bob.id }, alice);
-
-				const bobNote = await post(bob, { text: 'hi' });
+				await seedHistoricalFollowing(alice, bob);
+				const bobNote = await seedHistoricalRemoteNote(bob, { text: 'hi' }, [alice.id]);
 
 				await vi.waitFor(async () => {
 					const res = await api('notes/hybrid-timeline', { limit: 100 }, alice);
@@ -1771,13 +1805,11 @@ describe('Timelines', () => {
 				}, waitForPushToTlOptions);
 			});
 
-			test('フォローしているリモートユーザーの visibility: home なノートが含まれる', async () => {
+			test('過去にフォローしたリモートユーザーの保存済み visibility: home ノートが含まれる', async () => {
 				const [alice, bob] = await Promise.all([signup(), signup({ host: genHost() })]);
 
-				await sendEnvUpdateRequest({ key: 'FORCE_FOLLOW_REMOTE_USER_FOR_TESTING', value: 'true' });
-				await api('following/create', { userId: bob.id }, alice);
-
-				const bobNote = await post(bob, { text: 'hi', visibility: 'home' });
+				await seedHistoricalFollowing(alice, bob);
+				const bobNote = await seedHistoricalRemoteNote(bob, { text: 'hi', visibility: 'home' }, [alice.id]);
 
 				await vi.waitFor(async () => {
 					const res = await api('notes/hybrid-timeline', { limit: 100 }, alice);
@@ -2158,22 +2190,21 @@ describe('Timelines', () => {
 				});
 			});
 
-			describe('凍結 (リモート)', () => {
+			describe('凍結 (保存済みリモートノート)', () => {
 				/*
 				 * carol = 未フォローのリモートユーザー (凍結対象)
 				 * elle = フォローしているリモートユーザー (凍結対象)
 				 */
 				let alice: SignupResponse, carol: SignupResponse, elle: SignupResponse;
-				let aliceNote: Note, carolNote: Note, elleNote: Note;
+				let aliceNote: Pick<Note, 'id'>, carolNote: Pick<Note, 'id'>, elleNote: Pick<Note, 'id'>;
 
 				beforeAll(async () => {
 					[alice, carol, elle] = await Promise.all([signup(), signup({ host: genHost() }), signup({ host: genHost() })]);
 
-					await sendEnvUpdateRequest({ key: 'FORCE_FOLLOW_REMOTE_USER_FOR_TESTING', value: 'true' });
-					await api('following/create', { userId: elle.id }, alice);
+					await seedHistoricalFollowing(alice, elle);
 					aliceNote = await post(alice, { text: 'hi' });
-					carolNote = await post(carol, { text: 'kon\'nichiwa' });
-					elleNote = await post(elle, { text: 'hi there' });
+					carolNote = await seedHistoricalRemoteNote(carol, { text: 'kon\'nichiwa' });
+					elleNote = await seedHistoricalRemoteNote(elle, { text: 'hi there' }, [alice.id]);
 
 					await vi.waitFor(async () => {
 						const res = await api('notes/hybrid-timeline', { limit: 100 }, alice);
