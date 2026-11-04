@@ -13,8 +13,6 @@ SPDX-License-Identifier: AGPL-3.0-only
 				<!-- <div class="punished" v-if="user.isSilenced"><i class="ti ti-alert-triangle" style="margin-right: 8px;"></i> {{ i18n.ts.userSilenced }}</div> -->
 
 				<div class="profile _gaps">
-					<MkAccountMoved v-if="user.movedTo" :movedTo="user.movedTo"/>
-					<MkRemoteCaution v-if="user.host != null" :href="user.url ?? user.uri!"/>
 					<MkInfo v-if="user.host == null && user.username.includes('.')">{{ i18n.ts.isSystemAccount }}</MkInfo>
 
 					<div :key="user.id" class="main _panel">
@@ -164,9 +162,7 @@ import * as Misskey from 'misskey-js';
 import { getScrollContainer } from '@@/js/scroll.js';
 import MkNote from '@/components/MkNote.vue';
 import MkFollowButton from '@/components/MkFollowButton.vue';
-import MkAccountMoved from '@/components/MkAccountMoved.vue';
 import MkFukidashi from '@/components/MkFukidashi.vue';
-import MkRemoteCaution from '@/components/MkRemoteCaution.vue';
 import MkTextarea from '@/components/MkTextarea.vue';
 import MkOmit from '@/components/MkOmit.vue';
 import MkInfo from '@/components/MkInfo.vue';

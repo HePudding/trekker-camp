@@ -40,7 +40,6 @@ SPDX-License-Identifier: AGPL-3.0-only
 				<i v-else-if="note.visibility === 'followers'" class="ti ti-lock"></i>
 				<i v-else-if="note.visibility === 'specified'" ref="specified" class="ti ti-mail"></i>
 			</span>
-			<span v-if="note.localOnly" style="margin-left: 0.5em;" :title="i18n.ts._visibility['disableFederation']"><i class="ti ti-rocket-off"></i></span>
 		</div>
 	</div>
 	<div v-if="isRenote && note.renote == null" :class="$style.deleted">
@@ -62,7 +61,6 @@ SPDX-License-Identifier: AGPL-3.0-only
 								<i v-else-if="appearNote.visibility === 'followers'" class="ti ti-lock"></i>
 								<i v-else-if="appearNote.visibility === 'specified'" ref="specified" class="ti ti-mail"></i>
 							</span>
-							<span v-if="appearNote.localOnly" style="margin-left: 0.5em;" :title="i18n.ts._visibility['disableFederation']"><i class="ti ti-rocket-off"></i></span>
 						</div>
 					</div>
 					<div :class="$style.noteHeaderUsernameAndBadgeRoles">
@@ -145,14 +143,14 @@ SPDX-License-Identifier: AGPL-3.0-only
 					</span>
 				</div>
 				<MkReactionsViewer
-					v-if="appearNote.reactionAcceptance !== 'likeOnly'"
+					v-if="canInteract && appearNote.reactionAcceptance !== 'likeOnly'"
 					style="margin-top: 6px;"
 					:reactions="$appearNote.reactions"
 					:reactionEmojis="$appearNote.reactionEmojis"
 					:myReaction="$appearNote.myReaction"
 					:noteId="appearNote.id"
 				/>
-				<button class="_button" :class="$style.noteFooterButton" @click="reply()">
+				<button v-if="canInteract" class="_button" :class="$style.noteFooterButton" @click="reply()">
 					<i class="ti ti-arrow-back-up"></i>
 					<p v-if="appearNote.repliesCount > 0" :class="$style.noteFooterButtonCount">{{ number(appearNote.repliesCount) }}</p>
 				</button>
@@ -166,10 +164,10 @@ SPDX-License-Identifier: AGPL-3.0-only
 					<i class="ti ti-repeat"></i>
 					<p v-if="appearNote.renoteCount > 0" :class="$style.noteFooterButtonCount">{{ number(appearNote.renoteCount) }}</p>
 				</button>
-				<button v-else class="_button" :class="$style.noteFooterButton" disabled>
+				<button v-else-if="canInteract" class="_button" :class="$style.noteFooterButton" disabled>
 					<i class="ti ti-ban"></i>
 				</button>
-				<button ref="reactButton" :class="$style.noteFooterButton" class="_button" @click="toggleReact()">
+				<button v-if="canInteract" ref="reactButton" :class="$style.noteFooterButton" class="_button" @click="toggleReact()">
 					<i v-if="appearNote.reactionAcceptance === 'likeOnly' && $appearNote.myReaction != null" class="ti ti-heart-filled" style="color: var(--MI_THEME-love);"></i>
 					<i v-else-if="$appearNote.myReaction != null" class="ti ti-minus" style="color: var(--MI_THEME-accent);"></i>
 					<i v-else-if="appearNote.reactionAcceptance === 'likeOnly'" class="ti ti-heart"></i>
@@ -298,6 +296,7 @@ const {
 	translating,
 	translation,
 	muted,
+	canInteract,
 	canRenote,
 	isMyRenote,
 	parsed,

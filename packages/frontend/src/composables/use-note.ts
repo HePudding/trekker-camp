@@ -16,6 +16,7 @@ import { checkWordMute } from '@/utility/check-word-mute.js';
 import { misskeyApi } from '@/utility/misskey-api.js';
 import * as sound from '@/utility/sound.js';
 import * as os from '@/os.js';
+import { instance } from '@/instance.js';
 import { reactionPicker } from '@/utility/reaction-picker.js';
 import { extractUrlFromMfm } from '@/utility/extract-url-from-mfm.js';
 import { getNoteClipMenu, getNoteMenu, getRenoteMenu, getAbuseNoteMenu, getCopyNoteLinkMenu } from '@/utility/get-note-menu.js';
@@ -160,8 +161,9 @@ export function useNote(
 	const urls = parsed ? extractUrlFromMfm(parsed).filter((url) => appearNote.renote?.url !== url && appearNote.renote?.uri !== url) : null;
 	const isLong = shouldCollapsed(appearNote, urls ?? []);
 	const collapsed = ref(appearNote.cw == null && isLong);
-	const canRenote = ['public', 'home'].includes(appearNote.visibility) || (appearNote.visibility === 'followers' && appearNote.userId === $i?.id);
-	const showTicker = (prefer.s.instanceTicker === 'always') || (prefer.s.instanceTicker === 'remote' && appearNote.user.instance);
+	const canInteract = appearNote.user.host == null || instance.federation !== 'none';
+	const canRenote = canInteract && (['public', 'home'].includes(appearNote.visibility) || (appearNote.visibility === 'followers' && appearNote.userId === $i?.id));
+	const showTicker = instance.federation !== 'none' && ((prefer.s.instanceTicker === 'always') || (prefer.s.instanceTicker === 'remote' && appearNote.user.instance));
 	const renoteCollapsed = ref(prefer.s.collapseRenotes && isRenote && (($i && ($i.id === rawNote.userId || $i.id === appearNote.userId)) || ($appearNote.myReaction != null)));
 
 	const pleaseLoginContext: OpenOnRemoteOptions = {
@@ -220,7 +222,7 @@ export function useNote(
 
 	// 共通アクション関数群
 	async function renote() {
-		if (props.mock) return;
+		if (props.mock || !canRenote) return;
 		const isLoggedIn = await pleaseLogin({ openOnRemote: pleaseLoginContext });
 		if (!isLoggedIn) return;
 		showMovedDialog();
@@ -235,7 +237,7 @@ export function useNote(
 	}
 
 	async function reply() {
-		if (props.mock) return;
+		if (props.mock || !canInteract) return;
 		const isLoggedIn = await pleaseLogin({ openOnRemote: pleaseLoginContext });
 		if (!isLoggedIn) return;
 		os.post({
@@ -247,6 +249,7 @@ export function useNote(
 	}
 
 	async function react(createReactionMock?: (reaction: string) => void) {
+		if (!canInteract) return;
 		const isLoggedIn = await pleaseLogin({ openOnRemote: pleaseLoginContext });
 		if (!isLoggedIn) return;
 		showMovedDialog();
@@ -298,7 +301,7 @@ export function useNote(
 	}
 
 	async function reactViaMfmEmoji(reaction: string) {
-		if (props.mock) return;
+		if (props.mock || !canInteract) return;
 		const isLoggedIn = await pleaseLogin({ openOnRemote: pleaseLoginContext });
 		if (!isLoggedIn) return;
 		showMovedDialog();
@@ -324,6 +327,7 @@ export function useNote(
 	}
 
 	function toggleReact(customMockCallback?: (reaction: string) => void) {
+		if (!canInteract) return;
 		if ($appearNote.myReaction == null) {
 			react(customMockCallback);
 		} else {
@@ -340,7 +344,7 @@ export function useNote(
 		if (ev.target && isLink(ev.target as HTMLElement)) return;
 		if (window.getSelection()?.toString() !== '') return;
 
-		if (prefer.s.useReactionPickerForContextMenu) {
+		if (canInteract && prefer.s.useReactionPickerForContextMenu) {
 			ev.preventDefault();
 			react();
 		} else {
@@ -448,6 +452,7 @@ export function useNote(
 		urls,
 		isLong,
 		showTicker,
+		canInteract,
 		canRenote,
 
 		// アクション関数

@@ -15,6 +15,7 @@ import { LoggerService } from '@/core/LoggerService.js';
 import { HttpRequestService } from '@/core/HttpRequestService.js';
 import { bindThis } from '@/decorators.js';
 import { FederatedInstanceService } from '@/core/FederatedInstanceService.js';
+import { UtilityService } from '@/core/UtilityService.js';
 
 type NodeInfo = {
 	openRegistrations?: unknown;
@@ -43,6 +44,7 @@ export class FetchInstanceMetadataService {
 		private httpRequestService: HttpRequestService,
 		private loggerService: LoggerService,
 		private federatedInstanceService: FederatedInstanceService,
+		private utilityService: UtilityService,
 		@Inject(DI.redis)
 		private redisClient: Redis.Redis,
 	) {
@@ -70,6 +72,8 @@ export class FetchInstanceMetadataService {
 
 	@bindThis
 	public async fetchInstanceMetadata(instance: MiInstance, force = false): Promise<void> {
+		if (!this.utilityService.isFederationAllowedHost(instance.host)) return;
+
 		const host = instance.host;
 
 		// finallyでunlockされてしまうのでtry内でロックチェックをしない

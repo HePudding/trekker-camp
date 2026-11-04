@@ -40,7 +40,7 @@ SPDX-License-Identifier: AGPL-3.0-only
 				</MkPagination>
 			</div>
 
-			<div v-else-if="tab === 'remote'" class="remote">
+			<div v-else-if="tab === 'remote' && instance.federation !== 'none'" class="remote">
 				<FormSplit>
 					<MkInput v-model="queryRemote" :debounce="true" type="search" autocapitalize="off">
 						<template #prefix><i class="ti ti-search"></i></template>
@@ -71,6 +71,7 @@ SPDX-License-Identifier: AGPL-3.0-only
 </template>
 
 <script lang="ts" setup>
+import { instance } from '@/instance.js';
 import * as Misskey from 'misskey-js';
 import { computed, markRaw, ref } from 'vue';
 import MkButton from '@/components/MkButton.vue';
@@ -339,9 +340,6 @@ const headerActions = computed(() => [{
 const headerTabs = computed(() => [{
 	key: 'local',
 	title: i18n.ts.local,
-}, {
-	key: 'remote',
-	title: i18n.ts.remote,
 }]);
 
 definePage(() => ({

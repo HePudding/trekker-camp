@@ -7,6 +7,7 @@ import type { Router } from '@/router.js';
 import * as os from '@/os.js';
 import { misskeyApi } from '@/utility/misskey-api.js';
 import { i18n } from '@/i18n.js';
+import { instance } from '@/instance.js';
 import { mainRouter } from '@/router.js';
 import { acct } from '@@/js/user.js';
 
@@ -33,7 +34,7 @@ export async function lookup(router?: Router) {
 		return;
 	}
 
-	if (query.startsWith('https://')) {
+	if (instance.federation !== 'none' && query.startsWith('https://')) {
 		const res = await apLookup(query);
 
 		if (res.type === 'User') {

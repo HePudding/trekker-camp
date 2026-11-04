@@ -5,6 +5,7 @@ SPDX-License-Identifier: AGPL-3.0-only
 
 <template>
 <button
+	v-if="user.host == null || instance.federation !== 'none'"
 	class="_button"
 	:class="[$style.root, { [$style.wait]: wait, [$style.active]: isFollowing || hasPendingFollowRequestFromYou, [$style.full]: full, [$style.large]: large }]"
 	:disabled="wait"
@@ -35,6 +36,7 @@ SPDX-License-Identifier: AGPL-3.0-only
 </template>
 
 <script lang="ts" setup>
+import { instance } from '@/instance.js';
 import { onBeforeUnmount, onMounted, ref } from 'vue';
 import * as Misskey from 'misskey-js';
 import { host } from '@@/js/config.js';

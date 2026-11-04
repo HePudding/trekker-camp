@@ -136,16 +136,7 @@ const menuDef = computed<SuperMenuDef[]>(() => [{
 		text: i18n.ts.avatarDecorations,
 		to: '/admin/avatar-decorations',
 		active: currentPage.value?.route.name === 'avatarDecorations',
-	}, {
-		icon: 'ti ti-whirl',
-		text: i18n.ts.federation,
-		to: '/admin/federation',
-		active: currentPage.value?.route.name === 'federation',
-	}, {
-		icon: 'ti ti-clock-play',
-		text: i18n.ts.federationJobs,
-		to: '/admin/federation-job-queue',
-		active: currentPage.value?.route.name === 'federationJobQueue',
+
 	}, {
 		icon: 'ti ti-clock-play',
 		text: i18n.ts.jobQueue,
@@ -209,11 +200,6 @@ const menuDef = computed<SuperMenuDef[]>(() => [{
 		text: i18n.ts.security,
 		to: '/admin/security',
 		active: currentPage.value?.route.name === 'security',
-	}, {
-		icon: 'ti ti-planet',
-		text: i18n.ts.relays,
-		to: '/admin/relays',
-		active: currentPage.value?.route.name === 'relays',
 	}, {
 		icon: 'ti ti-link',
 		text: i18n.ts.externalServices,

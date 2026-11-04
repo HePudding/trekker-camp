@@ -296,7 +296,7 @@ async function search() {
 	if (searchParams.value == null) return;
 
 	//#region AP lookup
-	if (searchParams.value.query.startsWith('https://') && !searchParams.value.query.includes(' ')) {
+	if (instance.federation !== 'none' && searchParams.value.query.startsWith('https://') && !searchParams.value.query.includes(' ')) {
 		const confirm = await os.confirm({
 			type: 'info',
 			text: i18n.ts.lookupConfirm,
@@ -325,7 +325,7 @@ async function search() {
 	//#endregion
 
 	if (searchParams.value.query.length > 1 && !searchParams.value.query.includes(' ')) {
-		if (searchParams.value.query.startsWith('@')) {
+		if (/^@[^@]+$/.test(searchParams.value.query)) {
 			const confirm = await os.confirm({
 				type: 'info',
 				text: i18n.ts.lookupConfirm,

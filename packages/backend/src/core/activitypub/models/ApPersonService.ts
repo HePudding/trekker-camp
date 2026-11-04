@@ -671,6 +671,10 @@ export class ApPersonService implements OnModuleInit {
 	 */
 	@bindThis
 	public async resolvePerson(uri: string, resolver?: Resolver): Promise<MiLocalUser | MiRemoteUser> {
+		if (!this.utilityService.isUriLocal(uri) && !this.utilityService.isFederationAllowedUri(uri)) {
+			throw new Error('Federation is disabled.');
+		}
+
 		//#region このサーバーに既に登録されていたらそれを返す
 		const exist = await this.fetchPerson(uri);
 		if (exist) return exist;

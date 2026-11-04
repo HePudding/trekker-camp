@@ -117,9 +117,7 @@ SPDX-License-Identifier: AGPL-3.0-only
 				v-model="reactionAcceptance"
 				:items="[
 					{ label: i18n.ts.all, value: null },
-					{ label: i18n.ts.likeOnlyForRemote, value: 'likeOnlyForRemote' },
 					{ label: i18n.ts.nonSensitiveOnly, value: 'nonSensitiveOnly' },
-					{ label: i18n.ts.nonSensitiveOnlyForLocalLikeOnlyForRemote, value: 'nonSensitiveOnlyForLocalLikeOnlyForRemote' },
 					{ label: i18n.ts.likeOnly, value: 'likeOnly' },
 				]"
 			>

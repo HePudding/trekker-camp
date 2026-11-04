@@ -18,7 +18,6 @@ const PREFER_HTML = 'text/html, */*';
 const UNSPECIFIED = '*/*';
 
 // Response Content-Type in lowercase
-const AP = 'application/activity+json; charset=utf-8';
 const HTML = 'text/html; charset=utf-8';
 const JSON_UTF8 = 'application/json; charset=utf-8';
 
@@ -79,7 +78,6 @@ describe('Webリソース', () => {
 
 	beforeAll(async () => {
 		alice = await signup({ username: 'alice' });
-		await api('admin/update-meta', { federation: 'all' }, alice as misskey.entities.SignupResponse);
 		aliceUploadedFile = (await uploadFile(alice)).body;
 		alicesPost = await post(alice, {
 			text: 'test',
@@ -221,18 +219,18 @@ describe('Webリソース', () => {
 			{ accept: ONLY_AP },
 			{ accept: PREFER_AP },
 		])('(Acceptヘッダ: $accept)', ({ accept }) => {
-			test('はActivityPubとしてGETできる。', async () => {
-				const res = await ok({
+			test('rejects ActivityPub requests', async () => {
+				await notOk({
 					path: path(alice.username),
 					accept,
-					type: AP,
+					status: 403,
 				});
-				assert.strictEqual(res.body.type, 'Person');
 			});
 
-			test('は存在しないIDのときActivityPubとしてGETできない。', async () => await notFound({
+			test('は存在しないIDのときActivityPubとしてGETできない。', async () => await notOk({
 				path: path('xxxxxxxxxx'),
 				accept,
+				status: 403,
 			}));
 			test.todo('はオリジナルにリダイレクトされる。(リモートユーザー)');
 		});
@@ -303,19 +301,18 @@ describe('Webリソース', () => {
 			{ accept: ONLY_AP },
 			{ accept: PREFER_AP },
 		])('(Acceptヘッダ: $accept)', ({ accept }) => {
-			test('はActivityPubとしてGETできる。', async () => {
-				const res = await ok({
+			test('rejects ActivityPub requests', async () => {
+				await notOk({
 					path: path(alice.id),
 					accept,
-					type: AP,
+					status: 403,
 				});
-				assert.strictEqual(res.body.type, 'Person');
 			});
 
 			test('は存在しないIDのときActivityPubとしてGETできない。', async () => await notOk({
 				path: path('xxxxxxxx'),
 				accept,
-				status: 404,
+				status: 403,
 			}));
 		});
 	});
@@ -341,12 +338,11 @@ describe('Webリソース', () => {
 	describe('/users/:id/outbox', () => {
 		const path = (id: string): string => `/users/${id}/outbox`;
 
-		test('がGETできる。', async () => {
-			const res = await ok({
+		test('rejects ActivityPub outbox requests', async () => {
+			await notOk({
 				path: path(alice.id),
-				type: AP,
+				status: 403,
 			});
-			assert.strictEqual(res.body.type, 'OrderedCollection');
 		});
 	});
 
@@ -381,18 +377,18 @@ describe('Webリソース', () => {
 			{ accept: ONLY_AP },
 			{ accept: PREFER_AP },
 		])('(Acceptヘッダ: $accept)', ({ accept }) => {
-			test('はActivityPubとしてGETできる。', async () => {
-				const res = await ok({
+			test('rejects ActivityPub requests', async () => {
+				await notOk({
 					path: path(alicesPost.id),
 					accept,
-					type: AP,
+					status: 403,
 				});
-				assert.strictEqual(res.body.type, 'Note');
 			});
 
-			test('は存在しないIDのときActivityPubとしてGETできない。', async () => await notFound({
+			test('は存在しないIDのときActivityPubとしてGETできない。', async () => await notOk({
 				path: path('xxxxxxxxxx'),
 				accept,
+				status: 403,
 			}));
 		});
 	});

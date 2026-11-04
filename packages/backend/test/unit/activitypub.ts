@@ -185,15 +185,12 @@ describe('ActivityPub', () => {
 			assert.deepStrictEqual(user.inbox, actor.inbox);
 		});
 
-		test('Minimum Note', async () => {
+		test('Reject remote notes', async () => {
 			resolver.register(actor.id, actor);
 			resolver.register(post.id, post);
 
-			const note = await noteService.createNote(post.id, undefined, resolver, true);
-
-			assert.deepStrictEqual(note?.uri, post.id);
-			assert.deepStrictEqual(note.visibility, 'public');
-			assert.deepStrictEqual(note.text, post.content);
+			await assert.rejects(noteService.createNote(post.id, undefined, resolver, true), /Federation is disabled/);
+			assert.strictEqual(await noteService.fetchNote(post.id), null);
 		});
 	});
 
@@ -327,7 +324,7 @@ describe('ActivityPub', () => {
 	});
 
 	describe('Featured', () => {
-		test('Fetch featured notes from IActor', async () => {
+		test('Do not import featured notes from IActor', async () => {
 			const actor = createRandomActor();
 			actor.featured = `${actor.id}/collections/featured`;
 
@@ -341,16 +338,13 @@ describe('ActivityPub', () => {
 			// All notes in `featured` are same-origin, no need to fetch notes again
 			assert.deepStrictEqual(resolver.remoteGetTrials(), [actor.id, actor.featured]);
 
-			// Created notes without resolving anything
 			for (const item of featured.items as IPost[]) {
 				const note = await noteService.fetchNote(item);
-				assert.ok(note);
-				assert.strictEqual(note.text, 'test test foo');
-				assert.strictEqual(note.uri, item.id);
+				assert.strictEqual(note, null);
 			}
 		});
 
-		test('Fetch featured notes from IActor pointing to another remote server', async () => {
+		test('Do not import featured notes from another remote server', async () => {
 			const actor1 = createRandomActor();
 			actor1.featured = `${actor1.id}/collections/featured`;
 			const actor2 = createRandomActor({ actorHost: 'https://host2.test' });
@@ -376,14 +370,10 @@ describe('ActivityPub', () => {
 			);
 
 			const note = await noteService.fetchNote(actor2Note.id);
-			assert.ok(note);
-
-			// Reflects the original content instead of the fraud
-			assert.strictEqual(note.text, 'test test foo');
-			assert.strictEqual(note.uri, actor2Note.id);
+			assert.strictEqual(note, null);
 		});
 
-		test('Fetch a note that is a featured note of the attributed actor', async () => {
+		test('Reject a featured note of the attributed actor', async () => {
 			const actor = createRandomActor();
 			actor.featured = `${actor.id}/collections/featured`;
 
@@ -394,8 +384,8 @@ describe('ActivityPub', () => {
 			resolver.register(actor.featured, featured);
 			resolver.register(firstNote.id, firstNote);
 
-			const note = await noteService.createNote(firstNote.id as string, undefined, resolver);
-			assert.strictEqual(note?.uri, firstNote.id);
+			await assert.rejects(noteService.createNote(firstNote.id as string, undefined, resolver), /Federation is disabled/);
+			assert.strictEqual(await noteService.fetchNote(firstNote.id as string), null);
 		});
 	});
 

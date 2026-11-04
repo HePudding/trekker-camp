@@ -17,11 +17,11 @@ SPDX-License-Identifier: AGPL-3.0-only
 								<MkA v-user-preview="displayUser(req).id" class="name" :to="userPage(displayUser(req))"><MkUserName :user="displayUser(req)"/></MkA>
 								<p class="acct">@{{ acct(displayUser(req)) }}</p>
 							</div>
-							<div v-if="tab === 'list'" class="commands">
+							<div v-if="tab === 'list' && displayUser(req).host == null" class="commands">
 								<MkButton class="command" rounded primary @click="accept(displayUser(req))"><i class="ti ti-check"></i> {{ i18n.ts.accept }}</MkButton>
 								<MkButton class="command" rounded danger @click="reject(displayUser(req))"><i class="ti ti-x"></i> {{ i18n.ts.reject }}</MkButton>
 							</div>
-							<div v-else class="commands">
+							<div v-else-if="tab === 'sent' && displayUser(req).host == null" class="commands">
 								<MkButton class="command" rounded danger @click="cancel(displayUser(req))"><i class="ti ti-x"></i> {{ i18n.ts.cancel }}</MkButton>
 							</div>
 						</div>
@@ -58,12 +58,14 @@ watch(tab, (newTab) => {
 }, { immediate: true });
 
 function accept(user: Misskey.entities.UserLite) {
+	if (user.host != null) return;
 	os.apiWithDialog('following/requests/accept', { userId: user.id }).then(() => {
 		paginator.reload();
 	});
 }
 
 async function reject(user: Misskey.entities.UserLite) {
+	if (user.host != null) return;
 	const { canceled } = await os.confirm({
 		type: 'question',
 		text: i18n.tsx.rejectFollowRequestConfirm({ name: user.name || user.username }),
@@ -77,6 +79,7 @@ async function reject(user: Misskey.entities.UserLite) {
 }
 
 async function cancel(user: Misskey.entities.UserLite) {
+	if (user.host != null) return;
 	const { canceled } = await os.confirm({
 		type: 'question',
 		text: i18n.tsx.cancelFollowRequestConfirm({ name: user.name || user.username }),

@@ -117,6 +117,7 @@ export class UserFollowingService implements OnModuleInit {
 			this.usersRepository.findOneByOrFail({ id: _follower.id }),
 			this.usersRepository.findOneByOrFail({ id: _followee.id }),
 		]) as [MiLocalUser | MiRemoteUser, MiLocalUser | MiRemoteUser];
+		if ([follower, followee].some(user => user.host != null)) return;
 
 		if (this.userEntityService.isRemoteUser(follower) && this.userEntityService.isRemoteUser(followee)) {
 			// What?
@@ -595,6 +596,8 @@ export class UserFollowingService implements OnModuleInit {
 		},
 		follower: MiUser,
 	): Promise<void> {
+		if ([follower, followee].some(user => user.host != null)) return;
+
 		const request = await this.followRequestsRepository.findOneBy({
 			followeeId: followee.id,
 			followerId: follower.id,
@@ -642,7 +645,7 @@ export class UserFollowingService implements OnModuleInit {
 
 		for (const request of requests) {
 			const follower = request.follower;
-			if (follower == null) {
+			if (follower == null || follower.host != null) {
 				continue;
 			}
 

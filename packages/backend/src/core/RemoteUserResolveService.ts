@@ -67,6 +67,10 @@ export class RemoteUserResolveService {
 			}) as MiLocalUser;
 		}
 
+		if (!this.utilityService.isFederationAllowedHost(host)) {
+			throw new Error('Federation is disabled.');
+		}
+
 		const user = await this.usersRepository.findOneBy({ usernameLower, host }) as MiRemoteUser | null;
 
 		const acctLower = `${usernameLower}@${host}`;

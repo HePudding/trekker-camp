@@ -27,7 +27,7 @@ if (providedAt > cachedAt) {
 
 // TODO: instanceをリアクティブにするかは再考の余地あり
 
-export const instance: Misskey.entities.MetaDetailed = reactive(cachedMeta ?? {});
+export const instance: Misskey.entities.MetaDetailed = reactive({ ...cachedMeta, federation: 'none' });
 
 export async function fetchInstance(force = false): Promise<Misskey.entities.MetaDetailed> {
 	if (!force) {
@@ -42,7 +42,7 @@ export async function fetchInstance(force = false): Promise<Misskey.entities.Met
 		detail: true,
 	});
 
-	for (const [k, v] of Object.entries(meta)) {
+	for (const [k, v] of Object.entries({ ...meta, federation: 'none' })) {
 		(instance[k as keyof typeof meta] as any) = v;
 	}
 

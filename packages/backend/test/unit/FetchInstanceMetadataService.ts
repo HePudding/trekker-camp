@@ -69,6 +69,8 @@ describe('FetchInstanceMetadataService', () => {
 				}
 				return null;
 			})
+			.overrideProvider(UtilityService)
+			.useValue({ isFederationAllowedHost: () => true })
 			.compile();
 
 		app.enableShutdownHooks();

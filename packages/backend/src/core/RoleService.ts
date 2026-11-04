@@ -375,7 +375,7 @@ export class RoleService implements OnApplicationShutdown, OnModuleInit {
 
 	@bindThis
 	public async getUserPolicies(userId: MiUser['id'] | null): Promise<RolePolicies> {
-		const basePolicies = { ...DEFAULT_POLICIES, ...this.meta.policies };
+		const basePolicies = { ...DEFAULT_POLICIES, ...this.meta.policies, gtlAvailable: false };
 
 		if (userId == null) return basePolicies;
 
@@ -404,7 +404,7 @@ export class RoleService implements OnApplicationShutdown, OnModuleInit {
 		const serverMaxFileSizeMb = Math.floor(this.config.maxFileSize / (1024 * 1024));
 
 		return {
-			gtlAvailable: calc('gtlAvailable', vs => vs.some(v => v === true)),
+			gtlAvailable: false,
 			ltlAvailable: calc('ltlAvailable', vs => vs.some(v => v === true)),
 			canPublicNote: calc('canPublicNote', vs => vs.some(v => v === true)),
 			mentionLimit: calc('mentionLimit', vs => Math.max(...vs)),

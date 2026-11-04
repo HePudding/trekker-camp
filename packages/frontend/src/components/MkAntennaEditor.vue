@@ -30,7 +30,6 @@ SPDX-License-Identifier: AGPL-3.0-only
 				<template #label>{{ i18n.ts.antennaExcludeKeywords }}</template>
 				<template #caption>{{ i18n.ts.antennaKeywordsDescription }}</template>
 			</MkTextarea>
-			<MkSwitch v-model="localOnly">{{ i18n.ts.localOnly }}</MkSwitch>
 			<MkSwitch v-model="caseSensitive">{{ i18n.ts.caseSensitive }}</MkSwitch>
 			<MkSwitch v-model="withFile">{{ i18n.ts.withFileAntenna }}</MkSwitch>
 			<MkSwitch v-model="excludeNotesInSensitiveChannel">{{ i18n.ts.excludeNotesInSensitiveChannel }}</MkSwitch>

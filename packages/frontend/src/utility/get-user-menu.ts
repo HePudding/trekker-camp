@@ -12,6 +12,7 @@ import type { MenuItem } from '@/types/menu.js';
 import { i18n } from '@/i18n.js';
 import { copyToClipboard } from '@/utility/copy-to-clipboard.js';
 import * as os from '@/os.js';
+import { instance } from '@/instance.js';
 import { misskeyApi } from '@/utility/misskey-api.js';
 import { $i, iAmModerator } from '@/i.js';
 import { notesSearchAvailable, canSearchNonLocalNotes } from '@/utility/check-permissions.js';
@@ -192,7 +193,7 @@ export function getUserMenu(user: Misskey.entities.UserDetailed, router: Router 
 		},
 	});
 
-	if (user.host != null && user.url != null) {
+	if (instance.federation !== 'none' && user.host != null && user.url != null) {
 		menuItems.push({
 			icon: 'ti ti-external-link',
 			text: i18n.ts.showOnRemote,
@@ -355,39 +356,41 @@ export function getUserMenu(user: Misskey.entities.UserDetailed, router: Router 
 			});
 		}
 
-		// フォローしたとしても user.isFollowing はリアルタイム更新されないので不便なため
-		//if (user.isFollowing) {
-		const withRepliesRef = ref(user.withReplies ?? false);
+		if (user.host == null) {
+			// フォローしたとしても user.isFollowing はリアルタイム更新されないので不便なため
+			//if (user.isFollowing) {
+			const withRepliesRef = ref(user.withReplies ?? false);
 
-		menuItems.push({
-			type: 'switch',
-			icon: 'ti ti-messages',
-			text: i18n.ts.showRepliesToOthersInTimeline,
-			ref: withRepliesRef,
-		}, {
-			icon: user.notify === 'none' ? 'ti ti-bell' : 'ti ti-bell-off',
-			text: user.notify === 'none' ? i18n.ts.notifyNotes : i18n.ts.unnotifyNotes,
-			action: toggleNotify,
-		});
-
-		watch(withRepliesRef, (withReplies) => {
-			misskeyApi('following/update', {
-				userId: user.id,
-				withReplies,
-			}).then(() => {
-				user.withReplies = withReplies;
+			menuItems.push({
+				type: 'switch',
+				icon: 'ti ti-messages',
+				text: i18n.ts.showRepliesToOthersInTimeline,
+				ref: withRepliesRef,
+			}, {
+				icon: user.notify === 'none' ? 'ti ti-bell' : 'ti ti-bell-off',
+				text: user.notify === 'none' ? i18n.ts.notifyNotes : i18n.ts.unnotifyNotes,
+				action: toggleNotify,
 			});
-		});
-		//}
 
-		menuItems.push({ type: 'divider' }, {
-			icon: 'ti ti-pencil-heart',
-			text: i18n.ts.createUserSpecifiedNote,
-			action: () => {
-				const canonical = user.host === null ? `@${user.username}` : `@${user.username}@${user.host}`;
-				os.post({ specified: user, initialText: `${canonical} ` });
-			},
-		});
+			watch(withRepliesRef, (withReplies) => {
+				misskeyApi('following/update', {
+					userId: user.id,
+					withReplies,
+				}).then(() => {
+					user.withReplies = withReplies;
+				});
+			});
+			//}
+
+			menuItems.push({ type: 'divider' }, {
+				icon: 'ti ti-pencil-heart',
+				text: i18n.ts.createUserSpecifiedNote,
+				action: () => {
+					const canonical = user.host === null ? `@${user.username}` : `@${user.username}@${user.host}`;
+					os.post({ specified: user, initialText: `${canonical} ` });
+				},
+			});
+		}
 
 		if ($i.policies.chatAvailability === 'available' && user.canChat && user.host == null) {
 			menuItems.push({
@@ -427,7 +430,7 @@ export function getUserMenu(user: Misskey.entities.UserDetailed, router: Router 
 		});
 	}
 
-	if ($i != null && user.host !== null) {
+	if (instance.federation !== 'none' && $i != null && user.host !== null) {
 		menuItems.push({ type: 'divider' }, {
 			icon: 'ti ti-refresh',
 			text: i18n.ts.updateRemoteUser,

@@ -5,6 +5,13 @@
 
 type E = { message: string, code: string, id: string, kind?: 'client' | 'server' | 'permission', httpStatusCode?: number };
 
+export const federationDisabled = {
+	message: 'Federation is disabled.',
+	code: 'FEDERATION_DISABLED',
+	id: '866c3556-b9a1-481d-bc78-082e82c14e2c',
+	httpStatusCode: 403,
+} as const;
+
 export class ApiError extends Error {
 	public message: string;
 	public code: string;

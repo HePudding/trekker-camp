@@ -128,6 +128,8 @@ const $meta: Provider = {
 			}
 		});
 
+		meta.federation = 'none';
+
 		async function onMessage(_: string, data: string): Promise<void> {
 			const obj = JSON.parse(data);
 
@@ -139,6 +141,7 @@ const $meta: Provider = {
 							(meta as any)[key] = (body.after as any)[key];
 						}
 						meta.rootUser = null; // joinなカラムは通常取ってこないので
+						meta.federation = 'none';
 						break;
 					}
 					default:

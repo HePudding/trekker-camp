@@ -67,7 +67,6 @@ SPDX-License-Identifier: AGPL-3.0-only
 					</div>
 				</MkFolder>
 				<MkSwitch v-model="isSensitive">{{ i18n.ts.sensitive }}</MkSwitch>
-				<MkSwitch v-model="localOnly">{{ i18n.ts.localOnly }}</MkSwitch>
 				<MkButton v-if="emoji" danger @click="del()"><i class="ti ti-trash"></i> {{ i18n.ts.delete }}</MkButton>
 			</div>
 		</div>

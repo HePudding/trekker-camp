@@ -768,7 +768,7 @@ export default class extends Endpoint<typeof meta, typeof paramDef> { // eslint-
 				enableServerMachineStats: instance.enableServerMachineStats,
 				enableIdenticonGeneration: instance.enableIdenticonGeneration,
 				bannedEmailDomains: instance.bannedEmailDomains,
-				policies: { ...DEFAULT_POLICIES, ...instance.policies },
+				policies: { ...DEFAULT_POLICIES, ...instance.policies, gtlAvailable: false },
 				manifestJsonOverride: instance.manifestJsonOverride,
 				enableFanoutTimeline: instance.enableFanoutTimeline,
 				enableFanoutTimelineDbFallback: instance.enableFanoutTimelineDbFallback,

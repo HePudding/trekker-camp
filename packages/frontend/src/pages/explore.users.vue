@@ -164,7 +164,7 @@ misskeyApi('hashtags/list', {
 }).then(tags => {
 	tagsLocal.value = tags;
 });
-misskeyApi('hashtags/list', {
+if (instance.federation !== 'none') misskeyApi('hashtags/list', {
 	sort: '+attachedRemoteUsers',
 	attachedToRemoteUserOnly: true,
 	limit: 30,

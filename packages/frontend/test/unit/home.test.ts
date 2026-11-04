@@ -23,7 +23,7 @@ describe('XHome', () => {
 		cleanup();
 	});
 
-	test('Should render the remote caution when user.host exists', async () => {
+	test('Hides remote navigation for a cached remote user', async () => {
 		const home = renderHome({
 			id: 'blobcat',
 			name: 'blobcat',
@@ -39,11 +39,10 @@ describe('XHome', () => {
 		});
 
 		const anchor = home.container.querySelector<HTMLAnchorElement>('a[href^="https://example.com/"]');
-		assert.exists(anchor, 'anchor to the remote exists');
-		assert.strictEqual(anchor?.href, 'https://example.com/@user/profile');
+		assert.notExists(anchor, 'federation navigation is hidden');
 	});
 
-	test('The remote caution should fall back to uri if url is null', async () => {
+	test('Hides remote navigation when only an ActivityPub URI is available', async () => {
 		const home = renderHome({
 			id: 'blobcat',
 			name: 'blobcat',
@@ -59,7 +58,6 @@ describe('XHome', () => {
 		});
 
 		const anchor = home.container.querySelector<HTMLAnchorElement>('a[href^="https://example.com/"]');
-		assert.exists(anchor, 'anchor to the remote exists');
-		assert.strictEqual(anchor?.href, 'https://example.com/@user');
+		assert.notExists(anchor, 'federation navigation is hidden');
 	});
 });

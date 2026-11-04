@@ -72,9 +72,7 @@ async function renderChart() {
 	const vLineColor = store.s.darkMode ? 'rgba(255, 255, 255, 0.2)' : 'rgba(0, 0, 0, 0.2)';
 
 	const colorFollowLocal = '#008FFB';
-	const colorFollowRemote = '#008FFB88';
 	const colorFollowedLocal = '#2ecc71';
-	const colorFollowedRemote = '#2ecc7188';
 
 	function makeDataset(label: string, data: ChartDataset['data'], extra: Partial<ChartDataset> = {}): ChartDataset {
 		return Object.assign({
@@ -99,9 +97,7 @@ async function renderChart() {
 		data: {
 			datasets: [
 				makeDataset('Follow (local)', format(raw.local.followings.inc).slice().reverse(), { backgroundColor: colorFollowLocal, stack: 'follow' }),
-				makeDataset('Follow (remote)', format(raw.remote.followings.inc).slice().reverse(), { backgroundColor: colorFollowRemote, stack: 'follow' }),
 				makeDataset('Followed (local)', format(raw.local.followers.inc).slice().reverse(), { backgroundColor: colorFollowedLocal, stack: 'followed' }),
-				makeDataset('Followed (remote)', format(raw.remote.followers.inc).slice().reverse(), { backgroundColor: colorFollowedRemote, stack: 'followed' }),
 			],
 		},
 		options: {

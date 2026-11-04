@@ -284,129 +284,6 @@ SPDX-License-Identifier: AGPL-3.0-only
 					</MkFolder>
 				</SearchMarker>
 
-				<SearchMarker v-slot="slotProps" :keywords="['federation']">
-					<MkFolder :defaultOpen="slotProps.isParentOfTarget">
-						<template #icon><SearchIcon><i class="ti ti-planet"></i></SearchIcon></template>
-						<template #label><SearchLabel>{{ i18n.ts.federation }}</SearchLabel></template>
-						<template v-if="federationForm.savedState.federation === 'all'" #suffix>{{ i18n.ts.all }}</template>
-						<template v-else-if="federationForm.savedState.federation === 'specified'" #suffix>{{ i18n.ts.specifyHost }}</template>
-						<template v-else-if="federationForm.savedState.federation === 'none'" #suffix>{{ i18n.ts.none }}</template>
-						<template v-if="federationForm.modified.value" #footer>
-							<MkFormFooter :form="federationForm"/>
-						</template>
-
-						<div class="_gaps">
-							<SearchMarker>
-								<MkRadios
-									v-model="federationForm.state.federation"
-									:options="[
-										{ value: 'all', label: i18n.ts.all },
-										{ value: 'specified', label: i18n.ts.specifyHost },
-										{ value: 'none', label: i18n.ts.none },
-									]"
-								>
-									<template #label><SearchLabel>{{ i18n.ts.behavior }}</SearchLabel><span v-if="federationForm.modifiedStates.federation" class="_modified">{{ i18n.ts.modified }}</span></template>
-								</MkRadios>
-							</SearchMarker>
-
-							<SearchMarker :keywords="['hosts']">
-								<MkTextarea v-if="federationForm.state.federation === 'specified'" v-model="federationForm.state.federationHosts">
-									<template #label><SearchLabel>{{ i18n.ts.federationAllowedHosts }}</SearchLabel><span v-if="federationForm.modifiedStates.federationHosts" class="_modified">{{ i18n.ts.modified }}</span></template>
-									<template #caption>{{ i18n.ts.federationAllowedHostsDescription }}</template>
-								</MkTextarea>
-							</SearchMarker>
-
-							<SearchMarker :keywords="['suspended', 'software']">
-								<MkFolder>
-									<template #icon><i class="ti ti-list"></i></template>
-									<template #label><SearchLabel>{{ i18n.ts._serverSettings.deliverSuspendedSoftware }}</SearchLabel></template>
-									<template #footer>
-										<div class="_buttons">
-											<MkButton @click="federationForm.state.deliverSuspendedSoftware.push({software: '', versionRange: ''})"><i class="ti ti-plus"></i> {{ i18n.ts.add }}</MkButton>
-										</div>
-									</template>
-
-									<div :class="$style.metadataRoot" class="_gaps_s">
-										<MkInfo>{{ i18n.ts._serverSettings.deliverSuspendedSoftwareDescription }}</MkInfo>
-										<div v-for="(element, index) in federationForm.state.deliverSuspendedSoftware" :key="index" v-panel :class="$style.fieldDragItem">
-											<button class="_button" :class="$style.dragItemRemove" @click="federationForm.state.deliverSuspendedSoftware.splice(index, 1)"><i class="ti ti-x"></i></button>
-											<div :class="$style.dragItemForm">
-												<FormSplit :minWidth="200">
-													<MkInput v-model="element.software" small :placeholder="i18n.ts.softwareName">
-													</MkInput>
-													<MkInput v-model="element.versionRange" small :placeholder="i18n.ts.version">
-													</MkInput>
-												</FormSplit>
-											</div>
-										</div>
-									</div>
-								</MkFolder>
-							</SearchMarker>
-
-							<SearchMarker :keywords="['sign', 'get']">
-								<MkSwitch v-model="federationForm.state.signToActivityPubGet">
-									<template #label><SearchLabel>{{ i18n.ts._serverSettings.signToActivityPubGet }}</SearchLabel><span v-if="federationForm.modifiedStates.signToActivityPubGet" class="_modified">{{ i18n.ts.modified }}</span></template>
-									<template #caption><SearchText>{{ i18n.ts._serverSettings.signToActivityPubGet_description }}</SearchText></template>
-								</MkSwitch>
-							</SearchMarker>
-
-							<SearchMarker :keywords="['proxy', 'remote', 'files']">
-								<MkSwitch v-model="federationForm.state.proxyRemoteFiles">
-									<template #label><SearchLabel>{{ i18n.ts._serverSettings.proxyRemoteFiles }}</SearchLabel><span v-if="federationForm.modifiedStates.proxyRemoteFiles" class="_modified">{{ i18n.ts.modified }}</span></template>
-									<template #caption><SearchText>{{ i18n.ts._serverSettings.proxyRemoteFiles_description }}</SearchText></template>
-								</MkSwitch>
-							</SearchMarker>
-
-							<SearchMarker :keywords="['allow', 'external', 'redirect']">
-								<MkSwitch v-model="federationForm.state.allowExternalApRedirect">
-									<template #label><SearchLabel>{{ i18n.ts._serverSettings.allowExternalApRedirect }}</SearchLabel><span v-if="federationForm.modifiedStates.allowExternalApRedirect" class="_modified">{{ i18n.ts.modified }}</span></template>
-									<template #caption>
-										<div><SearchText>{{ i18n.ts._serverSettings.allowExternalApRedirect_description }}</SearchText></div>
-										<div>{{ i18n.ts.needToRestartServerToApply }}</div>
-									</template>
-								</MkSwitch>
-							</SearchMarker>
-
-							<SearchMarker :keywords="['cache', 'remote', 'files']">
-								<MkSwitch v-model="federationForm.state.cacheRemoteFiles">
-									<template #label><SearchLabel>{{ i18n.ts.cacheRemoteFiles }}</SearchLabel><span v-if="federationForm.modifiedStates.cacheRemoteFiles" class="_modified">{{ i18n.ts.modified }}</span></template>
-									<template #caption><SearchText>{{ i18n.ts.cacheRemoteFilesDescription }}</SearchText>{{ i18n.ts.youCanCleanRemoteFilesCache }}</template>
-								</MkSwitch>
-							</SearchMarker>
-
-							<template v-if="federationForm.state.cacheRemoteFiles">
-								<SearchMarker :keywords="['cache', 'remote', 'sensitive', 'files']">
-									<MkSwitch v-model="federationForm.state.cacheRemoteSensitiveFiles">
-										<template #label><SearchLabel>{{ i18n.ts.cacheRemoteSensitiveFiles }}</SearchLabel><span v-if="federationForm.modifiedStates.cacheRemoteSensitiveFiles" class="_modified">{{ i18n.ts.modified }}</span></template>
-										<template #caption><SearchText>{{ i18n.ts.cacheRemoteSensitiveFilesDescription }}</SearchText></template>
-									</MkSwitch>
-								</SearchMarker>
-							</template>
-						</div>
-					</MkFolder>
-				</SearchMarker>
-
-				<SearchMarker v-slot="slotProps" :keywords="['proxy', 'account']">
-					<MkFolder :defaultOpen="slotProps.isParentOfTarget">
-						<template #icon><SearchIcon><i class="ti ti-ghost"></i></SearchIcon></template>
-						<template #label><SearchLabel>{{ i18n.ts.proxyAccount }}</SearchLabel></template>
-						<template v-if="proxyAccountForm.modified.value" #footer>
-							<MkFormFooter :form="proxyAccountForm"/>
-						</template>
-
-						<div class="_gaps">
-							<MkInfo>{{ i18n.ts.proxyAccountDescription }}</MkInfo>
-
-							<SearchMarker :keywords="['description']">
-								<MkTextarea v-model="proxyAccountForm.state.description" :max="500" tall mfmAutocomplete :mfmPreview="true">
-									<template #label><SearchLabel>{{ i18n.ts._profile.description }}</SearchLabel></template>
-									<template #caption>{{ i18n.ts._profile.youCanIncludeHashtags }}</template>
-								</MkTextarea>
-							</SearchMarker>
-						</div>
-					</MkFolder>
-				</SearchMarker>
-
 				<MkButton primary @click="openSetupWizard">
 					Open setup wizard
 				</MkButton>
@@ -435,8 +312,6 @@ import MkFormFooter from '@/components/MkFormFooter.vue';
 import MkRadios from '@/components/MkRadios.vue';
 
 const meta = await misskeyApi('admin/meta');
-
-const proxyAccount = await misskeyApi('users/show', { userId: meta.proxyAccountId });
 
 const infoForm = useForm({
 	name: meta.name ?? '',
@@ -533,38 +408,6 @@ const urlPreviewForm = useForm({
 		urlPreviewUserAgent: state.urlPreviewUserAgent,
 		urlPreviewSummaryProxyUrl: state.urlPreviewSummaryProxyUrl,
 		urlPreviewSensitiveList: state.urlPreviewSensitiveList.split('\n'),
-	});
-	fetchInstance(true);
-});
-
-const federationForm = useForm({
-	federation: meta.federation,
-	federationHosts: meta.federationHosts.join('\n'),
-	deliverSuspendedSoftware: meta.deliverSuspendedSoftware,
-	signToActivityPubGet: meta.signToActivityPubGet,
-	proxyRemoteFiles: meta.proxyRemoteFiles,
-	allowExternalApRedirect: meta.allowExternalApRedirect,
-	cacheRemoteFiles: meta.cacheRemoteFiles,
-	cacheRemoteSensitiveFiles: meta.cacheRemoteSensitiveFiles,
-}, async (state) => {
-	await os.apiWithDialog('admin/update-meta', {
-		federation: state.federation,
-		federationHosts: state.federationHosts.split('\n'),
-		deliverSuspendedSoftware: state.deliverSuspendedSoftware,
-		signToActivityPubGet: state.signToActivityPubGet,
-		proxyRemoteFiles: state.proxyRemoteFiles,
-		allowExternalApRedirect: state.allowExternalApRedirect,
-		cacheRemoteFiles: state.cacheRemoteFiles,
-		cacheRemoteSensitiveFiles: state.cacheRemoteSensitiveFiles,
-	});
-	fetchInstance(true);
-});
-
-const proxyAccountForm = useForm({
-	description: proxyAccount.description,
-}, async (state) => {
-	await os.apiWithDialog('admin/update-proxy-account', {
-		description: state.description,
 	});
 	fetchInstance(true);
 });

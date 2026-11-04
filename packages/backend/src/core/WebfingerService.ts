@@ -7,6 +7,7 @@ import { URL } from 'node:url';
 import { Injectable } from '@nestjs/common';
 import { query as urlQuery } from '@/misc/prelude/url.js';
 import { HttpRequestService } from '@/core/HttpRequestService.js';
+import { UtilityService } from '@/core/UtilityService.js';
 import { bindThis } from '@/decorators.js';
 
 export type ILink = {
@@ -26,12 +27,16 @@ const mRegex = /^([^@]+)@(.*)/;
 export class WebfingerService {
 	constructor(
 		private httpRequestService: HttpRequestService,
+		private utilityService: UtilityService,
 	) {
 	}
 
 	@bindThis
 	public async webfinger(query: string): Promise<IWebFinger> {
 		const url = this.genUrl(query);
+		if (!this.utilityService.isFederationAllowedUri(url)) {
+			throw new Error('Federation is disabled.');
+		}
 
 		return await this.httpRequestService.getJson<IWebFinger>(url, 'application/jrd+json, application/json');
 	}

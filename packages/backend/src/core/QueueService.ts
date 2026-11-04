@@ -13,6 +13,7 @@ import type { MiWebhook, WebhookEventTypes } from '@/models/Webhook.js';
 import type { MiSystemWebhook, SystemWebhookEventType } from '@/models/SystemWebhook.js';
 import type { Config } from '@/config.js';
 import { DI } from '@/di-symbols.js';
+import type { MiMeta } from '@/models/Meta.js';
 import { bindThis } from '@/decorators.js';
 import type { Antenna } from '@/server/api/endpoints/i/import-antennas.js';
 import { ApRequestCreator } from '@/core/activitypub/ApRequestService.js';
@@ -103,6 +104,9 @@ function parseRedisInfo(infoText: string): Record<string, string> {
 @Injectable()
 export class QueueService {
 	constructor(
+		@Inject(DI.meta)
+		private meta: MiMeta,
+
 		@Inject(DI.config)
 		private config: Config,
 
@@ -147,6 +151,7 @@ export class QueueService {
 
 	@bindThis
 	public deliver(user: ThinUser, content: IActivity | null, to: string | null, isSharedInbox: boolean) {
+		if (this.meta.federation === 'none') return null;
 		if (content == null) return null;
 		if (to == null) return null;
 
@@ -190,6 +195,7 @@ export class QueueService {
 	 */
 	@bindThis
 	public async deliverMany(user: ThinUser, content: IActivity | null, inboxes: Map<string, boolean>) {
+		if (this.meta.federation === 'none') return null;
 		if (content == null) return null;
 		const contentBody = JSON.stringify(content);
 		const digest = ApRequestCreator.createDigest(contentBody);
@@ -226,6 +232,7 @@ export class QueueService {
 
 	@bindThis
 	public inbox(activity: IActivity, signature: httpSignature.IParsedSignature) {
+		if (this.meta.federation === 'none') return null;
 		const data = {
 			activity: activity,
 			signature,

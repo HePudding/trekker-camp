@@ -5,7 +5,7 @@ SPDX-License-Identifier: AGPL-3.0-only
 
 <template>
 <div class="_gaps_m">
-	<MkFolder v-for="x in statusbars" :key="x.id">
+	<MkFolder v-for="x in statusbars.filter(statusbar => statusbar.type !== 'federation')" :key="x.id">
 		<template #label>{{ x.type ?? i18n.ts.notSet }}</template>
 		<template #suffix>{{ x.name }}</template>
 		<XStatusbar :_id="x.id" :userLists="userLists"/>

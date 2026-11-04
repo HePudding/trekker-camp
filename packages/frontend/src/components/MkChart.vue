@@ -371,48 +371,33 @@ const fetchApRequestChart = async (): Promise<typeof chartData> => {
 	};
 };
 
-const fetchNotesChart = async (type: 'local' | 'remote' | 'combined'): Promise<typeof chartData> => {
+const fetchNotesChart = async (): Promise<typeof chartData> => {
 	const raw = await misskeyApiGet('charts/notes', { limit: props.limit, span: props.span });
 	return {
 		series: [{
 			name: 'All',
 			type: 'line',
-			data: format(type === 'combined'
-				? sum(raw.local.inc, negate(raw.local.dec), raw.remote.inc, negate(raw.remote.dec))
-				: sum(raw[type].inc, negate(raw[type].dec)),
-			),
+			data: format(sum(raw.local.inc, negate(raw.local.dec))),
 			color: '#888888',
 		}, {
 			name: 'Renotes',
 			type: 'area',
-			data: format(type === 'combined'
-				? sum(raw.local.diffs.renote, raw.remote.diffs.renote)
-				: raw[type].diffs.renote,
-			),
+			data: format(raw.local.diffs.renote),
 			color: colors.green,
 		}, {
 			name: 'Replies',
 			type: 'area',
-			data: format(type === 'combined'
-				? sum(raw.local.diffs.reply, raw.remote.diffs.reply)
-				: raw[type].diffs.reply,
-			),
+			data: format(raw.local.diffs.reply),
 			color: colors.yellow,
 		}, {
 			name: 'Normal',
 			type: 'area',
-			data: format(type === 'combined'
-				? sum(raw.local.diffs.normal, raw.remote.diffs.normal)
-				: raw[type].diffs.normal,
-			),
+			data: format(raw.local.diffs.normal),
 			color: colors.blue,
 		}, {
 			name: 'With file',
 			type: 'area',
-			data: format(type === 'combined'
-				? sum(raw.local.diffs.withFile, raw.remote.diffs.withFile)
-				: raw[type].diffs.withFile,
-			),
+			data: format(raw.local.diffs.withFile),
 			color: colors.purple,
 		}],
 	};
@@ -422,17 +407,9 @@ const fetchNotesTotalChart = async (): Promise<typeof chartData> => {
 	const raw = await misskeyApiGet('charts/notes', { limit: props.limit, span: props.span });
 	return {
 		series: [{
-			name: 'Combined',
-			type: 'line',
-			data: format(sum(raw.local.total, raw.remote.total)),
-		}, {
 			name: 'Local',
 			type: 'area',
 			data: format(raw.local.total),
-		}, {
-			name: 'Remote',
-			type: 'area',
-			data: format(raw.remote.total),
 		}],
 	};
 };
@@ -441,25 +418,11 @@ const fetchUsersChart = async (total: boolean): Promise<typeof chartData> => {
 	const raw = await misskeyApiGet('charts/users', { limit: props.limit, span: props.span });
 	return {
 		series: [{
-			name: 'Combined',
-			type: 'line',
-			data: format(total
-				? sum(raw.local.total, raw.remote.total)
-				: sum(raw.local.inc, negate(raw.local.dec), raw.remote.inc, negate(raw.remote.dec)),
-			),
-		}, {
 			name: 'Local',
 			type: 'area',
 			data: format(total
 				? raw.local.total
 				: sum(raw.local.inc, negate(raw.local.dec)),
-			),
-		}, {
-			name: 'Remote',
-			type: 'area',
-			data: format(total
-				? raw.remote.total
-				: sum(raw.remote.inc, negate(raw.remote.dec)),
 			),
 		}],
 	};
@@ -529,8 +492,6 @@ const fetchDriveChart = async (): Promise<typeof chartData> => {
 				sum(
 					raw.local.incSize,
 					negate(raw.local.decSize),
-					raw.remote.incSize,
-					negate(raw.remote.decSize),
 				),
 			),
 		}, {
@@ -541,14 +502,6 @@ const fetchDriveChart = async (): Promise<typeof chartData> => {
 			name: 'Local -',
 			type: 'area',
 			data: format(negate(raw.local.decSize)),
-		}, {
-			name: 'Remote +',
-			type: 'area',
-			data: format(raw.remote.incSize),
-		}, {
-			name: 'Remote -',
-			type: 'area',
-			data: format(negate(raw.remote.decSize)),
 		}],
 	};
 };
@@ -564,8 +517,6 @@ const fetchDriveFilesChart = async (): Promise<typeof chartData> => {
 				sum(
 					raw.local.incCount,
 					negate(raw.local.decCount),
-					raw.remote.incCount,
-					negate(raw.remote.decCount),
 				),
 			),
 		}, {
@@ -576,14 +527,6 @@ const fetchDriveFilesChart = async (): Promise<typeof chartData> => {
 			name: 'Local -',
 			type: 'area',
 			data: format(negate(raw.local.decCount)),
-		}, {
-			name: 'Remote +',
-			type: 'area',
-			data: format(raw.remote.incCount),
-		}, {
-			name: 'Remote -',
-			type: 'area',
-			data: format(negate(raw.remote.decCount)),
 		}],
 	};
 };
@@ -787,10 +730,6 @@ const fetchPerUserFollowingChart = async (): Promise<typeof chartData> => {
 			name: 'Local',
 			type: 'area',
 			data: format(raw.local.followings.total),
-		}, {
-			name: 'Remote',
-			type: 'area',
-			data: format(raw.remote.followings.total),
 		}],
 	};
 };
@@ -805,10 +744,6 @@ const fetchPerUserFollowersChart = async (): Promise<typeof chartData> => {
 			name: 'Local',
 			type: 'area',
 			data: format(raw.local.followers.total),
-		}, {
-			name: 'Remote',
-			type: 'area',
-			data: format(raw.remote.followers.total),
 		}],
 	};
 };
@@ -840,9 +775,9 @@ const fetchAndRender = async () => {
 			case 'users': return fetchUsersChart(false);
 			case 'users-total': return fetchUsersChart(true);
 			case 'active-users': return fetchActiveUsersChart();
-			case 'notes': return fetchNotesChart('combined');
-			case 'local-notes': return fetchNotesChart('local');
-			case 'remote-notes': return fetchNotesChart('remote');
+			case 'notes': return fetchNotesChart();
+			case 'local-notes': return fetchNotesChart();
+			case 'remote-notes': return { series: [] };
 			case 'notes-total': return fetchNotesTotalChart();
 			case 'drive': return fetchDriveChart();
 			case 'drive-files': return fetchDriveFilesChart();

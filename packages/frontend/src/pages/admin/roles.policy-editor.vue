@@ -15,16 +15,6 @@ SPDX-License-Identifier: AGPL-3.0-only
 			</template>
 		</XFolder>
 
-		<XFolder v-if="matchQuery([i18n.ts._role._options.gtlAvailable, 'gtlAvailable'])" v-model:policyMeta="policyMetaModel.gtlAvailable" :isBaseRole="isBaseRole" :readonly="readonly">
-			<template #label>{{ i18n.ts._role._options.gtlAvailable }}</template>
-			<template #valueText>{{ valuesModel.gtlAvailable ? i18n.ts.yes : i18n.ts.no }}</template>
-			<template #default="{ disabled }">
-				<MkSwitch v-model="valuesModel.gtlAvailable" :disabled="disabled">
-					<template #label>{{ i18n.ts.enable }}</template>
-				</MkSwitch>
-			</template>
-		</XFolder>
-
 		<XFolder v-if="matchQuery([i18n.ts._role._options.ltlAvailable, 'ltlAvailable'])" v-model:policyMeta="policyMetaModel.ltlAvailable" :isBaseRole="isBaseRole" :readonly="readonly">
 			<template #label>{{ i18n.ts._role._options.ltlAvailable }}</template>
 			<template #valueText>{{ valuesModel.ltlAvailable ? i18n.ts.yes : i18n.ts.no }}</template>
