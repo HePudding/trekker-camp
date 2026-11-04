@@ -1,84 +1,82 @@
-# SCSS Modules / CSS 変数 / utility class
+# SCSS Modules、CSS 变量与工具类
 
-Misskey の SCSS 規約。`<style lang="scss" module>` の書き方、`--MI_THEME-*` / `--MI-*` CSS 変数の使い分け、グローバル utility class の一覧をまとめる。
+本页说明 Misskey 的 SCSS 规范，包括 style module、主题与通用变量，以及全局工具类。
 
-## CSS 変数の使い分け
+## CSS 变量
 
-Misskey のテーマシステムは 2 系統の CSS 変数で構成される。新規のスタイルは **必ず変数経由** にする。直接の `#fff` / `rgb()` / `rgba()` ハードコードは vue-component-reviewer から Major 指摘される。
+新样式**必须通过变量设置**。直接硬编码 #fff、rgb、rgba 会被 vue-component-reviewer 记为 Major。
 
-### `--MI_THEME-*` (テーマ依存)
+### --MI_THEME-*：主题相关
 
-ユーザーが選んだテーマ (light / dark / 個別テーマ) で変わる色。`packages/frontend-shared/themes/_dark.json5` などで定義。
+颜色随浅色、深色或自定义主题变化，在 packages/frontend-shared/themes/_dark.json5 等文件中定义。
 
-| 変数 | 用途 |
+| 变量 | 用途 |
 |---|---|
-| `--MI_THEME-bg` | ページ背景 |
-| `--MI_THEME-panel` | カード / パネル背景 |
-| `--MI_THEME-panelHighlight` | 強調表示パネル |
-| `--MI_THEME-fg` | 本文文字色 |
-| `--MI_THEME-fgHighlighted` | 強調文字色 |
-| `--MI_THEME-fgOnPanel` | パネル上の文字 |
-| `--MI_THEME-fgOnAccent` | accent 色背景上の文字 (≒白系) |
-| `--MI_THEME-accent` | プライマリアクセント (リンク、active state) |
-| `--MI_THEME-accentedBg` | accent 系の薄背景 |
-| `--MI_THEME-divider` | 罫線 |
-| `--MI_THEME-error` | エラー色 |
-| `--MI_THEME-warn` / `--MI_THEME-infoWarnBg` / `--MI_THEME-infoWarnFg` | 警告系 |
-| `--MI_THEME-infoBg` / `--MI_THEME-infoFg` | 情報系 |
-| `--MI_THEME-buttonBg` / `--MI_THEME-buttonHoverBg` | ボタン背景 |
-| `--MI_THEME-inputBorder` / `--MI_THEME-inputBorderHover` | フォーム枠 |
-| `--MI_THEME-focus` | フォーカスリング色 |
-| `--MI_THEME-link` | リンク色 |
-| `--MI_THEME-mention` / `--MI_THEME-hashtag` | メンション / ハッシュタグ |
+| --MI_THEME-bg | 页面背景 |
+| --MI_THEME-panel | 卡片、面板背景 |
+| --MI_THEME-panelHighlight | 高亮面板 |
+| --MI_THEME-fg | 正文文字 |
+| --MI_THEME-fgHighlighted | 高亮文字 |
+| --MI_THEME-fgOnPanel | 面板文字 |
+| --MI_THEME-fgOnAccent | 强调色背景上的文字，通常偏白 |
+| --MI_THEME-accent | 主强调色，用于链接和激活状态 |
+| --MI_THEME-accentedBg | 浅强调色背景 |
+| --MI_THEME-divider | 分隔线 |
+| --MI_THEME-error | 错误色 |
+| --MI_THEME-warn、--MI_THEME-infoWarnBg、--MI_THEME-infoWarnFg | 警告 |
+| --MI_THEME-infoBg、--MI_THEME-infoFg | 信息提示 |
+| --MI_THEME-buttonBg、--MI_THEME-buttonHoverBg | 按钮背景 |
+| --MI_THEME-inputBorder、--MI_THEME-inputBorderHover | 表单边框 |
+| --MI_THEME-focus | 焦点边框 |
+| --MI_THEME-link | 链接 |
+| --MI_THEME-mention、--MI_THEME-hashtag | 提及和话题标签 |
 
-全部の一覧が必要なら `packages/frontend-shared/themes/_light.json5` を読むのが早い (JSON5 で全キーが揃っている)。
+完整列表见 packages/frontend-shared/themes/_light.json5。
 
-### `--MI-*` (UI 共通定数、テーマ非依存)
+### --MI-*：与主题无关的通用常量
 
-| 変数 | 用途 |
+| 变量 | 用途 |
 |---|---|
-| `--MI-radius` | 標準角丸 (`12px`) |
-| `--MI-margin` | 標準余白 (大、`16px` / モバイルでは `10px`) |
-| `--MI-marginHalf` | 標準余白の半分 |
-| `--MI-modalBgFilter` | モーダル背景 (backdrop) のフィルタ |
+| --MI-radius | 标准圆角，12px |
+| --MI-margin | 标准大间距，16px，移动端为 10px |
+| --MI-marginHalf | 标准间距的一半 |
+| --MI-modalBgFilter | 弹窗背景滤镜 |
 
-`var(--MI-radius)` を使うとアプリ全体で角丸の大きさが揃う。`border-radius: 12px;` のように直書きすると、後から角丸を変える要件が来たときに全件直すことになる。
+使用 `var(--MI-radius)` 保持全局一致，避免未来调整圆角时逐项修改硬编码。
 
-### ハードコードの例外
+### 允许的常量
 
-色は基本ハードコード禁止だが、以下のケースは正当化される:
+- transparent、currentColor、none 等 CSS 关键词。
+- 仅改变透明度时，通过 `color-mix(in srgb, var(--MI_THEME-fg) 50%, transparent)` 合成。
+- 尚未提供变量的图标尺寸等数值常量，例如 font-size: 14px。
 
-- `transparent` / `currentColor` / `none` などの CSS キーワード
-- alpha だけ動的に変えたい → `color-mix(in srgb, var(--MI_THEME-fg) 50%, transparent)` のように合成する
-- アイコンサイズ等、CSS 変数化されていない数値定数 (`font-size: 14px;` 等は OK)
+## 全局工具类
 
-## グローバル utility class
+定义位于 [packages/frontend/src/style.scss](../../../../../packages/frontend/src/style.scss)，可与模块类配合使用。全局类直接写入 `class="_button"`，模块类通过 `:class="$style.root"` 绑定。
 
-`packages/frontend/src/style.scss` に定義されたグローバル class。`<style module>` 内のクラスと **併用** する (`:class="[$style.root, '_button']"` ではなく、HTML の `class="_button"` 属性で直接書く)。
+以下为常用示例，实际定义可能变化。可通过 `grep -nE '^\._' packages/frontend/src/style.scss` 列出当前类名。
 
-下表は **よく使う代表例** で網羅ではない (class は随時増減するため、この一覧は腐りやすい)。手元の class が実在するか / 実装を確認したいときは正本の [packages/frontend/src/style.scss](../../../../../packages/frontend/src/style.scss) を直接見る (`grep -nE '^\._' packages/frontend/src/style.scss` で定義済み class を列挙できる)。
-
-| class | 意味 |
+| 类 | 含义 |
 |---|---|
-| `_button` | クリック可能な無装飾ベース (`appearance:none` + `cursor:pointer` + disabled cursor のリセットのみ。focus ring や ripple は**含まない** — ripple が要るなら `MkButton.vue` を使う)。`<button>` または `<a>` に付ける |
-| `_buttonPrimary` | `_button` + accent 色背景 (確定アクション) |
-| `_buttonGradate` | `_button` + グラデーション背景 |
-| `_panel` | カード / パネル枠 (背景 + 角丸 + `overflow:clip`。shadow は含まない) |
-| `_selectable` | テキスト選択許可 (Misskey はデフォルトで本文以外の選択を抑止しているため) |
-| `_selectableAtomic` | 子要素まとめて 1 単位で選択 |
-| `_noSelect` | テキスト選択禁止 |
-| `_nowrap` | `white-space: nowrap;` |
-| `_help` | accent 色 + `cursor: help` (ヘルプアイコン用) |
-| `_textButton` | accent 色のテキストボタン (hover で下線) |
-| `_link` | テキストリンク強調 |
-| `_gaps` | 縦並び flex (`display: flex; flex-direction: column; gap: var(--MI-margin);`) |
-| `_gaps_m` / `_gaps_s` | 同じく縦並び flex で gap 固定 (`21px` / `10px`) |
-| `_margin` | 標準 margin (= `--MI-margin`) |
-| `_shadow` | 標準シャドウ (`box-shadow`) |
-| `_popup` | popup / dropdown 用 (背景 + 角丸 + `contain`。shadow は含まない) |
-| `_acrylic` | 半透明 + backdrop blur (アクリル風) |
+| _button | 无装饰可点击基础样式，仅 appearance、光标和禁用光标重置；不含焦点环或波纹。用于 button 或 a，需要波纹时使用 MkButton |
+| _buttonPrimary | _button 加强调色背景，用于确认操作 |
+| _buttonGradate | _button 加渐变背景 |
+| _panel | 面板背景、圆角和 overflow:clip，不含阴影 |
+| _selectable | 允许选择文本；默认仅正文可选择 |
+| _selectableAtomic | 子元素整体作为一个选择单位 |
+| _noSelect | 禁止选择文本 |
+| _nowrap | white-space: nowrap |
+| _help | 强调色与帮助光标 |
+| _textButton | 强调色文字按钮，悬停下划线 |
+| _link | 强调文本链接 |
+| _gaps | 垂直 flex，间距为 --MI-margin |
+| _gaps_m、_gaps_s | 垂直 flex，间距分别为 21px、10px |
+| _margin | 标准 margin，等于 --MI-margin |
+| _shadow | 标准阴影 |
+| _popup | 弹出层背景、圆角和 contain，不含阴影 |
+| _acrylic | 半透明与背景模糊 |
 
-使い方:
+用法：
 
 ```vue
 <template>
@@ -90,16 +88,16 @@ Misskey のテーマシステムは 2 系統の CSS 変数で構成される。�
 <style lang="scss" module>
 .action {
 	padding: 8px 24px;
-	/* 背景色や focus ring は _buttonPrimary が持つので書かない */
+	/* 复用 _buttonPrimary 的背景与焦点样式，不重复声明 */
 }
 </style>
 ```
 
-## `<style lang="scss" module>` の特殊記法
+## style module 的特殊语法
 
-### `:global(...)` で module スコープから出る
+### :global：跳出模块作用域
 
-`<style lang="scss" module>` 内に書いたクラス名はビルド時にハッシュ化されて他コンポーネントから参照できなくなる。これを意図的に外したい (子コンポーネント側の特定クラスや外部ライブラリのクラスにスタイルを当てたい) 場合のみ `:global(...)` を使う:
+模块类名在构建时会被哈希化。仅在需要对外部库或子组件的特定类设置样式时使用：
 
 ```scss
 .root {
@@ -109,9 +107,9 @@ Misskey のテーマシステムは 2 系統の CSS 変数で構成される。�
 }
 ```
 
-通常はほぼ使わない。
+通常很少需要。
 
-### `:deep(...)` で子コンポーネント内部を狙う
+### :deep：访问子组件内部
 
 ```scss
 .root :deep(.child-internal-class) {
@@ -119,17 +117,17 @@ Misskey のテーマシステムは 2 系統の CSS 変数で構成される。�
 }
 ```
 
-これも頻用しない (子コンポーネントを直接修正する方が望ましい)。
+尽量直接修改子组件，避免频繁使用。
 
 ## 命名
 
-- module class は **camelCase** が慣習 (`root` / `inputCore` / `headerText`)
-- BEM 風の `block__element--modifier` は使わない (CSS Modules でハッシュ化されるので名前衝突を心配する必要が無い)
-- 状態 modifier は `&.active` / `&.disabled` のようにネストする
+- 模块类通常使用 camelCase，如 root、inputCore、headerText。
+- 无需使用 BEM 的 block__element--modifier；CSS Modules 已避免命名冲突。
+- 状态修饰使用嵌套的 &.active、&.disabled。
 
-## ありがちなレビュー指摘
+## 常见审查问题
 
-- `#fff` / `#000` / `rgba(0, 0, 0, 0.5)` のハードコード → `var(--MI_THEME-fg)` / `var(--MI_THEME-bg)` / `color-mix(...)` 等に置き換える
-- `<style scoped>` で書いている (module ではない) → `<style lang="scss" module>` に直し、`:class="$style.foo"` で参照する
-- 自前で `border-radius: 8px; padding: 14px;` を書いている → `_panel` global class 使えば不要
-- 自前で button styling を書いている → `_button` global class を base に乗せる
+- 硬编码 #fff、#000、rgba：改用主题变量或 color-mix。
+- 使用 scoped 而未使用 module：改为 `<style lang="scss" module>` 并通过 $style 引用。
+- 自行设置面板圆角和内边距：检查是否可复用 _panel。
+- 重写按钮基础样式：以 _button 为基础。

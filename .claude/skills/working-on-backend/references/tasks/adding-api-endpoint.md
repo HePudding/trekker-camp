@@ -1,46 +1,40 @@
-# 新規 REST API endpoint を追加する
+# 添加 REST API 端点
 
-`packages/backend/src/server/api/endpoints/<category>/<name>.ts` に新規エンドポイントを追加するための手順。**配線フェーズの `endpoint-list.ts` 登録を忘れると 404** になるので、まずそこを念頭に置く。
+在 `packages/backend/src/server/api/endpoints/<category>/<name>.ts` 添加端点时遵循本流程。**遗漏 endpoint-list.ts 注册会导致 404。**
 
-## 最重要事実 (見落とすと CI / 本番が壊れる)
+## 最重要的要求
 
-1. **エンドポイントは glob 自動収集されない**。[endpoint-list.ts](../../../../../packages/backend/src/server/api/endpoint-list.ts) への 1 行追加が必須 → [knowledge/endpoint-list.md](../knowledge/endpoint-list.md)
-2. **`meta` / `paramDef` / `res` を変えたら misskey-js 再生成が必須**。`pnpm build-misskey-js-with-types` を忘れると CI の `check-misskey-js-autogen` で必ず落ちる
-3. **`meta.errors` の各 `id` は UUID v4 で、リポジトリ内で一意**。`crypto.randomUUID()` で生成し、`grep -r "id: '<UUID>'" packages/backend/src/server/api/endpoints/` で衝突確認
+1. **端点不通过 glob 自动收集**，必须在 [endpoint-list.ts](../../../../../packages/backend/src/server/api/endpoint-list.ts) 添加一行，见[注册指南](../knowledge/endpoint-list.md)。
+2. **修改 meta、paramDef、res 后必须重新生成 misskey-js**。遗漏 `pnpm build-misskey-js-with-types` 会导致 check-misskey-js-autogen 失败。
+3. **meta.errors 的每个 id 必须是仓库内唯一的 UUID v4**。使用 crypto.randomUUID() 生成，再通过 grep 检查冲突。
 
-## ワークフロー全体図
+## 工作流
 
-```
-1. 設計    : エンドポイントの種類を決める (read/write × 認証要否 × 権限)
-2. 実装    : meta / paramDef / クラス本体を書く (SPDX ヘッダー付き)
-3. 配線    : endpoint-list.ts に登録 (★ 忘れると 404)
-4. 検証    : e2e テスト + lint + misskey-js 再生成
-```
+1. 设计：确定读写类型、认证要求和权限。
+2. 实现：编写 meta、paramDef 和类主体，包含 SPDX 头。
+3. 注册：加入 endpoint-list.ts。
+4. 验证：端到端测试、lint、重新生成 misskey-js。
 
----
+## 1. 设计：选择模板
 
-## 1. 設計フェーズ — どのテンプレートをベースにするか
+先明确端点性质，**以已有实现为模板起步**。
 
-まず作るエンドポイントの性質を確定させる。**既存実装をテンプレートとしてコピペ起点にするのが最短路**。
-
-| 性質 | ベースにする既存実装 |
+| 性质 | 参考实现 |
 |---|---|
-| 認証不要・パラメータなし・小さなレスポンス | [endpoints/ping.ts](../../../../../packages/backend/src/server/api/endpoints/ping.ts) |
-| 認証必須・DI で Repository / Service を注入・errors あり | [endpoints/notes/create.ts](../../../../../packages/backend/src/server/api/endpoints/notes/create.ts) |
-| ページネーション (sinceId/untilId/limit) | [endpoints/notes/timeline.ts](../../../../../packages/backend/src/server/api/endpoints/notes/timeline.ts) |
-| ロールポリシー (動的) ベースのアクセス制御 | [endpoints/notes/global-timeline.ts](../../../../../packages/backend/src/server/api/endpoints/notes/global-timeline.ts) — `RoleService.getUserPolicies()` を使う |
-| ファイル添付 (`requireFile: true`) | [endpoints/drive/files/create.ts](../../../../../packages/backend/src/server/api/endpoints/drive/files/create.ts) |
-| moderator / admin 専用 | [endpoints/admin/suspend-user.ts](../../../../../packages/backend/src/server/api/endpoints/admin/suspend-user.ts) (moderator), [endpoints/admin/roles/create.ts](../../../../../packages/backend/src/server/api/endpoints/admin/roles/create.ts) (admin) |
+| 无需认证、无参数、小响应 | [ping.ts](../../../../../packages/backend/src/server/api/endpoints/ping.ts) |
+| 需要认证、依赖注入、业务错误 | [notes/create.ts](../../../../../packages/backend/src/server/api/endpoints/notes/create.ts) |
+| sinceId、untilId、limit 分页 | [notes/timeline.ts](../../../../../packages/backend/src/server/api/endpoints/notes/timeline.ts) |
+| 动态角色策略访问控制 | [notes/global-timeline.ts](../../../../../packages/backend/src/server/api/endpoints/notes/global-timeline.ts)，使用 RoleService.getUserPolicies |
+| 文件上传 | [drive/files/create.ts](../../../../../packages/backend/src/server/api/endpoints/drive/files/create.ts) |
+| 管理员助手或管理员专用 | [admin/suspend-user.ts](../../../../../packages/backend/src/server/api/endpoints/admin/suspend-user.ts)、[admin/roles/create.ts](../../../../../packages/backend/src/server/api/endpoints/admin/roles/create.ts) |
 
-`<category>` は機能領域 (例: `notes`, `users`, `admin/announcements`)。ディレクトリは既存に倣う。
+category 为 notes、users、admin/announcements 等功能领域，遵循现有目录结构。
 
----
+## 2. 实现
 
-## 2. 実装フェーズ
+### 2.1 SPDX 头
 
-### 2.1 SPDX ヘッダー (必須)
-
-新規 `.ts` ファイル冒頭に必ず付ける (欠落すると CI の `spdx` ジョブで失敗):
+新 TypeScript 文件开头必须包含：
 
 ```ts
 /*
@@ -49,9 +43,9 @@
  */
 ```
 
-**注:** `packages/misskey-js/src/autogen/` 配下にも diff が出るが、**misskey-js は MIT ライセンス** で別管理 (`packages/misskey-js/package.json:license` = MIT) なので SPDX ヘッダーは付けない / 不要。
+misskey-js 的 autogen 也可能产生差异，但该子包使用 MIT 许可证，不添加 AGPL 头。
 
-### 2.2 最小テンプレート (認証不要 read 系)
+### 2.2 无需认证的读取端点模板
 
 ```ts
 /*
@@ -86,13 +80,13 @@ export default class extends Endpoint<typeof meta, typeof paramDef> { // eslint-
 	constructor(
 	) {
 		super(meta, paramDef, async (ps, me) => {
-			// 実装。me は MiLocalUser | null (requireCredential: false のため null チェック必須)
+			// 实现逻辑。me 为 MiLocalUser | null，匿名端点必须判空
 		});
 	}
 }
 ```
 
-### 2.3 DI / errors / limit を含むテンプレート
+### 2.3 包含依赖注入、错误和限流的模板
 
 ```ts
 import { Inject, Injectable } from '@nestjs/common';
@@ -103,24 +97,24 @@ import { DI } from '@/di-symbols.js';
 
 export const meta = {
 	tags: ['notes'],
-	requireCredential: true,         // 認証必須 → kind 必須 (例外: secure: true な内部 API は kind 不要)
-	kind: 'write:notes',             // OAuth scope (一覧は packages/misskey-js/src/consts.ts の `permissions`)
-	prohibitMoved: false,            // 移行済アカウントを拒否するか
+	requireCredential: true,         // 要求认证时必须指定 kind；secure: true 内部 API 除外
+	kind: 'write:notes',             // OAuth 权限范围，列表见 packages/misskey-js/src/consts.ts 的 permissions
+	prohibitMoved: false,            // 是否拒绝已迁移账户
 	limit: {
-		duration: 1000 * 60 * 60,    // 1 時間
+		duration: 1000 * 60 * 60,    // 1 小时
 		max: 300,
 	},
 	errors: {
-		noSuchNote: {                            // ← キーは camelCase
-			message: 'No such note.',            // ← 英語ハードコード (バックエンドに i18n 機構なし)
-			code: 'NO_SUCH_NOTE',                // ← code は SCREAMING_SNAKE_CASE
-			id: '17a0e0fa-3f3e-4f3e-9f3e-3f3e3f3e3f3e', // ← crypto.randomUUID() で生成し衝突確認
+		noSuchNote: {                            // ← 键使用 camelCase
+			message: 'No such note.',            // ← 固定英文消息（后端没有国际化机制）
+			code: 'NO_SUCH_NOTE',                // ← code 使用 SCREAMING_SNAKE_CASE
+			id: '17a0e0fa-3f3e-4f3e-9f3e-3f3e3f3e3f3e', // ← 使用 crypto.randomUUID() 生成并检查冲突
 		},
 	},
 	res: {
 		type: 'object',
 		optional: false, nullable: false,
-		ref: 'Note',                 // packed entity を参照する場合
+		ref: 'Note',                 // 引用打包实体时
 	},
 } as const;
 
@@ -139,84 +133,76 @@ export default class extends Endpoint<typeof meta, typeof paramDef> { // eslint-
 		private notesRepository: NotesRepository,
 	) {
 		super(meta, paramDef, async (ps, me) => {
-			// requireCredential: true なので me は MiLocalUser (null になり得ない)
+			// requireCredential 为 true，me 为非空 MiLocalUser
 			const note = await this.notesRepository.findOneBy({ id: ps.noteId });
 			if (note == null) throw new ApiError(meta.errors.noSuchNote);
-			// 実装
+			// 实现逻辑
 		});
 	}
 }
 ```
 
-DI / module 登録の詳細は [knowledge/nestjs-di.md](../knowledge/nestjs-di.md) を参照。
+依赖注入与模块注册详见 [nestjs-di.md](../knowledge/nestjs-di.md)。
 
-### 2.4 `exec` 関数のフルシグネチャ
+### 2.4 exec 完整签名
 
-`super(meta, paramDef, cb)` の `cb` が受け取る引数は 7 つある ([endpoint-base.ts](../../../../../packages/backend/src/server/api/endpoint-base.ts) の `Executor` 型):
+super 的回调接受七个参数，见 [endpoint-base.ts](../../../../../packages/backend/src/server/api/endpoint-base.ts) 的 Executor：
 
 ```ts
 async (ps, me, token, file, cleanup, ip, headers) => { ... }
 ```
 
-| 引数 | 型 | 用途 |
+| 参数 | 类型 | 用途 |
 |---|---|---|
-| `ps` | `SchemaType<typeof paramDef>` | AJV 検証済の入力 |
-| `me` | `MiLocalUser` (requireCredential: true) / `MiLocalUser \| null` (false) | ローカルユーザー。`requireCredential: false` のとき必ず null チェック |
-| `token` | `MiAccessToken \| null` | OAuth トークン (アプリ識別が要るとき) |
-| `file` | `{ name, path } \| undefined` | `requireFile: true` のときのみ確実に渡る。エンドポイント基底クラスが既に null チェック済 |
-| `cleanup` | `() => any \| undefined` | アップロードされた一時ファイルを削除するコールバック。**基底クラスが自動で呼ぶのは AJV バリデーション失敗時だけ**。正常終了や endpoint 内例外時は **呼ばれない** ので、`try { ... } finally { cleanup!(); }` で必ず呼ぶ責務がある ([drive/files/create.ts](../../../../../packages/backend/src/server/api/endpoints/drive/files/create.ts) の `finally { cleanup!(); }` が手本) |
-| `ip` | `string \| null \| undefined` | クライアント IP |
-| `headers` | `Record<string, string> \| null \| undefined` | リクエストヘッダ |
+| ps | SchemaType<typeof paramDef> | 经 AJV 验证的输入 |
+| me | MiLocalUser，或 MiLocalUser \| null | 当前本地用户；无需认证时必须判空 |
+| token | MiAccessToken \| null | OAuth 令牌，用于识别应用 |
+| file | { name, path } \| undefined | requireFile 为 true 时保证存在，基类已判空 |
+| cleanup | (() => any) \| undefined | 删除上传临时文件。基类仅在 AJV 验证失败时自动调用；正常或异常结束均需在 finally 中主动调用 |
+| ip | string \| null \| undefined | 客户端 IP |
+| headers | Record<string, string> \| null \| undefined | 请求头 |
 
-ほとんどのエンドポイントは `(ps, me)` だけで十分。`token` / `ip` / `headers` まで使うのは admin / debug / auth 系のごく一部。
+cleanup 参考 [drive/files/create.ts](../../../../../packages/backend/src/server/api/endpoints/drive/files/create.ts) 的 finally。
+大部分端点只需要 ps、me；少数管理、调试或认证端点才使用其他参数。
 
-### 2.5 meta / paramDef の規約
+### 2.5 meta 与 paramDef 规范
 
-頻出 5 件 (`tags` / `requireCredential` / `kind` / `limit` / `errors`) の使い方や全フィールド一覧、`requiredRolePolicy` / `secure` / `cacheSec` / `allowGet` 等、それと `paramDef` の AJV 実用パターンは → [knowledge/api-meta-paramdef.md](../knowledge/api-meta-paramdef.md)。
+tags、requireCredential、kind、limit、errors 等字段，以及 requiredRolePolicy、secure、cacheSec、allowGet 和 AJV 模式，见 [api-meta-paramdef.md](../knowledge/api-meta-paramdef.md)。
 
-### 2.6 エラー throw のバランス
+### 2.6 错误处理
 
-**クライアントに返すべき業務エラー** は必ず `meta.errors` に列挙して `throw new ApiError(meta.errors.<key>)` する。これを守らないと misskey-js 側の型に出ず、レスポンスも 500 になる。第 2 引数で追加情報を渡せる:
+**向客户端返回的业务错误**必须先在 meta.errors 声明，再抛出 ApiError，否则生成类型缺失且可能返回 500。第二个参数可携带补充信息：
 
 ```ts
 throw new ApiError(meta.errors.invalidParam, { reason: 'too short' });
 ```
 
-一方で **想定外の例外 (DB 不整合 / 下層 service の bug / 防御的アサーション)** は `throw new Error('...')` のままで構わない。すべての例外を `ApiError` で包むと、未知のバグが client error として隠蔽されてしまう。`endpoints/notes/create.ts` の `catch` 節末尾の `throw err;` がこの二段構えの典型。
+数据库不一致、底层服务缺陷和防御断言等**意外异常**可保留普通 Error。将所有异常包装为 ApiError 会把未知缺陷隐藏为客户端错误。可参考 notes/create.ts 在 catch 末尾重新抛出未知错误的模式。
 
----
+## 3. 注册到 endpoint-list.ts
 
-## 3. 配線フェーズ — endpoint-list.ts に登録 ★必須
-
-[endpoint-list.ts](../../../../../packages/backend/src/server/api/endpoint-list.ts) の **同カテゴリ内** に 1 行追加する:
+在 [endpoint-list.ts](../../../../../packages/backend/src/server/api/endpoint-list.ts) 的同类端点附近添加：
 
 ```ts
 export * as '<category>/<name>' from './endpoints/<category>/<name>.js';
 ```
 
-詳細・落とし穴は [knowledge/endpoint-list.md](../knowledge/endpoint-list.md) を参照。**ここへの登録漏れ = 404**。
+详见[注册指南](../knowledge/endpoint-list.md)。**遗漏会导致 404。**
 
----
+## 4. 验证
 
-## 4. 検証フェーズ
+### 4.1 端到端测试
 
-### 4.1 e2e テスト
-
-[packages/backend/test/e2e/](../../../../../packages/backend/test/e2e/) の構造は **機能カテゴリごとのファイル分け** (`note.ts` / `users.ts` / `timelines.ts` / `drive.ts` / `clips.ts` / `oauth.ts` 等)。
-
-- 既存のカテゴリファイルがあるなら、そこに `describe('<人間可読ラベル>', () => { test('正常系', ...) })` で追加
-- どのファイルにも合わないなら `test/e2e/endpoints.ts` に追加
-- `describe` 名は **人間可読 OK**
-
-最小例 (詳細なヘルパー一覧は → [knowledge/backend-testing.md](../knowledge/backend-testing.md)):
+[测试目录](../../../../../packages/backend/test/e2e/) 按 note、users、timelines、drive、clips、oauth 等领域分文件。
+已有合适分类时在其中添加测试，否则放入 endpoints.ts。describe 使用人类可读标签即可。
 
 ```ts
 import { describe, test } from 'vitest';
 import * as assert from 'node:assert';
 import { api, signup } from '../utils.js';
 
-describe('<人間可読ラベル>', () => {
-	test('正常系', async () => {
+describe('<人类可读标签>', () => {
+	test('正常情况', async () => {
 		const alice = await signup({ username: 'alice' });
 		const res = await api('<category>/<name>', { /* params */ }, alice);
 		assert.strictEqual(res.status, 200);
@@ -224,61 +210,55 @@ describe('<人間可読ラベル>', () => {
 });
 ```
 
-実行 (前提: `.config/test.yml` — [knowledge/backend-testing.md](../knowledge/backend-testing.md) §前提 参照):
+先准备 .config/test.yml，见[后端测试指南](../knowledge/backend-testing.md)，然后运行：
 
 ```bash
 pnpm --filter backend test:e2e
 ```
 
-### 4.2 lint / typecheck
+### 4.2 lint 与类型检查
 
 ```bash
-# 個別ファイルを高速にチェック
+# 快速检查单个文件
 pnpm exec eslint --fix packages/backend/src/server/api/endpoints/<category>/<name>.ts
-pnpm --filter backend typecheck      # tsc --noEmit (backend のみ)
+pnpm --filter backend typecheck      # tsc --noEmit（仅后端）
 
-# 一括 (PR 提出前)
+# 整体检查（提交 PR 前）
 pnpm --filter backend lint
 ```
 
-### 4.3 misskey-js 再生成 (★必須)
+### 4.3 重新生成 misskey-js
 
-`meta` / `paramDef` / `res` を変えたら必ず:
+修改 meta、paramDef、res 后执行：
 
 ```bash
 pnpm build-misskey-js-with-types
 ```
 
-PR に `packages/misskey-js/src/autogen/` 配下の差分が含まれていないと CI の `check-misskey-js-autogen` で必ず落ちる (最頻ミス)。詳細手順は [shipping-misskey-change/references/tasks/regenerate-misskey-js.md](../../../shipping-misskey-change/references/tasks/regenerate-misskey-js.md)。
+提交 autogen 下的差异，以通过 check-misskey-js-autogen。详细步骤见[生成指南](../../../shipping-misskey-change/references/tasks/regenerate-misskey-js.md)。
 
----
+## 常见问题
 
-## 落とし穴サマリ (PR で頻発するミス)
+完整的“症状、原因、修复”说明见 [API 速查](../knowledge/api-meta-paramdef.md)。
 
-詳細な症状 → 原因 → 修正 のフォーマット → **[knowledge/api-meta-paramdef.md](../knowledge/api-meta-paramdef.md) §落とし穴**
+- 404：遗漏 endpoint-list 注册。
+- check-misskey-js-autogen 失败：遗漏类型生成。
+- spdx 失败：缺少 SPDX 头。
+- 客户端收到 500 且没有错误类型：未在 meta.errors 声明业务错误。
+- me.id 抛出 TypeError：匿名端点未判空。
+- UUID 重复：遗漏冲突检查。
+- 临时文件残留：未在 finally 调用 cleanup。
+- requiredRolePolicy 匿名访问返回 500：ApiCallService 直接读取 user!.id，必须配合 requireCredential: true。
 
-- **404 になる** → `endpoint-list.ts` 登録漏れ
-- **CI `check-misskey-js-autogen` で落ちる** → `pnpm build-misskey-js-with-types` 忘れ
-- **CI `spdx` で落ちる** → SPDX ヘッダー欠落
-- **クライアントが 500 と error 型不在を受け取る** → `meta.errors` 列挙なしに `throw new ApiError(...)` した
-- **`me.id` で TypeError** → `requireCredential: false` で null チェックを忘れた
-- **UUID 重複** → 衝突確認グレップを忘れた
-- **一時ファイルが残る** → `requireFile: true` で `cleanup!()` を `finally` で呼び忘れた
-- **`requiredRolePolicy` で匿名アクセスが 500 になる** → `ApiCallService` が `user!.id` を非null前提で参照するため `requireCredential: true` 必須
+## 参考代码
 
----
-
-## 参照ファイル
-
-### コードベース
-
-- [endpoints.ts (meta/paramDef 型定義)](../../../../../packages/backend/src/server/api/endpoints.ts)
-- [endpoint-base.ts (Endpoint 基底クラス)](../../../../../packages/backend/src/server/api/endpoint-base.ts)
-- [endpoint-list.ts (★ ここに登録)](../../../../../packages/backend/src/server/api/endpoint-list.ts)
-- [error.ts (ApiError)](../../../../../packages/backend/src/server/api/error.ts)
-- [endpoints/ping.ts (最小例)](../../../../../packages/backend/src/server/api/endpoints/ping.ts)
-- [endpoints/notes/create.ts (DI + errors の典型)](../../../../../packages/backend/src/server/api/endpoints/notes/create.ts)
-- [endpoints/notes/global-timeline.ts (policies 動的チェック)](../../../../../packages/backend/src/server/api/endpoints/notes/global-timeline.ts)
-- [test/e2e/endpoints.ts (テスト例)](../../../../../packages/backend/test/e2e/endpoints.ts)
-- [test/utils.ts (api/signup/post 等のヘルパー)](../../../../../packages/backend/test/utils.ts)
-- [scripts/generate_api_json.js (misskey-js 生成元)](../../../../../packages/backend/scripts/generate_api_json.js)
+- [endpoints.ts 类型定义](../../../../../packages/backend/src/server/api/endpoints.ts)
+- [Endpoint 基类](../../../../../packages/backend/src/server/api/endpoint-base.ts)
+- [端点注册表](../../../../../packages/backend/src/server/api/endpoint-list.ts)
+- [ApiError](../../../../../packages/backend/src/server/api/error.ts)
+- [最小端点](../../../../../packages/backend/src/server/api/endpoints/ping.ts)
+- [依赖注入与错误处理](../../../../../packages/backend/src/server/api/endpoints/notes/create.ts)
+- [动态策略](../../../../../packages/backend/src/server/api/endpoints/notes/global-timeline.ts)
+- [测试示例](../../../../../packages/backend/test/e2e/endpoints.ts)
+- [测试辅助函数](../../../../../packages/backend/test/utils.ts)
+- [API JSON 生成器](../../../../../packages/backend/scripts/generate_api_json.js)

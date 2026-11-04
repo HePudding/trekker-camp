@@ -1,53 +1,54 @@
 ---
 name: shipping-misskey-change
-description: Use at every finish moment of a Misskey change, before committing, opening a PR, merging, or handing work back. Selects proportional validation, runs changed-file lint and repository safety checks, and records PASS/FAIL/BASELINE/SKIPPED without chasing unrelated failures.
+description: 在每次 Misskey 修改完成时使用，适用于提交、创建 PR、合并或交还工作之前。按修改范围选择验证，执行已修改文件的 lint 和仓库安全检查，记录 PASS/FAIL/BASELINE/SKIPPED，避免处理无关失败。
 ---
 
 # shipping-misskey-change
 
-Misskey の変更を commit / PR / merge する直前、または未commitでユーザーへ返す直前の出口。
-規範は [AGENTS.md](../../../AGENTS.md)、ここでは実行方法だけを定める。
+提交、创建 PR、合并 Misskey 修改，或将未提交的工作交还用户之前，必须执行本流程。
+规范以 [AGENTS.md](../../../AGENTS.md) 为准，此处仅定义执行方法。
 
-## 1. 検証レベル
+## 1. 验证级别
 
-| 段 | 条件 | 実行 |
+| 级别 | 条件 | 执行内容 |
 | --- | --- | --- |
-| 1 (必須) | package の ESLint 対象ファイルを変更 | 存在する変更ファイルへ `eslint --quiet` を最後に 1 回 |
-| 2 | 実装・挙動を変更 | 最も近い unit test を実行。型・生成物・DB に関係するときは対応する専用検証も実行 |
-| 3 (任意) | 明示依頼、広域変更、切り分けに必要 | package / repo 全体の lint、build、広域 test |
+| 1（必需） | 修改了包内受 ESLint 检查的文件 | 最后对仍存在的已修改文件运行一次 `eslint --quiet` |
+| 2 | 修改了实现或行为 | 运行最相关的单元测试；涉及类型、生成文件或数据库时，执行对应专项验证 |
+| 3（可选） | 用户明确要求、改动广泛或排查需要 | 对整个包或仓库运行 lint、构建或更大范围的测试 |
 
-段 1 は docs-only など対象が空なら `SKIPPED`。
-段 3 の既存失敗は成功扱いせず `BASELINE` として、今回の変更との関係だけを報告する。
+纯文档修改等没有适用文件时，将级别 1 记为 `SKIPPED`。
+级别 3 中原有的失败记为 `BASELINE`，说明其与本次修改的关系，不将其记为成功。
 
-### 自動検査
+### 自动检查
 
-repo root で次を 1 回実行する。
+在仓库根目录执行一次：
 
 ```bash
 node scripts/check-shipping.mjs
 ```
 
-統合先を明示する場合は `--base <ref>`、または `MISSKEY_BASE_REF` を使う。
-script は次を行い、独立した検査を最後まで続けて exit 0 (合格) / 1 (違反) / 2 (検査不能) に集約する。
+需要指定合入基线时，使用 `--base <ref>` 或 `MISSKEY_BASE_REF`。
 
-- commit 済み・未commit・untracked の変更集合を NUL-safe に列挙し、変更ファイルだけへ package root から `eslint --quiet` を実行
-- SPDX 違反時はローカル変更の欠落だけ `check-spdx.mjs --fix` で補い、通常検査を再実行
-- SPDX の結果にかかわらず、`locales/ja-JP.yml` 以外の locale YAML 変更を検査
+脚本完成以下独立检查，并以退出码 0（通过）、1（违规）、2（检查无法执行）汇总结果：
 
-`SPDX: OK` 後は追加確認しない。
-その他の常設方針は AGENTS.md に従う。
+- 以 NUL 分隔安全枚举已提交、未提交和未跟踪的改动，仅对改动文件从所属包根目录运行 `eslint --quiet`。
+- SPDX 检查失败时，仅对本地改动中缺失的头运行 `check-spdx.mjs --fix`，然后重新执行常规检查。
+- 无论 SPDX 结果如何，都检查是否修改了 `locales/ja-JP.yml` 之外的语言 YAML 文件。
 
-## 2. 変更別チェック
+得到 `SPDX: OK` 后无需重复检查。
+其他常设规则遵循 AGENTS.md。
 
-- backend API の `meta` / `paramDef` / `res`: `pnpm build-misskey-js-with-types`。
-  手順は [regenerate-misskey-js.md](references/tasks/regenerate-misskey-js.md)
-- entity / migration: `pnpm --filter backend check-migrations`。
-  新規 migration は `up()` / `down()`、既存のマージ済 migration は差分なし
-- backend API endpoint: [misskey-api-reviewer](../../agents/misskey-api-reviewer.md) を実行
-- frontend `.vue`: [vue-component-reviewer](../../agents/vue-component-reviewer.md) を実行
+## 2. 按修改类型检查
 
-## 3. 引き継ぎ
+- 后端 API 的 `meta`、`paramDef` 或 `res`：执行 `pnpm build-misskey-js-with-types`。
+  步骤见 [regenerate-misskey-js.md](references/tasks/regenerate-misskey-js.md)。
+- 实体或迁移：执行 `pnpm --filter backend check-migrations`。
+  新迁移同时实现 `up()` 和 `down()`，不修改已合并迁移。
+- 后端 API 端点：运行 [misskey-api-reviewer](../../agents/misskey-api-reviewer.md)。
+- 前端 `.vue`：运行 [vue-component-reviewer](../../agents/vue-component-reviewer.md)。
 
-実行項目を `PASS / FAIL / BASELINE / SKIPPED` で短く列挙する。
-失敗時は今回の変更との関係、未実行時は理由を書く。
-ユーザーが依頼していない commit / PR / 外部送信は行わない。
+## 3. 交接
+
+简要列出执行项目的 `PASS / FAIL / BASELINE / SKIPPED` 状态。
+失败时说明与本次修改的关系；未执行时说明原因。
+用户未要求时，不提交、不创建 PR，也不向外部发送信息。

@@ -1,138 +1,137 @@
-# Security Policy
+# 安全政策
 
-## Reporting Security Issues
+## 报告安全问题
 
-If you discover a security issue in Misskey, please report it by **[this form](https://github.com/misskey-dev/misskey/security/advisories/new)**.
+发现 Misskey 安全问题时，请通过**[此表单](https://github.com/misskey-dev/misskey/security/advisories/new)**报告。
 
-This will allow us to assess the risk, and make a fix available before we add a
-bug report to the GitHub repository.
+这样我们可以先评估风险并提供修复，再向 GitHub 仓库添加缺陷报告。
 
-**Please do not report security issues via public Issues, Pull Requests, or Discussions.**
+**请勿通过公开 Issue、Pull Request 或 Discussions 报告安全问题。**
 
-Thanks for helping make Misskey safe for everyone.
+感谢你帮助所有用户安全使用 Misskey。
 
 > [!note]
-> CNA [requires](https://www.cve.org/ResourcesSupport/AllResources/CNARules#section_5-2_Description) that CVEs include a description in English for inclusion in the CVE Catalog.
+> CNA [要求](https://www.cve.org/ResourcesSupport/AllResources/CNARules#section_5-2_Description)纳入 CVE 目录的 CVE 包含英文描述。
 >
-> When creating a security advisory, all content must be written in English (it is acceptable to include a Japanese description along with the English one).
+> 创建安全公告时，全部内容必须使用英语，也可以同时附上日语说明。
 
-## Supported Versions
+## 支持的版本
 
-| Version | Supported |
+| 版本 | 是否支持 |
 | --- | --- |
-| Latest stable release | :white_check_mark: |
-| Older stable releases | :x: |
-| Pre-releases (alpha / beta / rc) | See below |
+| 最新稳定版 | :white_check_mark: |
+| 较早的稳定版 | :x: |
+| 预发布版（alpha / beta / rc） | 见下文 |
 
-- In principle, only the **latest stable release** is supported.
-- Whether a report is in scope is determined by whether it affects the latest stable release, not by when the vulnerability was introduced. Vulnerabilities introduced in older versions are in scope as long as they are still reproducible in the latest stable release.
-- Fixes are provided only for the latest stable release; we do not backport fixes to older versions.
-- If a vulnerability was introduced in a pre-release and that pre-release **has already been published**, you may report it via the security advisory form. In this case, however, it may be handled as a regular bug fix without publishing a security advisory (and thus without a CVE).
-- If a vulnerability exists only in unreleased code (e.g. the `develop` branch, not yet included in any published release or pre-release), you may report it via a regular Issue or Pull Request.
+- 原则上仅支持**最新稳定版**。
+- 报告是否在范围内取决于是否影响最新稳定版，与漏洞引入时间无关。旧版引入的漏洞，只要仍能在最新稳定版复现，就在范围内。
+- 仅为最新稳定版提供修复，不向旧版回移补丁。
+- 若漏洞引入于**已经发布**的预发布版，可以通过安全公告表单报告。但可能按普通缺陷修复处理，不发布安全公告，也不分配 CVE。
+- 若漏洞仅存在于尚未发布的代码中，例如尚未纳入任何正式版或预发布版的 `develop` 分支，可通过普通 Issue 或 Pull Request 报告。
 
-## Scope
+## 范围
 
-### In scope
+### 范围内
 
-This policy covers the following components, which are maintained in this repository:
+本政策涵盖本仓库维护的以下组件：
 
-- Misskey: all components that run as part of a Misskey server or are delivered to its users (e.g. `packages/backend`, `packages/frontend`, `packages/frontend-embed`, `packages/sw`, and the shared packages they depend on)
-- `misskey-js` (`packages/misskey-js`)
-- The official Docker image (built from the `Dockerfile` in this repository)
+- Misskey：作为服务器一部分运行或交付给用户的全部组件，例如 `packages/backend`、`packages/frontend`、`packages/frontend-embed`、`packages/sw` 及其依赖的共享包。
+- `misskey-js`（`packages/misskey-js`）。
+- 官方 Docker 镜像，由本仓库的 `Dockerfile` 构建。
 
-Vulnerabilities in other libraries or tools (including those maintained by misskey-dev or aiscript-dev, such as AiScript, summaly, or the media proxy) should be reported to their respective repositories.
+其他库或工具的漏洞应向各自仓库报告，包括 misskey-dev 或 aiscript-dev 维护的 AiScript、summaly、媒体代理等。
 
-Issues specific to forks of Misskey, or to the configuration or operation of a particular server, are not covered by this policy. Please contact the developers of the fork or the administrators of the server.
+Misskey 分支项目特有的问题，以及特定服务器的配置或运维问题不在本政策范围内。请联系对应项目开发者或服务器管理员。
 
-#### Development tools and CI/CD
+#### 开发工具与 CI/CD
 
-Development tools and CI/CD (e.g. `scripts/`, `.github/workflows/`, `packages-private/`, and packages under `packages/` used only for development or building) are in scope **only if they can be exploited by a third party against this repository or its distribution**, for example:
+开发工具和 CI/CD（如 `scripts/`、`.github/workflows/`、`packages-private/`，以及 `packages/` 下仅用于开发或构建的包）仅在**第三方可利用其攻击本仓库或发行产物**时纳入范围，例如：
 
-- A Pull Request from a fork can leak secrets, obtain write access to this repository, or execute arbitrary code in a privileged context
-- Release artifacts (e.g. Docker images, the npm package of `misskey-js`) can be tampered with
+- 来自 fork 的 PR 可泄露密钥、获得仓库写权限，或在高权限环境执行任意代码。
+- 发布产物可被篡改，例如 Docker 镜像或 misskey-js 的 npm 包。
 
-Other issues, such as those that only affect the local environment of a developer running the tools, are treated as regular bugs; please report them via Issues.
+仅影响运行工具的开发者本地环境等其他问题，按普通缺陷处理，请通过 Issue 报告。
 
-### Out of scope
+### 范围外
 
-The following are generally **not** considered vulnerabilities. Some of them may still be reported as regular bugs via Issues.
+以下情况通常不按漏洞处理，其中部分仍可作为普通缺陷通过 Issue 报告：
 
-- **Behavior in non-production environments.** Checks (e.g. rate limits, CAPTCHA) may be bypassed when not running in production mode. Checks not applied correctly in production **are** in scope.
-- **Bypasses of the "Lockdown" features** (e.g. "Require sign-in to view contents"). These features only *hide* content and do not guarantee strict protection. Please report bypasses via Issues; maintainers will decide whether they are bugs.
-- **Remote servers not respecting visibility settings, deletion requests, etc.** This is a limitation of federation. (Tampering with local data or affecting local users through crafted activities **is** in scope.)
-- **Lack of sanitization in content configured by administrators of their own server** (e.g. arbitrary HTML/JavaScript in the server description). Administrators are trusted, and this is intentional; suggestions to sanitize such content as a defense-in-depth measure are not considered vulnerabilities. (It **is** in scope if non-administrators can set such content, or if such content is executed on other servers, e.g. via federation.)
-- **Behavior of plugins installed by the user.** Plugins run with the privileges the user grants them.
-- **Vulnerabilities in the AiScript runtime itself.** Please report them to the [AiScript repository](https://github.com/aiscript-dev/aiscript). Sandbox escapes caused by Misskey's own implementation **are** in scope.
-- **Denial of service via many requests to endpoints meant to be called frequently** (e.g. typeahead suggestions), unless the processing is unreasonably heavy for its purpose, or the requests expose or change more than the endpoint is intended to.
-- **Vulnerabilities in dependencies (including the Docker base image and OS packages) that are fixed simply by updating them**, even if exploitable through Misskey. Maintainers update dependencies regularly, so there is usually no need to report them unless they are critical (e.g. remote code execution through Misskey). Scanner output (e.g. Trivy, Dockle) alone is never considered a vulnerability.
-- **Server misconfiguration** (e.g. loosening `allowedPrivateNetworks`), and insecure defaults that do not lead to an exploitable condition.
-- **Insecure values in example configuration files** (e.g. `compose_example.yml`, `.config/example.yml`). Administrators are expected to review them and adjust them appropriately before setting up their server; please report such values via Issues.
+- **非生产环境中的行为。** 非生产模式可能绕过限流、验证码等检查；生产环境中检查未正确生效的问题在范围内。
+- **绕过“封闭访问”功能**，例如“登录后才能查看内容”。这些功能仅隐藏内容，不提供严格防护承诺。请通过 Issue 报告，由维护者判断是否属于缺陷。
+- **远程服务器不遵守可见范围、删除请求等设置。** 这是联邦机制的限制。通过构造活动篡改本地数据或影响本地用户的问题在范围内。
+- **管理员在自己服务器配置的内容缺少清理过滤**，例如服务器简介中的任意 HTML 或 JavaScript。管理员被视为可信，此行为是有意设计；将内容过滤作为纵深防御的建议不按漏洞处理。如果非管理员可设置此内容，或内容通过联邦等方式在其他服务器执行，则在范围内。
+- **用户安装的插件行为。** 插件使用用户授予的权限运行。
+- **AiScript 运行时本身的漏洞。** 请向 [AiScript 仓库](https://github.com/aiscript-dev/aiscript)报告。由 Misskey 自身实现导致的沙箱逃逸在范围内。
+- **大量请求频繁调用型端点造成的拒绝服务**，例如输入联想。若处理成本与用途明显不相称，或请求读取、修改了超出端点设计范围的数据，则在范围内。
+- **仅需更新依赖即可修复的依赖漏洞**，包括 Docker 基础镜像和操作系统包，即使可通过 Misskey 利用。维护者定期更新依赖，通常无需报告；通过 Misskey 远程执行代码等严重问题除外。报告必须提供具体漏洞依据，单独的 Trivy、Dockle 等扫描输出不予受理。
+- **服务器配置错误**，例如放宽 `allowedPrivateNetworks`，以及未造成可利用条件的不安全默认值。
+- **示例配置中的不安全值**，例如 `compose_example.yml`、`.config/example.yml`。管理员应在部署前审查并调整，请通过 Issue 报告此类值。
 
-### Privilege escalation and permission issues
+### 权限提升与权限问题
 
-Privilege escalation, and operations that regular users, moderators, or users without the relevant role policy should not be able to perform, **are** in scope.
+权限提升，以及普通用户、管理员助手或缺少对应角色策略的用户执行了本应受限的操作，**均在范围内**。
 
-However, some permission settings may be intentional. Before reporting, please investigate the background (e.g. the related code, commit history, Issues, and Pull Requests) to determine:
+某些权限设置可能出于设计。报告前，请调查相关代码、提交历史、Issue 和 PR，判断：
 
-1. whether the behavior is intentional, and
-2. if so, whether the intention itself is reasonable.
+1. 行为是否有意设计。
+2. 若是，设计意图是否合理。
 
-If the behavior is intentional, the intention is reasonable, and it is unlikely to cause any harm beyond what was intended, it is considered a specification, not a vulnerability.
+若行为出于合理设计，且不太可能造成超出预期的损害，则按既定行为处理。
 
-If you are still unsure after investigating, you may report it, but please include what you investigated and why you could not reach a conclusion.
+调查后仍有疑问时，可以报告，但请附上调查内容及未能得出结论的原因。
 
-## Before Reporting
+## 报告前
 
-A missing check in a single code path is not necessarily a vulnerability. The same protection may be enforced elsewhere (e.g. data that should not be exposed may never be stored or indexed in the first place, or may be filtered when it is serialized).
+单个代码路径缺少检查时，应继续追踪其他位置的保护机制。例如，不应暴露的数据可能从未存储或建立索引，也可能在序列化时被过滤。
 
-Before reporting, please confirm that the issue is actually exploitable end-to-end, preferably by reproducing it on a running server on your own environment. Reports based only on reading part of the code may be closed if the issue cannot be reproduced.
+报告前，请验证问题可从入口到结果完整利用，最好在自有环境运行服务器并复现。仅阅读部分代码且无法复现的报告可能被关闭。
 
-However, if the protection elsewhere appears to work only by coincidence rather than by design (e.g. it could easily be removed by commenting out a few lines or by an unrelated change), you may still report it. In that case, a working proof of concept is not required, but please explain why you think the protection is not intentional.
+若其他位置的保护看起来仅是偶然生效，例如注释掉几行代码或无关改动就容易移除，也可以报告。这种情况下无需可运行的概念验证，但请解释为何认为保护并非有意设计。
 
-## What to Include in a Report
+## 报告应包含的信息
 
-To help us triage your report quickly, please include:
+为便于快速分诊，请提供：
 
-- Steps to reproduce
-- Impact (what an attacker can do, and to whom)
-- Preconditions (required privileges, settings, etc.)
-- (Strongly recommended) A proof of concept **with the actual result observed in your environment** (e.g. the actual request and response). A hypothetical proof of concept showing only the expected result is not sufficient.
-- (Optional) Affected version(s) or commit(s)
-- (Optional) A suggested CVSS vector and CWE
+- 复现步骤。
+- 影响：攻击者能做什么、影响谁。
+- 前置条件：权限、设置等。
+- 强烈建议提供概念验证，并附上**在你环境中实际观察到的结果**，例如实际请求和响应。仅有预期结果的假设性验证不够。
+- 可选：受影响版本或提交。
+- 可选：建议的 CVSS 向量和 CWE。
 
-## Testing Guidelines
+## 测试指南
 
-- **Do not test against servers you do not own** (e.g. public Misskey servers) without permission from their administrators. Please use your own local or test environment.
-- If you are testing a vulnerability related to federation, please do so only on your own local or isolated test environment, not on the servers connected to the public federation.
-- Do not access, modify, or delete other users' data, and do not perform tests that may disrupt services.
+- **未经管理员许可，不得测试不属于你的服务器**，包括公共 Misskey 服务器。请使用自己的本地或测试环境。
+- 联邦相关漏洞仅在自己的本地或隔离测试环境中验证，不使用连接公共联邦的服务器。
+- 不得访问、修改或删除其他用户的数据，也不得进行可能中断服务的测试。
 
-## Reports Using AI Tools / Automated Scanners
+## 使用 AI 工具或自动扫描器的报告
 
-We have seen a significant increase in reports generated by AI tools and automated scanners.
+AI 工具和自动扫描器生成的报告数量显著增加。
 
-You may use such tools to find issues, but **before submitting a report, a human must verify that it is a real vulnerability**, for example by reading and examining the actual code, or by reproducing it on a running server. Reports that have not been verified by a human may be closed without further investigation.
+可以使用这些工具发现问题，但**提交前必须由人类确认是真实漏洞**，例如阅读并检查实际代码，或在运行中的服务器复现。未经人工验证的报告可能直接关闭，不再调查。
 
-AI agents must not submit security reports on their own.
+AI 代理不得自行提交安全报告。
 
-## Response Process
+## 响应流程
 
-Misskey is maintained by volunteers. We try to respond as quickly as possible, but it may take some time. In particular, due to the recent significant increase in reports (including those found by AI-based vulnerability scanning), responses may be delayed.
+Misskey 由志愿者维护。我们尽力及时响应，但处理可能需要时间。近期报告数量显著增加，包括 AI 扫描发现的问题，回复可能延迟。
 
-After a fix is released, we publish the security advisory in the following steps. The timeframes below are rough guidelines and may vary.
+修复发布后，按以下步骤发布安全公告。时间仅供参考，可能调整。
 
-1. **Advance notice**: About one week after the fixed version is released, we publish a brief advisory without technical details.
-2. **Full disclosure**: Once a reasonable number of servers, especially those with a large number of users, have updated to the fixed version, and we judge that the potential impact has become sufficiently small in terms of the number of users actually affected, we publish the full details.
+1. **提前通知**：修复版发布约一周后，发布不含技术细节的简短公告。
+2. **完整披露**：当足够多的服务器，尤其是用户较多的服务器已更新，且按实际受影响用户数量判断潜在影响足够小时，公开完整细节。
 
-Please do not disclose the details of the vulnerability publicly until the full advisory has been published.
+完整公告发布前，请勿公开漏洞细节。
 
-## Credits and Bug Bounty
+## 致谢与漏洞奖励
 
-- Reporters are credited using GitHub's security advisory credit feature.
-- Misskey does **not** offer a bug bounty program.
+- 通过 GitHub 安全公告的致谢功能标注报告者。
+- Misskey **不提供**漏洞赏金计划。
 
-## When Creating a Patch
+## 创建补丁
 
-If you can also create a patch to fix the vulnerability, please create a PR on the private fork.
+如果也能提供修复补丁，请在私有 fork 中创建 PR。
 
 > [!note]
-> If a pull request does not have a linear history relative to the current `develop` branch, it may not merge successfully. If conflicts occur, please resolve them by rebasing rather than creating a merge commit.
+> PR 与当前 `develop` 分支之间的历史若不线性，可能导致合并失败。出现冲突时，请通过变基解决，避免创建合并提交。

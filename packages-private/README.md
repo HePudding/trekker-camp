@@ -1,21 +1,20 @@
 # packages-private
 
-`packages-private` は、CIなどで使用するためのユーティリティなどを格納する場所です。この配下にあるものは**プロダクションの `/packages`**の依存となるものではありません。
+`packages-private` 存放用于 CI 等场景的工具。这些包不作为**生产目录 `/packages`** 的依赖。
 
-## パッケージ一覧
+## 包列表
 
-| パッケージ | 用途 |
+| 包 | 用途 |
 | --- | --- |
-| [`diagnostics-shared`](./diagnostics-shared) | 計測系パッケージが共有する統計・書式整形・V8 heap snapshot解析のユーティリティ |
-| [`diagnostics-backend`](./diagnostics-backend) | バックエンドのメモリ使用量をbase/headで比較し、PRコメント用のMarkdownを生成する |
-| [`diagnostics-frontend`](./diagnostics-frontend) | フロントエンドをブラウザで起動した際のメトリクスと生成されたchunk情報等をbase/headで比較する |
-| [`changelog-checker`](./changelog-checker) | `CHANGELOG.md` の追記内容を検証する |
+| [`diagnostics-shared`](./diagnostics-shared) | 测量包共用的统计、格式化及 V8 堆快照解析工具 |
+| [`diagnostics-backend`](./diagnostics-backend) | 比较基线与改动版本的后端内存使用量，生成用于 PR 评论的 Markdown |
+| [`diagnostics-frontend`](./diagnostics-frontend) | 比较基线与改动版本在浏览器中启动前端时的指标及生成的代码块信息 |
+| [`changelog-checker`](./changelog-checker) | 验证 `CHANGELOG.md` 新增的内容 |
 
-## GitHub Actionsからの呼び出し方
+## 从 GitHub Actions 调用
 
-ワークフロー側にロジックを持たせず、各パッケージのnpm scriptを呼ぶだけにしている。
-CLIに渡すパスはすべて呼び出し側のカレントディレクトリ基準で解決されるため、
-ワークフローからは `$GITHUB_WORKSPACE` / `$RUNNER_TEMP` を使った絶対パスを渡すこと。
+工作流仅调用各包的 npm 脚本，不在工作流中编写业务逻辑。
+CLI 接收的路径均相对于调用方的当前目录解析，因此工作流应使用 `$GITHUB_WORKSPACE`、`$RUNNER_TEMP` 传入绝对路径。
 
 ```yaml
 - name: Generate report
@@ -28,5 +27,4 @@ CLIに渡すパスはすべて呼び出し側のカレントディレクトリ�
     "$REPORT_DIR/report.md"
 ```
 
-base/head を比較する計測では、**head側のチェックアウトにあるハーネスで両方を計測する**
-(計測コードの差分ではなくビルド成果物の差分だけが結果に出るようにするため)。
+比较 base/head 时，**使用 head 检出版本中的测量工具测量两者**，确保结果仅反映构建产物的差异，避免测量代码变更影响结果。

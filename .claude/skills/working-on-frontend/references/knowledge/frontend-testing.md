@@ -1,59 +1,59 @@
-# Frontend テスト (Vitest / Playwright)
+# 前端测试（Vitest / Playwright）
 
-Misskey frontend のテスト構成。
+Misskey 前端的测试配置如下。
 
-## Vitest (unit)
+## Vitest（单元测试）
 
 ```bash
-pnpm --filter frontend test                # 1 回実行
-pnpm --filter frontend test-and-coverage   # カバレッジ付き
+pnpm --filter frontend test                # 运行一次
+pnpm --filter frontend test-and-coverage   # 包含覆盖率
 ```
 
-### 配置
+### 文件位置
 
-- 主な配置: `packages/frontend/test/*.test.ts` (例: `i18n.test.ts`, `theme.test.ts`, `is-birthday.test.ts`)
-- ビルドツール周りなど対象コードと隣接させた方が分かりやすいテストは、コードと同じディレクトリに `*.test.ts` として置く (例: [packages/frontend/lib/rollup-plugin-unwind-css-module-class-name.test.ts](../../../../../packages/frontend/lib/rollup-plugin-unwind-css-module-class-name.test.ts))
-- 共有コンポーネント (`MkX.vue`) のユニットテストは現状少なく、`*.spec.ts` / `__tests__/` 形式は採用していない (Storybook + Playwright でカバー)
+- 主要位于 `packages/frontend/test/*.test.ts`，例如 `i18n.test.ts`、`theme.test.ts`、`is-birthday.test.ts`。
+- 构建工具等适合与目标代码放在一起的测试，在同目录下使用 `*.test.ts`，例如 [packages/frontend/lib/rollup-plugin-unwind-css-module-class-name.test.ts](../../../../../packages/frontend/lib/rollup-plugin-unwind-css-module-class-name.test.ts)。
+- 共享组件（`MkX.vue`）的单元测试目前较少，未采用 `*.spec.ts` 或 `__tests__/` 形式，由 Storybook 和 Playwright 覆盖。
 
-## Playwright E2E
+## Playwright 端到端测试
 
-Playwright は **起動済みのテストサーバー** に対して走るため、unit より前提が多い。[.github/workflows/test-frontend.yml](../../../../../.github/workflows/test-frontend.yml) の `e2e` ジョブと同じ手順をローカルで踏む:
+Playwright 访问**已启动的测试服务器**，前置条件多于单元测试。在本地按 [.github/workflows/test-frontend.yml](../../../../../.github/workflows/test-frontend.yml) 的 `e2e` 任务执行：
 
 ```bash
-# 1. テスト用 DB / Redis を起動 (テスト用ポート。開発用の compose.local-db.yml ではない)
+# 1. 启动测试数据库和 Redis，使用测试端口
 docker compose -f packages/backend/test/compose.yml up -d
 
-# 2. テスト設定を配置 (未作成なら。例示なので、cpコマンドは環境にあったコマンドに適宜読み替えること)
+# 2. 尚未创建测试配置时复制；可按环境替换 cp 命令
 cp .github/misskey/test.yml .config/test.yml
 
-# 3. 全体ビルド
+# 3. 构建整个项目
 pnpm build
 
-# 4. テストサーバー起動 + Playwright 実行 (いずれもルートから)
-pnpm e2e                # 内部で pnpm start:test を起動し http://localhost:61812 を待って Playwright を実行
+# 4. 从根目录启动测试服务器并运行 Playwright
+pnpm e2e                # 内部运行 pnpm start:test，等待 http://localhost:61812 后执行 Playwright
 ```
 
-- 設定: ルート [packages/frontend/playwright.config.ts](../../../../../packages/frontend/playwright.config.ts) で、`packages/frontend/test/e2e/` 配下の `*.spec.ts` を対象にする
-- テスト本体は [packages/frontend/test/e2e/](../../../../../packages/frontend/test/e2e/) 配下に配置する。
+- 配置位于 [packages/frontend/playwright.config.ts](../../../../../packages/frontend/playwright.config.ts)，测试目标为 `packages/frontend/test/e2e/` 下的 `*.spec.ts`。
+- 测试文件放在 [packages/frontend/test/e2e/](../../../../../packages/frontend/test/e2e/) 下。
 
-新規 frontend 機能の E2E は Playwright に書くのが基本。ただし対象は主要 UI フロー (login / post / drive etc) に限定し、細かい単位テストは Vitest または Storybook で代替する慣習。
+新增前端功能的端到端测试通常使用 Playwright，重点覆盖登录、发帖、网盘等主要界面流程。细粒度测试使用 Vitest 或 Storybook。
 
-## Storybook (視覚確認 + Chromatic 視覚回帰)
+## Storybook（视觉检查及 Chromatic 视觉回归）
 
-詳細は → [storybook.md](storybook.md)。
+详情见 [storybook.md](storybook.md)。
 
 ```bash
 pnpm --filter frontend storybook-dev      # http://localhost:6006
-pnpm --filter frontend build-storybook    # 静的ビルド
+pnpm --filter frontend build-storybook    # 静态构建
 ```
 
-各コンポーネント横に `*.stories.impl.ts` を併設する慣習 (例: `MkButton.stories.impl.ts`)。Chromatic (`pnpm --filter frontend chromatic`) で視覚回帰チェック。
+各组件旁配套 `*.stories.impl.ts`，例如 `MkButton.stories.impl.ts`。使用 Chromatic（`pnpm --filter frontend chromatic`）检查视觉回归。
 
-## ローカル DB / Redis
+## 本地数据库与 Redis
 
-frontend のテスト種別で DB / Redis の要否が違う:
+不同前端测试对数据库和 Redis 的要求不同：
 
-- **Vitest (unit)** — DB 不要。ロジック / コンポーネント単体のテストで backend に繋がない (CI の `vitest` ジョブにも `services:` は無い)
-- **Playwright (E2E)** — テストサーバー (`pnpm start:test`) 経由で backend に繋ぐため DB / Redis が必要。**テスト用ポートの [packages/backend/test/compose.yml](../../../../../packages/backend/test/compose.yml)** を使う (上記 Playwright E2E の手順を参照)
+- **Vitest 单元测试**：不需要数据库。仅测试逻辑或组件，不连接后端；CI 的 `vitest` 任务也没有 `services:`。
+- **Playwright 端到端测试**：通过 `pnpm start:test` 连接后端，需要数据库和 Redis。使用测试端口的 [packages/backend/test/compose.yml](../../../../../packages/backend/test/compose.yml)，步骤见上文。
 
-開発用の `compose.local-db.yml` (db `5432` / redis `6379`) は **テストには使わない**。テスト用の `packages/backend/test/compose.yml` (`54312` / `56312`) とはポートが異なり、混同すると接続できない。
+开发用的 `compose.local-db.yml` 使用数据库端口 `5432`、Redis 端口 `6379`，**不用于测试**。测试配置 `packages/backend/test/compose.yml` 使用 `54312` 和 `56312`，混用会导致连接失败。

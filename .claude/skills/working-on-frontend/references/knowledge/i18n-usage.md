@@ -1,34 +1,35 @@
-# i18n 使い分け / Crowdin 安全策 / トラブルシュート
+# 国际化用法、Crowdin 安全措施与故障排查
 
-`i18n.ts` / `i18n.tsx` の使い分け、Crowdin との同期メカニズム、頻発する型エラー / 実行時警告の対処を 1 箇所にまとめたページ。
+本页说明 i18n.ts、i18n.tsx 的选择、Crowdin 同步，以及常见类型错误和运行时警告。
 
-## 目次
+## 目录
 
-- [基本: ts と tsx の使い分け](#基本-ts-と-tsx-の使い分け)
-- [実装パターン](#実装パターン)
-- [Crowdin 安全策 (既存キーのリネーム / 復旧)](#crowdin-安全策-既存キーのリネーム--復旧)
-- [トラブルシュート](#トラブルシュート)
-- [制約と補足](#制約と補足)
+- [基本用法](#基本用法)
+- [实现模式](#实现模式)
+- [Crowdin 安全措施](#crowdin-安全措施)
+- [故障排查](#故障排查)
+- [限制与补充](#限制与补充)
 
-## 基本: ts と tsx の使い分け
+## 基本用法
 
-文言は **必ず** [i18n.ts](../../../../../packages/frontend/src/i18n.ts) 経由で参照する。引数の有無で **使う変数名そのものが変わる**。間違えると、非パラメータキーを `i18n.tsx` で呼ぶ場合は型エラーになるが、パラメータキーを `i18n.ts` で参照する場合は型エラーにならず `{name}` 等が未展開のまま画面に出る (後述のトラブルシュート参照)。
+文案必须通过 [i18n.ts](../../../../../packages/frontend/src/i18n.ts) 引用。
+无参数使用 ts 属性，有参数使用 tsx 函数。无参数键通过 tsx 调用会报类型错误；带参数键通过 ts 引用可能不报错，却将占位符原样显示。
 
-- 引数なし → `i18n.ts.<key>` (プロパティアクセス)
+无参数：
 
   ```ts
   os.toast(i18n.ts.removed);
   ```
 
-- 引数あり → `i18n.tsx.<key>(...)` (関数呼び出し)
+有参数：
 
   ```ts
   os.alert({ type: 'info', text: i18n.tsx.unfollowConfirm({ name: user.username }) });
   ```
 
-  YAML 側に `{name}` 形式のプレースホルダが含まれているキーは **`i18n.tsx`** からしか呼べない。誤って `i18n.ts.unfollowConfirm` と書くと値がフォーマット前の関数になってそのまま表示される。
+包含 {name} 等占位符的键应使用 tsx；直接使用 ts 会跳过格式化。
 
-- **既存キーの再利用が第一**。新キー追加が必要に見えても、まず `locales/ja-JP.yml` を grep して `deleteAreYouSure({ x })` のような汎用キー (`x` プレースホルダ) が転用可能でないか確認する。新キー追加は [tasks/adding-i18n-key.md](../tasks/adding-i18n-key.md)。他言語ファイルは Crowdin の自動配信先なので絶対に手で触らない
+**优先复用已有键**。新增前先搜索 ja-JP.yml，检查 deleteAreYouSure({ x }) 等通用文案是否可用。新增步骤见[添加国际化键](../tasks/adding-i18n-key.md)。其他语言由 Crowdin 分发，不手动编辑。
 
 ```vue
 <script lang="ts" setup>
@@ -40,51 +41,48 @@ const props = defineProps<{ name: string }>();
 async function onDelete() {
 	const { canceled } = await os.confirm({
 		type: 'warning',
-		text: i18n.tsx.driveFileDeleteConfirm({ name: props.name }), // 引数あり
+		text: i18n.tsx.driveFileDeleteConfirm({ name: props.name }), // 有参数
 	});
 	if (canceled) return;
-	os.toast(i18n.ts.removed); // 引数なし
+	os.toast(i18n.ts.removed); // 无参数
 }
 </script>
 ```
 
-| 用途 | 書き方 |
+| 用途 | 写法 |
 |---|---|
-| 単純文字列 | `i18n.ts.save` |
-| ネスト | `i18n.ts._settings.general` |
-| パラメータ付き (1 個) | `i18n.tsx.unfollowConfirm({ name })` |
-| パラメータ付き (複数) | `i18n.tsx.monthAndDay({ month, day })` |
-| Vue テンプレート内 | `{{ i18n.ts.save }}` / `{{ i18n.tsx.unfollowConfirm({ name }) }}` |
+| 简单字符串 | i18n.ts.save |
+| 嵌套 | i18n.ts._settings.general |
+| 一个参数 | i18n.tsx.unfollowConfirm({ name }) |
+| 多个参数 | i18n.tsx.monthAndDay({ month, day }) |
+| Vue 模板 | {{ i18n.ts.save }} 或 {{ i18n.tsx.unfollowConfirm({ name }) }} |
 
-## 実装パターン
+## 实现模式
 
-### HTML タグ埋め込み
+### 嵌入 HTML
 
-ja-JP.yml の値に `<b>` / `<br>` / `<strong>` を含めて、表示側で v-html や `<Mfm>` で描画するパターンが多用されている。
+语言值可包含 b、br、strong 等标签，在界面通过 v-html 或 Mfm 渲染：
 
 ```yaml
 # locales/ja-JP.yml
-poweredByMisskeyDescription: "{name}は、オープンソースのプラットフォーム<b>Misskey</b>のサーバーのひとつです。"
+poweredByMisskeyDescription: "{name} 是开源平台 <b>Misskey</b> 的一个服务器。"
 
 # locales/ja-JP.yml (改行 + br)
-driveAboutTip: "ドライブでは、過去に...<br>\nノートに添付する際に再利用したり...<br>\n<b>ファイルを削除すると...</b><br>\n..."
+driveAboutTip: "网盘保存之前上传的文件。<br>\n发帖时可重复使用。<br>\n<b>删除文件会影响引用它的帖子。</b>"
 ```
 
-参照側:
+调用：
+
 ```vue
 <div v-html="i18n.tsx.poweredByMisskeyDescription({ name: 'Misskey' })" />
 ```
 
-注意:
+- 包含 HTML 的值使用双引号。
+- 使用 v-html 前检查 XSS 风险，参数仅允许安全静态字符串或经过转义的值，不直接传入用户输入。
 
-- HTML を含むキー値は **必ずダブルクォート** で囲む (YAML パース失敗回避)
-- `v-html` 越しの XSS リスクが無いことを必ず確認する。パラメータ側にユーザー入力をそのまま渡すと事故る。安全な静的文字列か、別途エスケープ済の値だけにする
+### 响应式引用与动态键
 
-### リアクティブ参照 + 動的キー切替
-
-時間経過などで翻訳キー自体を切り替えたい場合の慣習。`computed` でラップし、ブラケット記法で翻訳キーを動的に選ぶ。
-
-出典: [packages/frontend/src/components/MkPoll.vue](../../../../../packages/frontend/src/components/MkPoll.vue) の `_poll` 動的キー
+随时间等状态切换键时，通过 computed 和方括号动态选择，参考 [MkPoll.vue](../../../../../packages/frontend/src/components/MkPoll.vue)：
 
 ```ts
 const timer = computed(() => i18n.tsx._poll[
@@ -99,65 +97,57 @@ const timer = computed(() => i18n.tsx._poll[
 }));
 ```
 
-対応する yml (各キーで実際に使うプレースホルダは違って良い):
+对应 YAML：
 
 ```yaml
 _poll:
-  remainingDays: "終了まであと{d}日{h}時間"      # {d} {h}
-  remainingHours: "終了まであと{h}時間{m}分"     # {h} {m}
-  remainingMinutes: "終了まであと{m}分{s}秒"     # {m} {s}
-  remainingSeconds: "終了まであと{s}秒"          # {s}
+  remainingDays: "距离结束还有 {d} 天 {h} 小时"      # {d} {h}
+  remainingHours: "距离结束还有 {h} 小时 {m} 分钟"     # {h} {m}
+  remainingMinutes: "距离结束还有 {m} 分 {s} 秒"     # {m} {s}
+  remainingSeconds: "距离结束还有 {s} 秒"          # {s}
 ```
 
-ポイント:
+各键可使用不同参数。调用方用同一对象传入全部候选键所需参数的并集，各键自行读取需要的字段。
 
-- 各キーで使うプレースホルダは **バラバラで構わない**
-- **呼び出し側で候補キー全体に必要な全パラメータの superset を 1 つの引数オブジェクトで渡す**。各キーの内部実装は受け取ったオブジェクトから自分が必要なものだけ拾う
+### 非法标识符键
 
-### 識別子として無効なキー名 (ブラケット記法)
-
-キー名が数字始まりや予約語の場合、ドット記法ではアクセスできずブラケット記法を使う。
-
-出典: [packages/frontend/src/components/MkSignin.totp.vue](../../../../../packages/frontend/src/components/MkSignin.totp.vue)
+数字开头等不适合点号访问的键使用方括号，参考 [MkSignin.totp.vue](../../../../../packages/frontend/src/components/MkSignin.totp.vue)：
 
 ```vue
 <div :class="$style.totpDescription">{{ i18n.ts['2fa'] }}</div>
 ```
 
-新規キー追加時は **lowerCamelCase を守れば不要**。
+新键遵循 lowerCamelCase 可避免此问题。
 
-### ネスト + パラメータ複合
+### 嵌套与参数
 
 ```vue
 {{ i18n.tsx._uploader.maxFileSizeIsX({ x: maxSize + 'MB' }) }}
 {{ i18n.tsx._auth.shareAccess({ name: appName }) }}
 ```
 
-### `tsx` の引数に `ts` を埋め込む
+### 将已翻译字符串作为参数
 
-別の翻訳済み文字列をパラメータとして渡せる。
-
-出典: [packages/frontend/src/components/MkSignupDialog.rules.vue](../../../../../packages/frontend/src/components/MkSignupDialog.rules.vue)
+参考 [MkSignupDialog.rules.vue](../../../../../packages/frontend/src/components/MkSignupDialog.rules.vue)：
 
 ```ts
 i18n.tsx.iHaveReadXCarefullyAndAgree({ x: i18n.ts.serverRules })
 ```
 
-### 三項演算子で ts / tsx を切り替え
-
-パラメータ有無で出し分け。
+### 按有无参数切换
 
 ```vue
 {{ name ? i18n.tsx._auth.shareAccess({ name }) : i18n.ts._auth.shareAccessAsk }}
 ```
 
-## Crowdin 安全策 (既存キーのリネーム / 復旧)
+## Crowdin 安全措施
 
-ja-JP.yml 以外の locales/*.yml は **Crowdin の自動配信先**。手動編集や source 側の不用意な操作で他言語の翻訳資産が失われる。
+除 ja-JP.yml 外的语言文件都是 Crowdin 自动分发目标。手动编辑或不谨慎修改源键会损失翻译资产。
 
-### 同期メカニズム
+### 同步机制
 
-[crowdin.yml](../../../../../crowdin.yml):
+[crowdin.yml](../../../../../crowdin.yml)：
+
 ```yaml
 files:
   - source: /locales/ja-JP.yml
@@ -165,197 +155,160 @@ files:
     update_option: update_as_unapproved
 ```
 
-- `ja-JP.yml` = **source**。これだけが翻訳元
-- `en-US.yml` / `fr-FR.yml` ほか `ja-JP.yml` 以外の全 locale = **translation**。Crowdin が自動 PR で更新する
-- 翻訳済みキーの **source 文字列が変わると** `update_as_unapproved` 設定により翻訳が "unapproved" 状態に戻る (= レビュー再要求)
-- **キー名自体が変わる** と Crowdin は別キー扱いし、旧キーの翻訳は孤立 → 同期で削除される
+- ja-JP.yml 为源语言。
+- en-US.yml、fr-FR.yml 等为翻译目标，由 Crowdin 自动 PR 更新。
+- 源字符串改变后，update_as_unapproved 将翻译恢复为待批准状态，需要重新审查。
+- 键名改变时被视为新键，旧翻译失去关联并在同步时删除。
 
-根拠: [locales/README.md](../../../../../locales/README.md) "DO NOT edit locale files except `ja-JP.yml`."
+语言规则参考 [locales/README.md](../../../../../locales/README.md)。
 
-### 既存キーをリネームしたい時 (3 段階)
+### 三阶段重命名
 
-単純な「旧キー削除 → 新キー追加」を 1 PR で行うと、すべての言語の旧キー翻訳が失われる。以下のように分割する。
+在一个 PR 中删除旧键并新增新键，会失去各语言旧翻译。应分步：
 
-#### Step 1: 新キー追加 (PR A)
-
-旧キーを残したまま、新キー (同等の意味の日本語) を ja-JP.yml に追加する。
+1. **PR A：新增键。** 保留旧键，在 ja-JP.yml 添加语义对应的新日语键，并将前端引用迁移。
 
 ```yaml
-# 旧キー (まだ残す)
+# 旧键（暂时保留）
 _settings:
-  theme: "テーマ"
-# 新キー (追加)
-  appearance: "外観"
+  theme: "主题"
+# 新增键
+  appearance: "外观"
 ```
 
-参照箇所も新キーに移行 (frontend の全 grep + 置換)。
+2. **合并并等待 Crowdin。** 自动 PR 为其他语言添加 appearance。首次处于待批准状态，管理员批准前回退显示日语。通常需数天至数周，紧急时联系 Crowdin 管理者。
+3. **PR B：删除旧键。** 新翻译充分完成后，单独从 ja-JP.yml 删除 theme，下次同步会从其他语言移除。
 
-#### Step 2: マージ → Crowdin 翻訳が来るのを待つ
+### 误做直接重命名时
 
-Crowdin の自動 PR で他言語にも `appearance` が追加され、翻訳が入る。`update_option: update_as_unapproved` のため、初回は unapproved 状態。プロジェクト管理者が approve するまで本番には載らない (フォールバックで日本語が出る)。
-
-通常は数日〜数週間。急ぐ場合は Crowdin プロジェクト管理者に依頼。
-
-#### Step 3: 旧キー削除 (PR B)
-
-新キーの翻訳が十分埋まった後、別 PR で旧キー (`theme`) を ja-JP.yml から削除。次の Crowdin 同期で他言語からも消える。
-
-### 単純リネームをやってしまったら
+检查其他语言是否有差异：
 
 ```bash
-# git diff で他言語 yml が変更されていないか必ず確認 (出力が空なら OK)
+# 用 git diff 检查其他语言 YAML 无修改，输出为空即通过
 git diff --name-only develop -- 'locales/*.yml' | grep -v '^locales/ja-JP\.yml$'
 ```
 
-`grep -v 'ja-JP.yml'` を diff 本文に当てる書き方は、ja-JP.yml 単体の変更でも追加行 (`+`) が素通りして必ず非空になるため使わない。**ファイル名にだけ grep を当てる** こと。
+仅对 --name-only 的文件名过滤，不对 diff 正文过滤，否则新增行会导致误判。
 
-- **他言語 yml が変更されていたら即 revert**:
+其他语言被改动时，恢复相应文件：
+
   ```bash
   git restore --source=develop -- locales/en-US.yml locales/<lang>.yml
   ```
 
-- ja-JP.yml だけで旧キー削除 + 新キー追加してしまった場合は、PR を分割するか、上記 3 段階に組み直す。**マージ前なら間に合う**
+若仅在 ja-JP.yml 删除旧键并新增新键，应拆分 PR 或重组为三阶段流程。合并前仍可调整。
 
-### ja-JP.yml 以外を触ってしまったら
+### 误改其他语言时
 
 ```bash
-# 最も安全な復旧: develop 側の中身に戻す
+# 恢复为 develop 分支内容
 git restore --source=develop -- locales/en-US.yml
-# あるいは特定 path だけステージから外し作業ツリーごと戻す
+# 或仅恢复指定路径的暂存区和工作区
 git checkout HEAD -- locales/zh-CN.yml
 ```
 
-PR 化前なら何度でもやり直せる。**マージしてしまうと Crowdin 側との整合性が崩れて手動回復が必要** になるので、PR レビュー段階で必ず `locales/*.yml` (ja-JP 以外) の diff がゼロであることを確認する。
+合并前应确认其他语言无差异；合并后会破坏 Crowdin 一致性，可能需要人工恢复。
 
-## トラブルシュート
+## 故障排查
 
-i18n 周辺で踏みやすい失敗とその対処。エラー文字列で grep してたどり着けるよう整理。
+### Property '<key>' does not exist on type 'Locale'
 
-### 型エラー: `Property '<key>' does not exist on type 'Locale'`
-
-**症状**:
 ```
 packages/frontend/src/components/MkXxx.vue
 > i18n.ts.newKey
   Property 'newKey' does not exist on type 'Locale'.
 ```
 
-**原因**: ja-JP.yml にキーは追加したが、`packages/i18n` の型生成 (`autogen/locale.ts`) が再生成されていない。
+原因是 YAML 添加了键，但 autogen/locale.ts 未重新生成。
 
-**対処**:
+- pnpm dev 会监听生成，保存后重新检查类型。
+- 手动执行 pnpm --filter i18n generate。
+- 通过前端 lint 检查。
 
-- `pnpm dev` を起動中なら、`packages/i18n` の watch (`nodemon ... tsx ./build.ts --watch`) が自動再生成するので、yml 保存後に typecheck をやり直す
-- 一回だけ手動再生成したいなら: `pnpm --filter i18n generate` (実体は `tsx scripts/generateLocaleInterface.ts`)
-- 検出経路: `pnpm --filter frontend lint`
+实现见 [generateLocaleInterface.ts](../../../../../packages/i18n/scripts/generateLocaleInterface.ts)，参数提取正则为 /\{(\w+)\}/g。
 
-実装根拠: [packages/i18n/scripts/generateLocaleInterface.ts](../../../../../packages/i18n/scripts/generateLocaleInterface.ts) (パラメータ抽出の正規表現 `/\{(\w+)\}/g`)。
+### ts 与 tsx 混用
 
-### 型エラー: ts/tsx の取り違え
+无参数键通过 tsx 调用：
 
-**症状 A** (パラメータ無しキーを tsx で呼ぶ):
 ```
 i18n.tsx.save({...})
 > Property 'save' does not exist on type 'Tsx<Locale>'.
 ```
 
-**症状 B** (パラメータ付きキーを ts で参照、関数化されたまま使う):
+带参数键通过 ts 引用，界面会显示未替换占位符：
+
 ```vue
 {{ i18n.ts.unfollowConfirm }}
-<!-- 画面に "{name}のフォローを解除しますか？" が {name} 未置換のまま出る -->
+<!-- 界面显示“取消关注 {name} 吗？”，其中 {name} 未被替换 -->
 ```
 
-**原因**: `Tsx<T>` 型 ([packages/frontend-shared/js/i18n.ts](../../../../../packages/frontend-shared/js/i18n.ts)) は `ParameterizedString<P>` を持つキーだけを関数として公開する。
+[共享 i18n 实现](../../../../../packages/frontend-shared/js/i18n.ts)的 Tsx<T> 仅将 ParameterizedString<P> 键暴露为函数。
+按 YAML 中是否存在占位符选择：
 
-**対処**: パラメータ有無は yml の `{...}` 記法で決まる。
+| 值 | 正确调用 |
+|---|---|
+| 保存 | i18n.ts.save |
+| 包含 {name} 的取消关注确认 | i18n.tsx.unfollowConfirm({ name }) |
 
-| yml の値 | ts | tsx |
-|---|---|---|
-| `"保存"` | `i18n.ts.save` ✅ | (キー存在せず) ❌ |
-| `"{name}のフォローを解除しますか？"` | `i18n.ts.unfollowConfirm` → `{name}` 未置換の文字列のまま ❌ | `i18n.tsx.unfollowConfirm({ name })` ✅ |
+### Unexpected locale key: <key>
 
-### 実行時警告: `Unexpected locale key: <key>`
+开发模式 Proxy 检测到访问不存在的键。补充 ja-JP.yml 中的键或修复拼写，见[共享 i18n 实现](../../../../../packages/frontend-shared/js/i18n.ts)。
 
-**症状**: 開発モードのコンソールに出る。
+### Missing locale parameters: <param> at <key>
 
-**原因**: dev mode の Proxy が ja-JP.yml に存在しないキーへのアクセスを検知 ([packages/frontend-shared/js/i18n.ts](../../../../../packages/frontend-shared/js/i18n.ts) の dev 用 Proxy)。
+调用参数名与 YAML 不一致，或参数对象缺少值。实现使用 Object.hasOwn 检查。
+统一参数名；修改 YAML 参数时，搜索并同步全部前端调用。
 
-**対処**: ja-JP.yml に該当キーを追加するか、参照側のタイポを直す。
+### YAMLException
 
-### 実行時警告: `Missing locale parameters: <param> at <key>`
-
-**症状**: dev mode コンソール。
-
-**原因**:
-
-- yml 側 `{name}` に対し、呼び出し側で `{ user: ... }` のように **キー名が違う**
-- あるいは引数オブジェクトに値が含まれていない
-
-実装根拠: [packages/frontend-shared/js/i18n.ts](../../../../../packages/frontend-shared/js/i18n.ts) (`Object.hasOwn(arg, expressions[i])` チェック)。
-
-**対処**: yml と呼び出し側でパラメータ名を一致させる。yml 側のキー名を変更したら、呼び出し側 (frontend 全体) を grep で揃える。
-
-### YAML パース失敗
-
-**症状**: `pnpm --filter i18n generate` 実行時に `YAMLException: ...`、または `pnpm dev` の watch ログにエラー。
-
-**原因**: 値に YAML の特殊文字 (`<` `>` `:` `'` `&` `*` `|` `>` `#`) を含むのに **クォートしていない**。
-
-**対処**: 値全体を `"..."` (ダブルクォート) で囲む。
+生成或开发监听中出现 YAML 解析错误，常见原因是特殊字符未正确引用。
+包含标签、冒号、引号、&、*、竖线或 # 等时，将整个值置于双引号中。
 
 ```yaml
-# OK: HTML タグを含む
-poweredByMisskeyDescription: "{name}は、...プラットフォーム<b>Misskey</b>のサーバーのひとつです。"
+# 正确：包含 HTML 标签
+poweredByMisskeyDescription: "{name} 是 <b>Misskey</b> 平台的一个服务器。"
 
-# OK: コロン・シングルクォート・角括弧を含む URL 説明
-objectStorageBaseUrlDesc: "参照に使用するURL。CDNやProxyを使用している場合はそのURL、S3: 'https://<bucket>.s3.amazonaws.com'、GCS等: 'https://storage.googleapis.com/<bucket>'。"
+# 正确：包含冒号、单引号和尖括号的 URL 说明
+objectStorageBaseUrlDesc: "用于引用的 URL。使用 CDN 或代理时填写其 URL；S3: 'https://<bucket>.s3.amazonaws.com'；GCS: 'https://storage.googleapis.com/<bucket>'。"
 
-# OK: 改行をリテラルで埋め込む
-driveAboutTip: "ドライブでは、過去にアップロードしたファイルの...<br>\nノートに添付する際に..."
+# 正确：通过转义嵌入换行
+driveAboutTip: "网盘保存之前上传的文件。<br>\n发帖时可将文件作为附件使用。"
 ```
 
-YAML の block scalar (`|` / `>`) も使えるが、HTML タグ + プレースホルダ混在では **ダブルクォート + `\n` エスケープ** の方が安定する。
+也可使用块标量；HTML 与参数混用时通常采用双引号加换行转义。
 
-### キー名衝突: `_lang_` を上書きしてしまう
+### 覆盖 _lang_
 
-**症状**: 各言語ファイルの先頭にある `_lang_` (例: ja-JP は `"日本語"`) を別用途で使おうとして上書き。
+_lang_ 是语言自称的保留键，位于 [生成接口](../../../../../packages/i18n/src/autogen/locale.ts)开头。新增功能应使用其他键名。
 
-**原因**: `_lang_` は **言語自身の表記** に予約されている ([packages/i18n/src/autogen/locale.ts](../../../../../packages/i18n/src/autogen/locale.ts) の先頭キー)。
+### 修改后界面没有更新
 
-**対処**: 新規キーは別名にする。
+原因可能是只运行了前端 watch，i18n 未监听；或浏览器缓存了 built/_frontend_dist_/locales/*.json。
+使用根目录 pnpm dev 启动前后端及 i18n 监听。仍无变化时清除浏览器缓存，或手动运行 pnpm --filter i18n build。
 
-### frontend で diff を当てても変わらない
+## 限制与补充
 
-**症状**: ja-JP.yml を変更したが画面に反映されない。
+### 不支持 ICU MessageFormat
 
-**原因**:
+[生成器](../../../../../packages/i18n/scripts/generateLocaleInterface.ts)仅识别 /\{(\w+)\}/g，即简单 {paramName} 替换。
 
-- `pnpm dev` ではなく `pnpm --filter frontend watch` だけ起動していて、`packages/i18n` の watch が走っていない
-- もしくは frontend へ配信される生成物 (`built/_frontend_dist_/locales/*.json`) がブラウザ側でキャッシュされている
-
-**対処**: ルートの `pnpm dev` を起動する (frontend + backend + i18n watch が全部立ち上がる)。それでも反映しないならブラウザのキャッシュをクリア、または `pnpm --filter i18n build` を手動実行。
-
-## 制約と補足
-
-### ICU MessageFormat 非対応
-
-[packages/i18n/scripts/generateLocaleInterface.ts](../../../../../packages/i18n/scripts/generateLocaleInterface.ts) の正規表現は `/\{(\w+)\}/g`。つまり受け付けるのは **`{paramName}` 形式の単純置換のみ**。
+以下 ICU 写法会作为普通字符串显示：
 
 ```yaml
-# NG: ICU plural — そのまま画面に文字列として出るだけ
-items: "{count, plural, one {1個} other {{count}個}}"
+# 错误：ICU plural 会原样显示
+items: "{count, plural, one {1 个} other {{count} 个}}"
 
 # NG: ICU select
-gender: "{gender, select, male {彼} female {彼女} other {その人}}"
+gender: "{gender, select, male {他} female {她} other {对方}}"
 ```
 
-代替戦略:
-
-#### 1. 件数別にキーを分ける
+可按数量拆分键：
 
 ```yaml
 # OK
-withNFiles: "{n}個のファイル"
-withOneFile: "1個のファイル"
+withNFiles: "{n} 个文件"
+withOneFile: "1 个文件"
 ```
 
 ```ts
@@ -364,37 +317,32 @@ const text = files.length === 1
   : i18n.tsx.withNFiles({ n: files.length });
 ```
 
-#### 2. 切替パターン (動的キー)
+时间等连续状态使用上文 MkPoll 动态键模式。
 
-時間経過のような連続的な分岐は MkPoll のパターン ([上記「リアクティブ参照」](#リアクティブ参照--動的キー切替)) を採用。
+### 保留键 _lang_
 
-### 予約キー `_lang_`
-
-各 yml ファイルの **トップレベル先頭** に置かれ、その言語自身の表記名を持つ。
+位于每个语言文件顶层开头，存放该语言的自称：
 
 ```yaml
-# locales/ja-JP.yml (トップレベル先頭)
+# locales/ja-JP.yml (顶层开头)
 _lang_: "日本語"
 ```
 
-UI の言語切替プルダウンなどで参照される。**新規キーには使わない**。
+用于语言选择下拉框，不用于新增业务文案。
 
-### Storybook での挙動
+### Storybook
 
-Storybook 環境はバンドラが別物なので、本番の i18n パッケージをそのままは使わない。代わりに [packages/frontend/.storybook/preload-locale.ts](../../../../../packages/frontend/.storybook/preload-locale.ts) がビルド時に **ja-JP の locale だけを JSON にダンプして同居 `locale.ts` を生成** する。
+Storybook 使用独立打包流程，通过 [preload-locale.ts](../../../../../packages/frontend/.storybook/preload-locale.ts) 将 ja-JP 数据输出为 JSON，并生成同目录 locale.ts。
 
-つまり Storybook では:
+- 仅显示日语文案，无法验证其他语言。
+- 新增键后若预加载尚未执行，需重启 Storybook 或先构建 i18n。
+- 示例中调用方式相同，如 i18n.tsx._dialog.charactersBelow({ current: 0, min: 2 })。
 
-- **ja-JP の文字列だけが見える** (他言語の検証はできない)
-- ja-JP.yml にキーを追加した直後に Storybook を起動しても、`preload-locale.ts` 実行前なら反映されない。Storybook を再起動するか、`packages/i18n` を一度 build する
-- stories からの呼び方は通常通り: `i18n.tsx._dialog.charactersBelow({ current: 0, min: 2 })`
+### 后端国际化
 
-### backend での i18n 直接参照は基本無し
+国际化主要用于前端及部分服务端渲染错误页。后端通常不直接导入 i18n；API 错误使用未本地化的 ApiError 消息，再由前端翻译。
 
-i18n は frontend (および一部の SSR されるエラーページ) でのみ使われる。`packages/backend` 配下から `import { i18n }` するパターンは原則無く、API エラー文言は別ルート (`ApiError` の i18n 化されていないメッセージ + frontend 側で翻訳) で扱う。
+### 换行
 
-### 改行の扱い
-
-ダブルクォート値の中で `\n` は実際の改行になる。block scalar (`|`) でも可だが、HTML タグやプレースホルダ混在では扱いづらい。慣習はダブルクォート + `\n`。
-
-Vue 側で表示時に `white-space: pre-wrap` などを当てる必要あり。
+双引号值中的 \n 会变为实际换行。块标量也可用，但混合 HTML 和参数时通常使用双引号转义。
+Vue 展示时需配置 white-space: pre-wrap 等样式。

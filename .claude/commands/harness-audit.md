@@ -1,5 +1,5 @@
 ---
-description: Misskey の .claude/ ハーネス (skills/agents/commands) を 7 カテゴリで採点する確定的な監査。
+description: 按七个类别确定性评估 Misskey 的 .claude/ 协作配置，包括技能、代理和命令。
 argument-hint: "[repo|skills|commands|agents]"
 ---
 
@@ -7,132 +7,124 @@ argument-hint: "[repo|skills|commands|agents]"
 SPDX-License-Identifier: MIT
 SPDX-FileCopyrightText: 2026 Affaan Mustafa and everything-claude-code contributors
 
-出典 (upstream): https://github.com/affaan-m/everything-claude-code (v2.0.0-rc.1)
-upstream path: commands/harness-audit.md
-upstream license: MIT — https://github.com/affaan-m/everything-claude-code/blob/main/LICENSE
-project-level notice: see .claude/THIRD_PARTY_LICENSES.md (Misskey 内サードパーティ一覧 + MIT 全文)
+上游来源：https://github.com/affaan-m/everything-claude-code (v2.0.0-rc.1)
+上游路径：commands/harness-audit.md
+上游许可证：MIT — https://github.com/affaan-m/everything-claude-code/blob/main/LICENSE
+项目声明：.claude/THIRD_PARTY_LICENSES.md，包含第三方列表与 MIT 全文。
 
-Imported into Misskey .claude/ on 2026-05-10.
-The 7-category rubric and output contract are derived from the upstream ECC version (MIT).
-The runtime layer was substantially reimplemented for Misskey: the upstream relies on scripts/harness-audit.js to mechanically score, while this version uses repository-native commands and the SPDX checker, and adds Misskey-specific evaluation axes (SPDX coverage / endpoint-list 登録漏れ / migration 順序 / ja-JP.yml 整合).
-
-note: 元 ECC 版は scripts/harness-audit.js (専用 Node スクリプト) で機械採点していたが、Misskey は ECC plugin runtime に依存しない方針なので、Claude が直接ファイルを読んで採点する手動運用版に書き換えた。Misskey 固有の重要観点 (SPDX 適用率 / endpoint-list 登録漏れ / migration 順序 / ja-JP.yml 整合) を評価軸として明示的に組み込んでいる。
+于 2026-05-10 引入 Misskey .claude/。七类评分及输出约定来自 ECC（MIT）。
+执行层已针对 Misskey 重写：使用仓库命令及 SPDX 检查器，加入 SPDX 覆盖、端点注册、迁移顺序和语言文件一致性等评估维度。
+原版通过 scripts/harness-audit.js 自动评分。本版不依赖 ECC 运行时，由 Claude 读取文件并按相同标准评分。
 -->
 
-# /harness-audit — Misskey ハーネス監査
+# /harness-audit — Misskey AI 协作配置审计
 
-Misskey リポジトリの `.claude/` 構成を 7 カテゴリで採点し、改善優先度を提示する。
+按七类评估 .claude/ 配置，并提出改进优先级。
 
-## Usage
+## 用法
 
 `/harness-audit [scope]`
 
-- `scope` (任意): `repo` (default) / `skills` / `commands` / `agents`
+scope 可选，支持 repo（默认）、skills、commands、agents。
 
-## 評価カテゴリ (各 0-10)
+## 评分类别（各 0–10 分）
 
-| # | カテゴリ | 評価軸 |
-| --- | --- | --- |
-| 1 | Tool Coverage | skill / agent / command の数、欠けているワークフロー段、重複なし |
-| 2 | Context Efficiency | frontmatter description の冗長度、SKILL.md の長さ分布、重複情報、CLAUDE.md の肥大化 |
-| 3 | Quality Gates | 変更ファイル lint、`/quality-gate`、変更別 test / typecheck、CI gate との整合 |
-| 4 | Memory Persistence | `.claude/skills/*/SKILL.md` と `references/` の同期状態を評価。プロジェクト側 `.claude/memory/` は未採用方針 (auto-memory はユーザーホーム側で自動運用) のため、ここを採点起点にせず既定 5/10 から開始する |
-| 5 | Eval Coverage | `working-on-backend` / `working-on-frontend` の testing リファレンス (backend-testing.md / frontend-testing.md) の網羅、Misskey 固有の e2e/fed/Storybook/Playwright 適用ガイド |
-| 6 | Security Guardrails | SPDX checker、migration 不変性ルール、ja-JP.yml 限定編集ルール、secrets 検出 |
-| 7 | Cost Efficiency | enabledPlugins の重複・過剰、context-budget の整備、MCP 過剰登録なし |
+| 编号 | 类别 | 依据 |
+|---|---|---|
+| 1 | 工具覆盖 | 技能、代理、命令数量，工作流缺口及重复 |
+| 2 | 上下文效率 | description 冗余、技能长度、重复信息、CLAUDE.md 膨胀 |
+| 3 | 质量检查 | 改动文件 lint、quality-gate、专项测试和类型检查、与 CI 一致性 |
+| 4 | 知识持久化 | SKILL.md 与 references 同步程度；项目不使用 .claude/memory，自动记忆位于用户目录，因此默认从 5/10 起评 |
+| 5 | 验证覆盖 | 前后端测试参考文档，以及端到端、联邦、Storybook、Playwright 指引 |
+| 6 | 安全约束 | SPDX、迁移不可变、仅编辑 ja-JP.yml 的规则、密钥检测 |
+| 7 | 成本效率 | enabledPlugins 重复或过多、context-budget 是否完善、MCP 是否过量 |
 
-## Misskey 固有の確認項目 (採点根拠コマンド)
+## Misskey 专项检查
 
-採点時に以下を実コマンドで確認する。各項目の **属するカテゴリ** は項目内に明記する (#1-#3 は Security Guardrails、#4 は Tool Coverage、#5 は Quality Gates):
+通过实际命令收集评分依据。前 3 项属于安全约束，第 4 项属于工具覆盖，第 5 项属于质量检查：
 
 ```bash
-# 1. [Security Guardrails] SPDX 対象・CI 判定・HTML コメント形式
+# 1. [Security Guardrails] SPDX 范围、CI 判断和 HTML 注释格式
 node scripts/check-spdx.mjs
-# → exit 0 (`SPDX: OK`) なら満点。追加の目視判定はしない
+# → 退出码为 0（SPDX: OK）时满分，无需额外人工判断
 
-# 2. [Security Guardrails] ja-JP.yml 以外の locales が直近で手動編集されていないか
-#    --pretty=format: でコミットヘッダ行を抑止し、ファイル名行のみを残してから grep する。
-#    Crowdin の自動同期 commit でも他言語 yml は更新されるため、出力が 0 行になることは少ない。
-#    出力があった場合は、author / commit message を確認し Crowdin 由来か手動編集かを判定する:
+# 2. [Security Guardrails] 最近是否手动编辑了 ja-JP.yml 以外的语言文件
+#    通过 --pretty=format: 隐藏提交头，仅保留文件名后再过滤。
+#    Crowdin 自动同步也会更新其他语言，因此通常会有输出。
+#    有输出时检查作者和提交消息，区分 Crowdin 同步与手动编辑：
 #    git log --since='30 days ago' --pretty=format:'%h %an %s' -- locales/<file>.yml
 git log --since='30 days ago' --pretty=format: --name-only -- 'locales/*.yml' \
   | grep -v '^$' | grep -v 'ja-JP.yml' | sort -u
-# → 出力が無い、または全て Crowdin 由来 commit なら満点
+# → 无输出或全部来自 Crowdin 时满分
 
-# 3. [Security Guardrails] migration の pending DDL 検査 (TypeORM schema builder)
+# 3. [Security Guardrails] 迁移待执行 DDL 检查（TypeORM 架构构建器）
 pnpm --filter backend check-migrations
-# → 0 errors (= "All migrations are clean.") なら満点
+# → 0 个错误（All migrations are clean.）时满分
 
-# 4. [Tool Coverage] endpoint-list.ts 登録漏れ (新規 endpoint がリストにない場合)
-#    endpoints/ は再帰構造 (notes/create.ts, admin/announcements/create.ts 等) で 400+ ファイルあるため、
-#    endpoint-list.ts も `export * as '<category>/<name>' from './endpoints/<category>/<name>.js';` 形式で
-#    1 ファイル 1 行登録される。両者の行数を「再帰 .ts 数」と「export * as 行数」で比較する。
-#    e2e / 単体テストは endpoint ではないので *.test.ts を除外する。
+# 4. [Tool Coverage] endpoint-list.ts 注册遗漏（新端点不在列表中）
+#    endpoints/ 递归目录包含 400 多个文件，如 notes/create.ts、admin/announcements/create.ts。
+#    endpoint-list.ts 使用 export * as 形式注册端点。
+#    每个文件对应一行，比较递归 TypeScript 文件数与 export * as 行数。
+#    排除非端点的 *.test.ts 测试文件。
 endpoint_files=$(find packages/backend/src/server/api/endpoints -type f -name '*.ts' ! -name '*.test.ts' | wc -l)
 list_entries=$(grep -cE "^export \* as " packages/backend/src/server/api/endpoint-list.ts)
 echo "endpoints (recursive): $endpoint_files / endpoint-list.ts entries: $list_entries"
-# 差分が 0 なら満点。差分が出たら、登録漏れの具体特定:
+# 数量相同则满分；有差异时定位遗漏：
 comm -23 \
   <(find packages/backend/src/server/api/endpoints -type f -name '*.ts' ! -name '*.test.ts' \
     | sed -E 's|.*/endpoints/||;s|\.ts$||' | sort -u) \
   <(grep -oE "^export \* as '[^']+'" packages/backend/src/server/api/endpoint-list.ts \
     | sed -E "s/^export \* as '([^']+)'/\1/" | sort -u)
-# 出力された行が登録漏れの endpoint。0 行なら満点。
+# 输出为未注册端点，无输出时满分。
 
-# 5. [Quality Gates] console.log の混入
+# 5. [Quality Gates] 混入 console.log
 grep -rn 'console\.\(log\|debug\)' packages/backend/src packages/frontend/src 2>/dev/null \
   | grep -v 'node_modules\|test\|.spec\.\|.test\.' | wc -l
-# → 0 が理想
+# → 理想值为 0
 ```
 
-## 出力契約
+## 输出要求
 
-以下を返す:
+1. overall_score 和 max_score，repo 总分 70。
+2. 每类得分及具体依据。
+3. 失败项与文件路径。
+4. 三项优先改进措施。
+5. 建议下一步使用的技能或流程。
 
-1. `overall_score` / `max_score` (repo は 70 点満点)
-2. カテゴリごとのスコア + 具体的な根拠
-3. 失敗チェック項目と該当ファイルパス
-4. Top 3 改善アクション
-5. 次に適用を推奨する skill / 手順
-
-## サンプル出力
+## 输出示例
 
 ```text
-Harness Audit (repo): 52/70
+协作配置审计（repo）：52/70
 
-Tool Coverage:        9/10   (skills 5, agents 2, commands 5 — 偏りなし)
-Context Efficiency:   8/10   (description 平均 3-5 行、肥大なし)
-Quality Gates:        7/10   (変更ファイル lint / `/quality-gate` あり、広域 gate は任意)
-Memory Persistence:   5/10   (プロジェクト側 memory/ 未採用方針 = 既定値)
-Eval Coverage:        7/10   (backend/frontend testing リファレンス網羅、Storybook 一部抜け)
-Security Guardrails:   8/10  (SPDX 欠落 1 件、locales OK、migrations clean)
-Cost Efficiency:      8/10   (context-budget 導入済 / MCP 0)
+工具覆盖：9/10（5 个技能、2 个代理、5 个命令，分布合理）
+上下文效率：8/10（描述平均 3–5 行，无明显膨胀）
+质量检查：7/10（有改动文件 lint 与 quality-gate，全范围检查可选）
+知识持久化：5/10（项目未采用 memory，使用默认值）
+验证覆盖：7/10（前后端测试文档齐全，部分 Storybook 缺失）
+安全约束：8/10（1 处 SPDX 缺失，语言文件与迁移通过）
+成本效率：8/10（已引入 context-budget，无项目 MCP）
 
-Failed Checks:
-- packages/frontend/src/.../X.vue で SPDX 欠落 (Security Guardrails)
-- console.log が backend に 3 件 (Quality Gates)
+失败项：
+- 指定 Vue 文件缺少 SPDX 头。
+- 后端有 3 处 console.log。
 
-Top 3 Actions:
-1) [Security Guardrails] SPDX 欠落 1 ファイルを修正:
-   packages/frontend/src/.../X.vue
-2) [Quality Gates] backend の console.log 3 件を logger に置換。
-   git grep "console\.log" packages/backend/src
-3) [Cost Efficiency] enabledPlugins から未使用のものを外す。
-   `.claude/settings.json` の `enabledPlugins` と実プロジェクト利用状況を照合。
+优先改进：
+1. 修复缺少 SPDX 的文件。
+2. 将后端调试输出改为 logger。
+3. 对照实际用途清理 enabledPlugins 中未使用的插件。
 
-Suggested next skills to apply:
-- /quality-gate で完了前に lint + unit test を回す
-- context-budget で plugin 由来の overhead を確認
+下一步：
+- 使用 quality-gate 运行 lint 与单元测试。
+- 使用 context-budget 检查插件开销。
 ```
 
-## 採点の信頼性
+## 评分可靠性
 
-- 確定的: 同じ commit / 同じ `.claude/` 構成なら同じスコア
-- ヒューリスティクス: 「description の冗長度」のような主観項目は同一基準で機械的に判定
-- 専用 audit script 不要: repository の `pnpm` / `git` コマンドと SPDX checker を使う
+- 相同提交、相同配置应得到相同评分。
+- 描述冗余等启发式项目使用一致标准。
+- 无需专用审计脚本，使用仓库 pnpm、git 命令和 SPDX 检查器。
 
-## 参考: ECC オリジナルとの差分
+## 与 ECC 原版的区别
 
-- ECC 版は `node scripts/harness-audit.js` を直叩きする運用で、ECC リポジトリ全体に閉じた採点だった。
-- Misskey 版は **Misskey の規約 (SPDX/migration/locales/endpoint-list)** を Security 採点に組み込み、repository-native command で根拠を取る方式に再設計。
-- 結果として ECC への依存はゼロ。
+原版依赖 ECC 仓库的 scripts/harness-audit.js。
+本版加入 Misskey 专用规范，通过仓库原生命令取得依据，不依赖 ECC 运行时。

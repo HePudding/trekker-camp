@@ -1,148 +1,124 @@
 ---
 name: context-budget
-description: Claude Code セッションのコンテキスト窓消費を agents/skills/MCP/rules/CLAUDE.md ごとに見える化し、肥大化と冗長コンポーネントを検出して節約候補を提示する。"コンテキスト消費を見せて"、"context budget"、"context audit"、"トークン内訳"、"これ以上 MCP 入る？" 等の発話で起動する。
+description: 按代理、技能、MCP、规则和 CLAUDE.md 展示 Claude Code 会话的上下文消耗，识别膨胀与重复组件，提出节省建议。用户询问“上下文消耗”“context budget”“context audit”“令牌占用明细”或“还能添加 MCP 吗”等时使用。
 ---
 
 <!--
 SPDX-License-Identifier: MIT
 SPDX-FileCopyrightText: 2026 Affaan Mustafa and everything-claude-code contributors
 
-出典 (upstream): https://github.com/affaan-m/everything-claude-code (v2.0.0-rc.1)
-upstream path: skills/context-budget/SKILL.md
-upstream origin frontmatter: ECC
-upstream license: MIT — https://github.com/affaan-m/everything-claude-code/blob/main/LICENSE
-project-level notice: see .claude/THIRD_PARTY_LICENSES.md (Misskey 内サードパーティ一覧 + MIT 全文)
+上游来源：https://github.com/affaan-m/everything-claude-code (v2.0.0-rc.1)
+上游路径：skills/context-budget/SKILL.md
+上游文件头来源：ECC
+上游许可证：MIT — https://github.com/affaan-m/everything-claude-code/blob/main/LICENSE
+项目声明：.claude/THIRD_PARTY_LICENSES.md，包含第三方组件列表及 MIT 全文。
 
-Imported into Misskey .claude/ on 2026-05-10 as a standalone copy (no dependency on the ECC plugin runtime). description was rewritten in Japanese and a "Misskey 固有メモ" section was appended; body content remains MIT-licensed.
+于 2026-05-10 作为独立副本引入 Misskey .claude/，不依赖 ECC 插件运行时。描述已本地化，并补充 Misskey 专用说明；正文继续使用 MIT 许可证。
 
-note: Misskey の skills/agents 数は少ないので、MCP / CLAUDE.md / プラグイン由来の overhead が支配的になりやすい点に留意。
+Misskey 自有技能和代理较少，MCP、CLAUDE.md 及插件通常占据较多上下文。
 -->
 
-# Context Budget
+# 上下文预算
 
-セッション内に読み込まれるコンポーネント (agents / skills / rules / MCP servers / CLAUDE.md) の token overhead を分析し、空き context を回復する具体策を提示する。
+分析会话加载的代理、技能、规则、MCP 服务器和 CLAUDE.md 的令牌开销，提出释放上下文的具体方法。
 
-## 使う場面
+## 使用场景
 
-- セッションが重い・出力品質が落ちてきた感覚がある
-- 直近で skills / agents / MCP server を多数追加した
-- 残りの context headroom を知りたい
-- 追加コンポーネントを入れる前に空きを確認したい
-- 「context-budget」「token 内訳」等のキーワードでユーザーが明示的に要請した時 (Misskey リポジトリにはこの名前のスラッシュコマンドは登録していない — 本 skill は名前 / description マッチで auto-invoke される想定。実装済の slash command 一覧は [.claude/commands/](../../commands/) を参照)
+- 会话变慢或输出质量下降。
+- 最近添加了大量技能、代理或 MCP。
+- 需要了解上下文剩余空间。
+- 添加组件前检查容量。
+- 用户明确提出上下文预算或令牌明细请求。本仓库没有同名斜杠命令，本技能按名称与描述自动匹配；命令列表见 [.claude/commands/](../../commands/)。
 
-## 仕組み
+## 第 1 阶段：盘点
 
-### Phase 1: Inventory
+扫描各组件并估算令牌。
 
-各コンポーネントを走査して token を推定する。
+**代理（.claude/agents/*.md）**
 
-**Agents** (`.claude/agents/*.md`)
-- 行数とトークン数 (`words × 1.3`) を計算
-- frontmatter `description` の長さを抽出
-- フラグ: 200 行超 (重い)、description 30 word 超 (frontmatter 肥大)
+- 统计行数与令牌，按单词数 × 1.3 估算。
+- 提取 description 长度。
+- 标记超过 200 行的代理，以及 description 超过 30 个单词的文件头。
 
-**Skills** (`.claude/skills/*/SKILL.md`)
-- SKILL.md ごとに token を計算
-- フラグ: 400 行超
-- `.agents/skills/` 等の重複コピーは除外
+**技能（.claude/skills/*/SKILL.md）**
 
-**Rules** (リポジトリルートの `AGENTS.md` + `.claude/` から `@-import` されるファイル)
-- ファイル単位で token 計算
-- フラグ: 100 行超
-- 同一言語モジュール内の内容重複を検出
+- 计算各 SKILL.md 的令牌。
+- 标记超过 400 行的文件。
+- 排除 .agents/skills 等重复副本。
 
-**MCP Servers** (`.mcp.json` または有効 MCP 設定)
-- server 数と総 tool 数
-- schema overhead をツールあたり ~500 token で見積もる
-- フラグ: 20 tool 超のサーバー、`gh` / `git` / `npm` 等の CLI を単純ラップしただけのサーバー
+**规则（根目录 AGENTS.md 与 .claude/ 的 @ 导入文件）**
 
-**CLAUDE.md** (project + user-level)
-- ファイルごとに token を計算
-- フラグ: 合計 300 行超
+- 按文件估算令牌。
+- 标记超过 100 行的文件。
+- 检查同一语言模块中的重复内容。
 
-### Phase 2: Classify
+**MCP（.mcp.json 或当前有效配置）**
 
-| バケット           | 判定基準                                                    | 行動                              |
-|--------------------|-------------------------------------------------------------|-----------------------------------|
-| **Always needed**  | CLAUDE.md から参照されている / 有効コマンドの裏 / 現プロジェクトと一致 | 維持                              |
-| **Sometimes needed** | ドメイン依存 (例: 言語パターン)、CLAUDE.md 参照なし          | オンデマンド有効化を検討          |
-| **Rarely needed**  | コマンド参照なし、内容重複、明確な用途なし                  | 削除または lazy-load              |
+- 统计服务器和工具总数。
+- 每个工具的架构约按 500 令牌估算。
+- 标记超过 20 个工具的服务器，以及仅包装 gh、git、npm 等 CLI 的服务器。
 
-### Phase 3: Detect Issues
+**CLAUDE.md（项目级与用户级）**
 
-- **Bloated agent description** — frontmatter description が 30 word 超だと、Task ツール起動のたびに毎回ロードされる
-- **Heavy agents** — 200 行超は Task ツールの context を毎回膨らませる
-- **Redundant components** — agent ロジックを重複する skill、CLAUDE.md と重複する rule
-- **MCP over-subscription** — 10 server 超、または CLI 代用可能なサーバー
-- **CLAUDE.md bloat** — 冗長説明、古いセクション、rule に移すべき指示
+- 按文件估算令牌。
+- 合计超过 300 行时标记。
 
-### Phase 4: Report
+## 第 2 阶段：分类
 
-```
-Context Budget Report
-═══════════════════════════════════════
+| 类别 | 判断依据 | 行动 |
+|---|---|---|
+| 始终需要 | CLAUDE.md 引用、支撑有效命令或匹配当前项目 | 保留 |
+| 偶尔需要 | 依赖特定领域、未被 CLAUDE.md 引用 | 考虑按需启用 |
+| 很少需要 | 无命令引用、重复或用途不明确 | 删除或延迟加载 |
 
-Total estimated overhead: ~XX,XXX tokens
-Context model: <現在モデル名> (<window>K window)   ← 例: Claude Opus 4.7 (1M), Claude Sonnet (200K)
-Effective available context: ~XXX,XXX tokens (XX%)
+## 第 3 阶段：识别问题
 
-Component Breakdown:
-┌─────────────────┬────────┬───────────┐
-│ Component       │ Count  │ Tokens    │
-├─────────────────┼────────┼───────────┤
-│ Agents          │ N      │ ~X,XXX    │
-│ Skills          │ N      │ ~X,XXX    │
-│ Rules           │ N      │ ~X,XXX    │
-│ MCP tools       │ N      │ ~XX,XXX   │
-│ CLAUDE.md       │ N      │ ~X,XXX    │
-└─────────────────┴────────┴───────────┘
+- **代理描述过长**：超过 30 个单词，且每次 Task 调用都会加载。
+- **代理正文过长**：超过 200 行，增加每次调用的上下文。
+- **重复组件**：技能与代理重复，或规则与 CLAUDE.md 重复。
+- **MCP 过多**：超过 10 个服务器，或可由 CLI 替代。
+- **CLAUDE.md 膨胀**：冗余解释、过时章节或应拆入规则的指令。
 
-WARNING: Issues Found (N):
-[token 節約量の降順]
+## 第 4 阶段：报告
 
-Top 3 Optimizations:
-1. [action] → save ~X,XXX tokens
-2. [action] → save ~X,XXX tokens
-3. [action] → save ~X,XXX tokens
+报告包含：
 
-Potential savings: ~XX,XXX tokens (XX% of current overhead)
-```
+- 总估算开销：约 XX,XXX 令牌。
+- 当前模型及上下文窗口，例如 Claude Opus 4.7（1M）、Claude Sonnet（200K）。
+- 可用上下文：约 XXX,XXX 令牌及比例。
+- 按代理、技能、规则、MCP 工具、CLAUDE.md 列出数量和令牌表格。
+- 按可节省令牌降序列出问题。
+- 三项优先优化及各自节省量。
+- 总潜在节省量及其占当前开销的比例。
 
-verbose mode ではさらにファイルごとの token 内訳、最重ファイルの行単位ブレークダウン、重複行の対比、MCP tool 一覧 + tool ごとの schema サイズ推定を出す。
+详细模式额外列出逐文件明细、最重文件的逐行占用、重复行对照，以及各 MCP 工具的架构大小。
 
-## 例
+## 示例
 
-**基本監査**
-```
-User: コンテキスト消費を見せて
-Skill: 16 agents (12,400 tokens), 28 skills (6,200), 87 MCP tools (43,500), 2 CLAUDE.md (1,200)
-       Flags: 重い agent 3 個、CLI 代用可能な MCP 3 個
-       Top saving: MCP 3 個削除 → -27,500 tokens (overhead の 47% 削減)
-```
+### 基本审计
 
-**Verbose**
-```
-User: トークン内訳をファイル単位で
-Skill: 上記レポートに加えて、planner.md (213 lines, 1,840 tokens) のような
-       per-file 行内訳、MCP tool ごとのサイズ、rule の重複行を side-by-side で表示
-```
+用户要求查看上下文消耗时，可报告：
+16 个代理占 12,400 令牌，28 个技能占 6,200，87 个 MCP 工具占 43,500，2 个 CLAUDE.md 占 1,200。
+发现 3 个过重代理及 3 个可由 CLI 替代的 MCP；移除这些 MCP 可节省 27,500 令牌，约为开销的 47%。
 
-**追加前チェック**
-```
-User: MCP server を 5 個追加したいが、空きある？
-Skill: 現状 33% → 5 server (≈ 50 tools) 追加で +25,000 tokens → 45% に到達
-       推奨: CLI 代用可能な server 2 個を先に外して 40% 以下を維持
-```
+### 详细模式
 
-## ベストプラクティス
+除总表外，列出 planner.md 等文件的行数和令牌数，例如 213 行、1,840 令牌，并展示 MCP 工具大小与规则重复行对照。
 
-- **トークン推定**: prose は `words × 1.3`、code 主体は `chars / 4`
-- **MCP は最大のレバー**: tool あたり ~500 token、30-tool server ひとつで全 skill より大きい
-- **agent description は常時ロード**: 呼ばれない agent でも description は毎 Task 投入
-- **verbose は debug 用**: 普段は使わない
-- **変更後は監査**: agent/skill/MCP 追加直後に走らせて creep を早期発見
+### 添加前检查
 
-## Misskey 固有メモ
+当前占用 33%；再添加 5 个服务器、约 50 个工具会增加 25,000 令牌，达到 45%。
+建议先移除两个可由 CLI 替代的服务器，将占用维持在 40% 以下。
 
-- Misskey は MCP server をプロジェクトで明示登録していないため (`.mcp.json` 不在)、現状 overhead の支配項は CLAUDE.md と公式プラグイン群の skills / agents description である。
-- ECC プラグインがユーザースコープで `installed_plugins.json` に存在するため、プロジェクトで `enabledPlugins` に追加していなくても system reminder に 200+ skill が現れる。これらは description が短いので個別 overhead は小さいが、合計値の確認に本 skill を使う。
+## 最佳实践
+
+- 说明文本按单词数 × 1.3，代码按字符数 ÷ 4 估算。
+- MCP 通常最值得优化：每个工具约 500 令牌，30 个工具的服务器可能超过全部技能。
+- 代理描述常驻加载，即使代理未被调用。
+- 详细模式用于调试，日常保持简洁。
+- 新增代理、技能或 MCP 后执行审计，及早发现占用增长。
+
+## Misskey 专用说明
+
+- 项目没有显式注册 MCP（无 .mcp.json），主要开销来自 CLAUDE.md 和官方插件的技能、代理描述。
+- ECC 插件存在于用户级 installed_plugins.json，即使项目未在 enabledPlugins 启用，也可能在系统提醒中出现 200 多个技能。单个描述较短，但应通过本技能检查总占用。

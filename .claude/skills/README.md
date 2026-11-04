@@ -1,32 +1,32 @@
-# `.claude/skills/` — プロジェクト固有のカスタムスキル
+# `.claude/skills/` — 项目专用技能
 
-Misskey 固有の繰り返しタスクを Claude にスムーズに実行させるための **カスタムスキル** を `.claude/skills/<name>/SKILL.md` 形式で配置する。
+将 Misskey 中重复执行的任务编写为**自定义技能**，按 `.claude/skills/<name>/SKILL.md` 的格式存放，让 Claude 能顺利执行。
 
-frontmatter (`name` + `description`) は、Claude が **自動でスキルを呼び出すか判断する** 唯一の手がかりになる。`description` には用途を具体的かつ網羅的に書き、pushy なトリガー語 (例: "Use whenever ...", "Must be consulted before any ...") で発見されやすくする。
+YAML 文件头（`name` 和 `description`）是 Claude 判断**是否自动调用技能**的唯一线索。`description` 应具体、全面地描述用途，并使用明确的触发措辞（例如“凡是……都应使用”“在任何……之前必须阅读”），便于发现技能。
 
-実装済スキルの一覧は本ファイルでは管理しない (腐敗するため)。各サブディレクトリの `SKILL.md` の frontmatter が自己説明として機能する。
+本文件不维护已实现技能的列表，以免过时。各子目录中 `SKILL.md` 的文件头负责说明技能用途。
 
-## 構成方針
+## 组织原则
 
-Anthropic 公式の [Agent Skills ベストプラクティス](https://platform.claude.com/docs/ja/agents-and-tools/agent-skills/best-practices) に従い、以下の構造を採用する:
+遵循 Anthropic 官方的 [Agent Skills 最佳实践](https://platform.claude.com/docs/ja/agents-and-tools/agent-skills/best-practices)，采用以下结构：
 
-- **SKILL.md 本体は 500 行以下** (理想は 30-80 行の索引)
-- 詳細は `references/tasks/` (手順) と `references/knowledge/` (規約・背景知識) に分離 (progressive disclosure)
-- リンクは原則 **references への 1 段リンク** に留める (例外: 他 skill / agent への導線は可)
-- ファイルシステム上の references は読まれるまでゼロコンテキストコスト
+- **SKILL.md 正文不超过 500 行**，理想情况下为 30–80 行的索引。
+- 详细内容分别放入 `references/tasks/`（操作步骤）和 `references/knowledge/`（规范与背景知识），按需加载。
+- 原则上仅使用**直接指向 references 的一层链接**；允许链接到其他技能或代理。
+- 文件系统中的参考文件在读取前不占用上下文。
 
-ECC (everything-claude-code) 由来の MIT スキルが含まれる場合は、ファイル冒頭の SPDX ヘッダー + [.claude/THIRD_PARTY_LICENSES.md](../THIRD_PARTY_LICENSES.md) §1 に出典を記載する。
+包含源自 ECC（everything-claude-code）的 MIT 技能时，在文件开头添加 SPDX 头，并在 [.claude/THIRD_PARTY_LICENSES.md](../THIRD_PARTY_LICENSES.md) 第 1 节注明来源。
 
-## 新規スキルを追加する場合
+## 添加新技能
 
-- `.claude/skills/<name>/SKILL.md` に YAML frontmatter (`name` + `description`) と本文 Markdown を書く
-- description は **三人称の "Use when ..." 形式** で、主要キーワード網羅。pushy なトリガー語 ("Must be consulted before ...") を入れる
-- `disable-model-invocation: true` は付けない (auto-invoke させたいため)
-- 主要参照ファイルへのリンクは、各 markdown ファイルからの相対パスで貼る (`../../../../packages/backend/...` のような形)。絶対パスは contributor のホームディレクトリ依存になるので使わない
-- 詳細を分ける場合は `references/tasks/` (手順) / `references/knowledge/` (知識) の二分に従う
-- スキル作成は `/skill-creator` (公式の skill-creator スキル) のガイドを経由するのが推奨
+- 在 `.claude/skills/<name>/SKILL.md` 中编写 YAML 文件头（`name` 和 `description`）以及 Markdown 正文。
+- 描述使用第三人称的“在……时使用”形式，覆盖主要关键词，并加入“必须在……之前阅读”等明确触发措辞。
+- 不设置 `disable-model-invocation: true`，以便自动调用。
+- 主要参考文件的链接使用相对于当前 Markdown 文件的路径，例如 `../../../../packages/backend/...`。避免依赖贡献者个人主目录的绝对路径。
+- 拆分详细内容时，遵循 `references/tasks/`（步骤）和 `references/knowledge/`（知识）的分类。
+- 建议通过官方 `/skill-creator` 技能的指南创建技能。
 
-## 関連
+## 相关说明
 
-- 各スキルの description で自動索引される設計のため、実装済スキルの手書き索引 (一覧表) は本ファイルにも `AGENTS.md` にも持たない方針 (手書き索引は腐敗するため、frontmatter の description を唯一の索引とする)
-- スキルそのものの健全性検査は [/harness-audit](../commands/harness-audit.md) で採点できる
+- 技能通过各自的描述自动建立索引，因此本文件和 `AGENTS.md` 均不维护手写技能清单。以文件头的描述为唯一索引，避免清单过时。
+- 可以使用 [/harness-audit](../commands/harness-audit.md) 评估技能本身的健康状况。

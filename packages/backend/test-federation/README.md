@@ -1,24 +1,29 @@
 ## test-federation
-Test federation between two Misskey servers: `a.test` and `b.test`.
 
-Before testing, you need to build the entire project, and change working directory to here:
+测试两个 Misskey 服务器 `a.test` 和 `b.test` 之间的联邦通信。
+
+测试前，需要构建整个项目并切换到此目录：
+
 ```sh
 pnpm build
 cd packages/backend/test-federation
 ```
 
-First, you need to start servers by executing following commands:
+首先执行以下命令启动服务器：
+
 ```sh
 bash ./setup.sh
 NODE_VERSION=22 docker compose up --scale tester=0
 ```
 
-Then you can run all tests by a following command:
+然后执行以下命令运行全部测试：
+
 ```sh
 NODE_VERSION=22 docker compose run --no-deps --rm tester
 ```
 
-For testing a specific file, run a following command:
+测试指定文件：
+
 ```sh
 NODE_VERSION=22 docker compose run --no-deps --rm tester -- pnpm -F backend test:fed packages/backend/test-federation/test/user.test.ts
 ```
