@@ -177,6 +177,12 @@ export async function mainBoot() {
 		if ($i.notesCount >= 90000) claimAchievement('notes90000');
 		if ($i.notesCount >= 100000) claimAchievement('notes100000');
 
+		if ($i.followingCount >= 1) claimAchievement('following1');
+		if ($i.followingCount >= 10) claimAchievement('following10');
+		if ($i.followingCount >= 50) claimAchievement('following50');
+		if ($i.followingCount >= 100) claimAchievement('following100');
+		if ($i.followingCount >= 300) claimAchievement('following300');
+
 		if ($i.followersCount > 0) claimAchievement('followers1');
 		if ($i.followersCount >= 10) claimAchievement('followers10');
 		if ($i.followersCount >= 50) claimAchievement('followers50');

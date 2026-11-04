@@ -6,13 +6,14 @@
 process.env.NODE_ENV = 'test';
 
 import * as assert from 'assert';
-import { describe, beforeAll, test, expect, vi } from 'vitest';
+import { describe, beforeAll, afterAll, test, expect, vi } from 'vitest';
 // node-fetch only supports it's own Blob yet
 // https://github.com/node-fetch/node-fetch/pull/1664
 import { Blob } from 'node-fetch';
 import { api, castAsError, initTestDb, post, role, signup, simpleGet, uploadFile } from '../utils.js';
 import type * as misskey from 'misskey-js';
 import { MiUser } from '@/models/_.js';
+import type { AchievementSettings } from '@/misc/achievement-rules.js';
 
 const waitForPushToTlOptions = { timeout: 3000, interval: 25 };
 
@@ -29,6 +30,112 @@ describe('Endpoints', () => {
 		dave = await signup({ username: 'dave' });
 		await api('admin/update-meta', { federation: 'all' }, alice as misskey.entities.SignupResponse);
 	}, 1000 * 60 * 2);
+
+	describe('Achievement localization', () => {
+		let originalSettings: AchievementSettings;
+		const settings: AchievementSettings = {
+			musicBilibiliIds: ['BV1xx411c7mD'],
+			musicNeteaseIds: ['123456789'],
+			musicUrls: ['https://example.com/music/theme'],
+		};
+
+		beforeAll(async () => {
+			originalSettings = (await api('admin/meta', {}, alice)).body.achievementSettings;
+		});
+
+		afterAll(async () => {
+			await api('admin/update-meta', { achievementSettings: originalSettings }, alice);
+		});
+
+		async function achievements(user: misskey.entities.SignupResponse) {
+			return (await api('i', {}, user)).body.achievements?.map(achievement => achievement.name) ?? [];
+		}
+
+		test('only administrators can read and change achievement settings', async () => {
+			expect((await api('admin/update-meta', { achievementSettings: settings }, bob)).status).toBe(403);
+			expect((await api('admin/meta', {}, bob)).status).toBe(403);
+			expect((await api('admin/update-meta', { achievementSettings: settings }, alice)).status).toBe(204);
+			expect((await api('admin/meta', {}, alice)).body.achievementSettings).toEqual(settings);
+		});
+
+		test.each([
+			{ musicBilibiliIds: ['https://www.bilibili.com/video/BV1xx411c7mD'] },
+			{ musicNeteaseIds: ['123abc'] },
+			{ musicUrls: ['javascript:alert(1)'] },
+			{ additionalNicknames: ['测试角色'] },
+			{ musicBilibiliIds: ['BV1xx411c7mD', 'BV1xx411c7mD'] },
+		])('rejects invalid achievement settings: %j', async invalid => {
+			const response = await api('admin/update-meta', { achievementSettings: { ...settings, ...invalid } }, alice);
+			expect(response.status).toBe(400);
+			expect(response.body).toMatchObject({ error: { code: 'INVALID_PARAM' } });
+		});
+
+		test('applies replacement music rules to already signed-in users without restarting', async () => {
+			const first = await signup();
+			const second = await signup();
+			const third = await signup();
+			await api('admin/update-meta', { achievementSettings: settings }, alice);
+
+			await post(first, { text: '我喜欢星塔旅人 BV1xx411c7mD' });
+			await expect.poll(() => achievements(first)).toEqual(expect.arrayContaining(['brainDiver', 'iLoveMisskey']));
+
+			await api('admin/update-meta', {
+				achievementSettings: { ...settings, musicBilibiliIds: ['BV1yy411c7mD'], musicNeteaseIds: [], musicUrls: [] },
+			}, alice);
+			await post(second, { text: '我喜欢星塔旅人 BV1xx411c7mD https://music.163.com/song?id=123456789 https://example.com/music/theme' });
+			await expect.poll(() => achievements(second)).toContain('iLoveMisskey');
+			expect(await achievements(second)).not.toContain('brainDiver');
+			await post(third, { text: 'BV1yy411c7mD' });
+			await expect.poll(() => achievements(third)).toContain('brainDiver');
+		});
+
+		test('awards configured NetEase songs and custom links after successful posts', async () => {
+			await api('admin/update-meta', { achievementSettings: settings }, alice);
+			for (const text of ['https://music.163.com/#/song?id=123456789', 'https://example.com/music/theme']) {
+				const user = await signup();
+				await post(user, { text });
+				await expect.poll(() => achievements(user)).toContain('brainDiver');
+			}
+			const user = await signup();
+			const failed = await api('notes/create', { text: '我爱星塔旅人 BV1xx411c7mD', replyId: '0000000000' }, user);
+			expect(failed.status).toBe(400);
+			expect(await achievements(user)).toEqual([]);
+		});
+
+		test.each(['syuilo', 'しゅいろ'])('awards the original author name %s only after successful profile updates', async name => {
+			const user = await signup();
+			const failed = await api('i/update', { name, birthday: 'invalid' }, user);
+			expect(failed.status).toBe(400);
+			expect(await achievements(user)).not.toContain('setNameToSyuilo');
+			const updated = await api('i/update', { name: ` ${name} ` }, user);
+			expect(updated.status).toBe(200);
+			expect(updated.body.name).toBe(name);
+			expect(updated.body.achievements?.map(achievement => achievement.name)).toContain('setNameToSyuilo');
+		});
+
+		test('does not award other nicknames', async () => {
+			const user = await signup();
+			const updated = await api('i/update', { name: '测试角色' }, user);
+			expect(updated.status).toBe(200);
+			expect(updated.body.achievements?.map(achievement => achievement.name)).not.toContain('setNameToSyuilo');
+		});
+
+		test('keeps different concurrent awards and emits one notification for duplicate claims', async () => {
+			const user = await signup();
+			const responses = await Promise.all([
+				api('i/claim-achievement', { name: 'notes1' }, user),
+				api('i/claim-achievement', { name: 'brainDiver' }, user),
+				api('i/claim-achievement', { name: 'brainDiver' }, user),
+				api('i/claim-achievement', { name: 'iLoveMisskey' }, user),
+			]);
+			expect(responses.map(response => response.status)).toEqual([204, 204, 204, 204]);
+			expect((await achievements(user)).sort()).toEqual(['brainDiver', 'iLoveMisskey', 'notes1']);
+			await expect.poll(async () => {
+				const notifications = await api('i/notifications', { includeTypes: ['achievementEarned'], markAsRead: false }, user);
+				return notifications.body.filter(notification => notification.type === 'achievementEarned').map(notification => notification.achievement).sort();
+			}).toEqual(['brainDiver', 'iLoveMisskey', 'notes1']);
+		});
+	});
 
 	describe('signup', () => {
 		test('不正なユーザー名でアカウントが作成できない', async () => {

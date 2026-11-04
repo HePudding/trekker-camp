@@ -1,0 +1,41 @@
+name: Locale safety
+
+on:
+  push:
+    branches:
+      - master
+    paths:
+      - locales/**
+      - scripts/check-locales*.mjs
+      - scripts/check-shipping.mjs
+      - scripts/lib/git.mjs
+      - .github/workflows/locale-safety.yml
+  pull_request:
+    branches:
+      - master
+    paths:
+      - locales/**
+      - scripts/check-locales*.mjs
+      - scripts/check-shipping.mjs
+      - scripts/lib/git.mjs
+      - .github/workflows/locale-safety.yml
+
+permissions:
+  contents: read
+
+jobs:
+  locale-safety:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7.0.1
+        with:
+          fetch-depth: 0
+      - uses: actions/setup-node@v7.0.0
+        with:
+          node-version-file: .node-version
+      - name: Test locale safety
+        run: node --test scripts/check-locales.test.mjs
+      - name: Check changed locale files
+        env:
+          MISSKEY_BASE_REF: ${{ github.event.pull_request.base.sha || github.event.before }}
+        run: node scripts/check-locales.mjs

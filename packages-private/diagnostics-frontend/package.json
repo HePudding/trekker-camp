@@ -12,7 +12,8 @@
 		"typecheck": "tsc --noEmit"
 	},
 	"dependencies": {
-		"diagnostics-shared": "workspace:*"
+		"diagnostics-shared": "workspace:*",
+		"i18n": "workspace:*"
 	},
 	"devDependencies": {
 		"@types/node": "26.6.5",

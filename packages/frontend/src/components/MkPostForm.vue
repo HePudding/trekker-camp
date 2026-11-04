@@ -1103,26 +1103,6 @@ async function post(ev?: PointerEvent) {
 			}
 
 			const text = postData.text ?? '';
-			const lowerCase = text.toLowerCase();
-			if ((lowerCase.includes('love') || lowerCase.includes('❤')) && lowerCase.includes('misskey')) {
-				claimAchievement('iLoveMisskey');
-			}
-			if ([
-				'https://youtu.be/Efrlqw8ytg4',
-				'https://www.youtube.com/watch?v=Efrlqw8ytg4',
-				'https://m.youtube.com/watch?v=Efrlqw8ytg4',
-
-				'https://youtu.be/XVCwzwxdHuA',
-				'https://www.youtube.com/watch?v=XVCwzwxdHuA',
-				'https://m.youtube.com/watch?v=XVCwzwxdHuA',
-
-				'https://open.spotify.com/track/3Cuj0mZrlLoXx9nydNi7RB',
-				'https://open.spotify.com/track/7anfcaNPQWlWCwyCHmZqNy',
-				'https://open.spotify.com/track/5Odr16TvEN4my22K9nbH7l',
-				'https://open.spotify.com/album/5bOlxyl4igOrp2DwVQxBco',
-			].some(url => text.includes(url))) {
-				claimAchievement('brainDiver');
-			}
 
 			if (renoteTargetNote.value && (renoteTargetNote.value.userId === $i.id) && text.length > 0) {
 				claimAchievement('selfQuote');

@@ -5,6 +5,7 @@
 
 import { promises as fs } from 'node:fs';
 import path from 'node:path';
+import { defaultLanguage } from 'i18n/const';
 import { fileExists, fileSize, normalizePath, traverseDirectory } from './fs-utils';
 
 export type BundleManifestChunk = {
@@ -19,9 +20,9 @@ export type BundleManifest = Record<string, BundleManifestChunk>;
 
 /**
  * 比較対象とするロケール。ロケール別チャンクは全ロケール分だと数が多すぎるため、
- * 代表として ja-JP のみを見る。
+ * 代表としてプロジェクトのデフォルト言語のみを見る。
  */
-const locale = 'ja-JP';
+const locale = defaultLanguage;
 
 /**
  * `src` を持たないチャンクのうち、名前がビルド間で安定していて比較可能なもの。

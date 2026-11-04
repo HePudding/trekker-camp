@@ -33,7 +33,7 @@
   CI 和技能均通过 `scripts/check-spdx.mjs` 判断 SPDX 是否合格，代码审查无需重复人工检查。
   CI 使用 `--ci` 检查 SPDX 行是否存在，默认模式还会检查 `.vue` 和 `.html` 的注释格式。
 
-- **禁止编辑 `locales/ja-JP.yml` 之外的语言 YAML**。其他语言文件均为 Crowdin 自动分发目标，手动编辑会在下次同步时被覆盖。
+- **语言 YAML 只允许编辑 `locales/zh-CN.yml`，以及用于上游同步的 `locales/ja-JP.yml`**。旅人营地的产品文案源语言为简体中文；其余语言文件由上游维护，禁止手动修改。
 - **禁止修改已合并迁移**。不得修改 `packages/backend/migration/{timestamp}-*.js` 中已进入 `develop` 或 `master` 的文件。结构变更必须使用新时间戳创建文件，并同时实现 `up()` 和 `down()`。
 - **禁止提交密钥或凭据**，包括 `.config/*.yml` 中的生产配置、`.env`、API 令牌及私钥。
 
@@ -57,7 +57,7 @@
 3. 修改实体或迁移后，确保 `pnpm --filter backend check-migrations` 通过且待执行 DDL 为 0，新迁移已实现 `up()` 和 `down()`。
 4. `node scripts/check-spdx.mjs` 返回 `SPDX: OK`。
 5. 用户未明确要求时，不编辑 `CHANGELOG.md`；对用户有影响的修改，在交接中提供一行候选条目。
-6. 检查已提交、未提交和未跟踪的改动集合中没有 `locales/ja-JP.yml` 之外的语言 YAML。
+6. 检查已提交、未提交和未跟踪的语言 YAML 改动仅包含 `locales/zh-CN.yml` 或用于上游同步的 `locales/ja-JP.yml`，使用 `node scripts/check-locales.mjs`。
 
 ## 验证命令
 

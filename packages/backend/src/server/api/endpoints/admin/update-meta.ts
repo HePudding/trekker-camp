@@ -21,6 +21,25 @@ export const meta = {
 export const paramDef = {
 	type: 'object',
 	properties: {
+		achievementSettings: {
+			type: 'object',
+			additionalProperties: false,
+			properties: {
+				musicBilibiliIds: {
+					type: 'array', maxItems: 200, uniqueItems: true,
+					items: { type: 'string', pattern: '^BV[0-9A-Za-z]{10}$' },
+				},
+				musicNeteaseIds: {
+					type: 'array', maxItems: 200, uniqueItems: true,
+					items: { type: 'string', pattern: '^[0-9]{1,30}$' },
+				},
+				musicUrls: {
+					type: 'array', maxItems: 200, uniqueItems: true,
+					items: { type: 'string', minLength: 10, maxLength: 2048, pattern: '^https?://[^\\s]+$' },
+				},
+			},
+			required: ['musicBilibiliIds', 'musicNeteaseIds', 'musicUrls'],
+		},
 		disableRegistration: { type: 'boolean', nullable: true },
 		pinnedUsers: {
 			type: 'array', nullable: true, items: {
@@ -243,6 +262,10 @@ export default class extends Endpoint<typeof meta, typeof paramDef> { // eslint-
 	) {
 		super(meta, paramDef, async (ps, me) => {
 			const set = {} as Partial<MiMeta>;
+
+			if (ps.achievementSettings !== undefined) {
+				set.achievementSettings = ps.achievementSettings;
+			}
 
 			if (typeof ps.disableRegistration === 'boolean') {
 				set.disableRegistration = ps.disableRegistration;

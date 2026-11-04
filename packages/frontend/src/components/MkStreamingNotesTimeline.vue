@@ -56,7 +56,7 @@ SPDX-License-Identifier: AGPL-3.0-only
 </template>
 
 <script lang="ts" setup>
-import { computed, watch, onUnmounted, provide, useTemplateRef, TransitionGroup, onMounted, shallowRef, ref, markRaw } from 'vue';
+import { computed, watch, onUnmounted, provide, useTemplateRef, TransitionGroup, onMounted, onActivated, onDeactivated, shallowRef, ref, markRaw } from 'vue';
 import * as Misskey from 'misskey-js';
 import { useInterval } from '@@/js/use-interval.js';
 import { useDocumentVisibility } from '@@/js/use-document-visibility.js';
@@ -78,6 +78,8 @@ import { DI } from '@/di.js';
 import { globalEvents, useGlobalEvent } from '@/events.js';
 import { isSeparatorNeeded, getSeparatorInfo } from '@/utility/timeline-date-separate.js';
 import { Paginator } from '@/utility/paginator.js';
+import { claimAchievement, claimedAchievements } from '@/utility/achievements.js';
+import { TimelineAchievementTracker } from '@/utility/achievement-timeline.js';
 
 const props = withDefaults(defineProps<{
 	src: BasicTimelineType | 'mentions' | 'directs' | 'list' | 'antenna' | 'channel' | 'role';
@@ -228,10 +230,21 @@ onUnmounted(() => {
 
 const visibility = useDocumentVisibility();
 let isPausingUpdate = false;
+let isTimelineActive = true;
+const timelineAchievementTracker = new TimelineAchievementTracker();
+
+onActivated(() => {
+	isTimelineActive = true;
+});
+onDeactivated(() => {
+	isTimelineActive = false;
+	timelineAchievementTracker.reset();
+});
 
 watch(visibility, () => {
 	if (visibility.value === 'hidden') {
 		isPausingUpdate = true;
+		timelineAchievementTracker.reset();
 	} else { // 'visible'
 		isPausingUpdate = false;
 		if (isTop()) {
@@ -283,6 +296,13 @@ function releaseQueue() {
 }
 
 function prepend(note: Misskey.entities.Note & MisskeyEntity) {
+	if ($i && isTimelineActive && visibility.value === 'visible' &&
+		(props.src === 'local' || props.src === 'home') && !claimedAchievements.includes('htl20npm') &&
+		!paginator.items.value.some(item => item.id === note.id) &&
+		timelineAchievementTracker.record(note)) {
+		claimAchievement('htl20npm');
+	}
+
 	adInsertionCounter++;
 
 	if (instance.notesPerOneAd > 0 && adInsertionCounter % instance.notesPerOneAd === 0) {
@@ -387,6 +407,7 @@ function connectChannel() {
 }
 
 function disconnectChannel() {
+	timelineAchievementTracker.reset();
 	for (const key in connections) {
 		const conn = connections[key as keyof typeof connections];
 		if (conn != null) {

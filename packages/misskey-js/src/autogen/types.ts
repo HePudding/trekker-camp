@@ -9435,6 +9435,11 @@ export interface operations {
                 };
                 content: {
                     'application/json': {
+                        achievementSettings: {
+                            musicBilibiliIds: string[];
+                            musicNeteaseIds: string[];
+                            musicUrls: string[];
+                        };
                         cacheRemoteFiles: boolean;
                         cacheRemoteSensitiveFiles: boolean;
                         emailRequiredForSignup: boolean;
@@ -12957,6 +12962,11 @@ export interface operations {
         requestBody: {
             content: {
                 'application/json': {
+                    achievementSettings?: {
+                        musicBilibiliIds: string[];
+                        musicNeteaseIds: string[];
+                        musicUrls: string[];
+                    };
                     disableRegistration?: boolean | null;
                     pinnedUsers?: string[] | null;
                     hiddenTags?: string[] | null;
