@@ -3,31 +3,36 @@
  * SPDX-License-Identifier: AGPL-3.0-only
  */
 
-export const unicodeEmojiCategories = ['face', 'people', 'animals_and_nature', 'food_and_drink', 'activity', 'travel_and_places', 'objects', 'symbols', 'flags'] as const;
+const allUnicodeEmojiCategories = ['face', 'people', 'animals_and_nature', 'food_and_drink', 'activity', 'travel_and_places', 'objects', 'symbols', 'flags'] as const;
+
+export const unicodeEmojiCategories = allUnicodeEmojiCategories.filter(category => category !== 'flags');
 
 export type UnicodeEmojiDef = {
 	name: string;
 	char: string;
-	category: typeof unicodeEmojiCategories[number];
+	category: typeof allUnicodeEmojiCategories[number];
 };
 
 import _emojilist from '@misskey-dev/emoji-data/emojilist.json';
 
-export const emojilist: UnicodeEmojiDef[] = _emojilist.map(x => ({
+const allEmojis: UnicodeEmojiDef[] = _emojilist.map(x => ({
 	name: x[1] as string,
 	char: x[0] as string,
-	category: unicodeEmojiCategories[x[2] as number],
+	category: allUnicodeEmojiCategories[x[2] as number],
 }));
 
+export const emojilist = allEmojis.filter(emoji => emoji.category !== 'flags');
+
 const unicodeEmojisMap = new Map<string, UnicodeEmojiDef>(
-	emojilist.map(x => [x.char, x]),
+	allEmojis.map(x => [x.char, x]),
 );
 
 const _indexByChar = new Map<string, number>();
 const _charGroupByCategory = new Map<string, string[]>();
-for (let i = 0; i < emojilist.length; i++) {
-	const emo = emojilist[i];
+for (let i = 0; i < allEmojis.length; i++) {
+	const emo = allEmojis[i];
 	_indexByChar.set(emo.char, i);
+	if (emo.category === 'flags') continue;
 
 	if (_charGroupByCategory.has(emo.category)) {
 		_charGroupByCategory.get(emo.category)?.push(emo.char);
@@ -63,7 +68,7 @@ export function getEmojiName(char: string): string {
 		// 絵文字情報がjsonに無い場合は名前の取得が出来ないのでそのまま返すしか無い
 		return char;
 	} else {
-		return emojilist[idx].name;
+		return allEmojis[idx].name;
 	}
 }
 

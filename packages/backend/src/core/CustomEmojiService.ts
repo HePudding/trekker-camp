@@ -15,6 +15,8 @@ import { bindThis } from '@/decorators.js';
 import { DI } from '@/di-symbols.js';
 import { MemoryKVCache, RedisSingleCache } from '@/misc/cache.js';
 import { sqlLikeEscape } from '@/misc/sql-like-escape.js';
+import { readCampEmojis } from '@/misc/camp-emojis.js';
+import type { Config } from '@/config.js';
 import type { EmojisRepository, MiRole, MiUser } from '@/models/_.js';
 import type { MiEmoji } from '@/models/Emoji.js';
 import type { Serialized } from '@/types.js';
@@ -87,6 +89,34 @@ export class CustomEmojiService implements OnApplicationShutdown {
 				}]));
 			},
 		});
+	}
+
+	@bindThis
+	public async importCampEmojis(config: Pick<Config, 'rootDir' | 'url'>): Promise<number> {
+		const emojis = await readCampEmojis(config);
+		if (emojis.length === 0) return 0;
+
+		const added = await this.emojisRepository.manager.transaction(async manager => {
+			// Server workers may start together; serialize the name check and insertion.
+			await manager.query("SELECT pg_advisory_xact_lock(hashtext('trekker-camp:stella-sora-emojis'))");
+			const repository = manager.getRepository(this.emojisRepository.target);
+			const ids: string[] = [];
+			for (const emoji of emojis) {
+				if (await repository.existsBy({ name: emoji.name, host: IsNull() })) continue;
+				const id = this.idService.gen();
+				await repository.insert({ ...emoji, id, updatedAt: new Date() });
+				ids.push(id);
+			}
+			return ids;
+		});
+
+		await this.localEmojisCache.refresh();
+		for (const id of added) {
+			this.globalEventService.publishBroadcastStream('emojiAdded', {
+				emoji: await this.emojiEntityService.packDetailed(id),
+			});
+		}
+		return added.length;
 	}
 
 	@bindThis
