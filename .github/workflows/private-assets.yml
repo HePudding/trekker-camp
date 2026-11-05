@@ -1,0 +1,55 @@
+name: Private assets
+
+on:
+  push:
+    branches: [master]
+    paths:
+      - private-assets
+      - private-assets/**
+      - packages/frontend/assets/**
+      - scripts/private-assets*.mjs
+      - scripts/pull-private-assets*.mjs
+      - scripts/check-private-assets.mjs
+      - scripts/check-shipping.mjs
+      - scripts/tarball.mjs
+      - scripts/dev.mjs
+      - .gitignore
+      - .dockerignore
+      - compose.assets.yml
+      - package.json
+      - .github/workflows/private-assets.yml
+  pull_request:
+    branches: [master]
+    paths:
+      - private-assets
+      - private-assets/**
+      - packages/frontend/assets/**
+      - scripts/private-assets*.mjs
+      - scripts/pull-private-assets*.mjs
+      - scripts/check-private-assets.mjs
+      - scripts/check-shipping.mjs
+      - scripts/tarball.mjs
+      - scripts/dev.mjs
+      - .gitignore
+      - .dockerignore
+      - compose.assets.yml
+      - package.json
+      - .github/workflows/private-assets.yml
+
+permissions:
+  contents: read
+
+jobs:
+  private-assets:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7.0.1
+      - uses: actions/setup-node@v7.0.0
+        with:
+          node-version-file: .node-version
+      - name: Check artwork Git exclusions
+        run: node scripts/check-private-assets.mjs
+      - uses: pnpm/action-setup@v6.0.10
+      - run: pnpm install --frozen-lockfile --ignore-scripts
+      - name: Test artwork development and packaging
+        run: pnpm assets:test

@@ -13,6 +13,8 @@ node_modules/
 packages/*/node_modules
 redis/
 files/
+private-assets
+packages/frontend/assets/camp
 fluent-emojis/
 .pnp.*
 

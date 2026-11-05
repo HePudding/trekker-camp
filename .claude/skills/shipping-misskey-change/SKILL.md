@@ -34,6 +34,7 @@ node scripts/check-shipping.mjs
 - 以 NUL 分隔安全枚举已提交、未提交和未跟踪的改动，仅对改动文件从所属包根目录运行 `eslint --quiet`。
 - SPDX 检查失败时，仅对本地改动中缺失的头运行 `check-spdx.mjs --fix`，然后重新执行常规检查。
 - 无论 SPDX 结果如何，都检查语言 YAML 改动：允许产品文案源 `locales/zh-CN.yml` 和上游同步源 `locales/ja-JP.yml`，其余语言禁止修改。
+- 检查 `private-assets` 和 `packages/frontend/assets/camp` 的 Git 排除规则，拒绝已进入索引的素材、链接和私有素材子仓库。也可单独运行 `pnpm assets:check`。
 
 语言检查与 GitHub Actions 的 `Locale safety` 共用 `scripts/check-locales.mjs`；也可单独运行 `node scripts/check-locales.mjs --base <ref>`。
 
@@ -42,6 +43,8 @@ node scripts/check-shipping.mjs
 
 ## 2. 按修改类型检查
 
+- 素材脚本、Git/Docker 忽略规则、源码打包或素材部署挂载：运行 `pnpm assets:test`。Docker 不可用时明确记录镜像排除测试为 `SKIPPED`；开发与部署约定见 [ASSETS.md](../../../ASSETS.md)。
+- 私有素材库中的修改：分别遵循其 `AGENTS.md` 进行素材验证和提交，主仓库检查保持通过。不要向主仓库添加素材、链接或私有仓库文件；配置服务器后，素材库的 `master` 推送会触发自动发布。
 - 后端 API 的 `meta`、`paramDef` 或 `res`：执行 `pnpm build-misskey-js-with-types`。
   步骤见 [regenerate-misskey-js.md](references/tasks/regenerate-misskey-js.md)。
 - 实体或迁移：执行 `pnpm --filter backend check-migrations`。
