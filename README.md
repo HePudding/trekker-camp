@@ -1,4 +1,20 @@
-> **旅人营地 (trekker-camp)** — 星塔旅人（Stella Sora）简中社区用 Misskey fork。默认分支 `master`。搭环境见 [SETUP.zh-CN.md](./SETUP.zh-CN.md)，AI 规则见 [AGENTS.md](./AGENTS.md)。以下为上游 Misskey README。
+# 旅人营地 (trekker-camp)
+
+面向星塔旅人（Stella Sora）简中第三方社区的 Misskey fork，默认分支为 `master`。
+
+## 项目定位与支持范围
+
+开发和维护围绕旅人营地本站的实际需求展开。本项目不主动提供第三方部署、配置和运维支持，也不承诺兼容其他实例的环境或定制需求。开发与部署文档用于记录本站和团队的工作流程，其他使用者可自行参考。
+
+代码沿用各目录的许可证，主要为 [AGPL-3.0](./LICENSE)。使用者可以依照适用许可证运行、修改和再分发代码；上述维护范围不限制这些权利。
+
+本站运行版本的完整对应源码和构建脚本保持可获取。独立美术、字体和音频按各自授权管理，私有素材及生产数据不随公开代码分发；素材使用和品牌使用须遵守相应权利人的授权。
+
+环境搭建见 [SETUP.zh-CN.md](./SETUP.zh-CN.md)，素材管理见 [ASSETS.md](./ASSETS.md)，AI 规则见 [AGENTS.md](./AGENTS.md)。
+
+---
+
+以下保留上游 Misskey README，介绍上游项目及其资源。
 
 <div align="center">
 <a href="https://misskey-hub.net">

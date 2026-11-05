@@ -1,5 +1,7 @@
 # 旅人营地 · 本地开发环境
 
+本指南记录旅人营地本站及团队的开发流程，其他使用者可自行参考。本项目不主动提供第三方部署、配置和运维支持；代码仍可依照适用许可证使用，详见 [项目定位与支持范围](README.md#项目定位与支持范围)。
+
 仓库：https://github.com/HePudding/trekker-camp  
 默认分支：`master`（对齐上游 Misskey 正式版线）  
 版本锚点（以仓库文件为准）：`.node-version` → Node **26.12.1**，`package.json#packageManager` → **pnpm@12.14.0**（当前 `2026.10.1` / nasubi）。
