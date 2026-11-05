@@ -7,6 +7,7 @@ import { NestFactory } from '@nestjs/core';
 import { init } from 'slacc';
 import { NestLogger } from '@/NestLogger.js';
 import { envOption } from '@/env.js';
+import { DI } from '@/di-symbols.js';
 import type { Config } from '@/config.js';
 
 let slaccInitialized = false;
@@ -24,10 +25,13 @@ export function initExtraThreadPool(config: Config) {
 export async function server() {
 	const { MainModule } = await import('../MainModule.js');
 	const { ServerService } = await import('../server/ServerService.js');
+	const { CustomEmojiService } = await import('../core/CustomEmojiService.js');
 
 	const app = await NestFactory.createApplicationContext(MainModule, {
 		logger: new NestLogger(),
 	});
+
+	await app.get(CustomEmojiService).importCampEmojis(app.get<Config>(DI.config));
 
 	const serverService = app.get(ServerService);
 	await serverService.launch();

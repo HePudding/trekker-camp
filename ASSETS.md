@@ -78,6 +78,16 @@ CAMP_ASSETS_DIR=/srv/trekker-assets/public pnpm assets:link
 
 ## Docker 部署
 
+### 星塔旅人表情
+
+私有素材库的 `public/emojis/stella-sora/manifest.json` 记录表情名称、中文搜索别名、分类及图片文件名，图片保存在同一目录。静态表情使用 PNG，动态表情使用 GIF；来源与授权记录留在素材库的 `RIGHTS.md` 和 `originals/` 中。
+
+应用在 HTTP 服务启动前自动读取挂载的清单，将缺少的表情注册到站内表情列表，并刷新表情缓存。重复启动及多个服务进程同时启动均不会重复添加，已有表情的管理设置会保留。生产部署沿用以下素材同步及只读挂载流程，无需在管理页面手动上传或导入表情。
+
+未挂载清单时正常启动并使用已有表情；清单存在但图片缺失或数据无效时，启动会报错，避免注册无法显示的表情。图片只通过 `/client-assets/camp/` 运行时加载，不进入代码包或镜像。
+
+### 同步与挂载
+
 私有素材库的 [Assets 工作流](https://github.com/HePudding/trekker-camp-assets/actions/workflows/assets.yml) 已配置为：PR 验证素材；`master` 更新时验证并同步到已配置的服务器。未配置服务器时只验证，不发布。代码镜像仍只构建公开代码。
 
 使用现有的 `compose.yml` 应用配置，附加仓库提供的 `compose.assets.yml`。素材目录由运行时只读挂载，镜像构建不读取它。
