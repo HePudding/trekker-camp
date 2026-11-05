@@ -1,6 +1,6 @@
 ---
 name: working-on-frontend
-description: 编辑或添加 packages/frontend/ 下的代码，或修改 locales/ja-JP.yml 中面向前端的界面文案时必须使用，包括 Vue 3 单文件组件（Mk* 组件）、国际化键（i18n.ts.<key> / i18n.tsx.<key>()）、SCSS Modules、主题与 CSS 变量、os.* 界面辅助函数和 Storybook 示例。涵盖 <script setup lang="ts"> 规范、纯类型 defineProps、仅编辑 ja-JP.yml 的上游语言文件规则（其他语言由 Crowdin 管理，禁止手改）及无障碍要求。修改前端或界面语言文件前必须阅读，以避免 CI 失败、翻译丢失及审查退回。即使此前已使用 brainstorming、writing-plans 或其他上游技能，实现时仍须调用。
+description: 编辑或添加 packages/frontend/ 下的代码，或修改 locales/zh-CN.yml 中面向前端的界面文案时必须使用。涵盖 Vue 3 组件、国际化、SCSS Modules、Storybook、无障碍及独立授权美术的运行时加载。本仓库语言规则以 AGENTS.md 为准；使用过其他技能后进入前端实现阶段仍须阅读。
 ---
 
 # working-on-frontend
@@ -19,6 +19,8 @@ SKILL.md 本身仅作为参考文件索引。具体步骤和规范应按需读�
 - 添加或修改国际化键（编辑 `locales/ja-JP.yml`）→ [references/tasks/adding-i18n-key.md](references/tasks/adding-i18n-key.md)
 
 ## 通用知识（knowledge）
+
+营地独立授权美术的目录、运行时 URL、缺图回退、团队同步和 worktree 用法见 [ASSETS.md](../../../ASSETS.md)。涉及图片、字体或音频时先按该约定定位素材，阅读素材库的 `RIGHTS.md`。团队环境首次用 `pnpm assets:pull` 取得私有素材，之后按需同步；遇到本地修改或开发分支保留现场。`pnpm dev` 离线复用链接，公开贡献者可用 `assets:link` 创建空目录。私有素材通过 `/client-assets/camp/` 加载，保留无素材环境下的默认资源或回退，避免进入前端构建产物。
 
 编辑单文件组件时需要遵守的通用规范，新建和修改组件均适用。
 

@@ -39,6 +39,8 @@ pnpm dev
 
 `pnpm dev` 会 watch 后端并透过 Vite HMR 跑前端；行为与生产构建不完全一致，属正常。
 
+团队成员先运行 `pnpm assets:pull` 从 `HePudding/trekker-camp-assets` 私有仓库取得素材。营地美术独立存放在 `private-assets/public/`，`pnpm dev` 会自动将其连接到 `/client-assets/camp/`，离线也可使用。该目录不进入公开 Git 仓库、源码包和 Docker 镜像。团队协作、多个 worktree 共用素材和自动部署步骤见 [素材开发与部署](ASSETS.md)。
+
 ### 测试用配置
 
 ```bash
@@ -60,6 +62,10 @@ Windows：请在 **WSL** 里 clone；Git for Windows 的换行会把仓库弄坏
 | 用途 | 命令 |
 | --- | --- |
 | 开发服 | `pnpm dev` |
+| 连接本地美术素材 | `pnpm assets:link` |
+| 首次拉取或更新团队素材 | `pnpm assets:pull` |
+| 检查素材未进入 Git | `pnpm assets:check` |
+| 验证素材开发与分发流程 | `pnpm assets:test` |
 | 全量构建 | `pnpm build` |
 | 迁移 | `pnpm migrate` |
 | lint | `pnpm lint` |

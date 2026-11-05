@@ -7,7 +7,7 @@
 /**
  * Misskey 変更の完了前検査。
  *
- * 変更ファイル lint、SPDX 自動修正と再検査、locale safety を独立して実行し、
+ * 変更ファイル lint、SPDX、locale safety、private assets を独立して実行し、
  * 最後に終了コードを集約する。
  *
  * 使い方:
@@ -16,7 +16,7 @@
  *
  * 終了コード:
  *   0 = 全検査に合格 (lint 対象なしの SKIPPED を含む)
- *   1 = lint / SPDX / locale の違反
+ *   1 = lint / SPDX / locale / private assets の違反
  *   2 = 引数、Git ref、コマンド起動などの理由で検査不能
  */
 
@@ -26,6 +26,7 @@ import { execaSync } from 'execa';
 
 import { DEFAULT_INTEGRATION_REFS, findClosestMergeBase, gitLines, gitMergeBase, gitPaths } from './lib/git.mjs';
 import { runLocaleSafety } from './check-locales.mjs';
+import { checkPrivateAssets } from './check-private-assets.mjs';
 
 const LINT_TARGETS = [
 	{ root: 'packages/backend', pattern: /^packages\/backend\/(src|test-federation)\/.*\.ts$/ },
@@ -198,7 +199,7 @@ function parseBaseRef(args) {
 }
 
 /**
- * lint・SPDX・locale safety を実行し、終了コードを集約する。
+ * lint・SPDX・locale safety・private assets を実行し、終了コードを集約する。
  *
  * @returns {number}
  */
@@ -219,15 +220,23 @@ function main() {
 		const lint = runChangedFileLint(changedFiles, repoRoot);
 		const spdxStatus = runSpdx(base, repoRoot);
 		const localeStatus = runLocaleSafety(changedFiles);
+		let assetStatus = 0;
+		try {
+			checkPrivateAssets(repoRoot);
+		} catch (error) {
+			console.error(`Private assets: FAIL — ${error.message}`);
+			assetStatus = 1;
+		}
 
 		console.log('');
 		console.log('Shipping checks:');
 		console.log(`Lint:          ${lint.summary}`);
 		console.log(`SPDX:          ${spdxStatus === 0 ? 'PASS' : spdxStatus === 1 ? 'FAIL' : 'ERROR'}`);
 		console.log(`Locale safety: ${localeStatus === 0 ? 'PASS' : 'FAIL'}`);
+		console.log(`Private assets: ${assetStatus === 0 ? 'PASS' : 'FAIL'}`);
 
 		if (lint.status === 2 || spdxStatus === 2) return 2;
-		if (lint.status === 1 || spdxStatus === 1 || localeStatus === 1) return 1;
+		if (lint.status === 1 || spdxStatus === 1 || localeStatus === 1 || assetStatus === 1) return 1;
 		return 0;
 	} catch (error) {
 		const message = error instanceof Error ? error.message : String(error);
