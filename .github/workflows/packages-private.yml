@@ -7,20 +7,24 @@ on:
       - develop
     paths:
       - packages-private/**
+      - packages/i18n/**
+      - locales/**
       - packages/shared/eslint.config.js
       - package.json
       - pnpm-workspace.yaml
       - pnpm-lock.yaml
+      - .node-version
       - .github/workflows/packages-private.yml
   pull_request:
-    branches-ignore:
-      - master
     paths:
       - packages-private/**
+      - packages/i18n/**
+      - locales/**
       - packages/shared/eslint.config.js
       - package.json
       - pnpm-workspace.yaml
       - pnpm-lock.yaml
+      - .node-version
       - .github/workflows/packages-private.yml
 
 permissions:
@@ -48,6 +52,10 @@ jobs:
           node-version-file: '.node-version'
           cache: 'pnpm'
       - run: pnpm --filter ${{ matrix.workspace }}... install --frozen-lockfile
+      # i18n/const exports generated JS and declarations, even for Chinese-only builds.
+      - name: Build locale dependency
+        if: matrix.workspace == 'diagnostics-frontend'
+        run: pnpm --filter i18n build
       # lint = typecheck + eslint
       - run: pnpm --filter ${{ matrix.workspace }} run lint
       # 各パッケージは必ず test スクリプトを持たせる (無いと ERR_PNPM_RECURSIVE_RUN_NO_SCRIPT で落ちる)
