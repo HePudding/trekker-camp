@@ -3,7 +3,10 @@
  * SPDX-License-Identifier: AGPL-3.0-only
  */
 
-import { afterEach, beforeAll, describe, test, expect } from 'vitest';
+import { mkdtemp, mkdir, rm, writeFile } from 'node:fs/promises';
+import { tmpdir } from 'node:os';
+import { join } from 'node:path';
+import { afterAll, afterEach, beforeAll, beforeEach, describe, test, expect } from 'vitest';
 import { Test, TestingModule } from '@nestjs/testing';
 import { CustomEmojiService } from '@/core/CustomEmojiService.js';
 import { EmojiEntityService } from '@/core/entities/EmojiEntityService.js';
@@ -44,6 +47,80 @@ describe('CustomEmojiService', () => {
 		service = app.get<CustomEmojiService>(CustomEmojiService);
 		emojisRepository = app.get<EmojisRepository>(DI.emojisRepository);
 		idService = app.get<IdService>(IdService);
+	});
+
+	afterAll(async () => {
+		await app?.close();
+	});
+
+	describe('camp emoji startup import', () => {
+		let rootDir: string;
+		let directory: string;
+		const url = 'https://camp.example';
+		const manifest = [
+			{ name: 'stella_sora_1', file: 'stella_sora_1.png', category: '星塔旅人', aliases: ['赞'], license: 'Test fixture' },
+			{ name: 'stella_sora_2', file: 'stella_sora_2.gif', category: '星塔旅人 动态', aliases: ['摇摇'], license: 'Test fixture' },
+		];
+
+		beforeEach(async () => {
+			rootDir = await mkdtemp(join(tmpdir(), 'camp-emojis-'));
+			directory = join(rootDir, 'packages/frontend/assets/camp/emojis/stella-sora');
+			await mkdir(directory, { recursive: true });
+			await writeFile(join(directory, 'manifest.json'), JSON.stringify(manifest));
+			await writeFile(join(directory, manifest[0].file), 'test static image');
+			await writeFile(join(directory, manifest[1].file), 'test animated image');
+		});
+
+		afterEach(async () => {
+			await emojisRepository.delete({ name: 'stella_sora_1' });
+			await emojisRepository.delete({ name: 'stella_sora_2' });
+			await rm(rootDir, { recursive: true, force: true });
+		});
+
+		test('registers static and animated emoji with runtime URLs and refreshes the list', async () => {
+			expect(await service.importCampEmojis({ rootDir, url })).toBe(2);
+			const emojis = await service.localEmojisCache.fetch();
+			expect(emojis.get('stella_sora_1')).toMatchObject({
+				publicUrl: `${url}/client-assets/camp/emojis/stella-sora/stella_sora_1.png`,
+				aliases: ['赞'], category: '星塔旅人', type: 'image/png', host: null, localOnly: true,
+			});
+			expect(emojis.get('stella_sora_2')).toMatchObject({
+				publicUrl: `${url}/client-assets/camp/emojis/stella-sora/stella_sora_2.gif`, type: 'image/gif',
+			});
+		});
+
+		test('repeated startup preserves existing administrator changes', async () => {
+			await service.importCampEmojis({ rootDir, url });
+			await emojisRepository.update({ name: 'stella_sora_1' }, { aliases: ['管理员别名'], isSensitive: true });
+			expect(await service.importCampEmojis({ rootDir, url })).toBe(0);
+			expect(await emojisRepository.findOneBy({ name: 'stella_sora_1' })).toMatchObject({ aliases: ['管理员别名'], isSensitive: true });
+		});
+
+		test('concurrent server workers register each emoji once', async () => {
+			const counts = await Promise.all([
+				service.importCampEmojis({ rootDir, url }),
+				service.importCampEmojis({ rootDir, url }),
+			]);
+			expect(counts.sort()).toEqual([0, 2]);
+			expect(await emojisRepository.countBy({ name: 'stella_sora_1' })).toBe(1);
+			expect(await emojisRepository.countBy({ name: 'stella_sora_2' })).toBe(1);
+		});
+
+		test('starts without private artwork', async () => {
+			expect(await service.importCampEmojis({ rootDir: join(rootDir, 'no-assets'), url })).toBe(0);
+		});
+
+		test('rejects incomplete artwork before registering any emoji', async () => {
+			await rm(join(directory, manifest[1].file));
+			await expect(service.importCampEmojis({ rootDir, url })).rejects.toThrow();
+			expect(await emojisRepository.countBy({ name: 'stella_sora_1' })).toBe(0);
+		});
+
+		test('rejects duplicate names in the manifest before registering any emoji', async () => {
+			await writeFile(join(directory, 'manifest.json'), JSON.stringify([manifest[0], manifest[0]]));
+			await expect(service.importCampEmojis({ rootDir, url })).rejects.toThrow('Invalid camp emoji manifest entry');
+			expect(await emojisRepository.countBy({ name: 'stella_sora_1' })).toBe(0);
+		});
 	});
 
 	describe('fetchEmojis', () => {
