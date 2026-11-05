@@ -1,0 +1,10 @@
+# Use with: docker compose -f compose.yml -f compose.assets.yml up -d --build
+services:
+  web:
+    volumes:
+      - type: bind
+        source: ${CAMP_ASSETS_DIR:-./private-assets/public}
+        target: /misskey/packages/frontend/assets/camp
+        read_only: true
+        bind:
+          create_host_path: false

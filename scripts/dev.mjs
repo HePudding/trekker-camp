@@ -6,6 +6,7 @@
 import { dirname } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { execa } from 'execa';
+import { linkPrivateAssets } from './private-assets.mjs';
 
 const _filename = fileURLToPath(import.meta.url);
 const _dirname = dirname(_filename);
@@ -165,6 +166,9 @@ process.on('SIGTERM', () => {
 });
 
 try {
+	const artwork = await linkPrivateAssets();
+	console.log(`Artwork: ${artwork} -> /client-assets/camp/`);
+
 	await runChildProcess('pnpm', ['clean'], {
 		cwd: _dirname + '/../',
 		stdout: process.stdout,

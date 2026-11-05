@@ -36,6 +36,8 @@
 - **语言 YAML 只允许编辑 `locales/zh-CN.yml`，以及用于上游同步的 `locales/ja-JP.yml`**。旅人营地的产品文案源语言为简体中文；其余语言文件由上游维护，禁止手动修改。
 - **禁止修改已合并迁移**。不得修改 `packages/backend/migration/{timestamp}-*.js` 中已进入 `develop` 或 `master` 的文件。结构变更必须使用新时间戳创建文件，并同时实现 `up()` 和 `down()`。
 - **禁止提交密钥或凭据**，包括 `.config/*.yml` 中的生产配置、`.env`、API 令牌及私钥。
+- **独立授权美术单独管理**：素材放在 `private-assets/public/`，原稿、授权记录和素材仓库的 `.git/` 留在 `public/` 外。`pnpm assets:link`（`pnpm dev` 自动执行）将其连接到 `/client-assets/camp/`；多个 worktree 可用 `CAMP_ASSETS_DIR` 指定已有素材目录。通过 URL 加载，保持无私有素材时的默认资源或回退，不 import、内嵌或打包进公开镜像。Docker 使用 `compose.assets.yml` 只读挂载。禁止强制提交素材、链接或私有素材子模块；详细开发与部署步骤见根目录 `ASSETS.md`。
+- **团队素材同步**：私有仓库为 `HePudding/trekker-camp-assets`，默认分支 `master`。首次准备团队环境使用 `pnpm assets:pull`，之后按需快进更新；有未提交素材、开发分支或分叉历史时保留现场。`pnpm dev` 不联网拉取素材。素材在私有仓库独立提交和审查，配置服务器后其 `master` 更新会自动发布 `public/`，未经授权不推送该分支。
 
 ### Git 与仓库操作
 
@@ -58,6 +60,7 @@
 4. `node scripts/check-spdx.mjs` 返回 `SPDX: OK`。
 5. 用户未明确要求时，不编辑 `CHANGELOG.md`；对用户有影响的修改，在交接中提供一行候选条目。
 6. 检查已提交、未提交和未跟踪的语言 YAML 改动仅包含 `locales/zh-CN.yml` 或用于上游同步的 `locales/ja-JP.yml`，使用 `node scripts/check-locales.mjs`。
+7. `pnpm assets:check` 通过，确认私有素材和链接未被 Git 跟踪；`node scripts/check-shipping.mjs` 已集成。修改素材机制、忽略规则或部署挂载时运行 `pnpm assets:test`。
 
 ## 验证命令
 
