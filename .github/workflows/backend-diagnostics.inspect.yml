@@ -7,10 +7,10 @@ on:
       - master
       - develop
     paths:
-      - packages/backend/**
-      - packages/misskey-js/**
-      - packages-private/diagnostics-shared/**
-      - packages-private/diagnostics-backend/**
+      - apps/misskey/packages/backend/**
+      - apps/misskey/packages/misskey-js/**
+      - apps/misskey/packages-private/diagnostics-shared/**
+      - apps/misskey/packages-private/diagnostics-backend/**
       - .github/workflows/backend-diagnostics.inspect.yml
       - .github/workflows/backend-diagnostics.comment.yml
 

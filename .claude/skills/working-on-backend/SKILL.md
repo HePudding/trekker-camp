@@ -1,15 +1,15 @@
 ---
 name: working-on-backend
-description: 编辑或添加 packages/backend/ 下的代码时必须使用，包括 REST API 端点、NestJS 服务和模块、TypeORM 实体、迁移及后端测试。涵盖 NestJS 依赖注入、TypeORM 实体规范、endpoint-list 注册、meta/paramDef/res、misskey-js 重新生成、迁移 up/down 规则，以及 .config/test.yml 前置条件。任何后端修改前都必须阅读，以避免 CI 失败和生产事故。即使此前已经调用 brainstorming、writing-plans 或其他上游技能，进入实现阶段时仍必须调用本技能。
+description: 编辑或添加 apps/misskey/packages/backend/ 下的代码时必须使用，包括 REST API 端点、NestJS 服务和模块、TypeORM 实体、迁移及后端测试。涵盖 NestJS 依赖注入、TypeORM 实体规范、endpoint-list 注册、meta/paramDef/res、misskey-js 重新生成、迁移 up/down 规则，以及 .config/test.yml 前置条件。任何后端修改前都必须阅读，以避免 CI 失败和生产事故。即使此前已经调用 brainstorming、writing-plans 或其他上游技能，进入实现阶段时仍必须调用本技能。
 ---
 
 # working-on-backend
 
-编辑 `packages/backend/`（Misskey 服务端）时，首先阅读本技能。这里汇集 NestJS、TypeORM、API 端点、迁移和后端测试的**操作步骤**与**背景知识**。
+编辑 `apps/misskey/packages/backend/`（Misskey 服务端）时，首先阅读本技能。这里汇集 NestJS、TypeORM、API 端点、迁移和后端测试的**操作步骤**与**背景知识**。
 
 SKILL.md 本身仅作为参考文件索引。具体步骤和规范应按需读取对应文件。
 
-**使用过其他技能也不能免除本要求。** 即使已调用 `brainstorming`、`writing-plans` 或其他上游技能，进入涉及 `packages/backend/` 的实现阶段时，仍须调用本技能。
+**使用过其他技能也不能免除本要求。** 即使已调用 `brainstorming`、`writing-plans` 或其他上游技能，进入涉及 `apps/misskey/packages/backend/` 的实现阶段时，仍须调用本技能。
 
 ## 按任务组织的工作流（tasks）
 

@@ -2,7 +2,7 @@
 
 本文件作为 GitHub Copilot 的仓库级指令。部分 Copilot 代码审查环境不会读取 `AGENTS.md`，因此本文件应独立提供审查和小范围实现判断所需的规范。
 
-仓库是使用 pnpm workspace 的 Misskey 单体仓库。主要实现位于 `packages/backend`（NestJS / TypeORM）和 `packages/frontend`（Vue 3）。可参考根目录 `AGENTS.md` 获取详细指南，但不得省略本文件要求，仅提供指向它的链接。
+仓库是使用 pnpm workspace 的 Misskey 单体仓库。主要实现位于 `apps/misskey/packages/backend`（NestJS / TypeORM）和 `apps/misskey/packages/frontend`（Vue 3）。可参考根目录 `AGENTS.md` 获取详细指南，但不得省略本文件要求，仅提供指向它的链接。
 
 ## 项目定位与支持范围
 
@@ -35,12 +35,12 @@
   -->
   ```
 
-  `packages/misskey-js` 是 MIT 许可证子包，不统一添加 AGPL 头，应遵循该子包的 `package.json`、`LICENSE` 和已有文件头。
+  `apps/misskey/packages/misskey-js` 是 MIT 许可证子包，不统一添加 AGPL 头，应遵循该子包的 `package.json`、`LICENSE` 和已有文件头。
   CI 和技能均通过 `scripts/check-spdx.mjs` 判断 SPDX 是否合格，代码审查无需重复人工检查。
   CI 使用 `--ci` 检查 SPDX 行是否存在，默认模式还会检查 `.vue` 和 `.html` 的注释格式。
 
-- **语言 YAML 只允许编辑 `locales/zh-CN.yml`，以及用于上游同步的 `locales/ja-JP.yml`**。旅人营地的产品文案源语言为简体中文；其余语言文件由上游维护，禁止手动修改。
-- **禁止修改已合并迁移**。不得修改 `packages/backend/migration/{timestamp}-*.js` 中已进入 `develop` 或 `master` 的文件。结构变更必须使用新时间戳创建文件，并同时实现 `up()` 和 `down()`。
+- **语言 YAML 只允许编辑 `apps/misskey/locales/zh-CN.yml`，以及用于上游同步的 `apps/misskey/locales/ja-JP.yml`**。旅人营地的产品文案源语言为简体中文；其余语言文件由上游维护，禁止手动修改。
+- **禁止修改已合并迁移**。不得修改 `apps/misskey/packages/backend/migration/{timestamp}-*.js` 中已进入 `develop` 或 `master` 的文件。结构变更必须使用新时间戳创建文件，并同时实现 `up()` 和 `down()`。
 - **禁止提交密钥或凭据**，包括 `.config/*.yml` 中的生产配置、`.env`、API 令牌及私钥。
 - **独立授权美术单独管理**：素材放在 `private-assets/public/`，原稿、授权记录和素材仓库的 `.git/` 留在 `public/` 外。`pnpm assets:link`（`pnpm dev` 自动执行）将其连接到 `/client-assets/camp/`；多个 worktree 可用 `CAMP_ASSETS_DIR` 指定已有素材目录。通过 URL 加载，保持无私有素材时的默认资源或回退，不 import、内嵌或打包进公开镜像。Docker 使用 `compose.assets.yml` 只读挂载。禁止强制提交素材、链接或私有素材子模块；详细开发与部署步骤见根目录 `ASSETS.md`。
 - **团队素材同步**：私有仓库为 `HePudding/trekker-camp-assets`，默认分支 `master`。首次准备团队环境使用 `pnpm assets:pull`，之后按需快进更新；有未提交素材、开发分支或分叉历史时保留现场。`pnpm dev` 不联网拉取素材。素材在私有仓库独立提交和审查，配置服务器后其 `master` 更新会自动发布 `public/`，未经授权不推送该分支。
@@ -61,11 +61,11 @@
 ## 交付前的最低检查
 
 1. 最后从所属包根目录，对受 ESLint 检查的改动文件运行一次 `eslint --quiet`；实现改动需运行最相关的测试。全包或全仓库 lint 及更大范围测试为可选项。
-2. 修改后端 `meta`、`paramDef` 或 `res` 后，执行 `pnpm build-misskey-js-with-types`，并提交 `packages/misskey-js/src/autogen/` 的差异。
+2. 修改后端 `meta`、`paramDef` 或 `res` 后，执行 `pnpm build-misskey-js-with-types`，并提交 `apps/misskey/packages/misskey-js/src/autogen/` 的差异。
 3. 修改实体或迁移后，确保 `pnpm --filter backend check-migrations` 通过且待执行 DDL 为 0，新迁移已实现 `up()` 和 `down()`。
 4. `node scripts/check-spdx.mjs` 返回 `SPDX: OK`。
 5. 用户未明确要求时，不编辑 `CHANGELOG.md`；对用户有影响的修改，在交接中提供一行候选条目。
-6. 检查已提交、未提交和未跟踪的语言 YAML 改动仅包含 `locales/zh-CN.yml` 或用于上游同步的 `locales/ja-JP.yml`，使用 `node scripts/check-locales.mjs`。
+6. 检查已提交、未提交和未跟踪的语言 YAML 改动仅包含 `apps/misskey/locales/zh-CN.yml` 或用于上游同步的 `apps/misskey/locales/ja-JP.yml`，使用 `node scripts/check-locales.mjs`。
 7. `pnpm assets:check` 通过，确认私有素材和链接未被 Git 跟踪；`node scripts/check-shipping.mjs` 已集成。修改素材机制、忽略规则或部署挂载时运行 `pnpm assets:test`。
 
 ## 验证命令
@@ -85,8 +85,8 @@
 
 ## 编辑提示
 
-- 后端 API、迁移和 TypeORM 修改查看 `packages/backend`。
-- 前端 Vue 组件和页面修改查看 `packages/frontend`。
+- 后端 API、迁移和 TypeORM 修改查看 `apps/misskey/packages/backend`。
+- 前端 Vue 组件和页面修改查看 `apps/misskey/packages/frontend`。
 - `AGENTS.md` 中的相对链接以仓库根目录为起点。
 
 **补充：**`AGENTS.md` 是更详细的规范来源，由 Codex 和 Claude Code 读取。Copilot 代码审查以本文件为主要入口；环境同时读取两者时，可将 `AGENTS.md` 作为补充。

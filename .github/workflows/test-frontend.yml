@@ -6,20 +6,20 @@ on:
       - master
       - develop
     paths:
-      - packages/frontend/**
+      - apps/misskey/packages/frontend/**
       # for permissions
-      - packages/misskey-js/**
+      - apps/misskey/packages/misskey-js/**
       # for e2e
-      - packages/backend/**
+      - apps/misskey/packages/backend/**
       - .github/workflows/test-frontend.yml
       - .github/misskey/test.yml
   pull_request:
     paths:
-      - packages/frontend/**
+      - apps/misskey/packages/frontend/**
       # for permissions
-      - packages/misskey-js/**
+      - apps/misskey/packages/misskey-js/**
       # for e2e
-      - packages/backend/**
+      - apps/misskey/packages/backend/**
       - .github/workflows/test-frontend.yml
       - .github/misskey/test.yml
 jobs:
@@ -51,7 +51,7 @@ jobs:
       uses: codecov/codecov-action@v7
       with:
         token: ${{ secrets.CODECOV_TOKEN }}
-        files: ./packages/frontend/coverage/coverage-final.json
+        files: ./apps/misskey/packages/frontend/coverage/coverage-final.json
 
   e2e:
     name: E2E tests (frontend)
@@ -87,7 +87,7 @@ jobs:
     - name: Build
       run: pnpm build
     - name: Playwright install
-      working-directory: packages/frontend
+      working-directory: apps/misskey/packages/frontend
       run: pnpm exec playwright install --with-deps chromium
     - name: Test
       run: pnpm start-server-and-test start:test http://localhost:61812 "pnpm --filter frontend test:e2e"
@@ -96,4 +96,4 @@ jobs:
       if: failure()
       with:
         name: playwright-e2e-artifacts
-        path: packages/frontend/test/e2e/artifacts
+        path: apps/misskey/packages/frontend/test/e2e/artifacts

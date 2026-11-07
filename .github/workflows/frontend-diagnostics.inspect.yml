@@ -8,22 +8,22 @@ on:
       - reopened
       - ready_for_review
     paths:
-      - packages/frontend/**
-      - packages/frontend-shared/**
-      - packages/frontend-builder/**
-      - packages/backend/**
-      - packages/i18n/**
-      - packages/icons-subsetter/**
-      - packages/misskey-js/**
-      - packages/misskey-reversi/**
-      - packages/misskey-bubble-game/**
+      - apps/misskey/packages/frontend/**
+      - apps/misskey/packages/frontend-shared/**
+      - apps/misskey/packages/frontend-builder/**
+      - apps/misskey/packages/backend/**
+      - apps/misskey/packages/i18n/**
+      - apps/misskey/packages/icons-subsetter/**
+      - apps/misskey/packages/misskey-js/**
+      - apps/misskey/packages/misskey-reversi/**
+      - apps/misskey/packages/misskey-bubble-game/**
       - package.json
       - pnpm-lock.yaml
       - pnpm-workspace.yaml
       - .node-version
       - .github/misskey/test.yml
-      - packages-private/diagnostics-shared/**
-      - packages-private/diagnostics-frontend/**
+      - apps/misskey/packages-private/diagnostics-shared/**
+      - apps/misskey/packages-private/diagnostics-frontend/**
       - .github/workflows/frontend-diagnostics.inspect.yml
       - .github/workflows/frontend-diagnostics.comment.yml
 
@@ -133,7 +133,7 @@ jobs:
           retention-days: 7
 
       - name: Install Playwright browsers
-        working-directory: head/packages-private/diagnostics-frontend
+        working-directory: head/apps/misskey/packages-private/diagnostics-frontend
         run: pnpm exec playwright install --with-deps --no-shell chromium
 
       - name: Measure frontend browser metrics

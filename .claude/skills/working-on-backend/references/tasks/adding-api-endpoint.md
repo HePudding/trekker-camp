@@ -1,10 +1,10 @@
 # 添加 REST API 端点
 
-在 `packages/backend/src/server/api/endpoints/<category>/<name>.ts` 添加端点时遵循本流程。**遗漏 endpoint-list.ts 注册会导致 404。**
+在 `apps/misskey/packages/backend/src/server/api/endpoints/<category>/<name>.ts` 添加端点时遵循本流程。**遗漏 endpoint-list.ts 注册会导致 404。**
 
 ## 最重要的要求
 
-1. **端点不通过 glob 自动收集**，必须在 [endpoint-list.ts](../../../../../packages/backend/src/server/api/endpoint-list.ts) 添加一行，见[注册指南](../knowledge/endpoint-list.md)。
+1. **端点不通过 glob 自动收集**，必须在 [endpoint-list.ts](../../../../../apps/misskey/packages/backend/src/server/api/endpoint-list.ts) 添加一行，见[注册指南](../knowledge/endpoint-list.md)。
 2. **修改 meta、paramDef、res 后必须重新生成 misskey-js**。遗漏 `pnpm build-misskey-js-with-types` 会导致 check-misskey-js-autogen 失败。
 3. **meta.errors 的每个 id 必须是仓库内唯一的 UUID v4**。使用 crypto.randomUUID() 生成，再通过 grep 检查冲突。
 
@@ -21,12 +21,12 @@
 
 | 性质 | 参考实现 |
 |---|---|
-| 无需认证、无参数、小响应 | [ping.ts](../../../../../packages/backend/src/server/api/endpoints/ping.ts) |
-| 需要认证、依赖注入、业务错误 | [notes/create.ts](../../../../../packages/backend/src/server/api/endpoints/notes/create.ts) |
-| sinceId、untilId、limit 分页 | [notes/timeline.ts](../../../../../packages/backend/src/server/api/endpoints/notes/timeline.ts) |
-| 动态角色策略访问控制 | [notes/global-timeline.ts](../../../../../packages/backend/src/server/api/endpoints/notes/global-timeline.ts)，使用 RoleService.getUserPolicies |
-| 文件上传 | [drive/files/create.ts](../../../../../packages/backend/src/server/api/endpoints/drive/files/create.ts) |
-| 管理员助手或管理员专用 | [admin/suspend-user.ts](../../../../../packages/backend/src/server/api/endpoints/admin/suspend-user.ts)、[admin/roles/create.ts](../../../../../packages/backend/src/server/api/endpoints/admin/roles/create.ts) |
+| 无需认证、无参数、小响应 | [ping.ts](../../../../../apps/misskey/packages/backend/src/server/api/endpoints/ping.ts) |
+| 需要认证、依赖注入、业务错误 | [notes/create.ts](../../../../../apps/misskey/packages/backend/src/server/api/endpoints/notes/create.ts) |
+| sinceId、untilId、limit 分页 | [notes/timeline.ts](../../../../../apps/misskey/packages/backend/src/server/api/endpoints/notes/timeline.ts) |
+| 动态角色策略访问控制 | [notes/global-timeline.ts](../../../../../apps/misskey/packages/backend/src/server/api/endpoints/notes/global-timeline.ts)，使用 RoleService.getUserPolicies |
+| 文件上传 | [drive/files/create.ts](../../../../../apps/misskey/packages/backend/src/server/api/endpoints/drive/files/create.ts) |
+| 管理员助手或管理员专用 | [admin/suspend-user.ts](../../../../../apps/misskey/packages/backend/src/server/api/endpoints/admin/suspend-user.ts)、[admin/roles/create.ts](../../../../../apps/misskey/packages/backend/src/server/api/endpoints/admin/roles/create.ts) |
 
 category 为 notes、users、admin/announcements 等功能领域，遵循现有目录结构。
 
@@ -98,7 +98,7 @@ import { DI } from '@/di-symbols.js';
 export const meta = {
 	tags: ['notes'],
 	requireCredential: true,         // 要求认证时必须指定 kind；secure: true 内部 API 除外
-	kind: 'write:notes',             // OAuth 权限范围，列表见 packages/misskey-js/src/consts.ts 的 permissions
+	kind: 'write:notes',             // OAuth 权限范围，列表见 apps/misskey/packages/misskey-js/src/consts.ts 的 permissions
 	prohibitMoved: false,            // 是否拒绝已迁移账户
 	limit: {
 		duration: 1000 * 60 * 60,    // 1 小时
@@ -146,7 +146,7 @@ export default class extends Endpoint<typeof meta, typeof paramDef> { // eslint-
 
 ### 2.4 exec 完整签名
 
-super 的回调接受七个参数，见 [endpoint-base.ts](../../../../../packages/backend/src/server/api/endpoint-base.ts) 的 Executor：
+super 的回调接受七个参数，见 [endpoint-base.ts](../../../../../apps/misskey/packages/backend/src/server/api/endpoint-base.ts) 的 Executor：
 
 ```ts
 async (ps, me, token, file, cleanup, ip, headers) => { ... }
@@ -162,7 +162,7 @@ async (ps, me, token, file, cleanup, ip, headers) => { ... }
 | ip | string \| null \| undefined | 客户端 IP |
 | headers | Record<string, string> \| null \| undefined | 请求头 |
 
-cleanup 参考 [drive/files/create.ts](../../../../../packages/backend/src/server/api/endpoints/drive/files/create.ts) 的 finally。
+cleanup 参考 [drive/files/create.ts](../../../../../apps/misskey/packages/backend/src/server/api/endpoints/drive/files/create.ts) 的 finally。
 大部分端点只需要 ps、me；少数管理、调试或认证端点才使用其他参数。
 
 ### 2.5 meta 与 paramDef 规范
@@ -181,7 +181,7 @@ throw new ApiError(meta.errors.invalidParam, { reason: 'too short' });
 
 ## 3. 注册到 endpoint-list.ts
 
-在 [endpoint-list.ts](../../../../../packages/backend/src/server/api/endpoint-list.ts) 的同类端点附近添加：
+在 [endpoint-list.ts](../../../../../apps/misskey/packages/backend/src/server/api/endpoint-list.ts) 的同类端点附近添加：
 
 ```ts
 export * as '<category>/<name>' from './endpoints/<category>/<name>.js';
@@ -193,7 +193,7 @@ export * as '<category>/<name>' from './endpoints/<category>/<name>.js';
 
 ### 4.1 端到端测试
 
-[测试目录](../../../../../packages/backend/test/e2e/) 按 note、users、timelines、drive、clips、oauth 等领域分文件。
+[测试目录](../../../../../apps/misskey/packages/backend/test/e2e/) 按 note、users、timelines、drive、clips、oauth 等领域分文件。
 已有合适分类时在其中添加测试，否则放入 endpoints.ts。describe 使用人类可读标签即可。
 
 ```ts
@@ -220,7 +220,7 @@ pnpm --filter backend test:e2e
 
 ```bash
 # 快速检查单个文件
-pnpm exec eslint --fix packages/backend/src/server/api/endpoints/<category>/<name>.ts
+pnpm exec eslint --fix apps/misskey/packages/backend/src/server/api/endpoints/<category>/<name>.ts
 pnpm --filter backend typecheck      # tsc --noEmit（仅后端）
 
 # 整体检查（提交 PR 前）
@@ -252,13 +252,13 @@ pnpm build-misskey-js-with-types
 
 ## 参考代码
 
-- [endpoints.ts 类型定义](../../../../../packages/backend/src/server/api/endpoints.ts)
-- [Endpoint 基类](../../../../../packages/backend/src/server/api/endpoint-base.ts)
-- [端点注册表](../../../../../packages/backend/src/server/api/endpoint-list.ts)
-- [ApiError](../../../../../packages/backend/src/server/api/error.ts)
-- [最小端点](../../../../../packages/backend/src/server/api/endpoints/ping.ts)
-- [依赖注入与错误处理](../../../../../packages/backend/src/server/api/endpoints/notes/create.ts)
-- [动态策略](../../../../../packages/backend/src/server/api/endpoints/notes/global-timeline.ts)
-- [测试示例](../../../../../packages/backend/test/e2e/endpoints.ts)
-- [测试辅助函数](../../../../../packages/backend/test/utils.ts)
-- [API JSON 生成器](../../../../../packages/backend/scripts/generate_api_json.js)
+- [endpoints.ts 类型定义](../../../../../apps/misskey/packages/backend/src/server/api/endpoints.ts)
+- [Endpoint 基类](../../../../../apps/misskey/packages/backend/src/server/api/endpoint-base.ts)
+- [端点注册表](../../../../../apps/misskey/packages/backend/src/server/api/endpoint-list.ts)
+- [ApiError](../../../../../apps/misskey/packages/backend/src/server/api/error.ts)
+- [最小端点](../../../../../apps/misskey/packages/backend/src/server/api/endpoints/ping.ts)
+- [依赖注入与错误处理](../../../../../apps/misskey/packages/backend/src/server/api/endpoints/notes/create.ts)
+- [动态策略](../../../../../apps/misskey/packages/backend/src/server/api/endpoints/notes/global-timeline.ts)
+- [测试示例](../../../../../apps/misskey/packages/backend/test/e2e/endpoints.ts)
+- [测试辅助函数](../../../../../apps/misskey/packages/backend/test/utils.ts)
+- [API JSON 生成器](../../../../../apps/misskey/packages/backend/scripts/generate_api_json.js)

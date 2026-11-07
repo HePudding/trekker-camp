@@ -33,20 +33,20 @@
 		{
 			groupName: '[Backend] Update dependencies',
 			matchFileNames: [
-				'packages/backend/**/package.json',
+				'apps/misskey/packages/backend/**/package.json',
 			],
 		},
 		{
 			groupName: '[Frontend] Update dependencies',
 			matchFileNames: [
-				'packages/frontend/**/package.json',
-				'packages/frontend-embed/**/package.json',
-				'packages/frontend-shared/**/package.json',
-				'packages/frontend-builder/**/package.json',
-				'packages/misskey-bubble-game/**/package.json',
-				'packages/misskey-reversi/**/package.json',
-				'packages/sw/**/package.json',
-				'packages/icons-subsetter/**/package.json',
+				'apps/misskey/packages/frontend/**/package.json',
+				'apps/misskey/packages/frontend-embed/**/package.json',
+				'apps/misskey/packages/frontend-shared/**/package.json',
+				'apps/misskey/packages/frontend-builder/**/package.json',
+				'apps/misskey/packages/misskey-bubble-game/**/package.json',
+				'apps/misskey/packages/misskey-reversi/**/package.json',
+				'apps/misskey/packages/sw/**/package.json',
+				'apps/misskey/packages/icons-subsetter/**/package.json',
 			],
 			// prevent wastage of Chromatic snapshots
 			rebaseWhen: 'never',
@@ -54,7 +54,7 @@
 		{
 			groupName: '[misskey-js] Update dependencies',
 			matchFileNames: [
-				'packages/misskey-js/**/package.json',
+				'apps/misskey/packages/misskey-js/**/package.json',
 			],
 		},
 		{
@@ -98,7 +98,7 @@
 			matchFileNames: [
 				'compose.local-db.yml',
 				'compose_example.yml',
-				'packages/backend/test-federation/*.yml',
+				'apps/misskey/packages/backend/test-federation/*.yml',
 				'Dockerfile',
 			],
 		},

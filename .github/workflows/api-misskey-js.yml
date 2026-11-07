@@ -3,13 +3,13 @@ name: API report (misskey.js)
 on:
   push:
     paths:
-      - packages/misskey-js/**
+      - apps/misskey/packages/misskey-js/**
       - .github/workflows/api-misskey-js.yml
   pull_request:
     branches-ignore:
       - master
     paths:
-      - packages/misskey-js/**
+      - apps/misskey/packages/misskey-js/**
       - .github/workflows/api-misskey-js.yml
 jobs:
   report:
@@ -36,11 +36,11 @@ jobs:
         run: pnpm --filter misskey-js build
 
       - name: Check files
-        run: ls packages/misskey-js/built
+        run: ls apps/misskey/packages/misskey-js/built
 
       - name: API report
         run: pnpm --filter misskey-js api-prod
 
       - name: Show report
         if: always()
-        run: cat packages/misskey-js/temp/misskey-js.api.md
+        run: cat apps/misskey/packages/misskey-js/temp/misskey-js.api.md

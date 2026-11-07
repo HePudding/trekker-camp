@@ -6,7 +6,7 @@
 import { dirname } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { execa } from 'execa';
-import { linkPrivateAssets } from './private-assets.mjs';
+import { linkPrivateAssets } from '../../../scripts/private-assets.mjs';
 
 const _filename = fileURLToPath(import.meta.url);
 const _dirname = dirname(_filename);
@@ -35,8 +35,11 @@ function spawnChildProcess(command, args, options) {
 	const shouldForceColor = (process.stdout.isTTY || process.stderr.isTTY)
 		&& process.env.FORCE_COLOR == null
 		&& process.env.NO_COLOR == null;
-	const pnpmPath = _dirname + '/../node_modules/pnpm/bin/pnpm.mjs';
-	const windowsCommand = [process.execPath, pnpmPath, ...args]
+	const pnpmPath = process.env.npm_execpath;
+	const pnpmCommand = pnpmPath
+		? (/\.(?:c?js|mjs)$/i.test(pnpmPath) ? [process.execPath, pnpmPath] : [pnpmPath])
+		: ['pnpm'];
+	const windowsCommand = [...pnpmCommand, ...args]
 		.map(argument => `"${argument}"`)
 		.join(' ');
 	const executable = isWindows && command === 'pnpm' ? process.env.ComSpec ?? 'cmd.exe' : command;

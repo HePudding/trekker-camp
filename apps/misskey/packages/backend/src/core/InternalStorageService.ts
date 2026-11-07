@@ -18,7 +18,7 @@ export class InternalStorageService {
 		@Inject(DI.config)
 		private config: Config,
 	) {
-		this.path = Path.resolve(this.config.rootDir, 'files');
+		this.path = Path.resolve(this.config.rootDir, '../../files');
 	}
 
 	@bindThis

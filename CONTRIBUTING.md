@@ -73,9 +73,9 @@ PR 修改 ActivityPub 载荷时，请向 [misskey-hub 文档](https://github.com
 
 新增 ActivityPub 扩展属性名应以 `_misskey_` 开头，例如 `_misskey_quote`。
 
-`packages/backend/src/core/activitypub/type.ts` 中的扩展属性**必须声明为可选**，因为旧版 Misskey 或其他实现发送的载荷可能不含它。
+`apps/misskey/packages/backend/src/core/activitypub/type.ts` 中的扩展属性**必须声明为可选**，因为旧版 Misskey 或其他实现发送的载荷可能不含它。
 
-扩展属性必须纳入 `packages/backend/src/core/activitypub/misc/contexts.ts` 的上下文定义，键为扩展属性名，值为短 IRI。
+扩展属性必须纳入 `apps/misskey/packages/backend/src/core/activitypub/misc/contexts.ts` 的上下文定义，键为扩展属性名，值为短 IRI。
 
 短 IRI 在 misskey-hub 文档中定义，通常为 `misskey:<扩展属性名>`，例如 `misskey:_misskey_quote`。
 
@@ -224,9 +224,9 @@ pnpm --filter misskey-js test
 
 后端包含三类测试：
 
-- 单元测试：[`/packages/backend/test/unit`](/packages/backend/test/unit)
-- 单服务器端到端测试：[`/packages/backend/test/e2e`](/packages/backend/test/e2e)
-- 多服务器端到端测试：[`/packages/backend/test-federation`](/packages/backend/test-federation)
+- 单元测试：[`/apps/misskey/packages/backend/test/unit`](/apps/misskey/packages/backend/test/unit)
+- 单服务器端到端测试：[`/apps/misskey/packages/backend/test/e2e`](/apps/misskey/packages/backend/test/e2e)
+- 多服务器端到端测试：[`/apps/misskey/packages/backend/test-federation`](/apps/misskey/packages/backend/test-federation)
 
 #### 运行单元测试或单服务器端到端测试
 
@@ -239,7 +239,7 @@ cp .github/misskey/test.yml .config/
 2. 启动测试数据库和 Redis：
 
 ```sh
-docker compose -f packages/backend/test/compose.yml up
+docker compose -f apps/misskey/packages/backend/test/compose.yml up
 ```
 
 也可以准备可清空的空数据库，并相应调整 `.config/test.yml`。
@@ -254,13 +254,13 @@ pnpm --filter backend test:e2e # 单服务器端到端测试
 运行指定测试：
 
 ```sh
-pnpm --filter backend test -- packages/backend/test/unit/activitypub.ts
-pnpm --filter backend test:e2e -- packages/backend/test/e2e/nodeinfo.ts
+pnpm --filter backend test -- apps/misskey/packages/backend/test/unit/activitypub.ts
+pnpm --filter backend test:e2e -- apps/misskey/packages/backend/test/e2e/nodeinfo.ts
 ```
 
 #### 运行多服务器端到端测试
 
-见 [`/packages/backend/test-federation/README.md`](/packages/backend/test-federation/README.md)。
+见 [`/apps/misskey/packages/backend/test-federation/README.md`](/apps/misskey/packages/backend/test-federation/README.md)。
 
 ## 环境变量
 
@@ -610,7 +610,7 @@ SQL 数组下标**从 1 开始**。访问 `[a, b, c]` 的第一个元素时使�
 
 ### 创建迁移
 
-在 packages/backend 中执行：
+在 apps/misskey/packages/backend 中执行：
 
 ```sh
 pnpm dlx typeorm migration:generate -d ormconfig.js -o --esm <migration name>
