@@ -7,7 +7,7 @@ on:
       - master
       - develop
     paths:
-      - packages/backend/**
+      - apps/misskey/packages/backend/**
       - .github/workflows/get-api-diff.yml
 jobs:
   get-from-misskey:
@@ -46,7 +46,7 @@ jobs:
     - name: Generate API JSON
       run: pnpm --filter backend generate-api-json
     - name: Copy API.json
-      run: cp packages/backend/built/api.json ${{ matrix.api-json-name }}
+      run: cp apps/misskey/packages/backend/built/api.json ${{ matrix.api-json-name }}
     - name: Upload Artifact
       uses: actions/upload-artifact@v7
       with:

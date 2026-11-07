@@ -14,7 +14,7 @@
 
 ## 测试配置
 
-后端 test、test:e2e、test:fed 均在内部运行 `cross-env NODE_ENV=test pnpm compile-config`，读取 `.config/test.yml`。见 [package.json](../../../../../packages/backend/package.json) 和 [compile_config.js](../../../../../packages/backend/scripts/compile_config.js)。**缺少配置时测试无法启动。**
+后端 test、test:e2e、test:fed 均在内部运行 `cross-env NODE_ENV=test pnpm compile-config`，读取 `.config/test.yml`。见 [package.json](../../../../../apps/misskey/packages/backend/package.json) 和 [compile_config.js](../../../../../apps/misskey/packages/backend/scripts/compile_config.js)。**缺少配置时测试无法启动。**
 
 尚未创建时，任选一种方式复制一次：
 
@@ -32,15 +32,15 @@ cp .github/misskey/test.yml .config/test.yml
 
 | 类型 | 配置 | 命令 |
 |---|---|---|
-| 单元测试 | packages/backend/vitest.config.unit.ts | `pnpm --filter backend test` |
-| HTTP / 数据库端到端测试 | packages/backend/vitest.config.e2e.ts | `pnpm --filter backend test:e2e` |
-| 联邦测试 | packages/backend/vitest.config.fed.ts | `pnpm --filter backend test:fed` |
+| 单元测试 | apps/misskey/packages/backend/vitest.config.unit.ts | `pnpm --filter backend test` |
+| HTTP / 数据库端到端测试 | apps/misskey/packages/backend/vitest.config.e2e.ts | `pnpm --filter backend test:e2e` |
+| 联邦测试 | apps/misskey/packages/backend/vitest.config.fed.ts | `pnpm --filter backend test:fed` |
 
-测试位于 packages/backend/test 下。覆盖率命令为 `pnpm --filter backend test-and-coverage`。
+测试位于 apps/misskey/packages/backend/test 下。覆盖率命令为 `pnpm --filter backend test-and-coverage`。
 
 ## 端到端测试位置
 
-packages/backend/test/e2e 中的文件示例：
+apps/misskey/packages/backend/test/e2e 中的文件示例：
 
 ```
 note.ts            帖子相关（创建、转发、可见范围、附件等）
@@ -69,7 +69,7 @@ describe 使用人类可读名称即可，如 Note、管理员操作，无需使
 
 ## 共享初始化
 
-Vitest 的 setupFiles 加载 `packages/backend/test/setup.e2e.ts`，为各文件注册共享 beforeAll，初始化测试数据库并重置环境。
+Vitest 的 setupFiles 加载 `apps/misskey/packages/backend/test/setup.e2e.ts`，为各文件注册共享 beforeAll，初始化测试数据库并重置环境。
 服务器启动和停止由 globalSetup 中 `test-server/entry.ts` 的 setup/teardown 负责。
 测试文件自身的 beforeAll 用于准备用户：
 
@@ -95,7 +95,7 @@ describe('功能名称', () => {
 
 ## api 辅助函数
 
-实现见 [test/utils.ts](../../../../../packages/backend/test/utils.ts)：
+实现见 [test/utils.ts](../../../../../apps/misskey/packages/backend/test/utils.ts)：
 
 ```ts
 const res = await api('<category>/<name>', params, me?);
@@ -149,7 +149,7 @@ const file3 = await uploadFile(alice, { blob: new Blob([...]) });           // �
 
 ### role：创建并分配角色
 
-实现见 [test/utils.ts](../../../../../packages/backend/test/utils.ts)。
+实现见 [test/utils.ts](../../../../../apps/misskey/packages/backend/test/utils.ts)。
 
 ```ts
 const myRole = await role(adminUser, { name: 'tester' }, { canCreateChannel: { useDefault: false, priority: 0, value: true } });
@@ -169,7 +169,7 @@ const token = await createAppToken(alice, ['write:notes', 'read:account']);
 
 ### 更多工具
 
-[test/utils.ts](../../../../../packages/backend/test/utils.ts) 还提供：
+[test/utils.ts](../../../../../apps/misskey/packages/backend/test/utils.ts) 还提供：
 
 - userList：创建用户列表。
 - page、play：创建 Page 和 Flash。
@@ -184,9 +184,9 @@ const token = await createAppToken(alice, ['write:notes', 'read:account']);
 
 ### 现有测试
 
-- [note.ts](../../../../../packages/backend/test/e2e/note.ts)：describe('Note') 下组织多个测试。
-- [endpoints.ts](../../../../../packages/backend/test/e2e/endpoints.ts)：未按领域分类的端点。
-- [api.ts](../../../../../packages/backend/test/e2e/api.ts)：认证、限流等 API 层行为。
+- [note.ts](../../../../../apps/misskey/packages/backend/test/e2e/note.ts)：describe('Note') 下组织多个测试。
+- [endpoints.ts](../../../../../apps/misskey/packages/backend/test/e2e/endpoints.ts)：未按领域分类的端点。
+- [api.ts](../../../../../apps/misskey/packages/backend/test/e2e/api.ts)：认证、限流等 API 层行为。
 
 ## 本地数据库与 Redis
 
@@ -194,12 +194,12 @@ const token = await createAppToken(alice, ['write:notes', 'read:account']);
 
 | 用途 | compose 文件 | 数据库 / Redis 主机端口 |
 |---|---|---|
-| test、test:e2e、test:fed | [packages/backend/test/compose.yml](../../../../../packages/backend/test/compose.yml) | 54312 / 56312，与 [.github/misskey/test.yml](../../../../../.github/misskey/test.yml) 一致 |
+| test、test:e2e、test:fed | [apps/misskey/packages/backend/test/compose.yml](../../../../../apps/misskey/packages/backend/test/compose.yml) | 54312 / 56312，与 [.github/misskey/test.yml](../../../../../.github/misskey/test.yml) 一致 |
 | pnpm dev 等开发 | 根目录 compose.local-db.yml | 5432 / 6379 |
 
 ```bash
 # 测试用数据库和 Redis
-docker compose -f packages/backend/test/compose.yml up -d
+docker compose -f apps/misskey/packages/backend/test/compose.yml up -d
 
 # 开发用数据库和 Redis，仅启动 postgres、redis、meilisearch
 docker compose -f compose.local-db.yml up -d

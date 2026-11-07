@@ -62,8 +62,10 @@ beforeAll(async () => {
 	workDir = await mkdtemp(join(tempRoot, 'diagnostics-frontend-report-test-'));
 
 	for (const label of ['base', 'head'] as const) {
-		const outDir = join(workDir, label, 'built/_frontend_vite_');
+		const appDir = label === 'head' ? join(workDir, label, 'apps/misskey') : join(workDir, label);
+		const outDir = join(appDir, 'built/_frontend_vite_');
 		await mkdir(outDir, { recursive: true });
+		if (label === 'head') await writeFile(join(appDir, 'package.json'), '{"name":"misskey"}');
 		await writeFile(join(outDir, 'manifest.json'), JSON.stringify(manifest));
 
 		for (const [file, size] of Object.entries(fileSizes[label])) {

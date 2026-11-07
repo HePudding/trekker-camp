@@ -4,7 +4,7 @@
 
 ## 位置与命名
 
-- **后缀固定为 .stories.impl.ts**。`.stories.ts` 由 `packages/frontend/.storybook/generate.tsx` 生成，禁止手动编辑或提交。
+- **后缀固定为 .stories.impl.ts**。`.stories.ts` 由 `apps/misskey/packages/frontend/.storybook/generate.tsx` 生成，禁止手动编辑或提交。
 - 与组件放在同一层，包括 global 等子目录。
 - 开头需要 TypeScript 注释形式的 SPDX 头。
 
@@ -47,7 +47,7 @@ export const Default = {
 
 ## 多个示例：不同变体
 
-参考 [MkButton.stories.impl.ts](../../../../../packages/frontend/src/components/MkButton.stories.impl.ts)。
+参考 [MkButton.stories.impl.ts](../../../../../apps/misskey/packages/frontend/src/components/MkButton.stories.impl.ts)。
 存在 variant、size 或状态差异时，基于 Default 展开并派生：
 
 ```ts
@@ -183,7 +183,7 @@ pnpm --filter frontend storybook-dev    # http://localhost:6006
 pnpm --filter frontend build-storybook  # 静态构建
 ```
 
-新组件未出现在侧栏时，常见原因是未进入 [generate.tsx](../../../../../packages/frontend/.storybook/generate.tsx) 的**允许列表**。全量 Vue glob 已被注释，当前通过 `globSync('src/components/global/Mk*.vue')`、`globSync('src/components/Mk[B-E]*.vue')` 等显式列举。
+新组件未出现在侧栏时，常见原因是未进入 [generate.tsx](../../../../../apps/misskey/packages/frontend/.storybook/generate.tsx) 的**允许列表**。全量 Vue glob 已被注释，当前通过 `globSync('src/components/global/Mk*.vue')`、`globSync('src/components/Mk[B-E]*.vue')` 等显式列举。
 
 仅添加 .stories.impl.ts 可能仍不会显示；不在范围内时需在 generate.tsx 添加规则。同时检查后缀和 SPDX 头之后的语法。
 

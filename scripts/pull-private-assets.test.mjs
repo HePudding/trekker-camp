@@ -42,7 +42,7 @@ function fixture(t) {
 		const within = relative(parent, temporary);
 		assert.ok(!isAbsolute(within) && within.startsWith('camp-pull-test-') && !within.includes('..'));
 		for (const workspace of [root, join(temporary, 'second-worktree')]) {
-			try { unlinkSync(join(workspace, 'packages/frontend/assets/camp')); } catch (error) { if (error.code !== 'ENOENT') throw error; }
+			try { unlinkSync(join(workspace, 'apps/misskey/packages/frontend/assets/camp')); } catch (error) { if (error.code !== 'ENOENT') throw error; }
 		}
 		rmSync(temporary, { recursive: true, force: true });
 	});
@@ -60,7 +60,7 @@ test('first pull initializes an empty local asset directory, then fast-forwards'
 	git(seed, 'commit', '-m', 'Update artwork');
 	git(seed, 'push');
 	await pullPrivateAssets(root, { source: '', repository: remote });
-	assert.equal(readFileSync(join(root, 'packages/frontend/assets/camp/image.svg'), 'utf8'), '<svg>updated</svg>');
+	assert.equal(readFileSync(join(root, 'apps/misskey/packages/frontend/assets/camp/image.svg'), 'utf8'), '<svg>updated</svg>');
 });
 
 test('pull preserves uncommitted assets and topic branches', async t => {

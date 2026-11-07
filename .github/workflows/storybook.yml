@@ -63,7 +63,7 @@ jobs:
         if [ "$DIFF" = "0000000000000000000000000000000000000000 HEAD" ]; then
           DIFF="HEAD"
         fi
-        CHROMATIC_PARAMETER="$(node packages/frontend/.storybook/changes.js $(git diff-tree --no-commit-id --name-only -r $(echo "$DIFF") | xargs))"
+        CHROMATIC_PARAMETER="$(node apps/misskey/packages/frontend/.storybook/changes.js $(git diff-tree --no-commit-id --name-only -r $(echo "$DIFF") | xargs))"
         if [ "$CHROMATIC_PARAMETER" = " --skip" ]; then
           echo "skip=true" >> $GITHUB_OUTPUT
         fi
@@ -78,7 +78,7 @@ jobs:
       if: github.event_name == 'pull_request_target'
       id: chromatic_pull_request
       run: |
-        CHROMATIC_PARAMETER="$(node packages/frontend/.storybook/changes.js $(git diff --name-only origin/${GITHUB_BASE_REF}...origin/${GITHUB_HEAD_REF} | xargs))"
+        CHROMATIC_PARAMETER="$(node apps/misskey/packages/frontend/.storybook/changes.js $(git diff --name-only origin/${GITHUB_BASE_REF}...origin/${GITHUB_HEAD_REF} | xargs))"
         if [ "$CHROMATIC_PARAMETER" = " --skip" ]; then
           echo "skip=true" >> $GITHUB_OUTPUT
         fi
@@ -105,4 +105,4 @@ jobs:
       uses: actions/upload-artifact@v7
       with:
         name: storybook
-        path: packages/frontend/storybook-static
+        path: apps/misskey/packages/frontend/storybook-static

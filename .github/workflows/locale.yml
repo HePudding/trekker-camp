@@ -3,15 +3,15 @@ name: Locale
 on:
   push:
     paths:
-      - packages/i18n/**
-      - locales/**
+      - apps/misskey/packages/i18n/**
+      - apps/misskey/locales/**
       - .github/workflows/locale.yml
   pull_request:
     branches-ignore:
       - master
     paths:
-      - packages/i18n/**
-      - locales/**
+      - apps/misskey/packages/i18n/**
+      - apps/misskey/locales/**
       - .github/workflows/locale.yml
 jobs:
   locale_verify:
@@ -31,5 +31,5 @@ jobs:
       - run: pnpm i --frozen-lockfile
       - run: pnpm --filter i18n build
       - name: Verify Locales
-        working-directory: ./packages/i18n
+        working-directory: ./apps/misskey/packages/i18n
         run: pnpm run verify

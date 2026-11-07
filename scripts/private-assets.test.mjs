@@ -11,7 +11,7 @@ import { dirname, isAbsolute, join, relative, resolve } from 'node:path';
 import test from 'node:test';
 import { fileURLToPath } from 'node:url';
 import { t as listTar } from 'tar';
-import meta from '../package.json' with { type: 'json' };
+import meta from '../apps/misskey/package.json' with { type: 'json' };
 import { checkPrivateAssets } from './check-private-assets.mjs';
 import { linkPrivateAssets } from './private-assets.mjs';
 import { buildTarball } from './tarball.mjs';
@@ -26,7 +26,7 @@ function fixture(t) {
 	t.after(() => {
 		const within = relative(tempRoot, temporary);
 		assert.ok(!isAbsolute(within) && within.startsWith('trekker-assets-test-') && !within.includes('..'));
-		const link = join(root, 'packages/frontend/assets/camp');
+		const link = join(root, 'apps/misskey/packages/frontend/assets/camp');
 		if (existsSync(link) && lstatSync(link).isSymbolicLink()) unlinkSync(link);
 		rmSync(temporary, { recursive: true, force: true });
 	});
@@ -47,15 +47,15 @@ test('local link is idempotent and serves edits without copying private metadata
 	const root = fixture(t);
 	const source = await linkPrivateAssets(root, '');
 	assert.equal(source, await linkPrivateAssets(root, ''));
-	assert.ok(lstatSync(join(root, 'packages/frontend/assets/camp')).isSymbolicLink());
+	assert.ok(lstatSync(join(root, 'apps/misskey/packages/frontend/assets/camp')).isSymbolicLink());
 	write(root, 'private-assets/public/home/hero.webp', 'first artwork');
 	write(root, 'private-assets/RIGHTS.md', 'private license record');
 	write(root, 'private-assets/.git/config', 'private repository config');
-	assert.equal(readFileSync(join(root, 'packages/frontend/assets/camp/home/hero.webp'), 'utf8'), 'first artwork');
+	assert.equal(readFileSync(join(root, 'apps/misskey/packages/frontend/assets/camp/home/hero.webp'), 'utf8'), 'first artwork');
 	write(root, 'private-assets/public/home/hero.webp', 'updated artwork');
-	assert.equal(readFileSync(join(root, 'packages/frontend/assets/camp/home/hero.webp'), 'utf8'), 'updated artwork');
-	assert.equal(existsSync(join(root, 'packages/frontend/assets/camp/RIGHTS.md')), false);
-	assert.equal(existsSync(join(root, 'packages/frontend/assets/camp/.git')), false);
+	assert.equal(readFileSync(join(root, 'apps/misskey/packages/frontend/assets/camp/home/hero.webp'), 'utf8'), 'updated artwork');
+	assert.equal(existsSync(join(root, 'apps/misskey/packages/frontend/assets/camp/RIGHTS.md')), false);
+	assert.equal(existsSync(join(root, 'apps/misskey/packages/frontend/assets/camp/.git')), false);
 });
 
 test('worktrees can share an existing source and switch only the serving link', async t => {
@@ -66,17 +66,17 @@ test('worktrees can share an existing source and switch only the serving link', 
 	mkdirSync(shared, { recursive: true });
 	writeFileSync(join(shared, 'image.webp'), 'shared');
 	assert.equal(await linkPrivateAssets(root, shared), await linkPrivateAssets(root, ''));
-	assert.equal(readFileSync(join(root, 'packages/frontend/assets/camp/image.webp'), 'utf8'), 'shared');
+	assert.equal(readFileSync(join(root, 'apps/misskey/packages/frontend/assets/camp/image.webp'), 'utf8'), 'shared');
 	assert.equal(readFileSync(join(root, 'private-assets/public/image.webp'), 'utf8'), 'original');
 	await assert.rejects(linkPrivateAssets(root, join(shared, 'missing')), /ENOENT/);
-	assert.equal(readFileSync(join(root, 'packages/frontend/assets/camp/image.webp'), 'utf8'), 'shared');
+	assert.equal(readFileSync(join(root, 'apps/misskey/packages/frontend/assets/camp/image.webp'), 'utf8'), 'shared');
 });
 
 test('existing files and directories are preserved', async t => {
 	const root = fixture(t);
-	write(root, 'packages/frontend/assets/camp/keep.webp', 'keep');
+	write(root, 'apps/misskey/packages/frontend/assets/camp/keep.webp', 'keep');
 	await assert.rejects(linkPrivateAssets(root, ''), /already exists/);
-	assert.equal(readFileSync(join(root, 'packages/frontend/assets/camp/keep.webp'), 'utf8'), 'keep');
+	assert.equal(readFileSync(join(root, 'apps/misskey/packages/frontend/assets/camp/keep.webp'), 'utf8'), 'keep');
 });
 
 test('sources inside the checkout must use the excluded public directory', async t => {
@@ -84,7 +84,7 @@ test('sources inside the checkout must use the excluded public directory', async
 	write(root, 'unprotected-artwork/image.webp', 'artwork');
 	await assert.rejects(linkPrivateAssets(root, 'unprotected-artwork'), /must be under private-assets\/public/);
 	await assert.rejects(linkPrivateAssets(root, 'private-assets/public'), /ENOENT/);
-	assert.equal(existsSync(join(root, 'packages/frontend/assets/camp')), false);
+	assert.equal(existsSync(join(root, 'apps/misskey/packages/frontend/assets/camp')), false);
 	assert.equal(readFileSync(join(root, 'unprotected-artwork/image.webp'), 'utf8'), 'artwork');
 });
 
@@ -105,16 +105,16 @@ test('Git ignores artwork and its link, and the check rejects forced additions',
 test('the source archive excludes private artwork even without Git ignore rules', async t => {
 	const root = fixture(t);
 	write(root, 'README.md', 'public project');
-	write(root, 'packages/frontend/assets/default.txt', 'public default');
+	write(root, 'apps/misskey/packages/frontend/assets/default.txt', 'public default');
 	write(root, 'private-assets/public/image.webp', 'private artwork');
 	write(root, 'private-assets/RIGHTS.md', 'private license');
 	await linkPrivateAssets(root, '');
 	await buildTarball(root);
 	const entries = [];
-	await listTar({ file: join(root, 'built/tarball', `misskey-${meta.version}.tar.gz`), onReadEntry: entry => entries.push(entry.path) });
+	await listTar({ file: join(root, 'apps/misskey/built/tarball', `misskey-${meta.version}.tar.gz`), onReadEntry: entry => entries.push(entry.path) });
 	assert.ok(entries.includes('README.md'));
-	assert.ok(entries.includes('packages/frontend/assets/default.txt'));
-	assert.equal(entries.some(path => path.startsWith('private-assets') || path.startsWith('packages/frontend/assets/camp')), false, entries.join('\n'));
+	assert.ok(entries.includes('apps/misskey/packages/frontend/assets/default.txt'));
+	assert.equal(entries.some(path => path.startsWith('private-assets') || path.startsWith('apps/misskey/packages/frontend/assets/camp')), false, entries.join('\n'));
 });
 
 test('Docker build excludes artwork and the deployment mounts only public files read-only', async t => {
@@ -126,19 +126,19 @@ test('Docker build excludes artwork and the deployment mounts only public files 
 	const root = fixture(t);
 	copyFileSync(join(repoRoot, '.dockerignore'), join(root, '.dockerignore'));
 	write(root, 'README.md', 'public project');
-	write(root, 'packages/frontend/assets/default.txt', 'public default');
+	write(root, 'apps/misskey/packages/frontend/assets/default.txt', 'public default');
 	write(root, 'private-assets/public/image.webp', 'private artwork');
 	write(root, 'private-assets/RIGHTS.md', 'private license');
 	// A real directory also models a manually copied asset bundle or a container mount.
-	write(root, 'packages/frontend/assets/camp/image.webp', 'private artwork');
+	write(root, 'apps/misskey/packages/frontend/assets/camp/image.webp', 'private artwork');
 	const output = join(dirname(root), 'docker-output');
 	execFileSync('docker', ['build', '--file', '-', '--output', `type=local,dest=${output}`, root], {
 		input: 'FROM scratch\nCOPY . /\n', encoding: 'utf8', stdio: ['pipe', 'pipe', 'pipe'], timeout: 120000,
 	});
 	assert.equal(readFileSync(join(output, 'README.md'), 'utf8'), 'public project');
-	assert.equal(readFileSync(join(output, 'packages/frontend/assets/default.txt'), 'utf8'), 'public default');
+	assert.equal(readFileSync(join(output, 'apps/misskey/packages/frontend/assets/default.txt'), 'utf8'), 'public default');
 	assert.equal(existsSync(join(output, 'private-assets')), false);
-	assert.equal(existsSync(join(output, 'packages/frontend/assets/camp')), false);
+	assert.equal(existsSync(join(output, 'apps/misskey/packages/frontend/assets/camp')), false);
 
 	write(root, 'compose.yml', 'services:\n  web:\n    image: trekker-camp-test\n');
 	copyFileSync(join(repoRoot, 'compose.assets.yml'), join(root, 'compose.assets.yml'));
@@ -148,7 +148,7 @@ test('Docker build excludes artwork and the deployment mounts only public files 
 	}));
 	const mount = compose.services.web.volumes[0];
 	assert.equal(mount.type, 'bind');
-	assert.equal(mount.target, '/misskey/packages/frontend/assets/camp');
+	assert.equal(mount.target, '/misskey/apps/misskey/packages/frontend/assets/camp');
 	assert.equal(mount.read_only, true);
 	assert.equal(mount.bind?.create_host_path ?? false, false);
 	assert.equal(resolve(mount.source), resolve(root, 'private-assets/public'));

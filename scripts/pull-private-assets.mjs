@@ -27,7 +27,7 @@ function sameRepository(actual, expected) {
 /** Fetch artwork explicitly, preserving dirty worktrees and divergent branches. */
 export async function pullPrivateAssets(root = repoRoot, { source = process.env.CAMP_ASSETS_DIR, repository = repositoryUrl } = {}) {
 	let publicDirectory = resolve(root, source || 'private-assets/public');
-	const link = resolve(root, 'packages/frontend/assets/camp');
+	const link = resolve(root, 'apps/misskey/packages/frontend/assets/camp');
 	if (!source) {
 		const existing = await lstat(link).catch(error => {
 			if (error.code === 'ENOENT') return null;

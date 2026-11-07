@@ -6,13 +6,13 @@ on:
     paths:
       - private-assets
       - private-assets/**
-      - packages/frontend/assets/**
+      - apps/misskey/packages/frontend/assets/**
       - scripts/private-assets*.mjs
       - scripts/pull-private-assets*.mjs
       - scripts/check-private-assets.mjs
       - scripts/check-shipping.mjs
       - scripts/tarball.mjs
-      - scripts/dev.mjs
+      - apps/misskey/scripts/dev.mjs
       - .gitignore
       - .dockerignore
       - compose.assets.yml
@@ -23,13 +23,13 @@ on:
     paths:
       - private-assets
       - private-assets/**
-      - packages/frontend/assets/**
+      - apps/misskey/packages/frontend/assets/**
       - scripts/private-assets*.mjs
       - scripts/pull-private-assets*.mjs
       - scripts/check-private-assets.mjs
       - scripts/check-shipping.mjs
       - scripts/tarball.mjs
-      - scripts/dev.mjs
+      - apps/misskey/scripts/dev.mjs
       - .gitignore
       - .dockerignore
       - compose.assets.yml

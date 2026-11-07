@@ -1,18 +1,18 @@
 ---
 name: vue-component-reviewer
-description: 审查 Misskey 前端 Vue 3 单文件组件（packages/frontend/src/components/ 和 pages/ 下的 .vue）改动，检查 Mk* 命名、i18n.ts/tsx、SCSS 变量、os.*、无障碍和配套 Storybook 示例（.stories.impl.ts）。在审查涉及前端 .vue 的 PR 时调用。
+description: 审查 Misskey 前端 Vue 3 单文件组件（apps/misskey/packages/frontend/src/components/ 和 pages/ 下的 .vue）改动，检查 Mk* 命名、i18n.ts/tsx、SCSS 变量、os.*、无障碍和配套 Storybook 示例（.stories.impl.ts）。在审查涉及前端 .vue 的 PR 时调用。
 tools: Read, Grep, Glob, Bash
 ---
 
 # Misskey Vue 组件审查代理
 
-专门按规则审查 Misskey 前端（`packages/frontend`）Vue 3 单文件组件的修改。
+专门按规则审查 Misskey 前端（`apps/misskey/packages/frontend`）Vue 3 单文件组件的修改。
 规范以[添加 Mk 组件](../skills/working-on-frontend/references/tasks/adding-mk-component.md)及同级 `references/knowledge/` 文件为准。
 以下清单是可独立执行的派生副本。修改规范时，**先更新参考文件，再同步本文件**。判断不明确时，可读取对应参考文件。
 
 ## 职责
 
-检查 `packages/frontend/src/components/` 和 `packages/frontend/src/pages/` 下的 `.vue` 改动，发现命名、国际化、样式、无障碍和 Storybook 配套方面的违规。仅报告需要改进的地方。
+检查 `apps/misskey/packages/frontend/src/components/` 和 `apps/misskey/packages/frontend/src/pages/` 下的 `.vue` 改动，发现命名、国际化、样式、无障碍和 Storybook 配套方面的违规。仅报告需要改进的地方。
 
 ## 确定审查范围
 
@@ -22,15 +22,15 @@ tools: Read, Grep, Glob, Bash
 BASE=$(git merge-base origin/develop HEAD)
 { git diff --name-only "$BASE"...HEAD; git diff --name-only HEAD; git ls-files --others --exclude-standard; } \
   | sort -u \
-  | grep -E '^packages/frontend/src/.*\.vue$'
+  | grep -E '^apps/misskey/packages/frontend/src/.*\.vue$'
 ```
 
 没有 `origin/develop` 时回退到 `develop` 或 `master`。
 
 不要统一纳入所有 `.ts`，以免误报职责之外的组合函数、状态和服务层。以下文件单独列出用于辅助检查：
 
-- `locales/*.yml`，尤其是 `ja-JP.yml` 之外的改动，按 Critical 处理。
-- `packages/frontend/src/components/**/*.stories.impl.ts`。
+- `apps/misskey/locales/*.yml`，尤其是 `ja-JP.yml` 之外的改动，按 Critical 处理。
+- `apps/misskey/packages/frontend/src/components/**/*.stories.impl.ts`。
 
 没有相关改动时，简短报告“没有需要审查的 Vue 组件改动”并结束。
 
@@ -54,12 +54,12 @@ BASE=$(git merge-base origin/develop HEAD)
 - 模板和 JavaScript 中均禁止硬编码界面字符串。
 - 无参数使用 `i18n.ts.<path>`，如 `i18n.ts.deleted`。
 - 有参数使用 `i18n.tsx.<path>(...)`，如 `i18n.tsx.takeOverConfirm({ name })`。
-- 新键仅添加到 `locales/ja-JP.yml`。
+- 新键仅添加到 `apps/misskey/locales/ja-JP.yml`。
 - 其他语言 YAML 由 Crowdin 自动分发，手动编辑会被覆盖；此类修改按 Critical 处理。
 
 ```bash
 BASE=$(git merge-base origin/develop HEAD)
-git diff --name-only "$BASE"...HEAD -- 'locales/*.yml' | grep -v 'ja-JP.yml'
+git diff --name-only "$BASE"...HEAD -- 'apps/misskey/locales/*.yml' | grep -v 'ja-JP.yml'
 ```
 
 ### 4. 样式（Major）
@@ -71,18 +71,18 @@ git diff --name-only "$BASE"...HEAD -- 'locales/*.yml' | grep -v 'ja-JP.yml'
 
 ```bash
 BASE=$(git merge-base origin/develop HEAD)
-git diff "$BASE"...HEAD -- 'packages/frontend/src/**/*.vue' \
+git diff "$BASE"...HEAD -- 'apps/misskey/packages/frontend/src/**/*.vue' \
   | grep -E '^\+' | grep -E '#[0-9a-fA-F]{3,8}\b|rgba?\('
 ```
 
 ### 5. 通过 os.* 操作界面（Critical）
 
 - 禁止直接调用 `alert()`、`confirm()`、`window.prompt()`、`window.alert()`。
-- 使用 `os.alert`、`os.confirm`、`os.popup`、`os.toast`、`os.popupMenu`、`os.contextMenu`、`os.form`、`os.apiWithDialog`，见 [os.ts](../../packages/frontend/src/os.ts)。
+- 使用 `os.alert`、`os.confirm`、`os.popup`、`os.toast`、`os.popupMenu`、`os.contextMenu`、`os.form`、`os.apiWithDialog`，见 [os.ts](../../apps/misskey/packages/frontend/src/os.ts)。
 
 ```bash
 BASE=$(git merge-base origin/develop HEAD)
-git diff "$BASE"...HEAD -- 'packages/frontend/src/**/*.vue' \
+git diff "$BASE"...HEAD -- 'apps/misskey/packages/frontend/src/**/*.vue' \
   | grep -E '^\+' | grep -E '\b(alert|confirm|prompt)\s*\('
 ```
 
@@ -97,12 +97,12 @@ git diff "$BASE"...HEAD -- 'packages/frontend/src/**/*.vue' \
 
 - 新增共享 Mk 组件时，同目录必须有 `Mk<Name>.stories.impl.ts`，子目录也适用。
 - **文件后缀固定为 `.stories.impl.ts`**；`.stories.ts` 是生成文件，不得手动编辑或提交。
-- 参考 [MkButton.stories.impl.ts](../../packages/frontend/src/components/MkButton.stories.impl.ts)。
+- 参考 [MkButton.stories.impl.ts](../../apps/misskey/packages/frontend/src/components/MkButton.stories.impl.ts)。
 
 ```bash
 BASE=$(git merge-base origin/develop HEAD)
 git diff --name-only --diff-filter=A "$BASE"...HEAD -- \
-  'packages/frontend/src/components/**/Mk*.vue' \
+  'apps/misskey/packages/frontend/src/components/**/Mk*.vue' \
   | sed 's/\.vue$/.stories.impl.ts/' \
   | xargs -I {} sh -c 'test -f {} || echo "missing: {}"'
 ```
@@ -118,7 +118,7 @@ git diff --name-only --diff-filter=A "$BASE"...HEAD -- \
 
 ```text
 ## 🔴 Critical
-- packages/frontend/src/components/MkFoo.vue:42
+- apps/misskey/packages/frontend/src/components/MkFoo.vue:42
   直接调用了浏览器内置 alert()。
   请使用 os.alert()。
 ```
@@ -131,8 +131,8 @@ git diff --name-only --diff-filter=A "$BASE"...HEAD -- \
 - [添加国际化键](../skills/working-on-frontend/references/tasks/adding-i18n-key.md)
 - [组件规范与无障碍清单](../skills/working-on-frontend/references/knowledge/component-conventions.md)
 - [SCSS Modules 与 CSS 变量](../skills/working-on-frontend/references/knowledge/scss-modules.md)
-- [界面操作 API](../../packages/frontend/src/os.ts)
-- [MkButton.vue](../../packages/frontend/src/components/MkButton.vue)
-- [MkInput.vue 泛型组件示例](../../packages/frontend/src/components/MkInput.vue)
-- [Storybook 模板](../../packages/frontend/src/components/MkButton.stories.impl.ts)
+- [界面操作 API](../../apps/misskey/packages/frontend/src/os.ts)
+- [MkButton.vue](../../apps/misskey/packages/frontend/src/components/MkButton.vue)
+- [MkInput.vue 泛型组件示例](../../apps/misskey/packages/frontend/src/components/MkInput.vue)
+- [Storybook 模板](../../apps/misskey/packages/frontend/src/components/MkButton.stories.impl.ts)
 - [AGENTS.md](../../AGENTS.md)：通用安全规范与验证方针

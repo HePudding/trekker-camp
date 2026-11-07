@@ -8,7 +8,7 @@ on:
       - develop
       - improve-misskey-js-autogen-check
     paths:
-      - packages/backend/**
+      - apps/misskey/packages/backend/**
 
 jobs:
   generate-misskey-js:
@@ -48,15 +48,15 @@ jobs:
       # build misskey js
       - name: Build misskey-js
         run: |-
-          cp packages/backend/built/api.json packages/misskey-js/generator/api.json
+          cp apps/misskey/packages/backend/built/api.json apps/misskey/packages/misskey-js/generator/api.json
           pnpm run --filter misskey-js-type-generator generate
 
-      # packages/misskey-js/generator/built/autogen
+      # apps/misskey/packages/misskey-js/generator/built/autogen
       - name: Upload Generated
         uses: actions/upload-artifact@v7
         with:
           name: generated-misskey-js
-          path: packages/misskey-js/generator/built/autogen
+          path: apps/misskey/packages/misskey-js/generator/built/autogen
 
   get-actual-misskey-js:
     runs-on: ubuntu-latest
@@ -75,7 +75,7 @@ jobs:
         uses: actions/upload-artifact@v7
         with:
           name: actual-misskey-js
-          path: packages/misskey-js/src/autogen
+          path: apps/misskey/packages/misskey-js/src/autogen
 
   check-misskey-js-autogen:
     runs-on: ubuntu-latest

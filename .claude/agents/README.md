@@ -28,4 +28,4 @@ Misskey 专用规则由本目录代理检查，通用质量由 pr-review-toolkit
 - 在 `.claude/agents/<name>.md` 中编写 YAML 文件头（`name`、`description`、`tools`）及 Markdown 正文。
 - 描述应列出目标领域、主要检查项及触发条件。由于会常驻加载，应保持简洁，只保留有区分度的关键词。
 - 专门用于审查时，将工具限制为 `tools: Read, Grep, Glob, Bash`，不授予 Edit/Write。**注意：Bash 能运行任意 shell 命令，权限很强**。审查中仅使用 `git diff`、`git ls-files`、`grep`、`sed` 等读取命令。正文示例和指令中不要包含写入、删除或网络发送操作；代理正文负责约束这些行为。
-- 主要参考文件的链接使用相对于当前代理 Markdown 文件的路径，例如 `../../packages/backend/...`，避免依赖贡献者个人主目录的绝对路径。
+- 主要参考文件的链接使用相对于当前代理 Markdown 文件的路径，例如 `../../apps/misskey/packages/backend/...`，避免依赖贡献者个人主目录的绝对路径。

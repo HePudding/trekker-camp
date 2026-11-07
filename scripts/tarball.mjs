@@ -10,7 +10,7 @@ import { fileURLToPath } from 'node:url';
 import { pipeline } from 'node:stream/promises';
 import walk from 'ignore-walk';
 import { Pack } from 'tar/pack';
-import meta from '../package.json' with { type: "json" };
+import meta from '../apps/misskey/package.json' with { type: "json" };
 
 const repoRoot = fileURLToPath(new URL('..', import.meta.url));
 const ignore = [
@@ -19,18 +19,18 @@ const ignore = [
 	'**/.gitmodules',
 	'private-assets',
 	'private-assets/**',
-	'packages/frontend/assets/camp',
-	'packages/frontend/assets/camp/**',
+	'apps/misskey/packages/frontend/assets/camp',
+	'apps/misskey/packages/frontend/assets/camp/**',
 	// Exclude files you don't want to include in the tarball here
 ];
 
 export async function buildTarball(cwd = repoRoot) {
-	const mkdirPromise = mkdir(resolve(cwd, 'built', 'tarball'), { recursive: true });
+	const mkdirPromise = mkdir(resolve(cwd, 'apps/misskey/built', 'tarball'), { recursive: true });
 	const pack = new Pack({
 		cwd,
 		gzip: true,
 		// Pack also visits directory children; enforce exclusions at that boundary.
-		filter: path => !/^(private-assets|packages\/frontend\/assets\/camp)(\/|$)/.test(path.replaceAll('\\', '/')),
+		filter: path => !/^(private-assets|apps\/misskey\/packages\/frontend\/assets\/camp)(\/|$)/.test(path.replaceAll('\\', '/')),
 	});
 	const patterns = await walk({ path: cwd, ignoreFiles: ['.gitignore'] });
 
@@ -42,5 +42,5 @@ export async function buildTarball(cwd = repoRoot) {
 
 	await mkdirPromise;
 
-	await pipeline(pack, createWriteStream(resolve(cwd, 'built', 'tarball', `misskey-${meta.version}.tar.gz`)));
+	await pipeline(pack, createWriteStream(resolve(cwd, 'apps/misskey/built', 'tarball', `misskey-${meta.version}.tar.gz`)));
 }

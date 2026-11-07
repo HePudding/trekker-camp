@@ -12,7 +12,7 @@
 
 ## 基本用法
 
-文案必须通过 [i18n.ts](../../../../../packages/frontend/src/i18n.ts) 引用。
+文案必须通过 [i18n.ts](../../../../../apps/misskey/packages/frontend/src/i18n.ts) 引用。
 无参数使用 ts 属性，有参数使用 tsx 函数。无参数键通过 tsx 调用会报类型错误；带参数键通过 ts 引用可能不报错，却将占位符原样显示。
 
 无参数：
@@ -64,10 +64,10 @@ async function onDelete() {
 语言值可包含 b、br、strong 等标签，在界面通过 v-html 或 Mfm 渲染：
 
 ```yaml
-# locales/ja-JP.yml
+# apps/misskey/locales/ja-JP.yml
 poweredByMisskeyDescription: "{name} 是开源平台 <b>Misskey</b> 的一个服务器。"
 
-# locales/ja-JP.yml (改行 + br)
+# apps/misskey/locales/ja-JP.yml (改行 + br)
 driveAboutTip: "网盘保存之前上传的文件。<br>\n发帖时可重复使用。<br>\n<b>删除文件会影响引用它的帖子。</b>"
 ```
 
@@ -82,7 +82,7 @@ driveAboutTip: "网盘保存之前上传的文件。<br>\n发帖时可重复使�
 
 ### 响应式引用与动态键
 
-随时间等状态切换键时，通过 computed 和方括号动态选择，参考 [MkPoll.vue](../../../../../packages/frontend/src/components/MkPoll.vue)：
+随时间等状态切换键时，通过 computed 和方括号动态选择，参考 [MkPoll.vue](../../../../../apps/misskey/packages/frontend/src/components/MkPoll.vue)：
 
 ```ts
 const timer = computed(() => i18n.tsx._poll[
@@ -111,7 +111,7 @@ _poll:
 
 ### 非法标识符键
 
-数字开头等不适合点号访问的键使用方括号，参考 [MkSignin.totp.vue](../../../../../packages/frontend/src/components/MkSignin.totp.vue)：
+数字开头等不适合点号访问的键使用方括号，参考 [MkSignin.totp.vue](../../../../../apps/misskey/packages/frontend/src/components/MkSignin.totp.vue)：
 
 ```vue
 <div :class="$style.totpDescription">{{ i18n.ts['2fa'] }}</div>
@@ -128,7 +128,7 @@ _poll:
 
 ### 将已翻译字符串作为参数
 
-参考 [MkSignupDialog.rules.vue](../../../../../packages/frontend/src/components/MkSignupDialog.rules.vue)：
+参考 [MkSignupDialog.rules.vue](../../../../../apps/misskey/packages/frontend/src/components/MkSignupDialog.rules.vue)：
 
 ```ts
 i18n.tsx.iHaveReadXCarefullyAndAgree({ x: i18n.ts.serverRules })
@@ -150,8 +150,8 @@ i18n.tsx.iHaveReadXCarefullyAndAgree({ x: i18n.ts.serverRules })
 
 ```yaml
 files:
-  - source: /locales/ja-JP.yml
-    translation: /locales/%locale%.yml
+  - source: /apps/misskey/locales/ja-JP.yml
+    translation: /apps/misskey/locales/%locale%.yml
     update_option: update_as_unapproved
 ```
 
@@ -160,7 +160,7 @@ files:
 - 源字符串改变后，update_as_unapproved 将翻译恢复为待批准状态，需要重新审查。
 - 键名改变时被视为新键，旧翻译失去关联并在同步时删除。
 
-语言规则参考 [locales/README.md](../../../../../locales/README.md)。
+语言规则参考 [apps/misskey/locales/README.md](../../../../../apps/misskey/locales/README.md)。
 
 ### 三阶段重命名
 
@@ -185,7 +185,7 @@ _settings:
 
 ```bash
 # 用 git diff 检查其他语言 YAML 无修改，输出为空即通过
-git diff --name-only develop -- 'locales/*.yml' | grep -v '^locales/ja-JP\.yml$'
+git diff --name-only develop -- 'apps/misskey/locales/*.yml' | grep -v '^apps/misskey/locales/ja-JP\.yml$'
 ```
 
 仅对 --name-only 的文件名过滤，不对 diff 正文过滤，否则新增行会导致误判。
@@ -193,7 +193,7 @@ git diff --name-only develop -- 'locales/*.yml' | grep -v '^locales/ja-JP\.yml$'
 其他语言被改动时，恢复相应文件：
 
   ```bash
-  git restore --source=develop -- locales/en-US.yml locales/<lang>.yml
+  git restore --source=develop -- apps/misskey/locales/en-US.yml apps/misskey/locales/<lang>.yml
   ```
 
 若仅在 ja-JP.yml 删除旧键并新增新键，应拆分 PR 或重组为三阶段流程。合并前仍可调整。
@@ -202,9 +202,9 @@ git diff --name-only develop -- 'locales/*.yml' | grep -v '^locales/ja-JP\.yml$'
 
 ```bash
 # 恢复为 develop 分支内容
-git restore --source=develop -- locales/en-US.yml
+git restore --source=develop -- apps/misskey/locales/en-US.yml
 # 或仅恢复指定路径的暂存区和工作区
-git checkout HEAD -- locales/zh-CN.yml
+git checkout HEAD -- apps/misskey/locales/zh-CN.yml
 ```
 
 合并前应确认其他语言无差异；合并后会破坏 Crowdin 一致性，可能需要人工恢复。
@@ -214,7 +214,7 @@ git checkout HEAD -- locales/zh-CN.yml
 ### Property '<key>' does not exist on type 'Locale'
 
 ```
-packages/frontend/src/components/MkXxx.vue
+apps/misskey/packages/frontend/src/components/MkXxx.vue
 > i18n.ts.newKey
   Property 'newKey' does not exist on type 'Locale'.
 ```
@@ -225,7 +225,7 @@ packages/frontend/src/components/MkXxx.vue
 - 手动执行 pnpm --filter i18n generate。
 - 通过前端 lint 检查。
 
-实现见 [generateLocaleInterface.ts](../../../../../packages/i18n/scripts/generateLocaleInterface.ts)，参数提取正则为 /\{(\w+)\}/g。
+实现见 [generateLocaleInterface.ts](../../../../../apps/misskey/packages/i18n/scripts/generateLocaleInterface.ts)，参数提取正则为 /\{(\w+)\}/g。
 
 ### ts 与 tsx 混用
 
@@ -243,7 +243,7 @@ i18n.tsx.save({...})
 <!-- 界面显示“取消关注 {name} 吗？”，其中 {name} 未被替换 -->
 ```
 
-[共享 i18n 实现](../../../../../packages/frontend-shared/js/i18n.ts)的 Tsx<T> 仅将 ParameterizedString<P> 键暴露为函数。
+[共享 i18n 实现](../../../../../apps/misskey/packages/frontend-shared/js/i18n.ts)的 Tsx<T> 仅将 ParameterizedString<P> 键暴露为函数。
 按 YAML 中是否存在占位符选择：
 
 | 值 | 正确调用 |
@@ -253,7 +253,7 @@ i18n.tsx.save({...})
 
 ### Unexpected locale key: <key>
 
-开发模式 Proxy 检测到访问不存在的键。补充 ja-JP.yml 中的键或修复拼写，见[共享 i18n 实现](../../../../../packages/frontend-shared/js/i18n.ts)。
+开发模式 Proxy 检测到访问不存在的键。补充 ja-JP.yml 中的键或修复拼写，见[共享 i18n 实现](../../../../../apps/misskey/packages/frontend-shared/js/i18n.ts)。
 
 ### Missing locale parameters: <param> at <key>
 
@@ -280,18 +280,18 @@ driveAboutTip: "网盘保存之前上传的文件。<br>\n发帖时可将文件�
 
 ### 覆盖 _lang_
 
-_lang_ 是语言自称的保留键，位于 [生成接口](../../../../../packages/i18n/src/autogen/locale.ts)开头。新增功能应使用其他键名。
+_lang_ 是语言自称的保留键，位于 [生成接口](../../../../../apps/misskey/packages/i18n/src/autogen/locale.ts)开头。新增功能应使用其他键名。
 
 ### 修改后界面没有更新
 
-原因可能是只运行了前端 watch，i18n 未监听；或浏览器缓存了 built/_frontend_dist_/locales/*.json。
+原因可能是只运行了前端 watch，i18n 未监听；或浏览器缓存了 built/_frontend_dist_/apps/misskey/locales/*.json。
 使用根目录 pnpm dev 启动前后端及 i18n 监听。仍无变化时清除浏览器缓存，或手动运行 pnpm --filter i18n build。
 
 ## 限制与补充
 
 ### 不支持 ICU MessageFormat
 
-[生成器](../../../../../packages/i18n/scripts/generateLocaleInterface.ts)仅识别 /\{(\w+)\}/g，即简单 {paramName} 替换。
+[生成器](../../../../../apps/misskey/packages/i18n/scripts/generateLocaleInterface.ts)仅识别 /\{(\w+)\}/g，即简单 {paramName} 替换。
 
 以下 ICU 写法会作为普通字符串显示：
 
@@ -324,7 +324,7 @@ const text = files.length === 1
 位于每个语言文件顶层开头，存放该语言的自称：
 
 ```yaml
-# locales/ja-JP.yml (顶层开头)
+# apps/misskey/locales/ja-JP.yml (顶层开头)
 _lang_: "日本語"
 ```
 
@@ -332,7 +332,7 @@ _lang_: "日本語"
 
 ### Storybook
 
-Storybook 使用独立打包流程，通过 [preload-locale.ts](../../../../../packages/frontend/.storybook/preload-locale.ts) 将 ja-JP 数据输出为 JSON，并生成同目录 locale.ts。
+Storybook 使用独立打包流程，通过 [preload-locale.ts](../../../../../apps/misskey/packages/frontend/.storybook/preload-locale.ts) 将 ja-JP 数据输出为 JSON，并生成同目录 locale.ts。
 
 - 仅显示日语文案，无法验证其他语言。
 - 新增键后若预加载尚未执行，需重启 Storybook 或先构建 i18n。

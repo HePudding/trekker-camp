@@ -7,8 +7,8 @@
 import { action } from 'storybook/actions';
 import type { StoryObj } from '@storybook/vue3';
 import { HttpResponse, http } from 'msw';
-import { abuseUserReport } from '../packages/frontend/.storybook/fakes.js';
-import { commonHandlers } from '../packages/frontend/.storybook/mocks.js';
+import { abuseUserReport } from '../apps/misskey/packages/frontend/.storybook/fakes.js';
+import { commonHandlers } from '../apps/misskey/packages/frontend/.storybook/mocks.js';
 import MkAbuseReport from './MkAbuseReport.vue';
 export const Default = {
 	render(args) {

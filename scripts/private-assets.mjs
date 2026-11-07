@@ -20,7 +20,7 @@ export async function checkSourceLocation(root, source) {
 
 /** Connect separately managed, web-ready artwork to the existing static route. */
 export async function linkPrivateAssets(root = repoRoot, source = process.env.CAMP_ASSETS_DIR) {
-	const target = resolve(root, 'packages/frontend/assets/camp');
+	const target = resolve(root, 'apps/misskey/packages/frontend/assets/camp');
 	const current = await lstat(target).catch(error => {
 		if (error.code === 'ENOENT') return null;
 		throw error;

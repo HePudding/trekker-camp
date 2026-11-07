@@ -4,14 +4,14 @@ Misskey 后端使用 TypeORM 1 和 PostgreSQL。本页说明实体与迁移的�
 
 ## 模型与 Repository
 
-- 实体位于 `packages/backend/src/models/<Name>.ts`，使用 `@Entity`、`@Column`。
+- 实体位于 `apps/misskey/packages/backend/src/models/<Name>.ts`，使用 `@Entity`、`@Column`。
 - 通过依赖注入的 Repository 访问，例如 `@Inject(DI.notesRepository)`，见 [nestjs-di.md](nestjs-di.md)。
 
-实体的 `@Column`、`@Entity`、`@Index` 必须与迁移 DDL 一致。`pnpm --filter backend check-migrations` 检测差异，实现见 [check_migrations_clean.js](../../../../../packages/backend/scripts/check_migrations_clean.js)。
+实体的 `@Column`、`@Entity`、`@Index` 必须与迁移 DDL 一致。`pnpm --filter backend check-migrations` 检测差异，实现见 [check_migrations_clean.js](../../../../../apps/misskey/packages/backend/scripts/check_migrations_clean.js)。
 
 ## 迁移文件结构
 
-`packages/backend/migration/{unixMs}-{descriptive-name}.js` 使用 ESM JavaScript：
+`apps/misskey/packages/backend/migration/{unixMs}-{descriptive-name}.js` 使用 ESM JavaScript：
 
 ```js
 /*
@@ -38,7 +38,7 @@ export class PascalCaseName1234567890123 {
 
 大表上普通 CREATE INDEX 可能长时间锁表。PostgreSQL 禁止在事务内执行 CREATE INDEX CONCURRENTLY，因此必须在迁移类中关闭该迁移的事务。
 
-参考 [1745378064470-composite-note-index.js](../../../../../packages/backend/migration/1745378064470-composite-note-index.js)：
+参考 [1745378064470-composite-note-index.js](../../../../../apps/misskey/packages/backend/migration/1745378064470-composite-note-index.js)：
 
 ```js
 const isConcurrentIndexMigrationEnabled = process.env.MISSKEY_MIGRATION_CREATE_INDEX_CONCURRENTLY === '1';
@@ -66,7 +66,7 @@ export class CompositeNoteIndex1745378064470 {
 
 - 必须设置 `transaction = isConcurrentIndexMigrationEnabled ? false : undefined;`，否则出现 `ERROR: CREATE INDEX CONCURRENTLY cannot run inside a transaction block`。
 - 环境变量 `MISSKEY_MIGRATION_CREATE_INDEX_CONCURRENTLY=1` 默认关闭。关闭时应在事务内使用普通 CREATE INDEX。up 和 down 均需按环境变量分支。
-- [ormconfig.js](../../../../../packages/backend/ormconfig.js) 的 `migrationsTransactionMode` 在该环境变量启用时为 `'each'`，否则为 `'all'`，将全部迁移包在同一事务。日常按 all 模式考虑。
+- [ormconfig.js](../../../../../apps/misskey/packages/backend/ormconfig.js) 的 `migrationsTransactionMode` 在该环境变量启用时为 `'each'`，否则为 `'all'`，将全部迁移包在同一事务。日常按 all 模式考虑。
 
 ## 复杂情况
 
@@ -85,7 +85,7 @@ export class CompositeNoteIndex1745378064470 {
   await queryRunner.query(`ALTER TABLE "note_draft" DROP COLUMN "isActuallyScheduled"`);
   ```
 
-  参考 [1758677617888-scheduled-post.js](../../../../../packages/backend/migration/1758677617888-scheduled-post.js)。
+  参考 [1758677617888-scheduled-post.js](../../../../../apps/misskey/packages/backend/migration/1758677617888-scheduled-post.js)。
 
 - **需要逐行计算或随后移除默认值**：先添加可空列，再 UPDATE 回填，最后 SET NOT NULL。down 可删除列。大表的回填及非空检查会扫描大量行，可能长时间锁表。
 
@@ -119,7 +119,7 @@ await queryRunner.query(`DROP TYPE "public"."notification_type_enum_old"`);
 2. 数组列（如 mutingNotificationTypes）需使用数组类型与数组转换：`TYPE "..."[] USING "col"::"text"::"..."[]`。
 3. down 删除的枚举值若仍被数据使用，USING 转换会失败。上线使用后回滚，应先将相关行 UPDATE 为替代值，再转换类型。刚添加新值、尚未使用时回滚较安全。
 
-完整示例见 [1674118260469-achievement.js](../../../../../packages/backend/migration/1674118260469-achievement.js)；新建类型见 [1580276619901-v12-10.js](../../../../../packages/backend/migration/1580276619901-v12-10.js)。
+完整示例见 [1674118260469-achievement.js](../../../../../apps/misskey/packages/backend/migration/1674118260469-achievement.js)；新建类型见 [1580276619901-v12-10.js](../../../../../apps/misskey/packages/backend/migration/1580276619901-v12-10.js)。
 
 ### 3. 数据迁移与回填
 
@@ -146,7 +146,7 @@ await queryRunner.query(`ALTER TABLE "bubble_game_record" ADD "logs" jsonb NOT N
 await queryRunner.query(`ALTER TABLE "meta" ADD "pinnedUsers" character varying(256) array NOT NULL DEFAULT '{}'::varchar[]`); // PostgreSQL 数组类型
 ```
 
-参考 [1565634203341-room.js](../../../../../packages/backend/migration/1565634203341-room.js)、[1704959805077-bubble-game-record.js](../../../../../packages/backend/migration/1704959805077-bubble-game-record.js)、[1557476068003-PinnedUsers.js](../../../../../packages/backend/migration/1557476068003-PinnedUsers.js)。down 均为 DROP COLUMN。
+参考 [1565634203341-room.js](../../../../../apps/misskey/packages/backend/migration/1565634203341-room.js)、[1704959805077-bubble-game-record.js](../../../../../apps/misskey/packages/backend/migration/1704959805077-bubble-game-record.js)、[1557476068003-PinnedUsers.js](../../../../../apps/misskey/packages/backend/migration/1557476068003-PinnedUsers.js)。down 均为 DROP COLUMN。
 
 ### 5. 安全的 DROP 与 COMMENT
 
@@ -157,7 +157,7 @@ await queryRunner.query(`ALTER TABLE "meta" ADD "pinnedUsers" character varying(
   await queryRunner.query(`COMMENT ON COLUMN "note"."renoteChannelId" IS '[Denormalized]'`);
   ```
 
-参考 [1761569941833-add-channel-muting.js](../../../../../packages/backend/migration/1761569941833-add-channel-muting.js)。
+参考 [1761569941833-add-channel-muting.js](../../../../../apps/misskey/packages/backend/migration/1761569941833-add-channel-muting.js)。
 
 ### 6. 重命名列
 

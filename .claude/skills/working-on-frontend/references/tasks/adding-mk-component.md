@@ -1,13 +1,13 @@
 # 添加或修改 Mk* Vue 组件
 
-用于在 packages/frontend/src/components 下新增共享 Vue 3 单文件组件，或大幅修改已有组件。
+用于在 apps/misskey/packages/frontend/src/components 下新增共享 Vue 3 单文件组件，或大幅修改已有组件。
 对应审查代理为 [vue-component-reviewer](../../../../agents/vue-component-reviewer.md)。
 
 ## 强制前提（Critical）
 
 1. **SPDX 头**：Vue 文件使用 HTML 注释，.stories.impl.ts 使用 TypeScript 注释；缺失会导致 spdx CI 失败。
 2. **Mk 前缀**：共享组件包括子目录均需 Mk 前缀。页面专用组件放在 pages，无需前缀。
-3. **仅编辑 locales/ja-JP.yml**：其他语言由 Crowdin 分发，手动修改会被覆盖，见 [添加国际化键](adding-i18n-key.md)。
+3. **仅编辑 apps/misskey/locales/ja-JP.yml**：其他语言由 Crowdin 分发，手动修改会被覆盖，见 [添加国际化键](adding-i18n-key.md)。
 4. **不硬编码界面字符串**：模板与 JavaScript 均通过 i18n.ts 或 i18n.tsx，见 [国际化用法](../knowledge/i18n-usage.md)。
 5. **不直接调用浏览器对话框**：使用 os.alert、os.confirm、os.popup，见 [os API](../knowledge/os-api.md)。
 
@@ -15,10 +15,10 @@
 
 | 路径 | 用途 | 命名 |
 |---|---|---|
-| packages/frontend/src/components/Mk<Name>.vue | 普通共享组件 | Mk<Name>.vue |
-| packages/frontend/src/components/global/Mk<Name>.vue | 由 components/index.ts 通过 app.component 全局注册，无需导入即可使用，如 MkA、MkAvatar、MkAcct | 子目录中仍需 Mk 前缀 |
-| packages/frontend/src/components/grid/Mk<Name>.vue | 表格、网格组件 | 同上 |
-| packages/frontend/src/pages/<Name>.vue | 单个页面专用、不复用的界面 | 无需 Mk 前缀 |
+| apps/misskey/packages/frontend/src/components/Mk<Name>.vue | 普通共享组件 | Mk<Name>.vue |
+| apps/misskey/packages/frontend/src/components/global/Mk<Name>.vue | 由 components/index.ts 通过 app.component 全局注册，无需导入即可使用，如 MkA、MkAvatar、MkAcct | 子目录中仍需 Mk 前缀 |
+| apps/misskey/packages/frontend/src/components/grid/Mk<Name>.vue | 表格、网格组件 | 同上 |
+| apps/misskey/packages/frontend/src/pages/<Name>.vue | 单个页面专用、不复用的界面 | 无需 Mk 前缀 |
 
 判断依据是是否可能被其他 Mk 组件导入：会复用则放 components，否则放 pages。
 通常还需同目录添加 .stories.impl.ts，见 [Storybook](../knowledge/storybook.md)。
@@ -47,7 +47,7 @@ SPDX-License-Identifier: AGPL-3.0-only
 
 ## 最小模板
 
-以下为合成示例，并非某个实际文件的副本。简单真实组件可参考 [MkInfo.vue](../../../../../packages/frontend/src/components/MkInfo.vue)。
+以下为合成示例，并非某个实际文件的副本。简单真实组件可参考 [MkInfo.vue](../../../../../apps/misskey/packages/frontend/src/components/MkInfo.vue)。
 
 ```vue
 <!--
@@ -163,7 +163,7 @@ pnpm --filter frontend typecheck
 pnpm --filter frontend eslint
 
 # 对单个文件运行 ESLint --fix
-pnpm exec eslint --fix packages/frontend/src/components/Mk<Name>.vue
+pnpm exec eslint --fix apps/misskey/packages/frontend/src/components/Mk<Name>.vue
 
 # 通过 Storybook 检查外观
 pnpm --filter frontend storybook-dev    # localhost:6006
@@ -180,11 +180,11 @@ pnpm --filter frontend test
 
 ## 参考代码
 
-- [MkInfo.vue](../../../../../packages/frontend/src/components/MkInfo.vue)：简单组件。
-- [MkButton.vue](../../../../../packages/frontend/src/components/MkButton.vue)：通用按钮与无障碍。
-- [MkInput.vue](../../../../../packages/frontend/src/components/MkInput.vue)：泛型与双 script。
-- [MkSelect.vue](../../../../../packages/frontend/src/components/MkSelect.vue)：defineModel 与具名插槽。
-- [MkSwitch.vue](../../../../../packages/frontend/src/components/MkSwitch.vue)：自定义无障碍控件。
-- [MkButton.stories.impl.ts](../../../../../packages/frontend/src/components/MkButton.stories.impl.ts)：多个 Storybook 示例。
-- [os.ts](../../../../../packages/frontend/src/os.ts)：界面 API。
-- [i18n.ts](../../../../../packages/frontend/src/i18n.ts)：国际化实现。
+- [MkInfo.vue](../../../../../apps/misskey/packages/frontend/src/components/MkInfo.vue)：简单组件。
+- [MkButton.vue](../../../../../apps/misskey/packages/frontend/src/components/MkButton.vue)：通用按钮与无障碍。
+- [MkInput.vue](../../../../../apps/misskey/packages/frontend/src/components/MkInput.vue)：泛型与双 script。
+- [MkSelect.vue](../../../../../apps/misskey/packages/frontend/src/components/MkSelect.vue)：defineModel 与具名插槽。
+- [MkSwitch.vue](../../../../../apps/misskey/packages/frontend/src/components/MkSwitch.vue)：自定义无障碍控件。
+- [MkButton.stories.impl.ts](../../../../../apps/misskey/packages/frontend/src/components/MkButton.stories.impl.ts)：多个 Storybook 示例。
+- [os.ts](../../../../../apps/misskey/packages/frontend/src/os.ts)：界面 API。
+- [i18n.ts](../../../../../apps/misskey/packages/frontend/src/i18n.ts)：国际化实现。

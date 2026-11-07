@@ -1,6 +1,6 @@
 # API 端点 meta、paramDef 与 res 速查
 
-汇集 [IEndpointMeta](../../../../../packages/backend/src/server/api/endpoints.ts) 全部字段、AJV 实用模式及常见审查问题，供新增和修改端点时参考。
+汇集 [IEndpointMeta](../../../../../apps/misskey/packages/backend/src/server/api/endpoints.ts) 全部字段、AJV 实用模式及常见审查问题，供新增和修改端点时参考。
 
 ## 目录
 
@@ -15,7 +15,7 @@
 
 ## 字段列表
 
-来自 [endpoints.ts](../../../../../packages/backend/src/server/api/endpoints.ts) 的 IEndpointMetaBase。
+来自 [endpoints.ts](../../../../../apps/misskey/packages/backend/src/server/api/endpoints.ts) 的 IEndpointMetaBase。
 
 | 字段 | 类型 | 默认值 | 用途 |
 |---|---|---|---|
@@ -36,7 +36,7 @@
 | allowGet | boolean | false | 默认仅 POST，启用后允许 GET，适合幂等读取 |
 | cacheSec | number | — | 成功响应添加 Cache-Control: public, max-age=<秒> |
 
-Schema 见 @/misc/json-schema.js，联合类型约束见 [endpoints.ts](../../../../../packages/backend/src/server/api/endpoints.ts)。
+Schema 见 @/misc/json-schema.js，联合类型约束见 [endpoints.ts](../../../../../apps/misskey/packages/backend/src/server/api/endpoints.ts)。
 
 ## 权限字段组合
 
@@ -48,14 +48,14 @@ Schema 见 @/misc/json-schema.js，联合类型约束见 [endpoints.ts](../../..
 | 管理员 | 省略 | 省略 | true | 必需，如 write:admin:emoji |
 | secure: true 内部端点 | 任意 | 任意 | 任意 | 不需要 |
 
-**secure: true 例外**：它是独立联合类型分支，不要求 kind。参考 [auth/accept.ts](../../../../../packages/backend/src/server/api/endpoints/auth/accept.ts)、[i/export-user-lists.ts](../../../../../packages/backend/src/server/api/endpoints/i/export-user-lists.ts)。第三方应用无法访问，因此无需 OAuth scope。
+**secure: true 例外**：它是独立联合类型分支，不要求 kind。参考 [auth/accept.ts](../../../../../apps/misskey/packages/backend/src/server/api/endpoints/auth/accept.ts)、[i/export-user-lists.ts](../../../../../apps/misskey/packages/backend/src/server/api/endpoints/i/export-user-lists.ts)。第三方应用无法访问，因此无需 OAuth scope。
 
-- requiredRolePolicy 按指定策略限制用户，**必须配合 requireCredential: true**。[ApiCallService.ts](../../../../../packages/backend/src/server/api/ApiCallService.ts) 会直接访问 user!.id；允许匿名时会产生 TypeError 和 500。需要匿名用户时，在执行阶段调用 `RoleService.getUserPolicies(me ? me.id : null)`，参考 [global-timeline.ts](../../../../../packages/backend/src/server/api/endpoints/notes/global-timeline.ts)。策略列表见 [RolePolicies](../../../../../packages/backend/src/core/RoleService.ts)。
+- requiredRolePolicy 按指定策略限制用户，**必须配合 requireCredential: true**。[ApiCallService.ts](../../../../../apps/misskey/packages/backend/src/server/api/ApiCallService.ts) 会直接访问 user!.id；允许匿名时会产生 TypeError 和 500。需要匿名用户时，在执行阶段调用 `RoleService.getUserPolicies(me ? me.id : null)`，参考 [global-timeline.ts](../../../../../apps/misskey/packages/backend/src/server/api/endpoints/notes/global-timeline.ts)。策略列表见 [RolePolicies](../../../../../apps/misskey/packages/backend/src/core/RoleService.ts)。
 - secure: true 仅供 Misskey 自身前端调用，OAuth 令牌无法访问，无需 kind。
 
 ## kind 权限范围
 
-完整列表见 [consts.ts](../../../../../packages/misskey-js/src/consts.ts) 的 permissions。
+完整列表见 [consts.ts](../../../../../apps/misskey/packages/misskey-js/src/consts.ts) 的 permissions。
 
 | 类型 | 示例 |
 |---|---|
@@ -80,7 +80,7 @@ errors: {
 },
 ```
 
-httpStatusCode 与 kind 通过 [error.ts](../../../../../packages/backend/src/server/api/error.ts) 的 E 类型接受。未设置时使用默认行为，客户端错误通常为 400 系列。
+httpStatusCode 与 kind 通过 [error.ts](../../../../../apps/misskey/packages/backend/src/server/api/error.ts) 的 E 类型接受。未设置时使用默认行为，客户端错误通常为 400 系列。
 
 命名约定：
 
@@ -108,7 +108,7 @@ res: {
 res: {
 	type: 'object',
 	optional: false, nullable: false,
-	ref: 'Note',                  // ← packages/backend/src/models/json-schema/*.ts 中的定义名
+	ref: 'Note',                  // ← apps/misskey/packages/backend/src/models/json-schema/*.ts 中的定义名
 },
 
 // 数组
@@ -127,7 +127,7 @@ res: {
 
 ## paramDef 模式
 
-paramDef 是 JSON Schema 7 兼容架构，通过 `new Ajv({ useDefaults: true })` 编译。初始化见 [endpoint-base.ts](../../../../../packages/backend/src/server/api/endpoint-base.ts)。
+paramDef 是 JSON Schema 7 兼容架构，通过 `new Ajv({ useDefaults: true })` 编译。初始化见 [endpoint-base.ts](../../../../../apps/misskey/packages/backend/src/server/api/endpoint-base.ts)。
 
 ### 自定义格式
 
@@ -159,7 +159,7 @@ export const paramDef = {
 
 ### 分页
 
-参考 [notes/timeline.ts](../../../../../packages/backend/src/server/api/endpoints/notes/timeline.ts)：
+参考 [notes/timeline.ts](../../../../../apps/misskey/packages/backend/src/server/api/endpoints/notes/timeline.ts)：
 
 ```ts
 properties: {
@@ -188,7 +188,7 @@ properties: {
 },
 ```
 
-参考 [show-partial-bulk.ts](../../../../../packages/backend/src/server/api/endpoints/notes/show-partial-bulk.ts) 的 noteIds，以及 [drafts/create.ts](../../../../../packages/backend/src/server/api/endpoints/notes/drafts/create.ts) 的 fileIds、visibleUserIds。
+参考 [show-partial-bulk.ts](../../../../../apps/misskey/packages/backend/src/server/api/endpoints/notes/show-partial-bulk.ts) 的 noteIds，以及 [drafts/create.ts](../../../../../apps/misskey/packages/backend/src/server/api/endpoints/notes/drafts/create.ts) 的 fileIds、visibleUserIds。
 
 ### oneOf 与 anyOf
 
@@ -206,7 +206,7 @@ anyOf: [
 ],
 ```
 
-响应也可使用 oneOf 表达变体，参考 [ap/show.ts](../../../../../packages/backend/src/server/api/endpoints/ap/show.ts)：
+响应也可使用 oneOf 表达变体，参考 [ap/show.ts](../../../../../apps/misskey/packages/backend/src/server/api/endpoints/ap/show.ts)：
 
 ```ts
 res: {
@@ -231,7 +231,7 @@ data: {
 },
 ```
 
-参考 [retention.ts](../../../../../packages/backend/src/server/api/endpoints/retention.ts)、[admin/get-table-stats.ts](../../../../../packages/backend/src/server/api/endpoints/admin/get-table-stats.ts)。
+参考 [retention.ts](../../../../../apps/misskey/packages/backend/src/server/api/endpoints/retention.ts)、[admin/get-table-stats.ts](../../../../../apps/misskey/packages/backend/src/server/api/endpoints/admin/get-table-stats.ts)。
 additionalProperties: true 接受任意内容而不验证。
 
 ### 默认值
@@ -258,7 +258,7 @@ nullable: true 显式接受 null。
 
 ## OpenAPI 映射
 
-实现见 [gen-spec.ts](../../../../../packages/backend/src/server/api/openapi/gen-spec.ts)。
+实现见 [gen-spec.ts](../../../../../apps/misskey/packages/backend/src/server/api/openapi/gen-spec.ts)。
 
 | meta 字段 | OpenAPI 结果 |
 |---|---|
@@ -311,7 +311,7 @@ requireModerator、requireAdmin、requiredRolePolicy、prohibitMoved、cacheSec�
 复用 errors.id 会造成生成类型混淆。检查：
 
   ```bash
-  grep -r "id: '<生成的 UUID>'" packages/backend/src/server/api/endpoints/
+  grep -r "id: '<生成的 UUID>'" apps/misskey/packages/backend/src/server/api/endpoints/
   ```
 
 使用 `node -e "console.log(crypto.randomUUID())"` 生成新值。
@@ -332,16 +332,16 @@ requireModerator、requireAdmin、requiredRolePolicy、prohibitMoved、cacheSec�
 ### 10. 认证端点遗漏 kind
 
 联合类型约束会产生 Property 'kind' is missing。设置适当 OAuth scope。
-secure: true 内部端点属于独立分支，无需 kind，见 [endpoints.ts](../../../../../packages/backend/src/server/api/endpoints.ts)。
+secure: true 内部端点属于独立分支，无需 kind，见 [endpoints.ts](../../../../../apps/misskey/packages/backend/src/server/api/endpoints.ts)。
 
 ### 11. 上传临时文件残留
 
-基类仅在 AJV 验证失败时自动 cleanup。正常完成或端点内部抛错时都需 finally 调用 cleanup!()，参考 [drive/files/create.ts](../../../../../packages/backend/src/server/api/endpoints/drive/files/create.ts)，避免占满磁盘。
+基类仅在 AJV 验证失败时自动 cleanup。正常完成或端点内部抛错时都需 finally 调用 cleanup!()，参考 [drive/files/create.ts](../../../../../apps/misskey/packages/backend/src/server/api/endpoints/drive/files/create.ts)，避免占满磁盘。
 
 ### 12. requiredRolePolicy 允许匿名导致 500
 
-[ApiCallService.ts](../../../../../packages/backend/src/server/api/ApiCallService.ts) 直接读取 user!.id。
-静态策略必须与 requireCredential: true 配合；需要匿名策略时改为运行时判断，参考 [global-timeline.ts](../../../../../packages/backend/src/server/api/endpoints/notes/global-timeline.ts)。
+[ApiCallService.ts](../../../../../apps/misskey/packages/backend/src/server/api/ApiCallService.ts) 直接读取 user!.id。
+静态策略必须与 requireCredential: true 配合；需要匿名策略时改为运行时判断，参考 [global-timeline.ts](../../../../../apps/misskey/packages/backend/src/server/api/endpoints/notes/global-timeline.ts)。
 
 ### 13. 端到端测试无法启动
 

@@ -3,6 +3,7 @@
  * SPDX-License-Identifier: AGPL-3.0-only
  */
 
+import { existsSync } from 'node:fs';
 import { copyFile, rm, writeFile } from 'node:fs/promises';
 import { join, resolve } from 'node:path';
 import { execa } from 'execa';
@@ -90,7 +91,7 @@ async function genSample(label: string, repoDir: string, round: number, options:
 	});
 
 	process.stderr.write(`[${label}] Measuring memory\n`);
-	return await measureBackendMemory(resolve(repoDir, 'packages/backend'), {
+	return await measureBackendMemory(resolve(repoDir, existsSync(resolve(repoDir, 'apps/misskey/package.json')) ? 'apps/misskey/packages/backend' : 'packages/backend'), {
 		// warmupラウンド (round <= 0) は捨てるので、重いheap snapshotは取らない
 		...(round <= 0 || options.collectHeapSnapshot === false ? { heapSnapshot: false } : {}),
 		heapSnapshotSavePath: options.heapSnapshotSavePath ?? null,

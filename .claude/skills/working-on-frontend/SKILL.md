@@ -1,22 +1,22 @@
 ---
 name: working-on-frontend
-description: 编辑或添加 packages/frontend/ 下的代码，或修改 locales/zh-CN.yml 中面向前端的界面文案时必须使用。涵盖 Vue 3 组件、国际化、SCSS Modules、Storybook、无障碍及独立授权美术的运行时加载。本仓库语言规则以 AGENTS.md 为准；使用过其他技能后进入前端实现阶段仍须阅读。
+description: 编辑或添加 apps/misskey/packages/frontend/ 下的代码，或修改 apps/misskey/locales/zh-CN.yml 中面向前端的界面文案时必须使用。涵盖 Vue 3 组件、国际化、SCSS Modules、Storybook、无障碍及独立授权美术的运行时加载。本仓库语言规则以 AGENTS.md 为准；使用过其他技能后进入前端实现阶段仍须阅读。
 ---
 
 # working-on-frontend
 
-编辑 `packages/frontend/`（Misskey Web 客户端）时，首先阅读本技能。这里汇集 Vue 3 单文件组件、SCSS Modules、国际化、`os.*`、Storybook 和无障碍的**操作步骤**与**背景知识**。
+编辑 `apps/misskey/packages/frontend/`（Misskey Web 客户端）时，首先阅读本技能。这里汇集 Vue 3 单文件组件、SCSS Modules、国际化、`os.*`、Storybook 和无障碍的**操作步骤**与**背景知识**。
 
 SKILL.md 本身仅作为参考文件索引。具体步骤和规范应按需读取对应文件。
 
-**使用过其他技能也不能免除本要求。** 即使已调用 `brainstorming`、`writing-plans` 或其他上游技能，进入涉及 `packages/frontend/` 的实现阶段时，仍须调用本技能。
+**使用过其他技能也不能免除本要求。** 即使已调用 `brainstorming`、`writing-plans` 或其他上游技能，进入涉及 `apps/misskey/packages/frontend/` 的实现阶段时，仍须调用本技能。
 
 ## 按任务组织的工作流（tasks）
 
 每份文件包含完整任务清单。
 
 - 添加或修改 `Mk*` Vue 组件 → [references/tasks/adding-mk-component.md](references/tasks/adding-mk-component.md)
-- 添加或修改国际化键（编辑 `locales/ja-JP.yml`）→ [references/tasks/adding-i18n-key.md](references/tasks/adding-i18n-key.md)
+- 添加或修改国际化键（编辑 `apps/misskey/locales/ja-JP.yml`）→ [references/tasks/adding-i18n-key.md](references/tasks/adding-i18n-key.md)
 
 ## 通用知识（knowledge）
 
