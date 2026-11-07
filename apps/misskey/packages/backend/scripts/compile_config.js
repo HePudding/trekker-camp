@@ -16,7 +16,7 @@ import { load as loadYaml } from 'js-yaml';
 const _filename = fileURLToPath(import.meta.url);
 const _dirname = dirname(_filename);
 
-const configDir = resolve(_dirname, '../../../.config');
+const configDir = resolve(_dirname, '../../../../../.config');
 const OUTPUT_PATH = resolve(_dirname, '../../../built/.config.json');
 
 // TODO: yamlのパースに失敗したときのエラーハンドリング

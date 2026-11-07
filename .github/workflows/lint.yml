@@ -6,33 +6,33 @@ on:
       - master
       - develop
     paths:
-      - packages/backend/**
-      - packages/frontend/**
-      - packages/frontend-shared/**
-      - packages/frontend-builder/**
-      - packages/frontend-embed/**
-      - packages/icons-subsetter/**
-      - packages/sw/**
-      - packages/misskey-js/**
-      - packages/misskey-bubble-game/**
-      - packages/misskey-reversi/**
-      - packages/shared/eslint.config.js
+      - apps/misskey/packages/backend/**
+      - apps/misskey/packages/frontend/**
+      - apps/misskey/packages/frontend-shared/**
+      - apps/misskey/packages/frontend-builder/**
+      - apps/misskey/packages/frontend-embed/**
+      - apps/misskey/packages/icons-subsetter/**
+      - apps/misskey/packages/sw/**
+      - apps/misskey/packages/misskey-js/**
+      - apps/misskey/packages/misskey-bubble-game/**
+      - apps/misskey/packages/misskey-reversi/**
+      - apps/misskey/packages/shared/eslint.config.js
       - scripts/check-dts*.mjs
       - .github/workflows/lint.yml
       - package.json
   pull_request:
     paths:
-      - packages/backend/**
-      - packages/frontend/**
-      - packages/frontend-shared/**
-      - packages/frontend-builder/**
-      - packages/frontend-embed/**
-      - packages/icons-subsetter/**
-      - packages/sw/**
-      - packages/misskey-js/**
-      - packages/misskey-bubble-game/**
-      - packages/misskey-reversi/**
-      - packages/shared/eslint.config.js
+      - apps/misskey/packages/backend/**
+      - apps/misskey/packages/frontend/**
+      - apps/misskey/packages/frontend-shared/**
+      - apps/misskey/packages/frontend-builder/**
+      - apps/misskey/packages/frontend-embed/**
+      - apps/misskey/packages/icons-subsetter/**
+      - apps/misskey/packages/sw/**
+      - apps/misskey/packages/misskey-js/**
+      - apps/misskey/packages/misskey-bubble-game/**
+      - apps/misskey/packages/misskey-reversi/**
+      - apps/misskey/packages/shared/eslint.config.js
       - scripts/check-dts*.mjs
       - .github/workflows/lint.yml
       - package.json

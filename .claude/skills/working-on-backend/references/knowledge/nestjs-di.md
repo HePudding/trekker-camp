@@ -5,7 +5,7 @@ Misskey 后端采用 NestJS 11、Fastify 5、TypeORM 1（PostgreSQL）及 Redis�
 ## 架构
 
 - **依赖注入容器**：NestJS 的 `@Injectable()` 服务和 TypeORM Repository。
-- **注入令牌**：从 [`@/di-symbols.js`](../../../../../packages/backend/src/di-symbols.ts) 导入 `DI`，通过 `@Inject(DI.xxx)` 注入。
+- **注入令牌**：从 [`@/di-symbols.js`](../../../../../apps/misskey/packages/backend/src/di-symbols.ts) 导入 `DI`，通过 `@Inject(DI.xxx)` 注入。
 - **构建**：`rolldown -c` 打包到 `built/`，使用 `tsc` 检查类型。
 
 ## 端点中的依赖注入
@@ -58,7 +58,7 @@ constructor(
 
 ## 服务类写法
 
-服务添加 `@Injectable()`，在构造函数声明依赖，并注册为对应 NestJS 模块（如 `packages/backend/src/core/CoreModule.ts`）的提供者。
+服务添加 `@Injectable()`，在构造函数声明依赖，并注册为对应 NestJS 模块（如 `apps/misskey/packages/backend/src/core/CoreModule.ts`）的提供者。
 
 ```ts
 @Injectable()
@@ -90,6 +90,6 @@ export class MyService {
 
 ## 参考实现
 
-- [notes/create.ts](../../../../../packages/backend/src/server/api/endpoints/notes/create.ts)：按类型注入服务，结合 meta.errors、try/catch 转换业务错误，末尾重新抛出未知异常。
-- [i/pin.ts](../../../../../packages/backend/src/server/api/endpoints/i/pin.ts)：通过 catch 回调转换错误，并继续抛出未知错误。
-- [notes/global-timeline.ts](../../../../../packages/backend/src/server/api/endpoints/notes/global-timeline.ts)：通过 `RoleService.getUserPolicies()` 动态判断策略。
+- [notes/create.ts](../../../../../apps/misskey/packages/backend/src/server/api/endpoints/notes/create.ts)：按类型注入服务，结合 meta.errors、try/catch 转换业务错误，末尾重新抛出未知异常。
+- [i/pin.ts](../../../../../apps/misskey/packages/backend/src/server/api/endpoints/i/pin.ts)：通过 catch 回调转换错误，并继续抛出未知错误。
+- [notes/global-timeline.ts](../../../../../apps/misskey/packages/backend/src/server/api/endpoints/notes/global-timeline.ts)：通过 `RoleService.getUserPolicies()` 动态判断策略。

@@ -7,7 +7,7 @@ import { execFileSync } from 'node:child_process';
 import { resolve } from 'node:path';
 import { fileURLToPath } from 'node:url';
 
-const privatePaths = ['private-assets', 'packages/frontend/assets/camp'];
+const privatePaths = ['private-assets', 'apps/misskey/packages/frontend/assets/camp'];
 
 /** Reject artwork or a private repository/link accidentally added to the index. */
 export function checkPrivateAssets(cwd = process.cwd()) {

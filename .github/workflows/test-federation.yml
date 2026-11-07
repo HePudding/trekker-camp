@@ -6,15 +6,15 @@ on:
       - master
       - develop
     paths:
-      - packages/backend/**
-      - packages/misskey-js/**
+      - apps/misskey/packages/backend/**
+      - apps/misskey/packages/misskey-js/**
       - .github/workflows/test-federation.yml
   pull_request:
     branches-ignore:
       - master
     paths:
-      - packages/backend/**
-      - packages/misskey-js/**
+      - apps/misskey/packages/backend/**
+      - apps/misskey/packages/misskey-js/**
       - .github/workflows/test-federation.yml
   workflow_dispatch:
 
@@ -50,7 +50,7 @@ jobs:
       - name: Setup
         run: |
           echo "NODE_VERSION=$(cat ${{ matrix.node-version-file }})" >> $GITHUB_ENV
-          cd packages/backend/test-federation
+          cd apps/misskey/packages/backend/test-federation
           bash ./setup.sh
           sudo chmod 644 ./certificates/*.test.key
       - name: Start servers
@@ -58,26 +58,26 @@ jobs:
         continue-on-error: true
         # https://github.com/docker/compose/issues/1294#issuecomment-374847206
         run: |
-          cd packages/backend/test-federation
+          cd apps/misskey/packages/backend/test-federation
           touch ../../../built/._config_.json
           docker compose up -d --scale tester=0
       - name: Print start_servers error
         if: ${{ steps.start_servers.outcome == 'failure' }}
         run: |
-          cd packages/backend/test-federation
+          cd apps/misskey/packages/backend/test-federation
           docker compose logs | tail -n 300
           exit 1
       - name: Test
         run: |
-          cd packages/backend/test-federation
+          cd apps/misskey/packages/backend/test-federation
           docker compose run --no-deps tester
       - name: Log
         if: always()
         run: |
-          cd packages/backend/test-federation
+          cd apps/misskey/packages/backend/test-federation
           docker compose logs
       - name: Stop servers
         if: always()
         run: |
-          cd packages/backend/test-federation
+          cd apps/misskey/packages/backend/test-federation
           docker compose down

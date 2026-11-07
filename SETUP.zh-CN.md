@@ -47,7 +47,7 @@ pnpm dev
 
 ```bash
 cp .github/misskey/test.yml .config/test.yml
-docker compose -f packages/backend/test/compose.yml up   # 需完整 checkout
+docker compose -f apps/misskey/packages/backend/test/compose.yml up   # 需完整 checkout
 pnpm --filter backend test
 ```
 
@@ -77,7 +77,7 @@ Windows：请在 **WSL** 里 clone；Git for Windows 的换行会把仓库弄坏
 
 ## 文案与 AI
 
-- 简中文案改 `locales/zh-CN.yml`（见 [locales/README.md](locales/README.md)）
+- 简中文案改 `apps/misskey/locales/zh-CN.yml`（见 [apps/misskey/locales/README.md](apps/misskey/locales/README.md)）
 - AI 硬规矩：[AGENTS.md](AGENTS.md)；改 frontend / backend 前读读 `.claude/skills/` 对应 skill
 - 营地固定使用本地社区模式：联邦 / ActivityPub、远程账号解析与互动、中继和跨站迁移均已停用，界面隐藏对应入口。后台设置无法重新开启联邦；已有数据保留。
 

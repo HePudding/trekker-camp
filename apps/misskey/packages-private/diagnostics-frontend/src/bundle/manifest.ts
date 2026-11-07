@@ -3,6 +3,7 @@
  * SPDX-License-Identifier: AGPL-3.0-only
  */
 
+import { existsSync } from 'node:fs';
 import { promises as fs } from 'node:fs';
 import path from 'node:path';
 import { defaultLanguage } from 'i18n/const';
@@ -112,7 +113,7 @@ export async function resolveBuiltFile(outDir: string, file: string) {
 }
 
 export async function collectBundleReport(repoDir: string): Promise<CollectedBundleReport> {
-	const outDir = path.join(repoDir, 'built/_frontend_vite_');
+	const outDir = path.join(repoDir, existsSync(path.join(repoDir, 'apps/misskey/package.json')) ? 'apps/misskey/built/_frontend_vite_' : 'built/_frontend_vite_');
 	const manifestPath = path.join(outDir, 'manifest.json');
 	const manifest = JSON.parse(await fs.readFile(manifestPath, 'utf8')) as BundleManifest;
 	const chunksByFile = new Map<string, FileEntry>();

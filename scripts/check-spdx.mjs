@@ -33,31 +33,32 @@ import { DEFAULT_INTEGRATION_REFS, findClosestMergeBase, gitLines, gitMergeBase,
 
 /** CI の対象ディレクトリ。この配列を CI とローカル検査の両方が使う。 */
 const TARGET_DIRECTORIES = [
-	'packages/backend/migration',
-	'packages/backend/src',
-	'packages/backend/test',
-	'packages/frontend-shared/@types',
-	'packages/frontend-shared/js',
-	'packages/frontend-builder',
-	'packages/frontend/.storybook',
-	'packages/frontend/@types',
-	'packages/frontend/lib',
-	'packages/frontend/public',
-	'packages/frontend/src',
-	'packages/frontend/test',
-	'packages/frontend-embed/@types',
-	'packages/frontend-embed/src',
-	'packages/icons-subsetter/src',
-	'packages/misskey-bubble-game/src',
-	'packages/misskey-reversi/src',
-	'packages/sw/src',
+	'apps/misskey/packages/backend/migration',
+	'apps/misskey/packages/backend/src',
+	'apps/misskey/packages/backend/test',
+	'apps/misskey/packages/frontend-shared/@types',
+	'apps/misskey/packages/frontend-shared/js',
+	'apps/misskey/packages/frontend-builder',
+	'apps/misskey/packages/frontend/.storybook',
+	'apps/misskey/packages/frontend/@types',
+	'apps/misskey/packages/frontend/lib',
+	'apps/misskey/packages/frontend/public',
+	'apps/misskey/packages/frontend/src',
+	'apps/misskey/packages/frontend/test',
+	'apps/misskey/packages/frontend-embed/@types',
+	'apps/misskey/packages/frontend-embed/src',
+	'apps/misskey/packages/icons-subsetter/src',
+	'apps/misskey/packages/misskey-bubble-game/src',
+	'apps/misskey/packages/misskey-reversi/src',
+	'apps/misskey/packages/sw/src',
 	'scripts',
+	'apps/misskey/scripts',
 ];
 
 const TARGET_EXTENSIONS = new Set(['.cjs', '.html', '.js', '.mjs', '.scss', '.ts', '.vue']);
 const EXCLUDED_CONFIG_EXTENSIONS = new Set(['.cjs', '.js', '.mjs', '.ts']);
 const EXCLUDED_FILES = new Set([
-	'packages/frontend/public/mockServiceWorker.js', // `msw init` が生成する
+	'apps/misskey/packages/frontend/public/mockServiceWorker.js', // `msw init` が生成する
 ]);
 const HTML_COMMENT_EXTENSIONS = new Set(['.vue', '.html']);
 

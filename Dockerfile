@@ -18,18 +18,19 @@ WORKDIR /misskey
 
 COPY --link ["pnpm-lock.yaml", "pnpm-workspace.yaml", "package.json", "./"]
 COPY --link ["scripts", "./scripts"]
+COPY --link ["apps/misskey/package.json", "./apps/misskey/"]
 COPY --link ["patches", "./patches"]
-COPY --link ["packages/backend/package.json", "./packages/backend/"]
-COPY --link ["packages/frontend-shared/package.json", "./packages/frontend-shared/"]
-COPY --link ["packages/frontend/package.json", "./packages/frontend/"]
-COPY --link ["packages/frontend-embed/package.json", "./packages/frontend-embed/"]
-COPY --link ["packages/frontend-builder/package.json", "./packages/frontend-builder/"]
-COPY --link ["packages/i18n/package.json", "./packages/i18n/"]
-COPY --link ["packages/icons-subsetter/package.json", "./packages/icons-subsetter/"]
-COPY --link ["packages/sw/package.json", "./packages/sw/"]
-COPY --link ["packages/misskey-js/package.json", "./packages/misskey-js/"]
-COPY --link ["packages/misskey-reversi/package.json", "./packages/misskey-reversi/"]
-COPY --link ["packages/misskey-bubble-game/package.json", "./packages/misskey-bubble-game/"]
+COPY --link ["apps/misskey/packages/backend/package.json", "./apps/misskey/packages/backend/"]
+COPY --link ["apps/misskey/packages/frontend-shared/package.json", "./apps/misskey/packages/frontend-shared/"]
+COPY --link ["apps/misskey/packages/frontend/package.json", "./apps/misskey/packages/frontend/"]
+COPY --link ["apps/misskey/packages/frontend-embed/package.json", "./apps/misskey/packages/frontend-embed/"]
+COPY --link ["apps/misskey/packages/frontend-builder/package.json", "./apps/misskey/packages/frontend-builder/"]
+COPY --link ["apps/misskey/packages/i18n/package.json", "./apps/misskey/packages/i18n/"]
+COPY --link ["apps/misskey/packages/icons-subsetter/package.json", "./apps/misskey/packages/icons-subsetter/"]
+COPY --link ["apps/misskey/packages/sw/package.json", "./apps/misskey/packages/sw/"]
+COPY --link ["apps/misskey/packages/misskey-js/package.json", "./apps/misskey/packages/misskey-js/"]
+COPY --link ["apps/misskey/packages/misskey-reversi/package.json", "./apps/misskey/packages/misskey-reversi/"]
+COPY --link ["apps/misskey/packages/misskey-bubble-game/package.json", "./apps/misskey/packages/misskey-bubble-game/"]
 
 ARG NODE_ENV=production
 
@@ -55,11 +56,12 @@ WORKDIR /misskey
 
 COPY --link ["pnpm-lock.yaml", "pnpm-workspace.yaml", "package.json", "./"]
 COPY --link ["scripts", "./scripts"]
+COPY --link ["apps/misskey/package.json", "./apps/misskey/"]
 COPY --link ["patches", "./patches"]
-COPY --link ["packages/backend/package.json", "./packages/backend/"]
-COPY --link ["packages/misskey-js/package.json", "./packages/misskey-js/"]
-COPY --link ["packages/misskey-reversi/package.json", "./packages/misskey-reversi/"]
-COPY --link ["packages/misskey-bubble-game/package.json", "./packages/misskey-bubble-game/"]
+COPY --link ["apps/misskey/packages/backend/package.json", "./apps/misskey/packages/backend/"]
+COPY --link ["apps/misskey/packages/misskey-js/package.json", "./apps/misskey/packages/misskey-js/"]
+COPY --link ["apps/misskey/packages/misskey-reversi/package.json", "./apps/misskey/packages/misskey-reversi/"]
+COPY --link ["apps/misskey/packages/misskey-bubble-game/package.json", "./apps/misskey/packages/misskey-bubble-game/"]
 
 ARG NODE_ENV=production
 
@@ -94,16 +96,16 @@ USER misskey
 WORKDIR /misskey
 
 COPY --chown=misskey:misskey --from=target-builder /misskey/node_modules ./node_modules
-COPY --chown=misskey:misskey --from=target-builder /misskey/packages/backend/node_modules ./packages/backend/node_modules
-COPY --chown=misskey:misskey --from=target-builder /misskey/packages/misskey-js/node_modules ./packages/misskey-js/node_modules
-COPY --chown=misskey:misskey --from=target-builder /misskey/packages/misskey-reversi/node_modules ./packages/misskey-reversi/node_modules
-COPY --chown=misskey:misskey --from=target-builder /misskey/packages/misskey-bubble-game/node_modules ./packages/misskey-bubble-game/node_modules
-COPY --chown=misskey:misskey --from=native-builder /misskey/built ./built
-COPY --chown=misskey:misskey --from=native-builder /misskey/packages/misskey-js/built ./packages/misskey-js/built
-COPY --chown=misskey:misskey --from=native-builder /misskey/packages/misskey-reversi/built ./packages/misskey-reversi/built
-COPY --chown=misskey:misskey --from=native-builder /misskey/packages/misskey-bubble-game/built ./packages/misskey-bubble-game/built
-COPY --chown=misskey:misskey --from=native-builder /misskey/packages/backend/built ./packages/backend/built
-COPY --chown=misskey:misskey --from=native-builder /misskey/packages/i18n/built ./packages/i18n/built
+COPY --chown=misskey:misskey --from=target-builder /misskey/apps/misskey/packages/backend/node_modules ./apps/misskey/packages/backend/node_modules
+COPY --chown=misskey:misskey --from=target-builder /misskey/apps/misskey/packages/misskey-js/node_modules ./apps/misskey/packages/misskey-js/node_modules
+COPY --chown=misskey:misskey --from=target-builder /misskey/apps/misskey/packages/misskey-reversi/node_modules ./apps/misskey/packages/misskey-reversi/node_modules
+COPY --chown=misskey:misskey --from=target-builder /misskey/apps/misskey/packages/misskey-bubble-game/node_modules ./apps/misskey/packages/misskey-bubble-game/node_modules
+COPY --chown=misskey:misskey --from=native-builder /misskey/apps/misskey/built ./apps/misskey/built
+COPY --chown=misskey:misskey --from=native-builder /misskey/apps/misskey/packages/misskey-js/built ./apps/misskey/packages/misskey-js/built
+COPY --chown=misskey:misskey --from=native-builder /misskey/apps/misskey/packages/misskey-reversi/built ./apps/misskey/packages/misskey-reversi/built
+COPY --chown=misskey:misskey --from=native-builder /misskey/apps/misskey/packages/misskey-bubble-game/built ./apps/misskey/packages/misskey-bubble-game/built
+COPY --chown=misskey:misskey --from=native-builder /misskey/apps/misskey/packages/backend/built ./apps/misskey/packages/backend/built
+COPY --chown=misskey:misskey --from=native-builder /misskey/apps/misskey/packages/i18n/built ./apps/misskey/packages/i18n/built
 COPY --chown=misskey:misskey . ./
 
 ENV LD_PRELOAD=/usr/local/lib/libjemalloc.so

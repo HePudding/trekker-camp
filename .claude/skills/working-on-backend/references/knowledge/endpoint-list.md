@@ -4,11 +4,11 @@
 
 ## 为什么需要注册
 
-[`packages/backend/src/server/api/EndpointsModule.ts`](../../../../../packages/backend/src/server/api/EndpointsModule.ts) 使用 `Object.entries()` 遍历 [`endpoint-list.ts`](../../../../../packages/backend/src/server/api/endpoint-list.ts) 的全部导出，生成 NestJS 提供者（`provide: 'ep:<path>'`）。**此列表是 API 路由的唯一依据**，未列出的端点会被视为不存在。
+[`apps/misskey/packages/backend/src/server/api/EndpointsModule.ts`](../../../../../apps/misskey/packages/backend/src/server/api/EndpointsModule.ts) 使用 `Object.entries()` 遍历 [`endpoint-list.ts`](../../../../../apps/misskey/packages/backend/src/server/api/endpoint-list.ts) 的全部导出，生成 NestJS 提供者（`provide: 'ep:<path>'`）。**此列表是 API 路由的唯一依据**，未列出的端点会被视为不存在。
 
 ## 注册方法
 
-在 [endpoint-list.ts](../../../../../packages/backend/src/server/api/endpoint-list.ts) 的**同类端点中**添加一行：
+在 [endpoint-list.ts](../../../../../apps/misskey/packages/backend/src/server/api/endpoint-list.ts) 的**同类端点中**添加一行：
 
 ```ts
 export * as '<category>/<name>' from './endpoints/<category>/<name>.js';
@@ -35,7 +35,7 @@ export * as 'notes/create' from './endpoints/notes/create.js';
 添加文件后，通过 grep 检查注册行是否存在：
 
 ```bash
-grep -F "'<category>/<name>'" packages/backend/src/server/api/endpoint-list.ts
+grep -F "'<category>/<name>'" apps/misskey/packages/backend/src/server/api/endpoint-list.ts
 ```
 
 没有结果即表示遗漏注册。

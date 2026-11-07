@@ -16,15 +16,15 @@ report.*.json
 !.yarn/releases
 !.yarn/sdks
 !.yarn/versions
-packages/frontend/.yarn/cache
-packages/backend/.yarn/cache
-packages/sw/.yarn/cache
+apps/misskey/packages/frontend/.yarn/cache
+apps/misskey/packages/backend/.yarn/cache
+apps/misskey/packages/sw/.yarn/cache
 
 # pnpm
 .pnpm-store
 
 # Playwright
-packages/frontend/test/e2e/artifacts
+apps/misskey/packages/frontend/test/e2e/artifacts
 
 # Coverage
 coverage
@@ -41,7 +41,7 @@ docker-compose.yml
 !/.devcontainer/compose.yml
 
 # misskey
-/build
+/apps/misskey/build
 built
 built-test
 js-built
@@ -61,13 +61,13 @@ api-docs.json
 /files
 ormconfig.json
 temp
-/packages/frontend/src/**/*.stories.ts
+/apps/misskey/packages/frontend/src/**/*.stories.ts
 tsdoc-metadata.json
 misskey-assets
 
 # Separately managed artwork and its local serving link
 /private-assets
-/packages/frontend/assets/camp
+/apps/misskey/packages/frontend/assets/camp
 
 # Vite temporary files
 vite.config.js.timestamp-*

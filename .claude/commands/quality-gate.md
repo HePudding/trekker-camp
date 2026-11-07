@@ -34,7 +34,7 @@ SPDX-FileCopyrightText: 2026 Affaan Mustafa and everything-claude-code contribut
 
 ### 全仓库
 
-[后端](../../packages/backend/package.json)与[前端](../../packages/frontend/package.json)的 lint 内部执行 typecheck && eslint。
+[后端](../../apps/misskey/packages/backend/package.json)与[前端](../../apps/misskey/packages/frontend/package.json)的 lint 内部执行 typecheck && eslint。
 根目录 pnpm lint 使用 `pnpm --no-bail -r lint && pnpm check-dts`，前半段失败时会跳过 check-dts。
 因此将以下四条命令作为独立调用，收集全部结果：
 
@@ -81,8 +81,8 @@ pnpm --filter frontend test
 将仓库相对路径转换为包内路径，从对应包根目录运行：
 
 ```bash
-(cd packages/backend && pnpm exec eslint --quiet -- src/path/to/file.ts)
-(cd packages/frontend && pnpm exec eslint --quiet -- src/path/to/component.vue)
+(cd apps/misskey/packages/backend && pnpm exec eslint --quiet -- src/path/to/file.ts)
+(cd apps/misskey/packages/frontend && pnpm exec eslint --quiet -- src/path/to/component.vue)
 ```
 
 ## 输出

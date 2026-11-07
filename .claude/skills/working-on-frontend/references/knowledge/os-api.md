@@ -1,6 +1,6 @@
 # os.* 界面辅助函数
 
-[packages/frontend/src/os.ts](../../../../../packages/frontend/src/os.ts) 提供界面操作 API。
+[apps/misskey/packages/frontend/src/os.ts](../../../../../apps/misskey/packages/frontend/src/os.ts) 提供界面操作 API。
 **禁止直接调用 `window.alert()`、`window.confirm()`、`window.prompt()`**，它们与 Misskey 的主题、无障碍和弹窗层不一致。
 
 ## 主要 API
@@ -79,7 +79,7 @@ const result = await os.apiWithDialog('notes/create', {
 // 失败时：自动显示错误对话框，但 Promise 仍拒绝，await 调用需要 try/catch
 ```
 
-普通 misskeyApi 调用需要自行显示错误；apiWithDialog 在失败时自动调用错误提示。但它返回的仍是原 Promise，失败时仍会拒绝，见 [os.ts](../../../../../packages/frontend/src/os.ts) 的 `return promise`。await 调用仍需要 try/catch；若仅需在显示错误后停止后续操作，可在 catch 中不再抛出。
+普通 misskeyApi 调用需要自行显示错误；apiWithDialog 在失败时自动调用错误提示。但它返回的仍是原 Promise，失败时仍会拒绝，见 [os.ts](../../../../../apps/misskey/packages/frontend/src/os.ts) 的 `return promise`。await 调用仍需要 try/catch；若仅需在显示错误后停止后续操作，可在 catch 中不再抛出。
 
 ## 原生对话框的问题
 
@@ -93,6 +93,6 @@ const result = await os.apiWithDialog('notes/create', {
 
 ## 参考文件
 
-- [os.ts](../../../../../packages/frontend/src/os.ts)：全部 API 实现。
+- [os.ts](../../../../../apps/misskey/packages/frontend/src/os.ts)：全部 API 实现。
 - `MkDialog.vue`：alert 和 confirm 复用的组件。
 - `MkFormDialog.vue` 等表单对话框组件。

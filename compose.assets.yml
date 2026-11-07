@@ -4,7 +4,7 @@ services:
     volumes:
       - type: bind
         source: ${CAMP_ASSETS_DIR:-./private-assets/public}
-        target: /misskey/packages/frontend/assets/camp
+        target: /misskey/apps/misskey/packages/frontend/assets/camp
         read_only: true
         bind:
           create_host_path: false
