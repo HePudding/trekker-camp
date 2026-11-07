@@ -1,16 +1,16 @@
 # 添加或修改国际化键
 
-添加或修改界面文案时遵循本流程。上游规则**仅允许手动编辑 locales/ja-JP.yml**。
+添加或修改界面文案时遵循本流程。上游规则**仅允许手动编辑 apps/misskey/locales/ja-JP.yml**。
 
 ## 强制前提
 
-- 禁止编辑其他语言文件，它们由 Crowdin 自动分发，手动修改会被覆盖，见 [locales/README.md](../../../../../locales/README.md) 和 [crowdin.yml](../../../../../crowdin.yml)。
+- 禁止编辑其他语言文件，它们由 Crowdin 自动分发，手动修改会被覆盖，见 [apps/misskey/locales/README.md](../../../../../apps/misskey/locales/README.md) 和 [crowdin.yml](../../../../../crowdin.yml)。
 - 不在单文件组件中硬编码界面字符串，统一通过 i18n.ts 引用。
 - 重命名已有键会影响 Crowdin 翻译资产，应分为**新增 → 迁移 → 删除旧键**，详见[国际化用法](../knowledge/i18n-usage.md)。
 
 ## 1. 添加键
 
-编辑 [locales/ja-JP.yml](../../../../../locales/ja-JP.yml)，保留层级并放在相关章节：
+编辑 [apps/misskey/locales/ja-JP.yml](../../../../../apps/misskey/locales/ja-JP.yml)，保留层级并放在相关章节：
 
 ```yaml
 # 顶层简单键
@@ -37,7 +37,7 @@ ICU 替代方案、_lang_ 保留键和 Storybook 行为见[国际化用法](../k
 
 ## 2. 重新生成类型
 
-packages/i18n/build.ts 解析 ja-JP.yml，将接口写入 [packages/i18n/src/autogen/locale.ts](../../../../../packages/i18n/src/autogen/locale.ts)。
+apps/misskey/packages/i18n/build.ts 解析 ja-JP.yml，将接口写入 [apps/misskey/packages/i18n/src/autogen/locale.ts](../../../../../apps/misskey/packages/i18n/src/autogen/locale.ts)。
 
 ### 自动生成（推荐）
 
@@ -80,14 +80,14 @@ pnpm --filter i18n lint
 pnpm --filter frontend lint
 
 # 检查其他语言 YAML 无差异，输出为空即通过
-git diff --name-only develop -- 'locales/*.yml' | grep -v '^locales/ja-JP\.yml$'
+git diff --name-only develop -- 'apps/misskey/locales/*.yml' | grep -v '^apps/misskey/locales/ja-JP\.yml$'
 ```
 
 grep 排除 ja-JP.yml 时必须先用 --name-only 获取文件名。直接过滤 diff 正文会让新增行通过，导致误判。
 
 ## 示例：添加删除确认
 
-1. 在 locales/ja-JP.yml 添加：
+1. 在 apps/misskey/locales/ja-JP.yml 添加：
 
    ```yaml
    _notes:
@@ -115,8 +115,8 @@ grep 排除 ja-JP.yml 时必须先用 --name-only 获取文件名。直接过滤
 
 ## 参考
 
-- [语言文件编辑规则](../../../../../locales/README.md)
-- [ja-JP.yml](../../../../../locales/ja-JP.yml)
-- [i18n 构建](../../../../../packages/i18n/build.ts)
-- [生成类型](../../../../../packages/i18n/src/autogen/locale.ts)
-- [前端 i18n](../../../../../packages/frontend/src/i18n.ts)
+- [语言文件编辑规则](../../../../../apps/misskey/locales/README.md)
+- [ja-JP.yml](../../../../../apps/misskey/locales/ja-JP.yml)
+- [i18n 构建](../../../../../apps/misskey/packages/i18n/build.ts)
+- [生成类型](../../../../../apps/misskey/packages/i18n/src/autogen/locale.ts)
+- [前端 i18n](../../../../../apps/misskey/packages/frontend/src/i18n.ts)

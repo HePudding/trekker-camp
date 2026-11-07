@@ -22,7 +22,7 @@ YAML 文件头（`name` 和 `description`）是 Claude 判断**是否自动调�
 - 在 `.claude/skills/<name>/SKILL.md` 中编写 YAML 文件头（`name` 和 `description`）以及 Markdown 正文。
 - 描述使用第三人称的“在……时使用”形式，覆盖主要关键词，并加入“必须在……之前阅读”等明确触发措辞。
 - 不设置 `disable-model-invocation: true`，以便自动调用。
-- 主要参考文件的链接使用相对于当前 Markdown 文件的路径，例如 `../../../../packages/backend/...`。避免依赖贡献者个人主目录的绝对路径。
+- 主要参考文件的链接使用相对于当前 Markdown 文件的路径，例如 `../../../../apps/misskey/packages/backend/...`。避免依赖贡献者个人主目录的绝对路径。
 - 拆分详细内容时，遵循 `references/tasks/`（步骤）和 `references/knowledge/`（知识）的分类。
 - 建议通过官方 `/skill-creator` 技能的指南创建技能。
 

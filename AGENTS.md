@@ -12,8 +12,8 @@
 
 ## 旅人营地覆盖规则（优先于下文上游规则）
 
-1. **产品文案源语言是简体中文 `locales/zh-CN.yml`**
-   - AI 和开发者可以、也应当编辑 `locales/zh-CN.yml`。
+1. **产品文案源语言是简体中文 `apps/misskey/locales/zh-CN.yml`**
+   - AI 和开发者可以、也应当编辑 `apps/misskey/locales/zh-CN.yml`。
    - 禁止手动编辑其他语言 YAML（`en-US.yml`、`ja-JP.yml`、`zh-TW.yml` 等），避免与上游或 Crowdin 同步相互覆盖。
    - 合入上游文案时，先合并 `ja-JP.yml`（上游源语言），再将旅人营地需要的键写入 `zh-CN.yml`。
    - 前端新增国际化键时，写入 `zh-CN.yml`，并通过实例配置或默认语言设置保证运行时默认使用简体中文。
@@ -50,16 +50,16 @@
    - 适用类型：新增的 `.ts`、`.js`、`.cjs`、`.mjs`、`.vue`、`.scss`、`.html` 文件。
    - 适用范围和判断逻辑由 [scripts/check-spdx.mjs](scripts/check-spdx.mjs) 统一管理。
    - 执行一次 `node scripts/check-spdx.mjs`，缺失时使用 `--fix` 补齐。得到 `SPDX: OK` 后无需额外人工检查。
-   - `packages/misskey-js` 是 MIT 许可证子包，不应统一添加 AGPL 头；遵循该子包的 `package.json`、`LICENSE` 和已有文件头。
+   - `apps/misskey/packages/misskey-js` 是 MIT 许可证子包，不应统一添加 AGPL 头；遵循该子包的 `package.json`、`LICENSE` 和已有文件头。
 
-2. **禁止手动编辑 `locales/zh-CN.yml` 和用于上游同步的 `locales/ja-JP.yml` 之外的语言 YAML**
+2. **禁止手动编辑 `apps/misskey/locales/zh-CN.yml` 和用于上游同步的 `apps/misskey/locales/ja-JP.yml` 之外的语言 YAML**
    - 旅人营地的产品文案源文件是 **`zh-CN.yml`**，AI 可以编辑。
    - `ja-JP.yml` 保留为上游 Misskey 的同步入口；本 fork 默认关闭 Crowdin 流程。
    - 禁止手动编辑 `en-US.yml`、`zh-TW.yml` 等其他语言，避免同步覆盖和无关差异。
-   - 上游依据见 [locales/README.md](locales/README.md) 和 [crowdin.yml](crowdin.yml)；本仓库以“旅人营地覆盖规则”为准。
+   - 上游依据见 [apps/misskey/locales/README.md](apps/misskey/locales/README.md) 和 [crowdin.yml](crowdin.yml)；本仓库以“旅人营地覆盖规则”为准。
 
 3. **禁止修改已合并的迁移文件**
-   - 适用范围：`packages/backend/migration/{unixMs}-{name}.js` 中已合并到 `develop` 或 `master` 的文件。
+   - 适用范围：`apps/misskey/packages/backend/migration/{unixMs}-{name}.js` 中已合并到 `develop` 或 `master` 的文件。
    - 改写历史会导致生产环境严重的数据不一致。
    - 需要修改数据库结构时，使用新时间戳创建迁移文件（`node -e "console.log(Date.now())"`）。
    - 新迁移必须同时实现 `up()` 和 `down()`，并通过 `pnpm --filter backend check-migrations`，使用 TypeORM 架构构建器检查待执行 DDL。
@@ -83,8 +83,8 @@
 
 无论已执行哪些上游技能、掌握多少先验知识或记忆，以下要求均适用。
 
-13. 编辑或添加 `packages/backend/` 下的文件前，必须阅读 `working-on-backend` 技能。
-14. 编辑或添加 `packages/frontend/` 下的文件前，必须阅读 `working-on-frontend` 技能。
+13. 编辑或添加 `apps/misskey/packages/backend/` 下的文件前，必须阅读 `working-on-backend` 技能。
+14. 编辑或添加 `apps/misskey/packages/frontend/` 下的文件前，必须阅读 `working-on-frontend` 技能。
     - 即使技能正文规定仅可编辑 `ja-JP.yml`，**本仓库仍以 `zh-CN.yml` 为源语言**，遵循本文件覆盖规则。
 15. 提交、创建 PR 或将工作交还用户前，必须阅读 `shipping-misskey-change` 技能。
 16. 创建 Issue 或 PR 前，必须阅读 `creating-issues-and-prs` 技能，包括漏洞报告规则。
@@ -96,10 +96,10 @@
 所有代理都必须阅读 [shipping-misskey-change 技能](.claude/skills/shipping-misskey-change/SKILL.md)。即使当前环境无法使用技能，也必须执行以下检查：
 
 1. **lint 与测试**：最后从所属包根目录，对受 ESLint 检查的改动文件运行一次 `eslint --quiet`；实现改动需运行最相关的测试。整个包或仓库的 lint 及更大范围测试为可选项。
-2. **后端 API 修改**：执行 `pnpm build-misskey-js-with-types`，将 `packages/misskey-js/src/autogen/` 的差异一并提交。
+2. **后端 API 修改**：执行 `pnpm build-misskey-js-with-types`，将 `apps/misskey/packages/misskey-js/src/autogen/` 的差异一并提交。
 3. **实体或迁移修改**：`pnpm --filter backend check-migrations` 通过且待执行 DDL 为 0；新迁移已同时实现 `up()` 和 `down()`。
 4. **SPDX**：`node scripts/check-spdx.mjs` 返回 `SPDX: OK`。
-5. **语言文件安全**：改动集合中只允许出现 `locales/zh-CN.yml`，以及仅用于上游同步的 `locales/ja-JP.yml`；不混入其他语言 YAML 的差异。
+5. **语言文件安全**：改动集合中只允许出现 `apps/misskey/locales/zh-CN.yml`，以及仅用于上游同步的 `apps/misskey/locales/ja-JP.yml`；不混入其他语言 YAML 的差异。
 6. **[CHANGELOG](.claude/skills/shipping-misskey-change/references/tasks/changelog-update.md)**：用户未明确要求时不编辑。存在用户可感知的修改时，在交接中提供一行候选条目。
 7. **素材分发**：`pnpm assets:check` 通过，确认私有素材和本地链接没有进入 Git 索引；该项已纳入 `node scripts/check-shipping.mjs`。
 

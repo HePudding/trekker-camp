@@ -1,6 +1,6 @@
 # 创建数据库迁移
 
-在 packages/backend/migration 下添加 TypeORM 迁移时遵循本流程。
+在 apps/misskey/packages/backend/migration 下添加 TypeORM 迁移时遵循本流程。
 
 ## 强制要求
 
@@ -19,7 +19,7 @@
 
 ## 类命名
 
-- 文件：`packages/backend/migration/{unixMs}-{descriptive-name}.js`。
+- 文件：`apps/misskey/packages/backend/migration/{unixMs}-{descriptive-name}.js`。
 - 描述名称在历史中混用 PascalCase、camelCase、kebab-case，使用能表达修改的英文名称即可。
 - **类名为 PascalCase 加 13 位时间戳**，如 BirthdayIndex1767169026317。
 - **name 属性与类名完全相同**。
@@ -46,8 +46,8 @@ export class PascalCaseName1234567890123 {
 ## A. 按实体差异生成
 
 ```bash
-# 可从根目录执行，--filter backend exec 会切换到 packages/backend。
-# 输出路径和 ormconfig.js 均相对于 packages/backend 解析。
+# 可从根目录执行，--filter backend exec 会切换到 apps/misskey/packages/backend。
+# 输出路径和 ormconfig.js 均相对于 apps/misskey/packages/backend 解析。
 pnpm --filter backend exec typeorm migration:generate -d ormconfig.js -o --esm migration/<PascalName>
 ```
 
@@ -107,7 +107,7 @@ CLI 不会生成 SPDX，必须在开头添加，否则 spdx CI 失败：
 ### 并发建立索引
 
 大表普通 CREATE INDEX 可能长时间锁表。使用 CONCURRENTLY 时需关闭该迁移的事务，详情见 [TypeORM 模式](../knowledge/typeorm-patterns.md)。
-参考 [1745378064470-composite-note-index.js](../../../../../packages/backend/migration/1745378064470-composite-note-index.js)。
+参考 [1745378064470-composite-note-index.js](../../../../../apps/misskey/packages/backend/migration/1745378064470-composite-note-index.js)。
 
 ## 验证
 
@@ -127,7 +127,7 @@ pnpm revert
 pnpm migrate
 ```
 
-[check_migrations_clean.js](../../../../../packages/backend/scripts/check_migrations_clean.js) 通过 TypeORM 的 createSchemaBuilder().log() 获取待执行 DDL，upQueries 或 downQueries 有残留时以非零退出。该检查验证实体和迁移是否同步，不检查迁移排序。
+[check_migrations_clean.js](../../../../../apps/misskey/packages/backend/scripts/check_migrations_clean.js) 通过 TypeORM 的 createSchemaBuilder().log() 获取待执行 DDL，upQueries 或 downQueries 有残留时以非零退出。该检查验证实体和迁移是否同步，不检查迁移排序。
 
 ## 参考模板
 
@@ -135,9 +135,9 @@ pnpm migrate
 
 | 模式 | 文件 |
 |---|---|
-| 索引与函数 | [1767169026317-birthday-index.js](../../../../../packages/backend/migration/1767169026317-birthday-index.js) |
-| 仅新增列 | [1766652173085-add-category-to-avatar-decorations.js](../../../../../packages/backend/migration/1766652173085-add-category-to-avatar-decorations.js) |
-| 新建表与外键 | [1761569941833-add-channel-muting.js](../../../../../packages/backend/migration/1761569941833-add-channel-muting.js) |
+| 索引与函数 | [1767169026317-birthday-index.js](../../../../../apps/misskey/packages/backend/migration/1767169026317-birthday-index.js) |
+| 仅新增列 | [1766652173085-add-category-to-avatar-decorations.js](../../../../../apps/misskey/packages/backend/migration/1766652173085-add-category-to-avatar-decorations.js) |
+| 新建表与外键 | [1761569941833-add-channel-muting.js](../../../../../apps/misskey/packages/backend/migration/1761569941833-add-channel-muting.js) |
 
 ## 提交前自查
 

@@ -8,7 +8,7 @@
 
 ### --MI_THEME-*：主题相关
 
-颜色随浅色、深色或自定义主题变化，在 packages/frontend-shared/themes/_dark.json5 等文件中定义。
+颜色随浅色、深色或自定义主题变化，在 apps/misskey/packages/frontend-shared/themes/_dark.json5 等文件中定义。
 
 | 变量 | 用途 |
 |---|---|
@@ -31,7 +31,7 @@
 | --MI_THEME-link | 链接 |
 | --MI_THEME-mention、--MI_THEME-hashtag | 提及和话题标签 |
 
-完整列表见 packages/frontend-shared/themes/_light.json5。
+完整列表见 apps/misskey/packages/frontend-shared/themes/_light.json5。
 
 ### --MI-*：与主题无关的通用常量
 
@@ -52,9 +52,9 @@
 
 ## 全局工具类
 
-定义位于 [packages/frontend/src/style.scss](../../../../../packages/frontend/src/style.scss)，可与模块类配合使用。全局类直接写入 `class="_button"`，模块类通过 `:class="$style.root"` 绑定。
+定义位于 [apps/misskey/packages/frontend/src/style.scss](../../../../../apps/misskey/packages/frontend/src/style.scss)，可与模块类配合使用。全局类直接写入 `class="_button"`，模块类通过 `:class="$style.root"` 绑定。
 
-以下为常用示例，实际定义可能变化。可通过 `grep -nE '^\._' packages/frontend/src/style.scss` 列出当前类名。
+以下为常用示例，实际定义可能变化。可通过 `grep -nE '^\._' apps/misskey/packages/frontend/src/style.scss` 列出当前类名。
 
 | 类 | 含义 |
 |---|---|

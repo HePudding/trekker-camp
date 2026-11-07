@@ -7,12 +7,12 @@ on:
   push:
     branches: [ develop ]
     paths:
-      - packages/misskey-js/**
+      - apps/misskey/packages/misskey-js/**
       - .github/workflows/test-misskey-js.yml
   pull_request:
     branches: [ develop ]
     paths:
-      - packages/misskey-js/**
+      - apps/misskey/packages/misskey-js/**
       - .github/workflows/test-misskey-js.yml
 jobs:
   test:
@@ -51,4 +51,4 @@ jobs:
         uses: codecov/codecov-action@v7
         with:
           token: ${{ secrets.CODECOV_TOKEN }}
-          files: ./packages/misskey-js/coverage/coverage-final.json
+          files: ./apps/misskey/packages/misskey-js/coverage/coverage-final.json

@@ -6,6 +6,7 @@
 // @ts-check
 
 import { execFileSync } from 'node:child_process';
+import { existsSync, statSync } from 'node:fs';
 import { TextDecoder } from 'node:util';
 
 const UTF8_DECODER = new TextDecoder('utf-8', { fatal: true });
@@ -90,6 +91,38 @@ export function gitPaths(args, options = {}) {
 	return decodeGitOutput(gitBuffer(args, options), `git ${args[0]}`)
 		.split('\0')
 		.filter((path) => path !== '');
+}
+
+/**
+ * Exclude byte-identical relocations from content checks during the monorepo move.
+ * Hash paths in one Git call instead of reading each original blob separately.
+ * @param {string[]} files
+ * @param {string} base
+ * @returns {string[]}
+ */
+export function filterUnchangedRelocations(files, base) {
+	const prefix = 'apps/misskey/';
+	const originals = new Map(gitPaths(['ls-tree', '-r', '-z', base]).map(entry => {
+		const [metadata, path] = entry.split('\t');
+		return [path, metadata.split(' ')[2]];
+	}));
+	const moved = files.filter(file => file.startsWith(prefix)
+		&& originals.has(file.slice(prefix.length)) && !originals.has(file)
+		&& !existsSync(file.slice(prefix.length)) && existsSync(file) && statSync(file).isFile());
+	if (moved.length === 0) return files;
+	const hashes = execFileSync('git', ['hash-object', '--stdin-paths'], {
+		input: moved.map(file => JSON.stringify(file)).join('\n') + '\n',
+		encoding: 'utf8', maxBuffer: 64 * 1024 * 1024,
+	}).trim().split('\n');
+	const unchanged = new Set();
+	moved.forEach((file, index) => {
+		const oldPath = file.slice(prefix.length);
+		if (hashes[index] === originals.get(oldPath)) {
+			unchanged.add(file);
+			unchanged.add(oldPath);
+		}
+	});
+	return files.filter(file => !unchanged.has(file));
 }
 
 /**

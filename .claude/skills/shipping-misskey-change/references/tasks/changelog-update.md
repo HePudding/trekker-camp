@@ -8,8 +8,8 @@
 `## Unreleased` 下包含**三个子章节**：
 
 - `### General` — 通用或跨模块修改
-- `### Client` — `packages/frontend` 相关
-- `### Server` — `packages/backend` 相关
+- `### Client` — `apps/misskey/packages/frontend` 相关
+- `### Server` — `apps/misskey/packages/backend` 相关
 
 ## 条目格式
 

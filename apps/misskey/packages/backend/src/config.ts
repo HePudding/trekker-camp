@@ -249,7 +249,7 @@ while (!fs.existsSync(resolve(rootDir, 'packages'))) {
 }
 
 /** Path of configuration directory */
-const configDir = resolve(rootDir, '.config');
+const configDir = resolve(rootDir, '../../.config');
 /** Path of built directory */
 const projectBuiltDir = resolve(rootDir, 'built');
 

@@ -6,10 +6,10 @@ on:
       - master
       - develop
     paths:
-      - packages-private/**
-      - packages/i18n/**
-      - locales/**
-      - packages/shared/eslint.config.js
+      - apps/misskey/packages-private/**
+      - apps/misskey/packages/i18n/**
+      - apps/misskey/locales/**
+      - apps/misskey/packages/shared/eslint.config.js
       - package.json
       - pnpm-workspace.yaml
       - pnpm-lock.yaml
@@ -17,10 +17,10 @@ on:
       - .github/workflows/packages-private.yml
   pull_request:
     paths:
-      - packages-private/**
-      - packages/i18n/**
-      - locales/**
-      - packages/shared/eslint.config.js
+      - apps/misskey/packages-private/**
+      - apps/misskey/packages/i18n/**
+      - apps/misskey/locales/**
+      - apps/misskey/packages/shared/eslint.config.js
       - package.json
       - pnpm-workspace.yaml
       - pnpm-lock.yaml

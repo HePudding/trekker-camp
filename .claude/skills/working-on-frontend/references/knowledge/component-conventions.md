@@ -12,7 +12,7 @@
 ## 基本风格
 
 使用组合式 API 与 `<script setup lang="ts">`，不新增选项式 API。
-需要模块作用域类型、常量或工具函数时，可以额外使用普通 TypeScript script 块，例如 [MkInput.vue](../../../../../packages/frontend/src/components/MkInput.vue) 的 SupportedTypes。
+需要模块作用域类型、常量或工具函数时，可以额外使用普通 TypeScript script 块，例如 [MkInput.vue](../../../../../apps/misskey/packages/frontend/src/components/MkInput.vue) 的 SupportedTypes。
 样式使用 SCSS CSS Modules。
 
 ```vue
@@ -58,7 +58,7 @@ import { ref } from 'vue';
 
 ### 插槽与简单属性
 
-以下是合成示例，真实简单组件参考 [MkInfo.vue](../../../../../packages/frontend/src/components/MkInfo.vue)。
+以下是合成示例，真实简单组件参考 [MkInfo.vue](../../../../../apps/misskey/packages/frontend/src/components/MkInfo.vue)。
 
 ```vue
 <!--
@@ -111,7 +111,7 @@ const props = withDefaults(defineProps<{
 
 ### 泛型与双 script
 
-参考 [MkInput.vue](../../../../../packages/frontend/src/components/MkInput.vue)。
+参考 [MkInput.vue](../../../../../apps/misskey/packages/frontend/src/components/MkInput.vue)。
 类型计算或导出类型放入普通 script，实例逻辑放入 setup：
 
 ```vue
@@ -164,7 +164,7 @@ function select(value: T) {
 
 ### defineModel 与 v-model
 
-参考 [MkSelect.vue](../../../../../packages/frontend/src/components/MkSelect.vue)、[MkRadios.vue](../../../../../packages/frontend/src/components/MkRadios.vue)。
+参考 [MkSelect.vue](../../../../../apps/misskey/packages/frontend/src/components/MkSelect.vue)、[MkRadios.vue](../../../../../apps/misskey/packages/frontend/src/components/MkRadios.vue)。
 defineModel 可替代手动声明 modelValue 和 update:modelValue：
 
 ```vue
@@ -196,7 +196,7 @@ const props = defineProps<{
 ### 事件与具名插槽
 
 以下合成示例将点击处理交给调用方，适用于确认界面等。
-[MkButton.vue](../../../../../packages/frontend/src/components/MkButton.vue) 本身仅发出携带 PointerEvent 的 click 事件，结构与此示例不同。
+[MkButton.vue](../../../../../apps/misskey/packages/frontend/src/components/MkButton.vue) 本身仅发出携带 PointerEvent 的 click 事件，结构与此示例不同。
 
 ```vue
 <template>
@@ -276,7 +276,7 @@ const emit = defineEmits<{
 
 最常见遗漏是只处理 click，未支持 Enter。
 
-原则上不把不跳转的 a 当作按钮。导航使用 [MkA.vue](../../../../../packages/frontend/src/components/global/MkA.vue)，操作使用 button，避免无障碍和 SEO 问题。
+原则上不把不跳转的 a 当作按钮。导航使用 [MkA.vue](../../../../../apps/misskey/packages/frontend/src/components/global/MkA.vue)，操作使用 button，避免无障碍和 SEO 问题。
 
 ### 表单标签
 
@@ -294,7 +294,7 @@ const emit = defineEmits<{
 </label>
 ```
 
-[MkInput.vue](../../../../../packages/frontend/src/components/MkInput.vue)、[MkSwitch.vue](../../../../../packages/frontend/src/components/MkSwitch.vue) 等通过插槽接受标签，可自然满足要求。
+[MkInput.vue](../../../../../apps/misskey/packages/frontend/src/components/MkInput.vue)、[MkSwitch.vue](../../../../../apps/misskey/packages/frontend/src/components/MkSwitch.vue) 等通过插槽接受标签，可自然满足要求。
 
 不显示标签的图标按钮使用 aria-label：
 
@@ -320,17 +320,17 @@ function onClick() {
 ### 键盘操作
 
 - Tab 能到达全部可操作元素，不随意使用 tabindex="-1"。
-- 弹窗需要焦点限制，[MkModal.vue](../../../../../packages/frontend/src/components/MkModal.vue) 已内置处理。
+- 弹窗需要焦点限制，[MkModal.vue](../../../../../apps/misskey/packages/frontend/src/components/MkModal.vue) 已内置处理。
 - 列表考虑方向键。Space/Enter 打开菜单可参考 MkSelect 的 @keydown.space.enter。
 
 ### 参考组件
 
 | 模式 | 组件 |
 |---|---|
-| 标准按钮 | [MkButton.vue](../../../../../packages/frontend/src/components/MkButton.vue) |
-| 自定义无障碍控件 | [MkSwitch.vue](../../../../../packages/frontend/src/components/MkSwitch.vue) |
-| 输入框与标签插槽 | [MkInput.vue](../../../../../packages/frontend/src/components/MkInput.vue) |
-| 支持键盘的选择控件 | [MkSelect.vue](../../../../../packages/frontend/src/components/MkSelect.vue) |
+| 标准按钮 | [MkButton.vue](../../../../../apps/misskey/packages/frontend/src/components/MkButton.vue) |
+| 自定义无障碍控件 | [MkSwitch.vue](../../../../../apps/misskey/packages/frontend/src/components/MkSwitch.vue) |
+| 输入框与标签插槽 | [MkInput.vue](../../../../../apps/misskey/packages/frontend/src/components/MkInput.vue) |
+| 支持键盘的选择控件 | [MkSelect.vue](../../../../../apps/misskey/packages/frontend/src/components/MkSelect.vue) |
 
 ### 常见问题
 

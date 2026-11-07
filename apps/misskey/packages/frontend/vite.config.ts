@@ -19,7 +19,7 @@ import pluginWatchLocales from './lib/vite-plugin-watch-locales.js';
 import { pluginRemoveUnrefI18n } from '../frontend-builder/rollup-plugin-remove-unref-i18n.js';
 import { Features } from 'lightningcss';
 
-const url = process.env.NODE_ENV === 'development' ? (loadYaml(await fsp.readFile('../../.config/default.yml', 'utf-8')) as any).url : null;
+const url = process.env.NODE_ENV === 'development' ? (loadYaml(await fsp.readFile('../../../../.config/default.yml', 'utf-8')) as any).url : null;
 const host = url ? (new URL(url)).hostname : undefined;
 
 const extensions = ['.ts', '.tsx', '.js', '.jsx', '.mjs', '.json', '.json5', '.svg', '.sass', '.scss', '.css', '.vue'];

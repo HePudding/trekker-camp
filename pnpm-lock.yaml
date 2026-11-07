@@ -252,7 +252,9 @@ importers:
         specifier: npm:@typescript/typescript6@6.0.2
         version: '@typescript/typescript6@6.0.2'
 
-  packages-private/changelog-checker:
+  apps/misskey: {}
+
+  apps/misskey/packages-private/changelog-checker:
     devDependencies:
       '@types/mdast':
         specifier: 4.0.4
@@ -282,7 +284,7 @@ importers:
         specifier: 5.0.5
         version: 5.0.5(@opentelemetry/api@1.9.1)(@types/node@26.6.5)(@vitest/browser-playwright@5.0.5)(@vitest/coverage-v8@5.0.5)(@vitest/ui@5.0.5)(happy-dom@21.0.3(bufferutil@4.1.0)(utf-8-validate@6.0.6))(msw@3.0.3(@types/node@26.6.5)(@typescript/typescript6@6.0.2)(supports-color@10.2.2)(vite@8.3.4(@types/node@26.6.5)(esbuild@0.28.2)(sass-embedded@1.105.2)(sass@1.105.2)(tsx@4.23.15)))(vite@8.3.4(@types/node@26.6.5)(esbuild@0.28.2)(sass-embedded@1.105.2)(sass@1.105.2)(tsx@4.23.15))
 
-  packages-private/diagnostics-backend:
+  apps/misskey/packages-private/diagnostics-backend:
     dependencies:
       diagnostics-shared:
         specifier: workspace:*
@@ -310,7 +312,7 @@ importers:
         specifier: 5.0.5
         version: 5.0.5(@opentelemetry/api@1.9.1)(@types/node@26.6.5)(@vitest/browser-playwright@5.0.5)(@vitest/coverage-v8@5.0.5)(@vitest/ui@5.0.5)(happy-dom@21.0.3(bufferutil@4.1.0)(utf-8-validate@6.0.6))(msw@3.0.3(@types/node@26.6.5)(@typescript/typescript6@6.0.2)(supports-color@10.2.2)(vite@8.3.4(@types/node@26.6.5)(esbuild@0.28.2)(sass-embedded@1.105.2)(sass@1.105.2)(tsx@4.23.15)))(vite@8.3.4(@types/node@26.6.5)(esbuild@0.28.2)(sass-embedded@1.105.2)(sass@1.105.2)(tsx@4.23.15))
 
-  packages-private/diagnostics-frontend:
+  apps/misskey/packages-private/diagnostics-frontend:
     dependencies:
       diagnostics-shared:
         specifier: workspace:*
@@ -335,7 +337,7 @@ importers:
         specifier: 5.0.5
         version: 5.0.5(@opentelemetry/api@1.9.1)(@types/node@26.6.5)(@vitest/browser-playwright@5.0.5)(@vitest/coverage-v8@5.0.5)(@vitest/ui@5.0.5)(happy-dom@21.0.3(bufferutil@4.1.0)(utf-8-validate@6.0.6))(msw@3.0.3(@types/node@26.6.5)(@typescript/typescript6@6.0.2)(supports-color@5.5.0)(vite@8.3.4(@types/node@26.6.5)(esbuild@0.28.2)(sass-embedded@1.105.2)(sass@1.105.2)(tsx@4.23.15)))(vite@8.3.4(@types/node@26.6.5)(esbuild@0.28.2)(sass-embedded@1.105.2)(sass@1.105.2)(tsx@4.23.15))
 
-  packages-private/diagnostics-shared:
+  apps/misskey/packages-private/diagnostics-shared:
     devDependencies:
       '@types/node':
         specifier: 26.6.5
@@ -344,7 +346,7 @@ importers:
         specifier: 5.0.5
         version: 5.0.5(@opentelemetry/api@1.9.1)(@types/node@26.6.5)(@vitest/browser-playwright@5.0.5)(@vitest/coverage-v8@5.0.5)(@vitest/ui@5.0.5)(happy-dom@21.0.3(bufferutil@4.1.0)(utf-8-validate@6.0.6))(msw@3.0.3(@types/node@26.6.5)(@typescript/typescript6@6.0.2)(supports-color@5.5.0)(vite@8.3.4(@types/node@26.6.5)(esbuild@0.28.2)(sass-embedded@1.105.2)(sass@1.105.2)(tsx@4.23.15)))(vite@8.3.4(@types/node@26.6.5)(esbuild@0.28.2)(sass-embedded@1.105.2)(sass@1.105.2)(tsx@4.23.15))
 
-  packages/backend:
+  apps/misskey/packages/backend:
     dependencies:
       '@aws-sdk/client-s3':
         specifier: 3.1152.0
@@ -796,7 +798,7 @@ importers:
         specifier: 6.0.6
         version: 6.0.6
 
-  packages/frontend:
+  apps/misskey/packages/frontend:
     dependencies:
       '@analytics/google-analytics':
         specifier: 1.1.0
@@ -1169,7 +1171,7 @@ importers:
         specifier: 3.3.11
         version: 3.3.11(typescript@6.0.3)
 
-  packages/frontend-builder:
+  apps/misskey/packages/frontend-builder:
     dependencies:
       i18n:
         specifier: workspace:*
@@ -1203,7 +1205,7 @@ importers:
         specifier: 4.64.7
         version: 4.64.7
 
-  packages/frontend-embed:
+  apps/misskey/packages/frontend-embed:
     dependencies:
       buraha:
         specifier: 0.0.1
@@ -1321,7 +1323,7 @@ importers:
         specifier: 3.3.11
         version: 3.3.11(typescript@6.0.3)
 
-  packages/frontend-shared:
+  apps/misskey/packages/frontend-shared:
     dependencies:
       '@misskey-dev/emoji-data':
         specifier: 17.0.3
@@ -1373,7 +1375,7 @@ importers:
         specifier: 10.4.1
         version: 10.4.1(eslint@9.39.5(supports-color@10.2.2))(supports-color@10.2.2)
 
-  packages/i18n:
+  apps/misskey/packages/i18n:
     dependencies:
       js-yaml:
         specifier: 5.5.0
@@ -1404,7 +1406,7 @@ importers:
         specifier: 4.23.15
         version: 4.23.15
 
-  packages/icons-subsetter:
+  apps/misskey/packages/icons-subsetter:
     dependencies:
       '@tabler/icons-webfont':
         specifier: 3.35.0
@@ -1432,7 +1434,7 @@ importers:
         specifier: 8.71.2
         version: 8.71.2(@typescript/typescript6@6.0.2)(eslint@9.39.5(supports-color@10.2.2))(supports-color@10.2.2)
 
-  packages/misskey-bubble-game:
+  apps/misskey/packages/misskey-bubble-game:
     dependencies:
       eventemitter3:
         specifier: 5.0.4
@@ -1469,7 +1471,7 @@ importers:
         specifier: 3.1.14
         version: 3.1.14
 
-  packages/misskey-js:
+  apps/misskey/packages/misskey-js:
     dependencies:
       '@simplewebauthn/browser':
         specifier: 14.0.0
@@ -1518,7 +1520,7 @@ importers:
         specifier: 0.8.0
         version: 0.8.0(vitest@5.0.5)
 
-  packages/misskey-js/generator:
+  apps/misskey/packages/misskey-js/generator:
     devDependencies:
       '@readme/openapi-parser':
         specifier: 9.1.0
@@ -1548,7 +1550,7 @@ importers:
         specifier: 4.23.15
         version: 4.23.15
 
-  packages/misskey-reversi:
+  apps/misskey/packages/misskey-reversi:
     dependencies:
       crc-32:
         specifier: 1.2.2
@@ -1573,7 +1575,7 @@ importers:
         specifier: 3.1.14
         version: 3.1.14
 
-  packages/sw:
+  apps/misskey/packages/sw:
     dependencies:
       esbuild:
         specifier: 0.28.2

@@ -44,10 +44,11 @@ function readJson(filePath) {
 
 function getWorkspacePackageDirs(rootDir) {
 	const rootPackageJson = readJson(path.join(rootDir, 'package.json'));
-	return rootPackageJson.workspaces
-		.filter((workspace) => !workspace.includes('*'))
+	const directories = rootPackageJson.workspaces
+		.flatMap((workspace) => workspace.includes('*') ? [...fs.globSync(workspace, { cwd: rootDir })] : [workspace])
 		.map((workspace) => path.resolve(rootDir, workspace))
 		.filter((workspaceDir) => fs.existsSync(path.join(workspaceDir, 'package.json')));
+	return directories.filter(directory => fs.existsSync(path.join(directory, 'tsconfig.json')));
 }
 
 function getTsconfigPaths(packageDir) {

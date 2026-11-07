@@ -6,7 +6,7 @@
 // @ts-check
 
 import { fileURLToPath } from 'node:url';
-import { DEFAULT_INTEGRATION_REFS, findClosestMergeBase, gitMergeBase, gitPaths } from './lib/git.mjs';
+import { DEFAULT_INTEGRATION_REFS, filterUnchangedRelocations, findClosestMergeBase, gitMergeBase, gitPaths } from './lib/git.mjs';
 
 /**
  * 允许修改营地简中文案及上游同步源，其余语言文件由上游维护。
@@ -16,10 +16,10 @@ import { DEFAULT_INTEGRATION_REFS, findClosestMergeBase, gitMergeBase, gitPaths 
  */
 export function runLocaleSafety(changedFiles) {
 	const badLocales = changedFiles.filter((file) => (
-		file.startsWith('locales/') &&
+		file.startsWith('apps/misskey/locales/') &&
 		file.endsWith('.yml') &&
-		file !== 'locales/zh-CN.yml' &&
-		file !== 'locales/ja-JP.yml'
+		file !== 'apps/misskey/locales/zh-CN.yml' &&
+		file !== 'apps/misskey/locales/ja-JP.yml'
 	));
 	if (badLocales.length === 0) {
 		console.log('Locale safety: PASS');
@@ -45,7 +45,7 @@ function main() {
 			...gitPaths(['diff', '--name-only', '-z', 'HEAD']),
 			...gitPaths(['ls-files', '--others', '--exclude-standard', '-z']),
 		])];
-		return runLocaleSafety(changedFiles);
+		return runLocaleSafety(filterUnchangedRelocations(changedFiles, base));
 	} catch (error) {
 		console.error(`Locale safety: ${error instanceof Error ? error.message : String(error)}`);
 		return 2;

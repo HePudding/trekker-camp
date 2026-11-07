@@ -10,11 +10,11 @@ src-js/
 db/
 .devcontainer/compose.yml
 node_modules/
-packages/*/node_modules
+apps/misskey/packages/*/node_modules
 redis/
 files/
 private-assets
-packages/frontend/assets/camp
+apps/misskey/packages/frontend/assets/camp
 fluent-emojis/
 .pnp.*
 
@@ -29,5 +29,9 @@ fluent-emojis/
 .pnpm-store
 
 .idea/
-packages/*/.vscode/
-packages/backend/test/compose.yml
+apps/misskey/packages/*/.vscode/
+apps/misskey/packages/backend/test/compose.yml
+
+**/node_modules
+**/built
+**/src-js

@@ -35,7 +35,7 @@ pnpm dev
 
 `assets:pull` 首次在 `private-assets/` 中初始化独立 Git 仓库，安装该仓库的 LFS hooks 并拉取素材；以后仅快进更新 `master`，下载 `public/` 下的 Git LFS 文件，再建立本地链接。它会拒绝未提交素材、其他开发分支、分叉历史或错误的远程仓库，保留本地工作。登录使用本机已有的 Git 凭据，凭据不写入项目文件。
 
-`packages/frontend/assets/camp` 链接到素材库的 `public/`；Windows 使用目录联接，无需管理员权限。素材通过 `/client-assets/camp/` 访问。例如 `private-assets/public/home/hero.webp` 对应 `/client-assets/camp/home/hero.webp`。
+`apps/misskey/packages/frontend/assets/camp` 链接到素材库的 `public/`；Windows 使用目录联接，无需管理员权限。素材通过 `/client-assets/camp/` 访问。例如 `private-assets/public/home/hero.webp` 对应 `/client-assets/camp/home/hero.webp`。
 
 `pnpm dev` 会自动建立或复用链接，不访问 GitHub，适合离线开发。直接修改素材即可刷新预览，无需重新复制或构建；浏览器缓存命中时强制刷新。需要同步团队更新时显式执行 `pnpm assets:pull`。
 
