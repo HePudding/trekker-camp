@@ -1,0 +1,426 @@
+#!/usr/bin/env bash
+# SPDX-FileCopyrightText: syuilo and misskey-project
+# SPDX-License-Identifier: AGPL-3.0-only
+
+cli_dir=$(dirname "$(realpath -- "${BASH_SOURCE[0]}")")
+
+usage() {
+	cat <<'HELP'
+旅人营地 VPS 部署（Ubuntu 22.04 / 24.04 / 26.04 LTS，amd64 / arm64）
+
+  sudo bash scripts/deploy.sh install --url https://camp.example.com
+  sudo camp update
+  sudo camp self-update
+  camp version
+  sudo camp status
+  sudo camp logs
+  sudo camp r2-bind
+  sudo camp backup
+  sudo camp backup-status
+
+选项：
+  --dir PATH   部署目录，默认 /opt/trekker-camp；后续命令需使用同一路径
+  --data-dir PATH  首次安装的数据目录，默认与部署目录相同；后续自动读取
+  --url URL    首次部署的 HTTPS 域名；Cloudflare DNS 指向 VPS，开放 TCP 80/443
+  -h, --help   显示帮助
+
+认证依次读取 GH_TOKEN、GITHUB_TOKEN、gh auth token，或交互式隐藏输入。
+无人值守运行时通过环境变量注入 token，例如 sudo --preserve-env=GH_TOKEN camp update。
+首次安装读取 CLOUDFLARE_API_TOKEN 或隐藏输入，用于 DNS 验证及自动续期证书。
+Cloudflare SSL/TLS 模式使用 Full (strict)。
+R2 绑定读取 R2_ENDPOINT、R2_BUCKET、R2_ACCESS_KEY_ID、R2_SECRET_ACCESS_KEY、
+R2_BACKUP_PASSWORD 或交互式输入；绑定成功后每天北京时间 04:00 加密备份。
+HELP
+}
+
+fail() { printf '错误：%s\n' "$*" >&2; exit 1; }
+log() { printf '\n==> %s\n' "$*"; }
+
+cli_version() {
+	if [[ -f $cli_dir/VERSION ]]; then
+		printf 'camp CLI %s\n' "$(< "$cli_dir/VERSION")"
+	else
+		printf 'camp CLI 源码版 %s\n' "$(git -C "$cli_dir" rev-parse --short HEAD 2>/dev/null || printf unknown)"
+	fi
+}
+
+install_cli() {
+	local source_dir=$1 revision=$2 prefix=${3:-/usr/local} release
+	[[ $revision =~ ^[a-f0-9]{40}$ ]] || fail 'CLI 版本需为 Git 提交号。'
+	[[ -s $source_dir/deploy.sh && -s $source_dir/backup.sh ]] || fail 'CLI 更新文件不完整。'
+	# Validate the complete bundle before changing the installed entry point.
+	bash -n "$source_dir/deploy.sh"
+	bash -n "$source_dir/backup.sh"
+	install -d -m 0755 "$prefix/lib/trekker-camp" "$prefix/bin"
+	release=$(mktemp -d "$prefix/lib/trekker-camp/$revision-XXXXXX")
+	install -m 0755 "$source_dir/deploy.sh" "$release/deploy.sh"
+	install -m 0644 "$source_dir/backup.sh" "$release/backup.sh"
+	printf '%s\n' "$revision" > "$release/VERSION"
+	chmod 0644 "$release/VERSION"
+	chmod 0755 "$release"
+	ln -s "$release" "$release.link"
+	mv -Tf "$release.link" "$prefix/lib/trekker-camp/current"
+	ln -s "$prefix/lib/trekker-camp/current/deploy.sh" "$release/camp-entry"
+	mv -Tf "$release/camp-entry" "$prefix/bin/camp"
+}
+
+self_update() (
+	local prefix=${1:-/usr/local} download_dir remote_head revision name
+	umask 077
+	download_dir=$(mktemp -d)
+	trap 'rm -f -- "$download_dir/deploy.sh" "$download_dir/backup.sh"; rmdir -- "$download_dir"' EXIT
+	stage='下载 CLI 更新'
+	remote_head=$(GIT_TERMINAL_PROMPT=0 git -c credential.helper= ls-remote https://github.com/HePudding/trekker-camp.git refs/heads/master)
+	revision=${remote_head%%[[:space:]]*}
+	[[ $revision =~ ^[a-f0-9]{40}$ ]] || fail '无法读取 CLI 最新提交。'
+	for name in deploy.sh backup.sh; do
+		curl --fail --silent --show-error --location --proto '=https' \
+			"https://raw.githubusercontent.com/HePudding/trekker-camp/$revision/scripts/$name" -o "$download_dir/$name"
+	done
+	stage='安装 CLI 更新'
+	install_cli "$download_dir" "$revision" "$prefix"
+	log "CLI 已更新：$revision"
+)
+
+resolve_storage() {
+	local requested=${1:-} saved="$camp_dir/.config/data-dir"
+	data_dir=$camp_dir
+	if [[ -f $saved ]]; then
+		data_dir=$(< "$saved")
+		[[ -n $data_dir ]] || fail '保存的数据目录为空。'
+	elif [[ -n $requested && ! -f $camp_dir/.config/default.yml ]]; then
+		data_dir=$requested
+	fi
+	data_dir=$(realpath -m -- "$data_dir")
+	[[ $data_dir != / && $data_dir != *$'\n'* && $data_dir != *$'\r'* && $data_dir != *,* && $data_dir != *:* ]] ||
+		fail '数据目录需为独立路径，不含换行、逗号或冒号。'
+	if [[ -n $requested && $(realpath -m -- "$requested") != "$data_dir" ]]; then
+		fail "已有数据目录为 $data_dir；请保留该目录，路径变更需另行迁移数据。"
+	fi
+	if [[ $data_dir != "$camp_dir" ]]; then
+		[[ $data_dir != "$camp_dir/"* && $camp_dir != "$data_dir/"* ]] || fail '自定义数据目录需位于代码目录之外，且不能包含代码目录。'
+	fi
+	config_dir=$data_dir/.config
+	assets_dir=$data_dir/private-assets
+	backup_root=$data_dir/backups
+	if [[ $data_dir == "$camp_dir" ]]; then backup_root=$camp_dir.backups; fi
+}
+
+load_backup() {
+	local library=$cli_dir/backup.sh
+	if [[ ! -f $library ]]; then library=$camp_dir/scripts/backup.sh; fi
+	# shellcheck source=scripts/backup.sh
+	source "$library"
+}
+
+detect_ubuntu() {
+	# shellcheck disable=SC1090
+	source "${1:-/etc/os-release}"
+	case "${ID:-}:${VERSION_ID:-}" in
+		ubuntu:22.04) ubuntu_codename=jammy ;;
+		ubuntu:24.04) ubuntu_codename=noble ;;
+		ubuntu:26.04) ubuntu_codename=resolute ;;
+		*) fail '支持 Ubuntu 22.04、24.04、26.04 LTS。' ;;
+	esac
+	architecture=$(dpkg --print-architecture)
+	case "$architecture" in amd64|arm64) ;; *) fail '支持 amd64 和 arm64 VPS。' ;; esac
+}
+
+docker_apt_source() {
+	cat <<EOF
+Types: deb
+URIs: https://download.docker.com/linux/ubuntu
+Suites: $ubuntu_codename
+Components: stable
+Architectures: $architecture
+Signed-By: /etc/apt/keyrings/docker.asc
+EOF
+}
+
+install_dependencies() {
+	local package
+	local missing=()
+	for package in ca-certificates curl git git-lfs openssl tzdata; do
+		if [[ $(dpkg-query -W -f='${Status}' "$package" 2>/dev/null || true) != 'install ok installed' ]]; then
+			missing+=("$package")
+		fi
+	done
+	if ((${#missing[@]})); then
+		apt-get update
+		DEBIAN_FRONTEND=noninteractive apt-get install -y --no-install-recommends "${missing[@]}"
+	fi
+	if ! command -v docker >/dev/null; then
+		for package in docker.io docker-compose docker-compose-v2 docker-doc docker-buildx podman-docker containerd runc; do
+			[[ $(dpkg-query -W -f='${Status}' "$package" 2>/dev/null || true) != 'install ok installed' ]] ||
+				fail "发现已有 $package，请先处理与 Docker CE 的包冲突。"
+		done
+		install -d -m 0755 /etc/apt/keyrings
+		curl --fail --silent --show-error --location https://download.docker.com/linux/ubuntu/gpg -o /etc/apt/keyrings/docker.asc
+		chmod 0644 /etc/apt/keyrings/docker.asc
+		docker_apt_source > /etc/apt/sources.list.d/docker.sources
+		apt-get update
+		DEBIAN_FRONTEND=noninteractive apt-get install -y --no-install-recommends \
+			docker-ce docker-ce-cli containerd.io docker-buildx-plugin docker-compose-plugin
+	fi
+	docker compose version >/dev/null || fail '现有 Docker 缺少 Compose 插件，请安装 docker-compose-plugin。'
+	docker buildx version >/dev/null || fail '现有 Docker 缺少 Buildx 插件，请安装 docker-buildx-plugin。'
+}
+
+prepare_auth() {
+	if [[ -z $github_token ]] && command -v gh >/dev/null; then
+		github_token=$(gh auth token --hostname github.com 2>/dev/null || true)
+	fi
+	if [[ -z $github_token && -t 0 ]]; then
+		read -r -s -p 'GitHub token（私有素材仓库只读权限）：' github_token
+		printf '\n'
+	fi
+	[[ -n $github_token ]] || fail '请通过 GH_TOKEN 或 GITHUB_TOKEN 提供私有素材仓库的读取 token。'
+	auth_dir=$(mktemp -d)
+	cat > "$auth_dir/askpass" <<'ASKPASS'
+#!/bin/sh
+case "$1" in
+  "Username for 'https://github.com':"*|"Username for 'https://github.com/"*) printf '%s\n' x-access-token ;;
+  "Password for 'https://github.com':"*|"Password for 'https://x-access-token@github.com':"*|\
+  "Password for 'https://github.com/"*|"Password for 'https://x-access-token@github.com/"*) printf '%s\n' "$CAMP_GH_TOKEN" ;;
+  *) exit 1 ;;
+esac
+ASKPASS
+	chmod 0700 "$auth_dir/askpass"
+}
+
+github_git() {
+	LC_ALL=C CAMP_GH_TOKEN="$github_token" GIT_ASKPASS="$auth_dir/askpass" GIT_TERMINAL_PROMPT=0 GIT_LFS_SKIP_SMUDGE=1 \
+		git -c credential.helper= "$@"
+}
+
+prepare_cloudflare() {
+	if [[ -z $cloudflare_token && -t 0 ]]; then
+		read -r -s -p 'Cloudflare API token（本站 Zone Read + DNS Edit）：' cloudflare_token
+		printf '\n'
+	fi
+	[[ $cloudflare_token =~ ^([a-zA-Z0-9_-]{35,50}|cf(ut|at)_[a-zA-Z0-9_-]{32,256})$ ]] ||
+		fail '请提供有效的 CLOUDFLARE_API_TOKEN，授权本站 Zone Read 和 DNS Edit。'
+}
+
+check_checkout() {
+	local directory=$1 repository=$2
+	[[ -e $directory/.git ]] || fail "$directory 不是独立 Git 工作副本。"
+	[[ $(git -C "$directory" config --get remote.origin.url) == "$repository" ]] || fail "$directory 的 origin 需为 $repository。"
+	[[ $(git -C "$directory" symbolic-ref --quiet --short HEAD) == master ]] || fail "$directory 需位于 master 分支。"
+	[[ -z $(git -C "$directory" status --porcelain --untracked-files=all) ]] || fail "$directory 有本地改动，请先保存；部署已停止。"
+}
+
+sync_checkout() {
+	local directory=$1 repository=$2
+	if [[ ! -e $directory/.git ]]; then
+		github_git clone --branch master --single-branch "$repository" "$directory"
+	fi
+	check_checkout "$directory" "$repository"
+	github_git -C "$directory" fetch --no-tags origin master
+	git -C "$directory" merge-base --is-ancestor HEAD origin/master || fail "$directory 存在未发布提交或分叉，部署已停止。"
+	GIT_LFS_SKIP_SMUDGE=1 git -C "$directory" merge --ff-only origin/master
+}
+
+create_configuration() {
+	local password
+	[[ ! -e $camp_dir/compose.yml && ! -e $config_dir/default.yml && ! -e $config_dir/docker.env &&
+		! -e $config_dir/Caddyfile && ! -e $config_dir/cloudflare.env ]] ||
+		fail '部署配置已存在。请使用 update 继续部署；已有配置保持原样。'
+	password=$(openssl rand -hex 32)
+	install -d -m 0750 -g 991 "$config_dir"
+	if [[ $data_dir != "$camp_dir" ]]; then install -d -m 0755 "$camp_dir/.config"; fi
+	(
+		umask 077
+		printf '%s\n' "$data_dir" > "$camp_dir/.config/data-dir"
+		printf 'CLOUDFLARE_API_TOKEN=%s\n' "$cloudflare_token" > "$config_dir/cloudflare.env"
+		cat > "$config_dir/docker.env" <<EOF
+POSTGRES_DB=misskey
+POSTGRES_USER=misskey
+POSTGRES_PASSWORD=$password
+EOF
+		cat > "$config_dir/default.yml" <<EOF
+url: $site_url
+port: 3000
+db:
+  host: db
+  port: 5432
+  db: misskey
+  user: misskey
+  pass: '$password'
+redis:
+  host: redis
+  port: 6379
+id: aidx
+fulltextSearch:
+  provider: sqlLike
+EOF
+	)
+	chown root:991 "$config_dir/default.yml"
+	chmod 0640 "$config_dir/default.yml"
+	cat > "$config_dir/Caddyfile" <<EOF
+import /etc/caddy/cloudflare-proxies.caddy
+
+${site_url#https://} {
+	tls {
+		dns cloudflare {env.CLOUDFLARE_API_TOKEN}
+		resolvers 1.1.1.1 1.0.0.1
+	}
+	reverse_proxy web:3000 {
+		header_up X-Forwarded-For {client_ip}
+	}
+}
+EOF
+	cp "$camp_dir/compose.vps.yml" "$camp_dir/compose.yml"
+	install -d -m 0755 -o 991 -g 991 "$data_dir/files"
+	if [[ $data_dir != "$camp_dir" ]]; then
+		install -d -m 0700 "$data_dir/caddy/data" "$data_dir/caddy/config"
+	fi
+}
+
+compose() {
+	local caddy_data=caddy_data caddy_config=caddy_config
+	if [[ $data_dir != "$camp_dir" ]]; then caddy_data=$data_dir/caddy/data; caddy_config=$data_dir/caddy/config; fi
+	CAMP_DATA_DIR="$data_dir" CAMP_CADDY_DATA="$caddy_data" CAMP_CADDY_CONFIG="$caddy_config" \
+		CAMP_ASSETS_DIR="$assets_dir/public" docker compose --project-directory "$camp_dir" \
+		-f "$camp_dir/compose.yml" -f "$camp_dir/compose.assets.yml" "$@"
+}
+
+deploy() {
+	stage='构建应用镜像'
+	compose config --quiet
+	compose build web caddy
+	stage='验证 Caddy 与 Cloudflare 配置'
+	compose run --rm --no-deps caddy caddy validate --config /etc/caddy/Caddyfile --adapter caddyfile
+	stage='启动数据库与 Redis'
+	compose up -d --wait --wait-timeout 120 db redis
+	stage='停止应用并备份数据库'
+	compose stop web
+	backup_dir=$(mktemp -d "$backup_root/$(date -u +%Y%m%dT%H%M%SZ)-XXXXXX")
+	chmod 0700 "$backup_dir"
+	(
+		umask 077
+		tar -czf "$backup_dir/config.tar.gz" -C "$data_dir" .config -C "$camp_dir" compose.yml compose.assets.yml
+		# PostgreSQL credentials are expanded inside the database container.
+		# shellcheck disable=SC2016
+		compose exec -T db sh -c 'exec pg_dump -U "$POSTGRES_USER" -d "$POSTGRES_DB" -Fc' > "$backup_dir/database.dump"
+	)
+	[[ -s $backup_dir/database.dump ]] || fail "数据库备份为空：$backup_dir/database.dump"
+	log "备份已保存：$backup_dir"
+	stage='迁移数据库'
+	compose run --rm --no-deps web pnpm migrate
+	stage='启动应用并检查健康状态'
+	compose up -d --no-deps --force-recreate --wait --wait-timeout 180 web
+	stage='启动 HTTPS 入口'
+	compose up -d --wait --wait-timeout 60 caddy
+	stage='检查 HTTPS 入口'
+	site_url=$(sed -n 's/^url:[[:space:]]*//p' "$config_dir/default.yml")
+	curl --fail --silent --show-error --output /dev/null --retry 60 --retry-max-time 300 --retry-delay 5 --retry-all-errors \
+		--connect-timeout 5 --max-time 10 --resolve "${site_url#https://}:443:127.0.0.1" "$site_url/healthz"
+	stage='安装 camp 命令'
+	install_cli "$camp_dir/scripts" "$(git -C "$camp_dir" rev-parse HEAD)"
+	log "部署完成：$site_url。数据目录：$data_dir。使用 camp status 查看状态，camp logs 查看日志。"
+	compose ps
+}
+
+main() {
+	# Disable tracing before reading credentials, including when invoked with bash -x.
+	set +x
+	set -Eeuo pipefail
+	umask 022
+	local action=${1:-help} option requested_data_dir=''
+	camp_dir=/opt/trekker-camp
+	site_url=''
+	github_token=${GH_TOKEN:-${GITHUB_TOKEN:-}}
+	cloudflare_token=${CLOUDFLARE_API_TOKEN:-}
+	unset GH_TOKEN GITHUB_TOKEN CLOUDFLARE_API_TOKEN
+	auth_dir='' backup_dir='' stage='初始化'
+	trap 'if [[ -n $auth_dir ]]; then rm -f -- "$auth_dir/askpass"; rmdir -- "$auth_dir"; fi' EXIT
+	trap 'printf "操作失败：%s。备份目录：%s\n" "$stage" "${backup_dir:-未创建}" >&2' ERR
+	(($# == 0)) || shift
+	while (($#)); do
+		option=$1
+		case "$option" in
+			--dir|--url|--data-dir)
+				if (($# < 2)) || [[ -z $2 || $2 == --* ]]; then fail "$option 缺少值。"; fi
+				case "$option" in --dir) camp_dir=$2 ;; --data-dir) requested_data_dir=$2 ;; --url) site_url=${2%/} ;; esac
+				shift 2 ;;
+			-h|--help) usage; return ;;
+			*) fail "未知参数：$option" ;;
+		esac
+	done
+	case "$action" in
+		help|-h|--help) usage; return ;;
+		version|--version) cli_version; return ;;
+		install|update|self-update|status|logs|r2-bind|backup|backup-status) ;;
+		*) fail "未知命令：$action" ;;
+	esac
+	[[ $EUID == 0 ]] || fail '请通过 sudo 或 root 运行。'
+	detect_ubuntu /etc/os-release
+	if [[ $action == self-update ]]; then
+		[[ -z $site_url && -z $requested_data_dir ]] || fail 'self-update 不接受 --url 或 --data-dir。'
+		exec 9>/run/lock/trekker-camp-deploy.lock
+		flock -n 9 || fail '另一项营地部署或备份正在运行。'
+		self_update /usr/local
+		return
+	fi
+	camp_dir=$(realpath -m -- "$camp_dir")
+	[[ $camp_dir != / && $camp_dir != *$'\n'* ]] || fail '请指定独立部署目录。'
+	resolve_storage "$requested_data_dir"
+	if [[ $action != install ]]; then
+		[[ -z $site_url ]] || fail '--url 仅用于首次 install。'
+		[[ -f $camp_dir/compose.yml && -f $config_dir/default.yml ]] || fail '部署配置不存在，请先运行 install --url https://你的域名。'
+	fi
+	case "$action" in
+		status) printf '代码目录：%s\n数据目录：%s\n备份目录：%s\n' "$camp_dir" "$data_dir" "$backup_root"; compose ps; return ;;
+		logs) compose logs --tail 100 --follow web caddy; return ;;
+		backup-status)
+			r2_dir=$backup_root/r2
+			load_backup
+			r2_backup_status; return ;;
+		install)
+			[[ $site_url =~ ^https://[a-zA-Z0-9][a-zA-Z0-9.-]*\.[a-zA-Z]{2,63}$ && $site_url != *..* ]] || fail '--url 需为 HTTPS 域名，不含端口或子路径。' ;;
+	esac
+	exec 9>/run/lock/trekker-camp-deploy.lock
+	if [[ $action == backup || $action == r2-bind ]]; then
+		flock -w 3600 9 || fail '等待部署或备份锁超时。'
+		docker info >/dev/null
+		r2_dir=$backup_root/r2
+		load_backup
+		if [[ $action == r2-bind ]]; then r2_bind; else r2_backup; fi
+		return
+	fi
+	flock -n 9 || fail '另一项营地部署或备份正在运行。'
+	stage='准备系统依赖'
+	if [[ $action == install ]]; then
+		install_dependencies
+		systemctl enable --now docker
+	fi
+	docker info >/dev/null
+	stage='读取 GitHub 凭据'
+	prepare_auth
+	stage='读取 Cloudflare 凭据'
+	if [[ $action == update ]]; then
+		[[ -f $config_dir/cloudflare.env ]] || fail '缺少 .config/cloudflare.env。'
+		cloudflare_token=$(sed -n 's/^CLOUDFLARE_API_TOKEN=//p' "$config_dir/cloudflare.env")
+		[[ -n $cloudflare_token ]] || fail '.config/cloudflare.env 缺少 CLOUDFLARE_API_TOKEN。'
+	fi
+	prepare_cloudflare
+	# Validate both worktrees before advancing either repository.
+	if [[ -e $camp_dir/.git ]]; then check_checkout "$camp_dir" https://github.com/HePudding/trekker-camp.git; fi
+	if [[ -e $assets_dir/.git ]]; then check_checkout "$assets_dir" https://github.com/HePudding/trekker-camp-assets.git; fi
+	stage='同步代码和私有素材'
+	sync_checkout "$camp_dir" https://github.com/HePudding/trekker-camp.git
+	install -d -m 0755 "$data_dir"
+	sync_checkout "$assets_dir" https://github.com/HePudding/trekker-camp-assets.git
+	git -C "$assets_dir" lfs install --local --skip-smudge
+	github_git -C "$assets_dir" lfs pull --include='public/**' --exclude=
+	[[ -d $assets_dir/public ]] || fail '素材仓库缺少 public/ 目录。'
+	chmod -R a+rX "$assets_dir/public"
+	if [[ $action == install ]]; then create_configuration; fi
+	install -d -m 0700 "$backup_root"
+	deploy
+}
+
+if [[ ${BASH_SOURCE[0]} == "$0" ]]; then
+	main "$@"
+fi

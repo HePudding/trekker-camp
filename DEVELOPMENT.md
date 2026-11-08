@@ -6,6 +6,7 @@
 
 - [本地环境](SETUP.zh-CN.md)：依赖、配置、启动和测试数据库。
 - [素材管理](ASSETS.md)：团队素材同步、运行时加载和部署挂载。
+- [VPS 部署](DEPLOY.zh-CN.md)：Ubuntu LTS 自动安装、更新与私有仓库 token 认证。
 - [AI 工作规则](AGENTS.md)：改动范围、授权边界与最低检查。
 - [维护方向](ROADMAP.md)：本站的产品范围。
 - [安全问题](SECURITY.md)：非公开报告与处理。
@@ -46,6 +47,10 @@ pnpm --filter backend test:e2e
 团队以 `master` 为日常开发和交付目标。发布范围、版本号与部署时间由项目负责人确定。部署前核对代码版本、数据库迁移、素材版本与备份，使用本站现有配置；素材流程见 [ASSETS.md](ASSETS.md#docker-部署)。
 
 合并代码和部署是分别授权的操作。未授权生产部署时，完成代码与验证后交付结果。
+
+本站 VPS 统一使用 [部署 CLI](DEPLOY.zh-CN.md)：`camp update` 更新应用与素材，`camp self-update` 更新 CLI，`camp version` 显示工具版本。首次安装可用 `--data-dir` 指定数据盘，后续由 CLI 读取保存的路径，`camp status` 显示实际目录。R2 定时任务保持每天北京时间 04:00，部署和备份共用锁。
+
+Agent 修改部署脚本、Compose 或 Caddy 时，交付检查自动执行 `bash scripts/check-deploy.sh`，与 `.github/workflows/deploy-cli.yml` 使用同一入口；Windows 通过默认 WSL 发行版运行。CI 覆盖三版 Ubuntu、CLI 自更新、自定义存储、备份失败恢复，以及真实 Caddy 配置和 Restic 加密恢复。CI 使用临时仓库及测试凭据，线上操作仍按授权执行。
 
 ## 技术约定
 

@@ -12,6 +12,14 @@
 
 使用者依照各目录适用许可证运行、修改和再分发代码的权利保持不变，不添加“禁止部署”“禁止商用”等许可限制。保持本站运行版本的完整对应源码和构建脚本可获取；独立素材按各自授权管理，缺少私有素材时仍保持公开代码可构建、运行及必要的显示回退。
 
+## VPS 部署工作流
+
+本站使用 `scripts/deploy.sh` 提供的 `camp` CLI，支持 Ubuntu 22.04 / 24.04 / 26.04 LTS。`camp update` 同步代码与素材、备份数据库、迁移并验证健康状态；`camp self-update` 独立更新 CLI，`camp version` 显示 CLI 提交号。部署授权仍需由用户明确提供。
+
+`--dir` 是代码目录；首次安装可用 `--data-dir` 指定数据根目录，后续从代码目录 `.config/data-dir` 读取。配置、数据库、上传文件、私有素材和备份按实际数据路径管理，旧安装沿用原路径。路径标记和 Compose 挂载的修改不承担数据迁移。CLI 管理的素材通过 `camp update` 发布，独立 rsync 发布使用独立挂载目录。
+
+CLI 更新成套包含 `deploy.sh` 与 `backup.sh`，下载或校验失败应保留旧命令。R2 定时备份保持每天北京时间 04:00，使用部署共用锁，采集后恢复应用再上传。修改部署脚本、Compose、Caddy 时执行 `bash scripts/check-deploy.sh`；`node scripts/check-shipping.mjs` 会自动调用同一入口，Windows 使用默认 WSL 发行版。完整运行与恢复步骤见 `DEPLOY.zh-CN.md`。
+
 ## 严格禁止的操作
 
 违反要求会导致 CI 失败或生产事故。
@@ -69,6 +77,7 @@
 5. 用户未明确要求时，不编辑 `CHANGELOG.md`；对用户有影响的修改，在交接中提供一行候选条目。
 6. 检查已提交、未提交和未跟踪的语言 YAML 改动仅包含 `apps/misskey/locales/zh-CN.yml` 或用于上游同步的 `apps/misskey/locales/ja-JP.yml`，使用 `node scripts/check-locales.mjs`。
 7. `pnpm assets:check` 通过，确认私有素材和链接未被 Git 跟踪；`node scripts/check-shipping.mjs` 已集成。修改素材机制、忽略规则或部署挂载时运行 `pnpm assets:test`。
+8. 部署相关改动通过 `bash scripts/check-deploy.sh`，包括 CLI 自更新失败保留旧版本、自定义存储、旧路径兼容、迁移前备份和 R2 失败恢复。
 
 ## 验证命令
 

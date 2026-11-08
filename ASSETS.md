@@ -82,6 +82,12 @@ CAMP_ASSETS_DIR=/srv/trekker-assets/public pnpm assets:link
 
 ## Docker 部署
 
+本站 Ubuntu VPS 可使用 [部署 CLI](DEPLOY.zh-CN.md) 完成首次安装与更新。CLI 通过 GitHub token 拉取私有素材，沿用下述 `compose.assets.yml` 只读挂载，并在启动应用前完成素材同步。
+
+CLI 部署的素材工作副本位于数据根目录下的 `private-assets/`，默认数据根目录与代码目录相同；首次安装使用 `--data-dir` 时，素材随数据库、上传文件和备份一起放到指定目录。`camp update` 自动设置素材挂载路径，Agent 通过 `camp status` 确认实际位置。
+
+CLI 管理的服务器使用 `camp update` 统一发布素材和应用；下面的 rsync 工作流用于独立部署的素材目录。将 rsync 直接指向 CLI 的 Git 工作副本会留下未提交改动，使后续 CLI 更新停止。部署授权明确后按对应入口发布，保持素材与代码的独立提交。
+
 ### 星塔旅人表情
 
 私有素材库的 `public/emojis/stella-sora/manifest.json` 记录表情名称、中文搜索别名、分类及图片文件名，图片保存在同一目录。静态表情使用 PNG，动态表情使用 GIF；来源与授权记录留在素材库的 `RIGHTS.md` 和 `originals/` 中。

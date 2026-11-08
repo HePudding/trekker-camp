@@ -1,0 +1,69 @@
+# Managed by scripts/deploy.sh; copied to compose.yml during installation.
+services:
+  web:
+    build: .
+    restart: unless-stopped
+    command: [pnpm, start]
+    depends_on:
+      db:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+    ports:
+      - "127.0.0.1:3000:3000"
+    volumes:
+      - ${CAMP_DATA_DIR:-.}/files:/misskey/files
+      - ${CAMP_DATA_DIR:-.}/.config:/misskey/.config:ro
+    networks:
+      - internal_network
+      - external_network
+
+  db:
+    image: postgres:18-alpine
+    restart: unless-stopped
+    env_file: ${CAMP_DATA_DIR:-.}/.config/docker.env
+    volumes:
+      - ${CAMP_DATA_DIR:-.}/db:/var/lib/postgresql
+    healthcheck:
+      test: [CMD-SHELL, 'pg_isready -U "$$POSTGRES_USER" -d "$$POSTGRES_DB"']
+      interval: 5s
+      retries: 20
+    networks:
+      - internal_network
+
+  redis:
+    image: redis:7-alpine
+    restart: unless-stopped
+    command: [redis-server, --appendonly, "yes"]
+    volumes:
+      - ${CAMP_DATA_DIR:-.}/redis:/data
+    healthcheck:
+      test: [CMD, redis-cli, ping]
+      interval: 5s
+      retries: 20
+    networks:
+      - internal_network
+
+  caddy:
+    build: ./scripts/caddy
+    restart: unless-stopped
+    env_file: ${CAMP_DATA_DIR:-.}/.config/cloudflare.env
+    ports:
+      - "80:80"
+      - "443:443"
+      - "443:443/udp"
+    volumes:
+      - ${CAMP_DATA_DIR:-.}/.config/Caddyfile:/etc/caddy/Caddyfile:ro
+      - ${CAMP_CADDY_DATA:-caddy_data}:/data
+      - ${CAMP_CADDY_CONFIG:-caddy_config}:/config
+    networks:
+      - external_network
+
+networks:
+  internal_network:
+    internal: true
+  external_network:
+
+volumes:
+  caddy_data:
+  caddy_config:

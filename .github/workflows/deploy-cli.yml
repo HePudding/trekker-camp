@@ -1,0 +1,102 @@
+name: VPS deployment CLI
+
+on:
+  workflow_dispatch:
+  push:
+    branches: [master]
+    paths:
+      - scripts/deploy.sh
+      - scripts/deploy.test.py
+      - scripts/backup.sh
+      - scripts/backup.test.py
+      - scripts/check-deploy.sh
+      - scripts/check-shipping.mjs
+      - scripts/caddy/**
+      - compose.vps.yml
+      - compose.assets.yml
+      - Dockerfile
+      - .dockerignore
+      - DEPLOY.zh-CN.md
+      - .github/workflows/deploy-cli.yml
+  pull_request:
+    branches: [master]
+    paths:
+      - scripts/deploy.sh
+      - scripts/deploy.test.py
+      - scripts/backup.sh
+      - scripts/backup.test.py
+      - scripts/check-deploy.sh
+      - scripts/check-shipping.mjs
+      - scripts/caddy/**
+      - compose.vps.yml
+      - compose.assets.yml
+      - Dockerfile
+      - .dockerignore
+      - DEPLOY.zh-CN.md
+      - .github/workflows/deploy-cli.yml
+
+permissions:
+  contents: read
+
+env:
+  LANG: C.UTF-8
+  LC_ALL: C.UTF-8
+
+jobs:
+  backup:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v7.0.1
+      - name: Verify encrypted incremental backups can be restored
+        env:
+          RESTIC_TEST_IMAGE: restic/restic:0.19.1
+        run: python3 scripts/backup.test.py BackupTests.test_real_restic_encrypted_incremental_backup_and_restore -v
+
+  caddy:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v7.0.1
+      - name: Build Caddy with Cloudflare DNS
+        run: docker build -t camp-caddy-test scripts/caddy
+      - name: Validate generated Caddy configuration without accessing DNS
+        env:
+          CADDY_TEST_IMAGE: camp-caddy-test
+        run: python3 scripts/deploy.test.py DeployTests.test_caddy_validates_cloudflare_dns_and_trusted_client_headers -v
+
+  test:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    container: ubuntu:${{ matrix.ubuntu }}
+    strategy:
+      fail-fast: false
+      matrix:
+        ubuntu: ['22.04', '24.04', '26.04']
+    steps:
+      - name: Install test tools
+        run: |
+          apt-get update
+          apt-get install -y --no-install-recommends ca-certificates git git-lfs openssl python3 shellcheck
+      - uses: actions/checkout@v7.0.1
+      - name: Verify Docker installation from the Ubuntu APT source
+        shell: bash
+        run: |
+          source scripts/deploy.sh
+          detect_ubuntu
+          install_dependencies
+      - name: Test CLI updates, storage, deployment and backups
+        run: bash scripts/check-deploy.sh
+
+  result:
+    name: VPS CLI checks
+    if: always()
+    needs: [test, caddy, backup]
+    runs-on: ubuntu-latest
+    steps:
+      - name: Require every deployment check to pass
+        env:
+          TEST_RESULT: ${{ needs.test.result }}
+          CADDY_RESULT: ${{ needs.caddy.result }}
+          BACKUP_RESULT: ${{ needs.backup.result }}
+        run: test "$TEST_RESULT" = success && test "$CADDY_RESULT" = success && test "$BACKUP_RESULT" = success
