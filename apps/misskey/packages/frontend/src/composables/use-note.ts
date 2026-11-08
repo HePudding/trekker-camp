@@ -160,7 +160,7 @@ export function useNote(
 	const parsed = appearNote.text ? mfm.parse(appearNote.text) : null;
 	const urls = parsed ? extractUrlFromMfm(parsed).filter((url) => appearNote.renote?.url !== url && appearNote.renote?.uri !== url) : null;
 	const isLong = shouldCollapsed(appearNote, urls ?? []);
-	const collapsed = ref(appearNote.cw == null && isLong);
+	const collapsed = ref(isLong);
 	const canInteract = appearNote.user.host == null || instance.federation !== 'none';
 	const canRenote = canInteract && (['public', 'home'].includes(appearNote.visibility) || (appearNote.visibility === 'followers' && appearNote.userId === $i?.id));
 	const showTicker = instance.federation !== 'none' && ((prefer.s.instanceTicker === 'always') || (prefer.s.instanceTicker === 'remote' && appearNote.user.instance));
