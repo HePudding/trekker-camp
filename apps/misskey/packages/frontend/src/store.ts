@@ -54,7 +54,7 @@ export const store = markRaw(new Pizzax('base', {
 			src: 'home' as 'home' | 'following' | 'local' | 'social' | 'global' | `list:${string}`,
 			userList: null as Misskey.entities.UserList | null,
 			filter: {
-				withReplies: true,
+				withReplies: false,
 				withRenotes: true,
 				withSensitive: true,
 				onlyFiles: false,
