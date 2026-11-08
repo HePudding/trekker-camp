@@ -19,8 +19,14 @@ SPDX-License-Identifier: AGPL-3.0-only
 				<div><MkCondensedLine :minScale="2 / 3">{{ acct }}</MkCondensedLine></div>
 			</div>
 		</div>
-		<img v-if="deviceMotionPermissionNeeded" v-flip :class="$style.logo" :src="misskeysvg" alt="Misskey Logo" @click="requestDeviceMotion"/>
-		<img v-else v-flip :class="$style.logo" :src="misskeysvg" alt="Misskey Logo"/>
+		<button v-if="deviceMotionPermissionNeeded" v-flip type="button" class="_button" :class="$style.logo" @click="requestDeviceMotion">
+			<img v-if="!logoFailed" :key="logoUrl" :src="logoUrl" alt="旅人营地" @error="logoFailed = true"/>
+			<span v-else>旅人营地</span>
+		</button>
+		<div v-else v-flip :class="$style.logo">
+			<img v-if="!logoFailed" :key="logoUrl" :src="logoUrl" alt="旅人营地" @error="logoFailed = true"/>
+			<span v-else>旅人营地</span>
+		</div>
 	</div>
 </div>
 </template>
@@ -34,11 +40,13 @@ import type { Directive } from 'vue';
 import { instance } from '@/instance.js';
 import { ensureSignin } from '@/i.js';
 import { userPage, userName } from '@@/js/user.js';
-import misskeysvg from '/client-assets/misskey.svg';
+import { store } from '@/store.js';
 import { getStaticImageUrl } from '@/utility/media-proxy.js';
 import { i18n } from '@/i18n.js';
 
 const $i = ensureSignin();
+const logoFailed = ref(false);
+const logoUrl = computed(() => `/client-assets/trekker-camp/branding/wordmark-${store.s.darkMode ? 'light' : 'dark'}-v1.png`);
 
 const acct = computed(() => `@${$i.username}@${host}`);
 const userProfileUrl = computed(() => userPage($i, undefined, true));
@@ -212,9 +220,15 @@ $avatarSize: 58px;
 }
 
 .logo {
-	width: 100px;
+	width: 180px;
 	margin: $s3 auto 0;
-	filter: drop-shadow(0 0 6px #0007);
+	text-align: center;
+
+	> img {
+		display: block;
+		width: 100%;
+		height: auto;
+	}
 }
 </style>
 

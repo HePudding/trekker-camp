@@ -161,19 +161,19 @@ export class ClientServerService {
 			'icons': [{
 				// 空文字列の場合右辺を使いたいため
 				// eslint-disable-next-line @typescript-eslint/prefer-nullish-coalescing
-				'src': this.meta.app192IconUrl || '/static-assets/icons/192.png',
+				'src': this.meta.app192IconUrl || '/client-assets/trekker-camp/branding/app-icon-192-v1.png',
 				'sizes': '192x192',
 				'type': 'image/png',
 				'purpose': 'maskable',
 			}, {
 				// 空文字列の場合右辺を使いたいため
 				// eslint-disable-next-line @typescript-eslint/prefer-nullish-coalescing
-				'src': this.meta.app512IconUrl || '/static-assets/icons/512.png',
+				'src': this.meta.app512IconUrl || '/client-assets/trekker-camp/branding/app-icon-512-v1.png',
 				'sizes': '512x512',
 				'type': 'image/png',
 				'purpose': 'maskable',
 			}, {
-				'src': '/static-assets/splash.png',
+				'src': '/client-assets/trekker-camp/branding/splash-v1.png',
 				'sizes': '300x300',
 				'type': 'image/png',
 				'purpose': 'any',
@@ -256,6 +256,14 @@ export class ClientServerService {
 
 		//#region static assets
 
+		fastify.get('/favicon.ico', async (request, reply) => {
+			return reply.sendFile('trekker-camp/branding/favicon-v1.ico', this.clientAssets, { maxAge: ms('7 days') });
+		});
+
+		fastify.get('/apple-touch-icon.png', async (request, reply) => {
+			return reply.sendFile('trekker-camp/branding/apple-touch-icon-v1.png', this.clientAssets, { maxAge: ms('7 days') });
+		});
+
 		fastify.register(fastifyStatic, {
 			root: this.staticAssets,
 			prefix: '/static-assets/',
@@ -287,14 +295,6 @@ export class ClientServerService {
 			});
 			fastify.addHook('onRequest', handleRequestRedirectToOmitSearch);
 			done();
-		});
-
-		fastify.get('/favicon.ico', async (request, reply) => {
-			return reply.sendFile('/favicon.ico', this.staticAssets);
-		});
-
-		fastify.get('/apple-touch-icon.png', async (request, reply) => {
-			return reply.sendFile('/apple-touch-icon.png', this.staticAssets);
 		});
 
 		fastify.get<{ Params: { path: string } }>('/fluent-emoji/:path(.*)', async (request, reply) => {

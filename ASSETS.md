@@ -6,6 +6,10 @@
 
 团队素材仓库为 [HePudding/trekker-camp-assets](https://github.com/HePudding/trekker-camp-assets)，保持 **Private**，默认分支为 `master`。仅授权成员有权拉取；素材更新在该仓库独立提交和审查。
 
+## 公开品牌与界面素材
+
+经维护者确认，本次营地横版 Logo、帐篷双星图标及四张魔王界面插图放在 `apps/misskey/packages/frontend/assets/trekker-camp/`，随代码仓库与构建产物分发，通过 `/client-assets/trekker-camp/` 加载。来源与用途见该目录的 [RIGHTS.md](apps/misskey/packages/frontend/assets/trekker-camp/RIGHTS.md)。这些默认资源无需拉取私有素材库。其他独立素材继续遵循以下私有素材约定。
+
 ## 目录约定
 
 素材仓库在本地位于主代码仓库忽略的 `private-assets/`：
@@ -82,9 +86,17 @@ CAMP_ASSETS_DIR=/srv/trekker-assets/public pnpm assets:link
 
 私有素材库的 `public/emojis/stella-sora/manifest.json` 记录表情名称、中文搜索别名、分类及图片文件名，图片保存在同一目录。静态表情使用 PNG，动态表情使用 GIF；来源与授权记录留在素材库的 `RIGHTS.md` 和 `originals/` 中。
 
+日服官网 Fan Kit 表情也加入同一清单，按「星塔旅人 日服官方 第XX期」分类，可搜索「日服」「第X期」「动态」等别名。图片保持官方原始内容，扩展名按实际格式确定。官网来源、期数、下载地址及使用条款保存在私有素材库的 `originals/emojis/stella-sora-jp-fankit/`。
+
 应用在 HTTP 服务启动前自动读取挂载的清单，将缺少的表情注册到站内表情列表，并刷新表情缓存。重复启动及多个服务进程同时启动均不会重复添加，已有表情的管理设置会保留。生产部署沿用以下素材同步及只读挂载流程，无需在管理页面手动上传或导入表情。
 
 未挂载清单时正常启动并使用已有表情；清单存在但图片缺失或数据无效时，启动会报错，避免注册无法显示的表情。图片只通过 `/client-assets/camp/` 运行时加载，不进入代码包或镜像。
+
+### 默认用户头像
+
+未设置自定义头像的用户使用私有素材库中的 `public/avatars/default-v1.png`。用户上传头像后显示其自定义头像，移除后恢复营地默认头像；无需修改已有账号数据。系统账号沿用实例图标。
+
+本次发布需要同时交付代码仓库与素材仓库：先同步包含该图片的素材版本到服务器，再部署配套代码，并沿用下述 `compose.assets.yml` 只读挂载。头像通过 `/client-assets/camp/avatars/default-v1.png` 加载，不进入镜像。未挂载图片时沿用原有默认头像；素材随后到位即可生效，无需再次重启应用。
 
 ### 同步与挂载
 
@@ -109,6 +121,8 @@ docker compose -f compose.yml -f compose.assets.yml up -d --build
 使用现成镜像时去掉 `--build`。素材目录必须预先存在；容器内默认 UID/GID 为 `991`，需要能够读取文件、遍历目录。容器只挂载 `public/`，原稿和授权记录留在宿主机。
 
 后续仅修改素材时，合入私有素材库 `master` 会自动同步已挂载目录。采用上述新文件名规则更新引用，无需重建镜像。非 Docker 部署也可在服务器执行 `pnpm assets:pull`，使用同一静态资源路径。
+
+新增表情清单同步后，需要在部署流程中重启应用服务，由启动导入流程注册新增表情；仅同步图片不会触发数据库导入。与应用版本一起部署时，先同步素材，再启动应用即可，无需手动添加自定义表情。
 
 应用自动部署需要配套素材时，可从可信的部署任务触发私有素材库的 `assets.yml`，将 `assets_ref` 设置为选定的素材提交号，等待成功后再部署应用。普通 PR 检查不读取私有素材或部署凭据。
 
