@@ -8,7 +8,7 @@ export function Splash(props: {
 }) {
 	return (
 		<div id="splash">
-			<img id="splashIcon" src={props.icon || '/client-assets/camp/branding/icon-v1.svg'} />
+			<img id="splashIcon" src={props.icon || '/client-assets/trekker-camp/branding/icon-v1.svg'} />
 			<div id="splashSpinner">
 				<svg class="spinner bg" viewBox="0 0 152 152" xmlns="http://www.w3.org/2000/svg">
 					<g transform="matrix(1,0,0,1,12,12)">

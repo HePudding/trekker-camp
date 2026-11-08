@@ -24,7 +24,7 @@ import { instance as meta } from '@/instance.js';
 import { store } from '@/store.js';
 
 const logoFailed = ref(false);
-const logoUrl = computed(() => `/client-assets/camp/branding/wordmark-${meta.backgroundImageUrl || store.s.darkMode ? 'light' : 'dark'}-v1.png`);
+const logoUrl = computed(() => `/client-assets/trekker-camp/branding/wordmark-${meta.backgroundImageUrl || store.s.darkMode ? 'light' : 'dark'}-v1.png`);
 </script>
 
 <style lang="scss" module>

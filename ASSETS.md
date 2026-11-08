@@ -6,6 +6,10 @@
 
 团队素材仓库为 [HePudding/trekker-camp-assets](https://github.com/HePudding/trekker-camp-assets)，保持 **Private**，默认分支为 `master`。仅授权成员有权拉取；素材更新在该仓库独立提交和审查。
 
+## 公开品牌与界面素材
+
+经维护者确认，本次营地横版 Logo、帐篷双星图标及四张魔王界面插图放在 `apps/misskey/packages/frontend/assets/trekker-camp/`，随代码仓库与构建产物分发，通过 `/client-assets/trekker-camp/` 加载。来源与用途见该目录的 [RIGHTS.md](apps/misskey/packages/frontend/assets/trekker-camp/RIGHTS.md)。这些默认资源无需拉取私有素材库。其他独立素材继续遵循以下私有素材约定。
+
 ## 目录约定
 
 素材仓库在本地位于主代码仓库忽略的 `private-assets/`：

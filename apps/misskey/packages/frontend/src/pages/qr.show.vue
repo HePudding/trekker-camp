@@ -46,7 +46,7 @@ import { i18n } from '@/i18n.js';
 
 const $i = ensureSignin();
 const logoFailed = ref(false);
-const logoUrl = computed(() => `/client-assets/camp/branding/wordmark-${store.s.darkMode ? 'light' : 'dark'}-v1.png`);
+const logoUrl = computed(() => `/client-assets/trekker-camp/branding/wordmark-${store.s.darkMode ? 'light' : 'dark'}-v1.png`);
 
 const acct = computed(() => `@${$i.username}@${host}`);
 const userProfileUrl = computed(() => userPage($i, undefined, true));

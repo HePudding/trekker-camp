@@ -10,7 +10,7 @@ SPDX-License-Identifier: AGPL-3.0-only
 	<div :class="$style.shape1"></div>
 	<div :class="$style.shape2"></div>
 	<div :class="$style.logoWrapper">
-		<img v-if="!logoFailed" :src="'/client-assets/camp/branding/wordmark-light-v1.png'" :class="$style.logo" alt="旅人营地" @error="logoFailed = true"/>
+		<img v-if="!logoFailed" :src="'/client-assets/trekker-camp/branding/wordmark-light-v1.png'" :class="$style.logo" alt="旅人营地" @error="logoFailed = true"/>
 		<span v-else :class="$style.logoFallback">旅人营地</span>
 	</div>
 	<div :class="$style.contents">

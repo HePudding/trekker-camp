@@ -882,7 +882,7 @@ function getGameImageDriveFile() {
 		if (!ctx || !canvasEl.value) return res(null);
 		Promise.all([
 			loadImage('/client-assets/drop-and-fusion/frame-light.svg'),
-			loadImage('/client-assets/camp/characters/maou/bubble-game-logo-v1.png'),
+			loadImage('/client-assets/trekker-camp/characters/maou/bubble-game-logo-v1.png'),
 		]).then((images) => {
 			const [frame, logo] = images;
 			ctx.fillStyle = '#fff';

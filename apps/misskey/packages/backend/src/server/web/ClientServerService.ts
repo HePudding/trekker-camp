@@ -4,7 +4,6 @@
  */
 
 import { randomUUID } from 'node:crypto';
-import { existsSync } from 'node:fs';
 import { resolve } from 'node:path';
 import { Inject, Injectable } from '@nestjs/common';
 import ms from 'ms';
@@ -162,19 +161,19 @@ export class ClientServerService {
 			'icons': [{
 				// 空文字列の場合右辺を使いたいため
 				// eslint-disable-next-line @typescript-eslint/prefer-nullish-coalescing
-				'src': this.meta.app192IconUrl || '/client-assets/camp/branding/app-icon-192-v1.png',
+				'src': this.meta.app192IconUrl || '/client-assets/trekker-camp/branding/app-icon-192-v1.png',
 				'sizes': '192x192',
 				'type': 'image/png',
 				'purpose': 'maskable',
 			}, {
 				// 空文字列の場合右辺を使いたいため
 				// eslint-disable-next-line @typescript-eslint/prefer-nullish-coalescing
-				'src': this.meta.app512IconUrl || '/client-assets/camp/branding/app-icon-512-v1.png',
+				'src': this.meta.app512IconUrl || '/client-assets/trekker-camp/branding/app-icon-512-v1.png',
 				'sizes': '512x512',
 				'type': 'image/png',
 				'purpose': 'maskable',
 			}, {
-				'src': '/client-assets/camp/branding/splash-v1.png',
+				'src': '/client-assets/trekker-camp/branding/splash-v1.png',
 				'sizes': '300x300',
 				'type': 'image/png',
 				'purpose': 'any',
@@ -257,43 +256,13 @@ export class ClientServerService {
 
 		//#region static assets
 
-		for (const [name, fallback, alias] of [
-			['icon-v1.svg', 'favicon.ico', null],
-			['favicon-v1.ico', 'favicon.ico', '/favicon.ico'],
-			['app-icon-192-v1.png', 'icons/192.png', null],
-			['app-icon-512-v1.png', 'icons/512.png', null],
-			['splash-v1.png', 'splash.png', null],
-			['apple-touch-icon-v1.png', 'apple-touch-icon.png', '/apple-touch-icon.png'],
-			['email-icon-v1.png', 'mi-white.png', null],
-		] as const) {
-			for (const url of [`/client-assets/camp/branding/${name}`, ...(alias ? [alias] : [])]) {
-				fastify.get(url, async (request, reply) => {
-					const asset = `camp/branding/${name}`;
-					if (existsSync(resolve(this.clientAssets, asset))) {
-						return reply.sendFile(asset, this.clientAssets, { maxAge: ms('7 days') });
-					}
-					reply.header('Cache-Control', 'no-store');
-					return reply.sendFile(fallback, this.staticAssets, { cacheControl: false });
-				});
-			}
-		}
+		fastify.get('/favicon.ico', async (request, reply) => {
+			return reply.sendFile('trekker-camp/branding/favicon-v1.ico', this.clientAssets, { maxAge: ms('7 days') });
+		});
 
-		for (const [name, fallback] of [
-			['tutorial-avatar-v3.png', 'tutorial/ai.webp'],
-			['reversi-logo-v1.png', 'reversi/logo.png'],
-			['bubble-game-logo-v1.png', 'drop-and-fusion/logo.png'],
-			['error-v1.png', 'https://xn--931a.moe/assets/error.jpg'],
-		]) {
-			fastify.get(`/client-assets/camp/characters/maou/${name}`, async (request, reply) => {
-				const asset = `camp/characters/maou/${name}`;
-				if (existsSync(resolve(this.clientAssets, asset))) {
-					return reply.sendFile(asset, this.clientAssets, { maxAge: ms('7 days') });
-				}
-				reply.header('Cache-Control', 'no-store');
-				if (fallback.startsWith('https://')) return reply.redirect(fallback);
-				return reply.sendFile(fallback, this.clientAssets, { cacheControl: false });
-			});
-		}
+		fastify.get('/apple-touch-icon.png', async (request, reply) => {
+			return reply.sendFile('trekker-camp/branding/apple-touch-icon-v1.png', this.clientAssets, { maxAge: ms('7 days') });
+		});
 
 		fastify.register(fastifyStatic, {
 			root: this.staticAssets,
