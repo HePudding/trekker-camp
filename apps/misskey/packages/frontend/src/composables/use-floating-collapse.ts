@@ -94,13 +94,16 @@ export function useFloatingCollapse(opts: {
 		const vp = viewport();
 		const delta = computeCollapseScrollDelta(root.getBoundingClientRect().top, vp.top);
 		const fromHeight = content.getBoundingClientRect().height;
+		// 折りたたみで高さが変わるとブラウザのスクロールアンカリングやクランプで位置がずれるため、
+		// 相対量ではなく折りたたみ前に求めた絶対位置へスクロールする
+		const scrollTarget = (container ? container.scrollTop : window.scrollY) + delta;
 
 		opts.collapsed.value = true;
 		await nextTick();
 
 		if (delta !== 0) {
-			if (container) container.scrollBy({ top: delta, behavior: 'instant' });
-			else window.scrollBy({ top: delta, behavior: 'instant' });
+			if (container) container.scrollTo({ top: scrollTarget, behavior: 'instant' });
+			else window.scrollTo({ top: scrollTarget, behavior: 'instant' });
 		}
 
 		if (!prefer.s.animation) return;
