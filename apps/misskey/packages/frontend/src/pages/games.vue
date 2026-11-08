@@ -9,12 +9,12 @@ SPDX-License-Identifier: AGPL-3.0-only
 		<div class="_gaps">
 			<div class="_panel" :class="$style.link">
 				<MkA to="/bubble-game">
-					<img src="/client-assets/drop-and-fusion/logo.png" style="display: block; max-width: 100%; max-height: 200px; margin: auto;"/>
+					<img :src="'/client-assets/camp/characters/maou/bubble-game-logo-v1.png'" style="display: block; max-width: 100%; max-height: 200px; margin: auto;"/>
 				</MkA>
 			</div>
 			<div class="_panel" :class="$style.link">
 				<MkA to="/reversi">
-					<img src="/client-assets/reversi/logo.png" style="display: block; max-width: 100%; max-height: 200px; margin: auto;"/>
+					<img :src="'/client-assets/camp/characters/maou/reversi-logo-v1.png'" style="display: block; max-width: 100%; max-height: 200px; margin: auto;"/>
 				</MkA>
 			</div>
 		</div>

@@ -10,8 +10,7 @@ SPDX-License-Identifier: AGPL-3.0-only
 		<MkSystemIcon v-else-if="type === 'empty'" type="info" :class="$style.icon"/>
 		<img v-if="type === 'notFound' && instance.notFoundImageUrl" :src="instance.notFoundImageUrl" draggable="false" :class="$style.img"/>
 		<MkSystemIcon v-else-if="type === 'notFound'" type="question" :class="$style.icon"/>
-		<img v-if="type === 'error' && instance.serverErrorImageUrl" :src="instance.serverErrorImageUrl" draggable="false" :class="$style.img"/>
-		<MkSystemIcon v-else-if="type === 'error'" type="error" :class="$style.icon"/>
+		<img v-if="type === 'error'" :src="instance.serverErrorImageUrl ?? '/client-assets/camp/characters/maou/error-v1.png'" draggable="false" :class="$style.img"/>
 
 		<div style="opacity: 0.7;">{{ props.text ?? (type === 'empty' ? i18n.ts.nothing : type === 'notFound' ? i18n.ts.notFound : type === 'error' ? i18n.ts.somethingHappened : null) }}</div>
 		<slot></slot>
