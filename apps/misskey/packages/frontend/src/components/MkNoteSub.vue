@@ -7,7 +7,7 @@ SPDX-License-Identifier: AGPL-3.0-only
 <div v-if="note == null" :class="$style.deleted">
 	{{ i18n.ts.deletedNote }}
 </div>
-<div v-else-if="!muted" :class="[$style.root, { [$style.children]: depth > 1 }]">
+<div v-else-if="!muted" :class="[$style.root, { [$style.children]: depth > 1 }]" @click="onNoteClick" @auxclick="onNoteClick">
 	<div :class="$style.main">
 		<div v-if="note.channel" :class="$style.colorBar" :style="{ background: note.channel.color }"></div>
 		<MkAvatar :class="$style.avatar" :user="note.user" link preview/>
@@ -54,6 +54,7 @@ import { i18n } from '@/i18n.js';
 import { $i } from '@/i.js';
 import { userPage } from '@@/js/user.js';
 import { checkWordMute } from '@/utility/check-word-mute.js';
+import { useNoteClick } from '@/composables/use-note-click.js';
 
 const props = withDefaults(defineProps<{
 	note: Misskey.entities.Note | null;
@@ -68,6 +69,7 @@ const props = withDefaults(defineProps<{
 const muted = ref(props.note && $i ? checkWordMute(props.note, $i, $i.mutedWords) : false);
 
 const showContent = ref(false);
+const onNoteClick = useNoteClick(() => props.note);
 const replies = ref<Misskey.entities.Note[]>([]);
 
 if (props.detail && props.note) {

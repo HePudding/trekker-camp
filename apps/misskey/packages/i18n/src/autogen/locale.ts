@@ -13850,4 +13850,22 @@ export interface Locale extends ILocale {
          */
         "nextMedia": string;
     };
+    "_noteComments": {
+        /**
+         * 还没有回复
+         */
+        "empty": string;
+        /**
+         * 共 {n} 条回复，点击查看
+         */
+        "viewAllReplies": ParameterizedString<"n">;
+        /**
+         * 收起回复
+         */
+        "collapseReplies": string;
+        /**
+         * 回复 {user}
+         */
+        "replyTo": ParameterizedString<"user">;
+    };
 }
