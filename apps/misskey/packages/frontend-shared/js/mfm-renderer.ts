@@ -7,6 +7,7 @@ import { h } from 'vue';
 import * as mfm from 'mfm-js';
 import * as Misskey from 'misskey-js';
 import { host } from './config.js';
+import { splitTableNodes } from './mfm-table.js';
 import type { Component, VNode, SetupContext } from 'vue';
 
 function safeParseFloat(str: unknown): number | null {
@@ -35,6 +36,8 @@ export type MfmBaseProps = {
 	rootScale?: number;
 	nyaize?: boolean | 'respect';
 	parsedNodes?: mfm.MfmNode[] | null;
+	/** $[img N] で参照する添付ファイル */
+	files?: Misskey.entities.DriveFile[] | null;
 };
 
 /** `supports` で有効にした場合のみ参照される props */
@@ -69,6 +72,8 @@ export type MfmRendererConfig = {
 		Search?: Component;
 		/** 省略時は sparkle を無視して子要素のみ描画する */
 		Sparkle?: Component;
+		/** 省略時は $[img N] をそのまま描画する */
+		InlineImage?: Component;
 	};
 	/** 描画のたびに呼ばれる (設定の変更をリアクティブに反映するため) 。省略時はすべて有効 */
 	getOptions?: () => {
@@ -93,7 +98,7 @@ export function createMfmRenderer<P extends MfmBaseProps = MfmBaseProps>(config:
 		//provide('linkNavigationBehavior', props.linkNavigationBehavior);
 
 		const props = _props as P & MfmOptionalProps;
-		const { Url, Link, Mention, A, Time, Emoji, CustomEmoji, Code, CodeInline, Search, Sparkle } = config.components();
+		const { Url, Link, Mention, A, Time, Emoji, CustomEmoji, Code, CodeInline, Search, Sparkle, InlineImage } = config.components();
 
 		const isNote = props.isNote ?? true;
 		const shouldNyaize = props.nyaize ? props.nyaize === 'respect' ? props.author?.isCat : false : false;
@@ -357,6 +362,32 @@ export function createMfmRenderer<P extends MfmBaseProps = MfmBaseProps>(config:
 									mode: 'detail',
 								}),
 							]);
+						}
+						case 'img': {
+							const child = token.children[0];
+							const index = parseInt(token.children.length === 1 && child.type === 'text' ? child.props.text : '', 10);
+							if (InlineImage == null || !Number.isInteger(index) || index < 1) break;
+							return h(InlineImage, {
+								file: props.files?.[index - 1] ?? null,
+								index,
+								user: props.author,
+							});
+						}
+						case 'table': {
+							const rows = splitTableNodes(token.children);
+							const cols = Math.max(1, ...rows.map(r => r.length));
+							const cellStyle = 'border: solid 1px var(--MI_THEME-divider); padding: 4px 8px; text-align: left; vertical-align: top;';
+							return h('div', {
+								style: 'display: block; overflow-x: auto; max-width: 100%; margin: 0.5em 0;',
+							}, [h('table', {
+								style: 'border-collapse: collapse; white-space: normal; font-size: 0.95em;',
+							}, [
+								h('tbody', {}, rows.map((row, ri) => h('tr', {}, Array.from({ length: cols }, (_, ci) =>
+									h(ri === 0 ? 'th' : 'td', {
+										style: cellStyle + (ri === 0 ? ' font-weight: bold; background: var(--MI_THEME-bg);' : ''),
+									}, genEl(row[ci] ?? [], scale)),
+								)))),
+							])]);
 						}
 						case 'clickable': {
 							return h('span', {

@@ -4,17 +4,17 @@ SPDX-License-Identifier: AGPL-3.0-only
 -->
 
 <template>
-<div :class="[$style.root, { [$style.collapsed]: collapsed }]">
+<div ref="rootEl" :class="[$style.root, { [$style.collapsed]: collapsed }]">
 	<div>
 		<span v-if="note.isHidden" style="opacity: 0.5">({{ i18n.ts.private }})</span>
 		<span v-if="note.deletedAt" style="opacity: 0.5">({{ i18n.ts.deletedNote }})</span>
 		<MkA v-if="note.replyId" :class="$style.reply" :to="`/notes/${note.replyId}`"><i class="ti ti-arrow-back-up"></i></MkA>
-		<Mfm v-if="note.text" :text="note.text" :author="note.user" :nyaize="'respect'" :emojiUrls="note.emojis"/>
+		<Mfm v-if="note.text" :text="note.text" :files="note.files" :parsedNodes="collapsed ? collapsedParsed : null" :author="note.user" :nyaize="'respect'" :emojiUrls="note.emojis"/>
 		<MkA v-if="note.renoteId" :class="$style.rp" :to="`/notes/${note.renoteId}`">RN: ...</MkA>
 	</div>
-	<details v-if="note.files && note.files.length > 0">
-		<summary>({{ i18n.tsx.withNFiles({ n: note.files.length }) }})</summary>
-		<MkMediaList :mediaList="note.files" :user="note.user"/>
+	<details v-if="galleryFiles.length > 0">
+		<summary>({{ i18n.tsx.withNFiles({ n: galleryFiles.length }) }})</summary>
+		<MkMediaList :mediaList="galleryFiles" :user="note.user"/>
 	</details>
 	<details v-if="note.poll">
 		<summary>{{ i18n.ts.poll }}</summary>
@@ -31,16 +31,29 @@ SPDX-License-Identifier: AGPL-3.0-only
 	<button v-if="isLong && collapsed" :class="$style.fade" class="_button" @click="collapsed = false">
 		<span :class="$style.fadeLabel">{{ i18n.ts.showMore }}</span>
 	</button>
-	<button v-else-if="isLong && !collapsed" :class="$style.showLess" class="_button" @click="collapsed = true">
-		<span :class="$style.showLessLabel">{{ i18n.ts.showLess }}</span>
-	</button>
+	<Transition
+		v-else-if="isLong && !collapsed"
+		:enterActiveClass="prefer.s.animation ? $style.transition_fc_enterActive : ''"
+		:leaveActiveClass="prefer.s.animation ? $style.transition_fc_leaveActive : ''"
+		:enterFromClass="prefer.s.animation ? $style.transition_fc_enterFrom : ''"
+		:leaveToClass="prefer.s.animation ? $style.transition_fc_leaveTo : ''"
+	>
+		<button v-show="floatingVisible" :class="$style.showLess" class="_button" @click.stop="collapse()">
+			<span :class="$style.showLessLabel"><i class="ti ti-chevron-up"></i> {{ i18n.ts._longNote.collapse }}</span>
+		</button>
+	</Transition>
 </div>
 </template>
 
 <script lang="ts" setup>
-import { ref } from 'vue';
+import { filterUnreferencedFiles } from '@@/js/mfm-inline-image.js';
+import { ref, useTemplateRef } from 'vue';
 import * as Misskey from 'misskey-js';
+import * as mfm from 'mfm-js';
 import { shouldCollapsed } from '@@/js/collapsed.js';
+import { prefer } from '@/preferences.js';
+import { useFloatingCollapse } from '@/composables/use-floating-collapse.js';
+import { truncateMfmNodes, COLLAPSED_RENDER_CHARS } from '@@/js/mfm-truncate.js';
 import MkMediaList from '@/components/MkMediaList.vue';
 import MkPoll from '@/components/MkPoll.vue';
 import { i18n } from '@/i18n.js';
@@ -52,6 +65,13 @@ const props = defineProps<{
 const isLong = shouldCollapsed(props.note, []);
 
 const collapsed = ref(isLong);
+const rootEl = useTemplateRef('rootEl');
+const { floatingVisible, collapse } = useFloatingCollapse({ rootEl, contentEl: rootEl, collapsed, isLong });
+
+// 折りたたみ中は先頭部分だけを描画する（長文でタイムラインが重くならないように）
+const collapsedParsed = isLong && props.note.text ? truncateMfmNodes(mfm.parse(props.note.text), COLLAPSED_RENDER_CHARS).nodes : null;
+
+const galleryFiles = filterUnreferencedFiles(props.note.files ?? [], props.note.text);
 </script>
 
 <style lang="scss" module>
@@ -99,6 +119,17 @@ const collapsed = ref(isLong);
 	margin-left: 4px;
 	font-style: oblique;
 	color: var(--MI_THEME-renote);
+}
+
+.transition_fc_enterActive,
+.transition_fc_leaveActive {
+	transition: opacity 150ms ease-out, transform 150ms ease-out;
+}
+
+.transition_fc_enterFrom,
+.transition_fc_leaveTo {
+	opacity: 0;
+	transform: translateY(6px);
 }
 
 .showLess {

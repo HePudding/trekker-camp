@@ -11,19 +11,21 @@ SPDX-License-Identifier: AGPL-3.0-only
 			ref="gallery"
 			:class="[
 				$style.medias,
-				...(prefer.s.showMediaListByGridInWideArea ? [$style.gridInWideArea] : []),
+				...(prefer.s.showMediaListByGridInWideArea && count === 1 ? [$style.gridInWideArea] : []),
 				count === 1 ? [$style.n1, {
 					[$style.n116_9]: prefer.s.mediaListWithOneImageAppearance === '16_9',
 					[$style.n11_1]: prefer.s.mediaListWithOneImageAppearance === '1_1',
 					[$style.n12_3]: prefer.s.mediaListWithOneImageAppearance === '2_3',
-				}] : count === 2 ? $style.n2 : count === 3 ? $style.n3 : count === 4 ? $style.n4 : $style.nMany,
+				}] : $style.carousel,
 			]"
+			@scroll.passive="updateArrows"
 		>
 			<template v-for="media in medias.previewable">
 				<XAudio
 					v-if="media.type.startsWith('audio')"
 					:key="`audio:${media.id}`"
 					:class="$style.media"
+					:style="count > 1 ? carouselItemStyle(media) : undefined"
 					:audio="media"
 					@mediaClick="onMediaClick(media)"
 				/>
@@ -32,6 +34,7 @@ SPDX-License-Identifier: AGPL-3.0-only
 					:key="`video:${media.id}`"
 					:ref="(comp) => { mediaComponents.set(media.id, comp as InstanceType<typeof XVideo> | null); }"
 					:class="$style.media"
+					:style="count > 1 ? carouselItemStyle(media) : undefined"
 					:video="media"
 					@mediaClick="onMediaClick(media)"
 				/>
@@ -42,18 +45,23 @@ SPDX-License-Identifier: AGPL-3.0-only
 					:marker="`${markerId}:${media.id}`"
 					:disableImageLink="true"
 					:class="$style.media"
+					:style="count > 1 ? carouselItemStyle(media) : undefined"
 					:image="media"
 					:raw="raw"
 					@mediaClick="onMediaClick(media)"
 				/>
 			</template>
 		</div>
+		<template v-if="count > 1">
+			<button v-show="canScrollPrev" :class="[$style.arrow, $style.arrowPrev]" class="_button" :aria-label="i18n.ts._longNote.prevMedia" @click.stop="scrollCarousel(-1)"><i class="ti ti-chevron-left"></i></button>
+			<button v-show="canScrollNext" :class="[$style.arrow, $style.arrowNext]" class="_button" :aria-label="i18n.ts._longNote.nextMedia" @click.stop="scrollCarousel(1)"><i class="ti ti-chevron-right"></i></button>
+		</template>
 	</div>
 </div>
 </template>
 
 <script lang="ts" setup>
-import { computed, markRaw, onMounted, onUnmounted, useTemplateRef } from 'vue';
+import { computed, markRaw, nextTick, onMounted, onUnmounted, ref, useTemplateRef } from 'vue';
 import * as Misskey from 'misskey-js';
 import type { Content } from '@/components/MkLightbox.item.vue';
 import type { MediaComponentExposes } from '@/types/media-component.js';
@@ -65,6 +73,7 @@ import * as os from '@/os.js';
 import { prefer } from '@/preferences.js';
 import { isPreviewable, getType } from '@/utility/lightbox.js';
 import { genId } from '@/utility/id.js';
+import { i18n } from '@/i18n.js';
 
 const props = defineProps<{
 	mediaList: Misskey.entities.DriveFile[];
@@ -124,8 +133,33 @@ async function calcAspectRatio() {
 	}
 }
 
+// 複数メディアは横スクロールのカルーセルで表示する（高さを揃え、幅は各メディアの縦横比に合わせる）
+const canScrollPrev = ref(false);
+const canScrollNext = ref(false);
+
+function carouselItemStyle(media: Misskey.entities.DriveFile) {
+	const w = media.properties.width;
+	const h = media.properties.height;
+	const ratio = media.type.startsWith('audio') ? 4 / 3 : w && h ? Math.min(Math.max(w / h, 0.5), 2) : 1;
+	return { aspectRatio: `${ratio}` };
+}
+
+function updateArrows() {
+	const el = gallery.value;
+	if (el == null || count.value < 2) return;
+	canScrollPrev.value = el.scrollLeft > 1;
+	canScrollNext.value = el.scrollLeft + el.clientWidth < el.scrollWidth - 1;
+}
+
+function scrollCarousel(dir: 1 | -1) {
+	const el = gallery.value;
+	if (el == null) return;
+	el.scrollBy({ left: dir * el.clientWidth * 0.8, behavior: prefer.s.animation ? 'smooth' : 'instant' });
+}
+
 onMounted(() => {
 	calcAspectRatio();
+	nextTick(updateArrows);
 
 	if (gallery.value == null) return; // TSを黙らすため
 });
@@ -234,40 +268,59 @@ defineExpose({
 		}
 	}
 
-	&.n2 {
-		aspect-ratio: 16/9;
-		grid-template-columns: 1fr 1fr;
-		grid-template-rows: 1fr;
-	}
+	&.carousel {
+		display: flex;
+		gap: 8px;
+		height: clamp(160px, 60cqw, 280px);
+		overflow-x: auto;
+		overflow-y: hidden;
+		overscroll-behavior-x: contain;
+		scroll-snap-type: x mandatory;
+		scrollbar-width: none;
 
-	&.n3 {
-		aspect-ratio: 16/9;
-		grid-template-columns: 1fr 0.5fr;
-		grid-template-rows: 1fr 1fr;
-
-		> .media:nth-child(1) {
-			grid-row: 1 / 3;
+		&::-webkit-scrollbar {
+			display: none;
 		}
-
-		> .media:nth-child(3) {
-			grid-column: 2 / 3;
-			grid-row: 2 / 3;
-		}
-	}
-
-	&.n4 {
-		aspect-ratio: 16/9;
-		grid-template-columns: 1fr 1fr;
-		grid-template-rows: 1fr 1fr;
-	}
-
-	&.nMany {
-		grid-template-columns: 1fr 1fr;
 
 		> .media {
-			aspect-ratio: 16/9;
+			flex: 0 0 auto;
+			height: 100%;
+			max-width: 85%;
+			scroll-snap-align: start;
 		}
 	}
+}
+
+.arrow {
+	position: absolute;
+	top: 50%;
+	z-index: 1;
+	display: none;
+	width: 34px;
+	height: 34px;
+	margin-top: -17px;
+	border-radius: 50%;
+	background: rgba(0, 0, 0, 0.6);
+	color: #fff;
+	backdrop-filter: blur(4px);
+
+	&:hover {
+		background: rgba(0, 0, 0, 0.75);
+	}
+
+	// 矢印はマウス操作の環境だけで出す（タッチ端末はスワイプで送る）
+	@media (hover: hover) and (pointer: fine) {
+		display: grid;
+		place-items: center;
+	}
+}
+
+.arrowPrev {
+	left: 8px;
+}
+
+.arrowNext {
+	right: 8px;
 }
 
 .media {

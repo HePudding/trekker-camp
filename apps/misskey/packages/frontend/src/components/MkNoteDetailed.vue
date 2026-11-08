@@ -12,9 +12,6 @@ SPDX-License-Identifier: AGPL-3.0-only
 	tabindex="0"
 >
 	<div v-if="appearNote.reply && appearNote.reply.replyId">
-		<div v-if="!conversationLoaded" style="padding: 16px">
-			<MkButton style="margin: 0 auto;" primary rounded @click="loadConversation">{{ i18n.ts.loadConversation }}</MkButton>
-		</div>
 		<MkNoteSub v-for="note in conversation" :key="note.id" :class="$style.replyToMore" :note="note"/>
 	</div>
 	<MkNoteSub v-if="appearNote.replyId" :note="appearNote?.reply ?? null" :class="$style.replyTo"/>
@@ -92,7 +89,7 @@ SPDX-License-Identifier: AGPL-3.0-only
 					<Mfm
 						v-if="appearNote.text"
 						:parsedNodes="parsed"
-						:text="appearNote.text"
+						:text="appearNote.text" :files="appearNote.files"
 						:author="appearNote.user"
 						:nyaize="'respect'"
 						:emojiUrls="appearNote.emojis"
@@ -108,8 +105,8 @@ SPDX-License-Identifier: AGPL-3.0-only
 							<Mfm :text="translation.text" :author="appearNote.user" :nyaize="'respect'" :emojiUrls="appearNote.emojis" class="_selectable"/>
 						</div>
 					</div>
-					<div v-if="appearNote.files && appearNote.files.length > 0">
-						<MkMediaList ref="galleryEl" :mediaList="appearNote.files" :user="appearNote.user"/>
+					<div v-if="galleryFiles.length > 0">
+						<MkMediaList ref="galleryEl" :mediaList="galleryFiles" :user="appearNote.user"/>
 					</div>
 					<MkPoll
 						v-if="appearNote.poll"
@@ -182,6 +179,7 @@ SPDX-License-Identifier: AGPL-3.0-only
 				</button>
 			</footer>
 		</article>
+		<MkPostForm v-if="$i && canInteract" :class="$style.replyForm" :reply="appearNote" fixed :autofocus="false"/>
 		<div :class="$style.tabs">
 			<button class="_button" :class="[$style.tab, { [$style.tabActive]: tab === 'replies' }]" @click="tab = 'replies'"><i class="ti ti-arrow-back-up"></i> {{ i18n.ts.replies }}</button>
 			<button class="_button" :class="[$style.tab, { [$style.tabActive]: tab === 'renotes' }]" @click="tab = 'renotes'"><i class="ti ti-repeat"></i> {{ i18n.ts.renotes }}</button>
@@ -189,10 +187,7 @@ SPDX-License-Identifier: AGPL-3.0-only
 		</div>
 		<div>
 			<div v-if="tab === 'replies'">
-				<div v-if="!repliesLoaded" style="padding: 16px">
-					<MkButton style="margin: 0 auto;" primary rounded @click="loadReplies">{{ i18n.ts.loadReplies }}</MkButton>
-				</div>
-				<MkNoteSub v-for="note in replies" :key="note.id" :note="note" :class="$style.reply" :detail="true"/>
+				<MkNoteComments :note="appearNote"/>
 			</div>
 			<div v-else-if="tab === 'renotes'" :class="$style.tab_renotes">
 				<MkPagination :paginator="renotesPaginator" :forceDisableInfiniteScroll="true">
@@ -237,6 +232,7 @@ SPDX-License-Identifier: AGPL-3.0-only
 </template>
 
 <script lang="ts" setup>
+import { filterUnreferencedFiles } from '@@/js/mfm-inline-image.js';
 import { inject, provide, ref, useTemplateRef, markRaw, computed } from 'vue';
 import * as Misskey from 'misskey-js';
 import { useNote } from '@/composables/use-note.js';
@@ -253,6 +249,9 @@ import type { Keymap } from '@/utility/hotkey.js';
 
 // コンポーネント外部の依存関係
 import MkNoteSub from '@/components/MkNoteSub.vue';
+import MkNoteComments from '@/components/MkNoteComments.vue';
+import { $i } from '@/i.js';
+import MkPostForm from '@/components/MkPostForm.vue';
 import MkNoteSimple from '@/components/MkNoteSimple.vue';
 import MkReactionsViewer from '@/components/MkReactionsViewer.vue';
 import MkMediaList from '@/components/MkMediaList.vue';
@@ -263,7 +262,6 @@ import MkInstanceTicker from '@/components/MkInstanceTicker.vue';
 import MkUserCardMini from '@/components/MkUserCardMini.vue';
 import MkPagination from '@/components/MkPagination.vue';
 import MkReactionIcon from '@/components/MkReactionIcon.vue';
-import MkButton from '@/components/MkButton.vue';
 
 const props = withDefaults(defineProps<{
 	note: Misskey.entities.Note;
@@ -347,31 +345,19 @@ const reactionsPaginator = markRaw(new Paginator('notes/reactions', {
 	})),
 }));
 
-const replies = ref<Misskey.entities.Note[]>([]);
-const repliesLoaded = ref(false);
-
-function loadReplies() {
-	repliesLoaded.value = true;
-	misskeyApi('notes/children', {
-		noteId: appearNote.id,
-		limit: 30,
-	}).then(res => {
-		replies.value = res;
-	});
-}
-
 const conversation = ref<Misskey.entities.Note[]>([]);
-const conversationLoaded = ref(false);
 
 function loadConversation() {
-	conversationLoaded.value = true;
-	if (appearNote.replyId == null) return;
+	if (appearNote.reply?.replyId == null) return;
 	misskeyApi('notes/conversation', {
-		noteId: appearNote.replyId,
+		noteId: appearNote.reply.id,
 	}).then(res => {
 		conversation.value = res.reverse();
 	});
 }
+
+// 返信先より前の会話は最初から表示する
+loadConversation();
 
 // キーボードショートカットマップ
 const keymap = {
@@ -396,6 +382,9 @@ const keymap = {
 		callback: () => blur(),
 	},
 } as const satisfies Keymap;
+
+// 本文中に $[img N] で埋め込んだ添付は末尾の一覧に出さない
+const galleryFiles = filterUnreferencedFiles(appearNote.files ?? [], appearNote.text);
 </script>
 
 <style lang="scss" module>
@@ -435,6 +424,11 @@ const keymap = {
 
 .replyToMore {
 	opacity: 0.7;
+}
+
+.replyForm {
+	border-top: solid 0.5px var(--MI_THEME-divider);
+	box-shadow: none;
 }
 
 .renote {

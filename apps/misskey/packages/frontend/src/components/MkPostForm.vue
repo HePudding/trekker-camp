@@ -43,7 +43,8 @@ SPDX-License-Identifier: AGPL-3.0-only
 			</button>
 		</div>
 	</header>
-	<MkNoteSimple v-if="replyTargetNote" :class="$style.targetNote" :note="replyTargetNote"/>
+	<!-- 固定表示（詳細ページの返信欄など）では返信先がすぐ上にあるので出さない -->
+	<MkNoteSimple v-if="replyTargetNote && !fixed" :class="$style.targetNote" :note="replyTargetNote"/>
 	<MkNoteSimple v-if="renoteTargetNote" :class="$style.targetNote" :note="renoteTargetNote"/>
 	<div v-if="quoteId" :class="$style.withQuote"><i class="ti ti-quote"></i> {{ i18n.ts.quoteAttached }}<button @click="quoteId = null; renoteTargetNote = null;"><i class="ti ti-x"></i></button></div>
 	<div v-if="visibility === 'specified'" :class="$style.toSpecified">
@@ -76,6 +77,11 @@ SPDX-License-Identifier: AGPL-3.0-only
 		<textarea ref="textareaEl" v-model="text" :class="[$style.text]" :disabled="posting || posted" :readonly="textAreaReadOnly" :placeholder="placeholder" data-testid="post-form-text" @keydown="onKeydown" @keyup="onKeyup" @paste="onPaste" @compositionupdate="onCompositionUpdate" @compositionend="onCompositionEnd"></textarea>
 		<div v-if="maxTextLength - textLength < 100" :class="['_acrylic', $style.textCount, { [$style.textOver]: textLength > maxTextLength }]">{{ maxTextLength - textLength }}</div>
 	</div>
+	<div v-if="autosaveStatusText" :class="[$style.autosaveStatus, { [$style.autosaveWarn]: autosaver.status.value === 'full' || autosaver.status.value === 'error' }]" role="status" aria-live="polite">
+		<i :class="autosaver.status.value === 'saved' ? 'ti ti-cloud-check' : autosaver.status.value === 'full' || autosaver.status.value === 'error' ? 'ti ti-cloud-off' : 'ti ti-cloud-upload'"></i>
+		{{ autosaveStatusText }}
+		<button v-if="autosaver.status.value === 'full'" class="_textButton" @click="showDraftsDialog(false)">{{ i18n.ts._longNote.openDrafts }}</button>
+	</div>
 	<input v-show="withHashtags" ref="hashtagsInputEl" v-model="hashtags" :class="$style.hashtags" :placeholder="i18n.ts.hashtags" list="hashtags">
 	<XPostFormAttaches v-model="files" @detach="detachFile" @changeSensitive="updateFileSensitive" @changeName="updateFileName"/>
 	<div v-if="uploader.items.value.length > 0" style="padding: 12px;">
@@ -96,6 +102,8 @@ SPDX-License-Identifier: AGPL-3.0-only
 			<button v-tooltip="i18n.ts.useCw" class="_button" :class="[$style.footerButton, { [$style.footerButtonActive]: useCw }]" @click="useCw = !useCw"><i class="ti ti-eye-off"></i></button>
 			<button v-tooltip="i18n.ts.hashtags" class="_button" :class="[$style.footerButton, { [$style.footerButtonActive]: withHashtags }]" @click="withHashtags = !withHashtags"><i class="ti ti-hash"></i></button>
 			<button v-tooltip="i18n.ts.mention" class="_button" :class="$style.footerButton" @click="insertMention"><i class="ti ti-at"></i></button>
+			<button v-tooltip="i18n.ts._longNote.insertImage" class="_button" :class="$style.footerButton" @click="insertInlineImage"><i class="ti ti-photo-down"></i></button>
+			<button v-tooltip="i18n.ts._longNote.insertTable" class="_button" :class="$style.footerButton" @click="insertOrEditTable"><i class="ti ti-table"></i></button>
 			<button v-if="showAddMfmFunction" v-tooltip="i18n.ts.addMfmFunction" :class="['_button', $style.footerButton]" @click="insertMfmFunction"><i class="ti ti-palette"></i></button>
 			<button v-if="postFormActions.length > 0" v-tooltip="i18n.ts.plugins" class="_button" :class="$style.footerButton" @click="showActions"><i class="ti ti-plug"></i></button>
 		</div>
@@ -154,6 +162,9 @@ import { checkDragDataType, getDragData } from '@/drag-and-drop.js';
 import { useUploader } from '@/composables/use-uploader.js';
 import { startTour } from '@/utility/tour.js';
 import { closeTip } from '@/tips.js';
+import { findTableAtCursor, serializeMfmTable, tsvToRows } from '@@/js/mfm-table.js';
+import { buildIndexMap, getInlineImageIndices, inlineImageToken, remapInlineImageIndices } from '@@/js/mfm-inline-image.js';
+import { createDraftAutosaver, AUTOSAVE_MIN_CHARS } from '@/utility/draft-autosave.js';
 
 const $i = ensureSignin();
 
@@ -221,6 +232,7 @@ const replyTargetNote: ShallowRef<PostFormProps['reply'] | null> = shallowRef(pr
 const targetChannel = shallowRef(props.channel);
 
 const serverDraftId = ref<string | null>(null);
+const serverDraftActuallyScheduled = ref(false);
 const postFormActions = getPluginHandlers('post_form_action');
 
 let textAutocomplete: Autocomplete | null = null;
@@ -719,6 +731,15 @@ async function onPaste(ev: ClipboardEvent) {
 
 	const paste = ev.clipboardData.getData('text');
 
+	// スプレッドシートからの貼り付けは表に変換できる
+	const tsvRows = tsvToRows(paste);
+	if (tsvRows != null) {
+		ev.preventDefault();
+		const { canceled } = await os.confirm({ type: 'question', text: i18n.ts._longNote.pasteAsTable });
+		insertTextAtCursor(textareaEl.value, canceled ? paste : serializeMfmTable(tsvRows));
+		return;
+	}
+
 	if (!renoteTargetNote.value && !quoteId.value && paste.startsWith(url + '/notes/')) {
 		ev.preventDefault();
 
@@ -825,6 +846,7 @@ type StoredDrafts = {
 			quoteId: string | null;
 			reactionAcceptance: 'likeOnly' | 'likeOnlyForRemote' | 'nonSensitiveOnly' | 'nonSensitiveOnlyForLocalLikeOnlyForRemote' | null;
 			scheduledAt: number | null;
+			serverDraftId?: string | null;
 		};
 	};
 };
@@ -848,10 +870,13 @@ function saveDraft() {
 			quoteId: quoteId.value,
 			reactionAcceptance: reactionAcceptance.value,
 			scheduledAt: scheduledAt.value,
+			serverDraftId: serverDraftId.value,
 		},
 	};
 
 	miLocalStorage.setItem('drafts', JSON.stringify(draftsData));
+
+	autosaver.notify();
 }
 
 function deleteDraft() {
@@ -862,11 +887,8 @@ function deleteDraft() {
 	miLocalStorage.setItem('drafts', JSON.stringify(draftsData));
 }
 
-async function saveServerDraft(options: {
-	isActuallyScheduled?: boolean;
-} = {}) {
-	return await os.apiWithDialog(serverDraftId.value == null ? 'notes/drafts/create' : 'notes/drafts/update', {
-		...(serverDraftId.value == null ? {} : { draftId: serverDraftId.value }),
+function serverDraftPayload(isActuallyScheduled: boolean) {
+	return {
 		text: text.value,
 		cw: useCw.value ? cw.value || null : null,
 		visibility: visibility.value,
@@ -880,9 +902,48 @@ async function saveServerDraft(options: {
 		channelId: targetChannel.value ? targetChannel.value.id : null,
 		reactionAcceptance: reactionAcceptance.value,
 		scheduledAt: scheduledAt.value,
-		isActuallyScheduled: options.isActuallyScheduled ?? false,
-	});
+		isActuallyScheduled,
+	};
 }
+
+async function saveServerDraft(options: {
+	isActuallyScheduled?: boolean;
+} = {}) {
+	const payload = serverDraftPayload(options.isActuallyScheduled ?? false);
+	if (serverDraftId.value == null) {
+		return await os.apiWithDialog('notes/drafts/create', payload);
+	} else {
+		return await os.apiWithDialog('notes/drafts/update', { ...payload, draftId: serverDraftId.value });
+	}
+}
+
+// 長文の書きかけを失わないよう、一定量を超えたらサーバー下書きへ自動保存する
+const autosaver = createDraftAutosaver({
+	serverDraftId,
+	enabled: () => !props.instant && !props.mock && !posted.value && textLength.value >= AUTOSAVE_MIN_CHARS,
+	isActuallyScheduled: () => serverDraftActuallyScheduled.value,
+	save: async (draftId) => {
+		if (draftId == null) {
+			const res = await misskeyApi('notes/drafts/create', serverDraftPayload(false));
+			return { id: res.createdDraft.id };
+		} else {
+			const res = await misskeyApi('notes/drafts/update', { ...serverDraftPayload(false), draftId });
+			return { id: res.updatedDraft.id };
+		}
+	},
+});
+
+const autosaveStatusText = computed((): string | null => {
+	switch (autosaver.status.value) {
+		case 'pending': return i18n.ts._longNote.autosavePending;
+		case 'saving': return i18n.ts._longNote.autosaveSaving;
+		case 'saved': return i18n.ts._longNote.autosaveSaved;
+		case 'full': return i18n.ts._longNote.autosaveFull;
+		case 'scheduled': return i18n.ts._longNote.autosaveScheduled;
+		case 'error': return i18n.ts._longNote.autosaveError;
+		default: return null;
+	}
+});
 
 function isAnnoying(text: string): boolean {
 	return text.includes('$[x2') ||
@@ -1093,6 +1154,52 @@ function cancel() {
 	emit('cancel');
 }
 
+function insertInlineImage(ev: PointerEvent) {
+	if (files.value.length === 0) {
+		os.toast(i18n.ts._longNote.noAttachmentsToInsert);
+		return;
+	}
+	os.popupMenu([{ type: 'label', text: i18n.ts._longNote.selectImageToInsert }, ...files.value.map((f, i) => ({
+		text: `${i + 1}. ${f.name}`,
+		icon: f.type.startsWith('image/') ? 'ti ti-photo' : 'ti ti-file',
+		action: () => {
+			if (textareaEl.value == null) return;
+			insertTextAtCursor(textareaEl.value, `
+${inlineImageToken(i + 1)}
+`);
+		},
+	}))], (ev.currentTarget ?? ev.target) as HTMLElement);
+}
+
+function insertOrEditTable() {
+	const el = textareaEl.value;
+	if (el == null) return;
+	const found = findTableAtCursor(text.value, el.selectionStart);
+	const { dispose } = os.popup(defineAsyncComponent(() => import('@/components/MkTableEditorDialog.vue')), {
+		initialRows: found?.rows ?? null,
+	}, {
+		done: (rows: string[][]) => {
+			const src = serializeMfmTable(rows);
+			if (found) {
+				text.value = text.value.slice(0, found.start) + src + text.value.slice(found.end);
+			} else {
+				el.focus();
+				insertTextAtCursor(el, `
+${src}
+`);
+			}
+		},
+		closed: () => dispose(),
+	});
+}
+
+// 添付の並べ替え・削除に合わせて本文中の $[img N] を付け替える
+watch(() => files.value.map(f => f.id), (next, prev) => {
+	if (prev == null || getInlineImageIndices(text.value).length === 0) return;
+	if (next.length === prev.length && next.every((id, i) => id === prev[i])) return;
+	text.value = remapInlineImageIndices(text.value, buildIndexMap(prev, next));
+});
+
 function insertMention() {
 	os.selectUser({ localOnly: true, includeSelf: true }).then(user => {
 		if (textareaEl.value == null) return;
@@ -1180,65 +1287,67 @@ function showActions(ev: PointerEvent) {
 
 const postAccount = ref<Misskey.entities.UserDetailed | null>(null);
 
+function showDraftsDialog(scheduled: boolean) {
+	const { dispose } = os.popup(defineAsyncComponent(() => import('@/components/MkNoteDraftsDialog.vue')), {
+		scheduled,
+	}, {
+		restore: async (draft: Misskey.entities.NoteDraft) => {
+			text.value = draft.text ?? '';
+			useCw.value = draft.cw != null;
+			cw.value = draft.cw ?? null;
+			visibility.value = draft.visibility;
+			localOnly.value = draft.localOnly ?? false;
+			files.value = draft.files ?? [];
+			hashtags.value = draft.hashtag ?? '';
+			if (draft.hashtag) withHashtags.value = true;
+			if (draft.poll) {
+				// 投票を一時的に空にしないと反映されないため
+				poll.value = null;
+				nextTick(() => {
+					poll.value = {
+						choices: draft.poll!.choices,
+						multiple: draft.poll!.multiple,
+						expiresAt: draft.poll!.expiresAt ? (new Date(draft.poll!.expiresAt)).getTime() : null,
+						expiredAfter: null,
+					};
+				});
+			}
+			if (draft.visibleUserIds) {
+				misskeyApi('users/show', { userIds: draft.visibleUserIds }).then(users => {
+					users.forEach(u => pushVisibleUser(u));
+				});
+			}
+			quoteId.value = draft.renoteId ?? null;
+			renoteTargetNote.value = draft.renote;
+			replyTargetNote.value = draft.reply;
+			reactionAcceptance.value = draft.reactionAcceptance;
+			scheduledAt.value = draft.scheduledAt ?? null;
+			if (draft.channel) targetChannel.value = draft.channel as unknown as Misskey.entities.Channel;
+
+			visibleUsers.value = [];
+			draft.visibleUserIds?.forEach(uid => {
+				if (!visibleUsers.value.some(u => u.id === uid)) {
+					misskeyApi('users/show', { userId: uid }).then(user => {
+						pushVisibleUser(user);
+					});
+				}
+			});
+
+			serverDraftId.value = draft.id;
+			serverDraftActuallyScheduled.value = draft.isActuallyScheduled;
+			autosaver.reset();
+		},
+		cancel: () => {
+
+		},
+		closed: () => {
+			dispose();
+		},
+	});
+}
+
 async function openAccountMenu(ev: PointerEvent) {
 	if (props.mock) return;
-
-	function showDraftsDialog(scheduled: boolean) {
-		const { dispose } = os.popup(defineAsyncComponent(() => import('@/components/MkNoteDraftsDialog.vue')), {
-			scheduled,
-		}, {
-			restore: async (draft: Misskey.entities.NoteDraft) => {
-				text.value = draft.text ?? '';
-				useCw.value = draft.cw != null;
-				cw.value = draft.cw ?? null;
-				visibility.value = draft.visibility;
-				localOnly.value = draft.localOnly ?? false;
-				files.value = draft.files ?? [];
-				hashtags.value = draft.hashtag ?? '';
-				if (draft.hashtag) withHashtags.value = true;
-				if (draft.poll) {
-					// 投票を一時的に空にしないと反映されないため
-					poll.value = null;
-					nextTick(() => {
-						poll.value = {
-							choices: draft.poll!.choices,
-							multiple: draft.poll!.multiple,
-							expiresAt: draft.poll!.expiresAt ? (new Date(draft.poll!.expiresAt)).getTime() : null,
-							expiredAfter: null,
-						};
-					});
-				}
-				if (draft.visibleUserIds) {
-					misskeyApi('users/show', { userIds: draft.visibleUserIds }).then(users => {
-						users.forEach(u => pushVisibleUser(u));
-					});
-				}
-				quoteId.value = draft.renoteId ?? null;
-				renoteTargetNote.value = draft.renote;
-				replyTargetNote.value = draft.reply;
-				reactionAcceptance.value = draft.reactionAcceptance;
-				scheduledAt.value = draft.scheduledAt ?? null;
-				if (draft.channel) targetChannel.value = draft.channel as unknown as Misskey.entities.Channel;
-
-				visibleUsers.value = [];
-				draft.visibleUserIds?.forEach(uid => {
-					if (!visibleUsers.value.some(u => u.id === uid)) {
-						misskeyApi('users/show', { userId: uid }).then(user => {
-							pushVisibleUser(user);
-						});
-					}
-				});
-
-				serverDraftId.value = draft.id;
-			},
-			cancel: () => {
-
-			},
-			closed: () => {
-				dispose();
-			},
-		});
-	}
 
 	const items = await getAccountMenu({
 		withExtraOperation: false,
@@ -1368,6 +1477,7 @@ onMounted(() => {
 				quoteId.value = draft.data.quoteId;
 				reactionAcceptance.value = draft.data.reactionAcceptance;
 				scheduledAt.value = draft.data.scheduledAt ?? null;
+				serverDraftId.value = draft.data.serverDraftId ?? null;
 			}
 		}
 
@@ -1402,6 +1512,7 @@ onMounted(() => {
 });
 
 onBeforeUnmount(() => {
+	autosaver.flush().finally(() => autosaver.dispose());
 	uploader.abortAll();
 	if (textAutocomplete) {
 		textAutocomplete.detach();
@@ -1704,8 +1815,21 @@ html[data-color-scheme=light] .preview {
 	min-width: 100%;
 	width: 100%;
 	min-height: 90px;
-	max-height: 500px;
+	// 長文でも見通しよくスクロールできるよう、画面の高さに合わせて伸ばす
+	max-height: max(500px, 60dvh);
+	overscroll-behavior: contain;
 	field-sizing: content;
+}
+
+.autosaveStatus {
+	padding: 4px 24px;
+	font-size: 0.8em;
+	opacity: 0.7;
+}
+
+.autosaveWarn {
+	color: var(--MI_THEME-warn);
+	opacity: 1;
 }
 
 .textCount {

@@ -13756,4 +13756,116 @@ export interface Locale extends ILocale {
          */
         "mfm": string;
     };
+    "_longNote": {
+        /**
+         * 有未保存的修改
+         */
+        "autosavePending": string;
+        /**
+         * 正在保存到服务器草稿…
+         */
+        "autosaveSaving": string;
+        /**
+         * 已自动保存到服务器草稿
+         */
+        "autosaveSaved": string;
+        /**
+         * 服务器草稿已满，仅保存在本地
+         */
+        "autosaveFull": string;
+        /**
+         * 定时帖不自动保存到服务器
+         */
+        "autosaveScheduled": string;
+        /**
+         * 自动保存失败，已保存在本地
+         */
+        "autosaveError": string;
+        /**
+         * 管理草稿
+         */
+        "openDrafts": string;
+        /**
+         * 在正文中插入图片
+         */
+        "insertImage": string;
+        /**
+         * 插入表格
+         */
+        "insertTable": string;
+        /**
+         * 编辑表格
+         */
+        "editTable": string;
+        /**
+         * 表格编辑器
+         */
+        "tableEditor": string;
+        /**
+         * 添加行
+         */
+        "addRow": string;
+        /**
+         * 添加列
+         */
+        "addColumn": string;
+        /**
+         * 删除行
+         */
+        "removeRow": string;
+        /**
+         * 删除列
+         */
+        "removeColumn": string;
+        /**
+         * 第一行作为表头
+         */
+        "tableFirstRowIsHeader": string;
+        /**
+         * 请先添加附件，再插入到正文中
+         */
+        "noAttachmentsToInsert": string;
+        /**
+         * 选择要插入的附件
+         */
+        "selectImageToInsert": string;
+        /**
+         * 图片 {n} 不存在
+         */
+        "inlineImageMissing": ParameterizedString<"n">;
+        /**
+         * 检测到表格数据，要转换为表格吗？
+         */
+        "pasteAsTable": string;
+        /**
+         * 收起
+         */
+        "collapse": string;
+        /**
+         * 上一张
+         */
+        "prevMedia": string;
+        /**
+         * 下一张
+         */
+        "nextMedia": string;
+    };
+    "_noteComments": {
+        /**
+         * 还没有回复
+         */
+        "empty": string;
+        /**
+         * 共 {n} 条回复，点击查看
+         */
+        "viewAllReplies": ParameterizedString<"n">;
+        /**
+         * 收起回复
+         */
+        "collapseReplies": string;
+        /**
+         * 回复 {user}
+         */
+        "replyTo": ParameterizedString<"user">;
+    };
 }
