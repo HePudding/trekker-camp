@@ -10,4 +10,4 @@
 | `ja-JP.yml` | 上游 Misskey 的源语言；合上游时跟着合，不要当产品文案入口 |
 | 其它 `*.yml` | **不要手改**（上游 Crowdin 同步目标；手改易被覆盖或制造噪声） |
 
-上游原文约定见 Misskey 的 Crowdin 流程；本 fork 默认不以 Crowdin 为发布路径。AI 硬规矩见根目录 [AGENTS.md](../AGENTS.md)。
+上游原文约定见 Misskey 的 Crowdin 流程；本 fork 默认不以 Crowdin 为发布路径。AI 硬规矩见根目录 [AGENTS.md](../../../AGENTS.md)。

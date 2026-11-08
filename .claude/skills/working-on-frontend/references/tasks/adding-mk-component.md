@@ -7,7 +7,7 @@
 
 1. **SPDX 头**：Vue 文件使用 HTML 注释，.stories.impl.ts 使用 TypeScript 注释；缺失会导致 spdx CI 失败。
 2. **Mk 前缀**：共享组件包括子目录均需 Mk 前缀。页面专用组件放在 pages，无需前缀。
-3. **仅编辑 apps/misskey/locales/ja-JP.yml**：其他语言由 Crowdin 分发，手动修改会被覆盖，见 [添加国际化键](adding-i18n-key.md)。
+3. **产品文案仅编辑 apps/misskey/locales/zh-CN.yml**：ja-JP.yml 仅用于上游同步，其他语言 YAML 不手动修改，见 [添加国际化键](adding-i18n-key.md)。
 4. **不硬编码界面字符串**：模板与 JavaScript 均通过 i18n.ts 或 i18n.tsx，见 [国际化用法](../knowledge/i18n-usage.md)。
 5. **不直接调用浏览器对话框**：使用 os.alert、os.confirm、os.popup，见 [os API](../knowledge/os-api.md)。
 

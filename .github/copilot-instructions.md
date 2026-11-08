@@ -1,10 +1,12 @@
-# Misskey 的 Copilot 指南
+# 旅人营地的 Copilot 指南
 
 本文件作为 GitHub Copilot 的仓库级指令。部分 Copilot 代码审查环境不会读取 `AGENTS.md`，因此本文件应独立提供审查和小范围实现判断所需的规范。
 
 仓库是使用 pnpm workspace 的 Misskey 单体仓库。主要实现位于 `apps/misskey/packages/backend`（NestJS / TypeORM）和 `apps/misskey/packages/frontend`（Vue 3）。可参考根目录 `AGENTS.md` 获取详细指南，但不得省略本文件要求，仅提供指向它的链接。
 
 ## 项目定位与支持范围
+
+本项目由团队维护，不征集外部代码贡献。日常开发和 PR 目标为 `master`；产品文案以简体中文为源语言，默认不开展联邦工作。团队流程见根目录 `DEVELOPMENT.md`。
 
 开发、测试和部署流程围绕旅人营地本站及团队需求维护。不主动提供第三方部署、配置和运维支持，不为其他实例增加通用配置或兼容层，除非用户明确要求。
 

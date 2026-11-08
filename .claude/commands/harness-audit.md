@@ -36,7 +36,7 @@ scope 可选，支持 repo（默认）、skills、commands、agents。
 | 3 | 质量检查 | 改动文件 lint、quality-gate、专项测试和类型检查、与 CI 一致性 |
 | 4 | 知识持久化 | SKILL.md 与 references 同步程度；项目不使用 .claude/memory，自动记忆位于用户目录，因此默认从 5/10 起评 |
 | 5 | 验证覆盖 | 前后端测试参考文档，以及端到端、联邦、Storybook、Playwright 指引 |
-| 6 | 安全约束 | SPDX、迁移不可变、仅编辑 ja-JP.yml 的规则、密钥检测 |
+| 6 | 安全约束 | SPDX、迁移不可变、简中产品文案与上游语言同步规则、密钥检测 |
 | 7 | 成本效率 | enabledPlugins 重复或过多、context-budget 是否完善、MCP 是否过量 |
 
 ## Misskey 专项检查
@@ -48,14 +48,9 @@ scope 可选，支持 repo（默认）、skills、commands、agents。
 node scripts/check-spdx.mjs
 # → 退出码为 0（SPDX: OK）时满分，无需额外人工判断
 
-# 2. [Security Guardrails] 最近是否手动编辑了 ja-JP.yml 以外的语言文件
-#    通过 --pretty=format: 隐藏提交头，仅保留文件名后再过滤。
-#    Crowdin 自动同步也会更新其他语言，因此通常会有输出。
-#    有输出时检查作者和提交消息，区分 Crowdin 同步与手动编辑：
-#    git log --since='30 days ago' --pretty=format:'%h %an %s' -- apps/misskey/locales/<file>.yml
-git log --since='30 days ago' --pretty=format: --name-only -- 'apps/misskey/locales/*.yml' \
-  | grep -v '^$' | grep -v 'ja-JP.yml' | sort -u
-# → 无输出或全部来自 Crowdin 时满分
+# 2. [Security Guardrails] 产品文案仅改 zh-CN.yml；ja-JP.yml 仅用于上游同步
+node scripts/check-locales.mjs
+# → 检查通过时满分
 
 # 3. [Security Guardrails] 迁移待执行 DDL 检查（TypeORM 架构构建器）
 pnpm --filter backend check-migrations

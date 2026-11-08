@@ -57,6 +57,6 @@
 CHANGELOG 和提交消息各有格式：
 
 - CHANGELOG：`- Enhance: 改善帖子显示`，使用首字母大写的英文前缀、冒号和说明正文。上游正文使用日语。
-- 提交消息：`enhance(frontend): improve note display`，使用小写前缀、范围、冒号和英文正文。详情见 [CONTRIBUTING.md](../../../../../CONTRIBUTING.md)。
+- 提交消息：`enhance(frontend): improve note display`，使用小写前缀、范围、冒号和英文正文。详情见 [DEVELOPMENT.md](../../../../../DEVELOPMENT.md)。
 
 在同一个 PR 中更新两者时，应分别遵循对应格式。
