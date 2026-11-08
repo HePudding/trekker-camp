@@ -9,6 +9,7 @@ import * as mfm from 'mfm-js';
 import * as Misskey from 'misskey-js';
 import { isLink } from '@@/js/is-link.js';
 import { shouldCollapsed } from '@@/js/collapsed.js';
+import { truncateMfmNodes, COLLAPSED_RENDER_CHARS } from '@@/js/mfm-truncate.js';
 import { host } from '@@/js/config.js';
 import { pleaseLogin } from '@/utility/please-login.js';
 import type { OpenOnRemoteOptions } from '@/utility/please-login.js';
@@ -161,6 +162,8 @@ export function useNote(
 	const urls = parsed ? extractUrlFromMfm(parsed).filter((url) => appearNote.renote?.url !== url && appearNote.renote?.uri !== url) : null;
 	const isLong = shouldCollapsed(appearNote, urls ?? []);
 	const collapsed = ref(isLong);
+	// 折りたたみ中は先頭部分だけを描画する（長文でタイムラインが重くならないように）
+	const collapsedParsed = isLong && parsed ? truncateMfmNodes(parsed, COLLAPSED_RENDER_CHARS).nodes : null;
 	const canInteract = appearNote.user.host == null || instance.federation !== 'none';
 	const canRenote = canInteract && (['public', 'home'].includes(appearNote.visibility) || (appearNote.visibility === 'followers' && appearNote.userId === $i?.id));
 	const showTicker = instance.federation !== 'none' && ((prefer.s.instanceTicker === 'always') || (prefer.s.instanceTicker === 'remote' && appearNote.user.instance));
@@ -449,6 +452,7 @@ export function useNote(
 		// 導出値
 		isMyRenote,
 		parsed,
+		collapsedParsed,
 		urls,
 		isLong,
 		showTicker,
