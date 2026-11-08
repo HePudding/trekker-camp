@@ -13853,5 +13853,9 @@ export interface Locale extends ILocale {
          * {n} / {max} 字
          */
         "charCount": ParameterizedString<"n" | "max">;
+        /**
+         * 检测到表格数据，要转换为表格吗？
+         */
+        "pasteAsTable": string;
     };
 }
