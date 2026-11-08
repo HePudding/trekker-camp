@@ -4,19 +4,19 @@
  */
 
 import { describe, test, assert } from 'vitest';
-import { canShowRepliesToOthers } from '@/timelines.js';
+import { hasWithReplies } from '@/timelines.js';
 
-describe('canShowRepliesToOthers', () => {
-	test('the home feed (local timeline) never shows replies to others', () => {
-		assert.isFalse(canShowRepliesToOthers('local'));
+describe('hasWithReplies', () => {
+	test('the home feed (local timeline) supports the replies switch', () => {
+		assert.isTrue(hasWithReplies('local'));
 	});
 
 	test('the social timeline keeps the switch', () => {
-		assert.isTrue(canShowRepliesToOthers('social'));
+		assert.isTrue(hasWithReplies('social'));
 	});
 
 	test('timelines without the switch stay without it', () => {
-		assert.isFalse(canShowRepliesToOthers('home'));
-		assert.isFalse(canShowRepliesToOthers('global'));
+		assert.isFalse(hasWithReplies('home'));
+		assert.isFalse(hasWithReplies('global'));
 	});
 });

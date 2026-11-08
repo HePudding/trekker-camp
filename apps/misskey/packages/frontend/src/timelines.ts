@@ -54,11 +54,3 @@ export function availableBasicTimelines(): BasicTimelineType[] {
 export function hasWithReplies(timeline: BasicTimelineType | undefined | null): boolean {
 	return timeline === 'local' || timeline === 'social';
 }
-
-/**
- * タイムラインページで「他人への返信を表示」を使えるか。
- * 旅人営地の「首页」はローカルタイムラインで、推薦の仕組みができるまでは他人への返信を出さない。
- */
-export function canShowRepliesToOthers(timeline: BasicTimelineType | undefined | null): boolean {
-	return hasWithReplies(timeline) && timeline !== 'local';
-}
