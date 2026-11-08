@@ -52,7 +52,7 @@ const exampleCWNote = reactive<Misskey.entities.Note>({
 		username: 'ai',
 		host: null,
 		avatarDecorations: [],
-		avatarUrl: '/client-assets/camp/characters/maou/tutorial-avatar-v3.png',
+		avatarUrl: '/client-assets/trekker-camp/characters/maou/tutorial-avatar-v3.png',
 		avatarBlurhash: 'eiKmhHIByXxZ~qWXs:-pR*NbR*s:xuRjoL-oR*WCt6WWf6WVf6oeWB',
 		isBot: false,
 		isCat: true,

@@ -135,7 +135,7 @@ SPDX-License-Identifier: AGPL-3.0-only
 		</div>
 
 		<MkA v-if="game.isEnded" :to="`/reversi`">
-			<img :src="'/client-assets/camp/characters/maou/reversi-logo-v1.png'" style="display: block; max-width: 100%; width: 200px; margin: auto;"/>
+			<img :src="'/client-assets/trekker-camp/characters/maou/reversi-logo-v1.png'" style="display: block; max-width: 100%; width: 200px; margin: auto;"/>
 		</MkA>
 	</div>
 </div>
