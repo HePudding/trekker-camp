@@ -1,22 +1,19 @@
-name: ✨ 功能请求
-description: 为项目提出建议
+name: 需求记录
+description: 记录团队已确认的营地需求
 labels: ["✨Feature"]
-
 body:
   - type: textarea
     attributes:
-      label: 概述
-      description: 请描述你的建议
+      label: 需求与使用场景
+      description: 描述旅人在营地遇到的问题和期望的行为。
     validations:
       required: true
   - type: textarea
     attributes:
-      label: 目的
-      description: 请说明该功能解决的具体问题或需求，以及受益的用户群体。
+      label: 实现范围与验收条件
+      description: 记录已确认的范围和完成标准。
     validations:
       required: true
-  - type: checkboxes
+  - type: textarea
     attributes:
-      label: 你愿意自行实现这个功能吗？
-      options:
-        - label: 是，我会自行实现并提交 Pull Request
+      label: 相关任务与依赖

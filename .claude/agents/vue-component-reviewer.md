@@ -19,17 +19,17 @@ tools: Read, Grep, Glob, Bash
 优先使用调用方明确提供的文件，否则获取整个 PR 或分支的差异，并包含未提交内容：
 
 ```bash
-BASE=$(git merge-base origin/develop HEAD)
+BASE=$(git merge-base origin/master HEAD)
 { git diff --name-only "$BASE"...HEAD; git diff --name-only HEAD; git ls-files --others --exclude-standard; } \
   | sort -u \
   | grep -E '^apps/misskey/packages/frontend/src/.*\.vue$'
 ```
 
-没有 `origin/develop` 时回退到 `develop` 或 `master`。
+没有 `origin/master` 时回退到本地 `master`。
 
 不要统一纳入所有 `.ts`，以免误报职责之外的组合函数、状态和服务层。以下文件单独列出用于辅助检查：
 
-- `apps/misskey/locales/*.yml`，尤其是 `ja-JP.yml` 之外的改动，按 Critical 处理。
+- `apps/misskey/locales/*.yml`，允许 `zh-CN.yml` 产品文案和 `ja-JP.yml` 上游同步，其他语言的手动改动按 Critical 处理。
 - `apps/misskey/packages/frontend/src/components/**/*.stories.impl.ts`。
 
 没有相关改动时，简短报告“没有需要审查的 Vue 组件改动”并结束。
@@ -54,12 +54,12 @@ BASE=$(git merge-base origin/develop HEAD)
 - 模板和 JavaScript 中均禁止硬编码界面字符串。
 - 无参数使用 `i18n.ts.<path>`，如 `i18n.ts.deleted`。
 - 有参数使用 `i18n.tsx.<path>(...)`，如 `i18n.tsx.takeOverConfirm({ name })`。
-- 新键仅添加到 `apps/misskey/locales/ja-JP.yml`。
-- 其他语言 YAML 由 Crowdin 自动分发，手动编辑会被覆盖；此类修改按 Critical 处理。
+- 产品文案新键仅添加到 `apps/misskey/locales/zh-CN.yml`。
+- `ja-JP.yml` 仅用于上游同步，其余语言 YAML 禁止手动编辑。
 
 ```bash
-BASE=$(git merge-base origin/develop HEAD)
-git diff --name-only "$BASE"...HEAD -- 'apps/misskey/locales/*.yml' | grep -v 'ja-JP.yml'
+BASE=$(git merge-base origin/master HEAD)
+node scripts/check-locales.mjs --base "$BASE"
 ```
 
 ### 4. 样式（Major）
@@ -70,7 +70,7 @@ git diff --name-only "$BASE"...HEAD -- 'apps/misskey/locales/*.yml' | grep -v 'j
 - 禁止硬编码 `#fff`、`rgb(...)`、`rgba(...)`。
 
 ```bash
-BASE=$(git merge-base origin/develop HEAD)
+BASE=$(git merge-base origin/master HEAD)
 git diff "$BASE"...HEAD -- 'apps/misskey/packages/frontend/src/**/*.vue' \
   | grep -E '^\+' | grep -E '#[0-9a-fA-F]{3,8}\b|rgba?\('
 ```
@@ -81,7 +81,7 @@ git diff "$BASE"...HEAD -- 'apps/misskey/packages/frontend/src/**/*.vue' \
 - 使用 `os.alert`、`os.confirm`、`os.popup`、`os.toast`、`os.popupMenu`、`os.contextMenu`、`os.form`、`os.apiWithDialog`，见 [os.ts](../../apps/misskey/packages/frontend/src/os.ts)。
 
 ```bash
-BASE=$(git merge-base origin/develop HEAD)
+BASE=$(git merge-base origin/master HEAD)
 git diff "$BASE"...HEAD -- 'apps/misskey/packages/frontend/src/**/*.vue' \
   | grep -E '^\+' | grep -E '\b(alert|confirm|prompt)\s*\('
 ```
@@ -100,7 +100,7 @@ git diff "$BASE"...HEAD -- 'apps/misskey/packages/frontend/src/**/*.vue' \
 - 参考 [MkButton.stories.impl.ts](../../apps/misskey/packages/frontend/src/components/MkButton.stories.impl.ts)。
 
 ```bash
-BASE=$(git merge-base origin/develop HEAD)
+BASE=$(git merge-base origin/master HEAD)
 git diff --name-only --diff-filter=A "$BASE"...HEAD -- \
   'apps/misskey/packages/frontend/src/components/**/Mk*.vue' \
   | sed 's/\.vue$/.stories.impl.ts/' \

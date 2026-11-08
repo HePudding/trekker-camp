@@ -8,19 +8,20 @@
 - **OpenAI Codex**：直接读取本文件；`.agents/skills/` 指向 `.claude/skills/`。
 - **GitHub Copilot**：`.github/copilot-instructions.md`。
 
-开发者指南见 [CONTRIBUTING.md](CONTRIBUTING.md)（上游流程）和 [SETUP.zh-CN.md](SETUP.zh-CN.md)（本仓库环境搭建）。
+团队开发指南见 [DEVELOPMENT.md](DEVELOPMENT.md)和 [SETUP.zh-CN.md](SETUP.zh-CN.md)（本仓库环境搭建）。
 
 ## 旅人营地覆盖规则（优先于下文上游规则）
 
 1. **产品文案源语言是简体中文 `apps/misskey/locales/zh-CN.yml`**
    - AI 和开发者可以、也应当编辑 `apps/misskey/locales/zh-CN.yml`。
-   - 禁止手动编辑其他语言 YAML（`en-US.yml`、`ja-JP.yml`、`zh-TW.yml` 等），避免与上游或 Crowdin 同步相互覆盖。
+   - 禁止手动编辑其他语言 YAML（`en-US.yml`、`zh-TW.yml` 等；`ja-JP.yml` 仅用于上游同步），避免与上游或 Crowdin 同步相互覆盖。
    - 合入上游文案时，先合并 `ja-JP.yml`（上游源语言），再将旅人营地需要的键写入 `zh-CN.yml`。
    - 前端新增国际化键时，写入 `zh-CN.yml`，并通过实例配置或默认语言设置保证运行时默认使用简体中文。
 2. **默认不开展 Federation / ActivityPub / 联邦相关工作**
    - 除非主人明确要求，不修改 AP 载荷、联邦测试或远程互动相关代码。
-   - 上游 CONTRIBUTING 中的 ActivityPub 扩展章节不属于本仓库默认目标。
+   - 联邦代码按现有状态保留，仅在明确任务涉及时处理。
 3. **不要主动扩大产品范围**
+   - 本项目由团队维护，不征集外部代码贡献；Issue 和 PR 用于团队记录与审查，无需为已有明确任务另建 Issue。
    - 只实现主人指定的功能，以及面向“营地 / 旅人”的用户体验、文案和主题修改。
    - 开发、测试和部署流程围绕本站及团队需求维护。不主动提供第三方部署、配置和运维支持，不为其他实例增加通用配置或兼容层，除非主人明确要求。
    - 保留使用者依照适用许可证运行、修改和再分发代码的权利；不添加“禁止部署”“禁止商用”等许可限制。保持本站运行版本的完整对应源码和构建脚本可获取，独立素材按各自授权管理。
@@ -30,7 +31,7 @@
    - PR 和直接推送默认以 `master` 为目标；本仓库不使用 `develop` 作为日常开发主线。
 6. **独立授权美术单独管理**
    - 开发和部署约定见 [ASSETS.md](ASSETS.md)。网页素材放在 `private-assets/public/`，原稿与授权记录放在 `public/` 外；两个目录及素材链接均不提交到公开仓库。
-   - 团队素材库是 `HePudding/trekker-camp-assets`（Private，`master`）。首次准备团队开发环境用 `pnpm assets:pull`，以后按需快进同步；它会保留未提交素材和开发分支。公开贡献者可用 `pnpm assets:link` 创建空目录。`pnpm dev` 离线建立或复用链接，通过 `/client-assets/camp/` 加载。多个 worktree 可通过 `CAMP_ASSETS_DIR` 共用已有的 `public` 目录。
+   - 团队素材库是 `HePudding/trekker-camp-assets`（Private，`master`）。首次准备团队开发环境用 `pnpm assets:pull`，以后按需快进同步；它会保留未提交素材和开发分支。无素材库权限时可用 `pnpm assets:link` 创建空目录。`pnpm dev` 离线建立或复用链接，通过 `/client-assets/camp/` 加载。多个 worktree 可通过 `CAMP_ASSETS_DIR` 共用已有的 `public` 目录。
    - 保持素材运行时加载，不将其 import、内嵌或复制进 JS/CSS 包、公开资源目录及镜像。程序代码、样式和构建脚本保持公开；没有私有素材时仍可构建、运行并使用默认资源或回退。
    - Docker 使用 `compose.assets.yml` 只读挂载素材。不要将整个素材仓库（含原稿、授权记录或 `.git`）暴露为静态目录。
    - 不强制添加忽略的素材或链接，不创建指向私有素材库的 Git 子模块。修改素材机制、忽略规则或部署挂载时运行 `pnpm assets:test`；交付流程自动执行 `assets:check`。
@@ -85,7 +86,7 @@
 
 13. 编辑或添加 `apps/misskey/packages/backend/` 下的文件前，必须阅读 `working-on-backend` 技能。
 14. 编辑或添加 `apps/misskey/packages/frontend/` 下的文件前，必须阅读 `working-on-frontend` 技能。
-    - 即使技能正文规定仅可编辑 `ja-JP.yml`，**本仓库仍以 `zh-CN.yml` 为源语言**，遵循本文件覆盖规则。
+    - 技能与参考文档统一以 `zh-CN.yml` 为产品文案源语言，`ja-JP.yml` 仅用于上游同步。
 15. 提交、创建 PR 或将工作交还用户前，必须阅读 `shipping-misskey-change` 技能。
 16. 创建 Issue 或 PR 前，必须阅读 `creating-issues-and-prs` 技能，包括漏洞报告规则。
 

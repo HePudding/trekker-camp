@@ -1,8 +1,8 @@
+blank_issues_enabled: true
 contact_links:
-  - name: 💬 Misskey 官方 Discord
-    url: https://discord.gg/Wp8gVStHW3
-    about: 自由交流 Misskey 相关话题
-  # 暂定
-  - name: 💬 发起讨论
-    url: https://github.com/misskey-dev/misskey/discussions
-    about: 参与交流和提问的官方论坛
+  - name: 旅人营地维护说明
+    url: https://github.com/HePudding/trekker-camp/blob/master/DEVELOPMENT.md
+    about: 本仓库由团队维护，Issue 用于记录本站问题和已确认任务。
+  - name: 安全问题报告方式
+    url: https://github.com/HePudding/trekker-camp/blob/master/SECURITY.md
+    about: 安全问题请私下联系营地维护团队。

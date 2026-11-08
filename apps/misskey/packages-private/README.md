@@ -1,6 +1,6 @@
 # packages-private
 
-`packages-private` 存放用于 CI 等场景的工具。这些包不作为**生产目录 `/packages`** 的依赖。
+`packages-private` 存放用于 CI 等场景的工具。这些包不作为**应用内部 `packages/`** 的依赖。
 
 ## 包列表
 

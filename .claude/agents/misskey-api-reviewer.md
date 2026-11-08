@@ -19,13 +19,13 @@ tools: Read, Grep, Glob, Bash
 优先使用调用方明确提供的文件。否则获取**整个 PR 或分支**的差异，同时包含未提交内容：
 
 ```bash
-BASE=$(git merge-base origin/develop HEAD)
+BASE=$(git merge-base origin/master HEAD)
 { git diff --name-only "$BASE"...HEAD; git diff --name-only HEAD; git ls-files --others --exclude-standard; } \
   | sort -u \
   | grep -E '^apps/misskey/packages/backend/src/server/api/endpoints/.*\.ts$'
 ```
 
-没有 `origin/develop` 时，回退到 `develop` 或 `master`。
+没有 `origin/master` 时，回退到本地 `master`。
 
 同时使用该基线检查：
 
@@ -101,7 +101,7 @@ grep -F "'<category>/<name>'" apps/misskey/packages/backend/src/server/api/endpo
 修改 `meta`、`paramDef`、`res` 后，检查 PR 或分支是否包含生成类型的差异：
 
 ```bash
-BASE=$(git merge-base origin/develop HEAD)
+BASE=$(git merge-base origin/master HEAD)
 git diff --name-only "$BASE"...HEAD -- apps/misskey/packages/misskey-js/src/autogen/
 ```
 

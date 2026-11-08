@@ -1,12 +1,12 @@
-# 国际化用法、Crowdin 安全措施与故障排查
+# 国际化用法、语言文件维护与故障排查
 
-本页说明 i18n.ts、i18n.tsx 的选择、Crowdin 同步，以及常见类型错误和运行时警告。
+本页说明 i18n.ts、i18n.tsx 的选择、语言文件维护，以及常见类型错误和运行时警告。
 
 ## 目录
 
 - [基本用法](#基本用法)
 - [实现模式](#实现模式)
-- [Crowdin 安全措施](#crowdin-安全措施)
+- [语言文件维护](#语言文件维护)
 - [故障排查](#故障排查)
 - [限制与补充](#限制与补充)
 
@@ -29,7 +29,7 @@
 
 包含 {name} 等占位符的键应使用 tsx；直接使用 ts 会跳过格式化。
 
-**优先复用已有键**。新增前先搜索 ja-JP.yml，检查 deleteAreYouSure({ x }) 等通用文案是否可用。新增步骤见[添加国际化键](../tasks/adding-i18n-key.md)。其他语言由 Crowdin 分发，不手动编辑。
+**优先复用已有键**。新增前先搜索 zh-CN.yml，检查 deleteAreYouSure({ x }) 等通用文案是否可用。新增步骤见[添加国际化键](../tasks/adding-i18n-key.md)。其他语言按上游同步规则维护，不手动编辑。
 
 ```vue
 <script lang="ts" setup>
@@ -64,10 +64,10 @@ async function onDelete() {
 语言值可包含 b、br、strong 等标签，在界面通过 v-html 或 Mfm 渲染：
 
 ```yaml
-# apps/misskey/locales/ja-JP.yml
+# apps/misskey/locales/zh-CN.yml
 poweredByMisskeyDescription: "{name} 是开源平台 <b>Misskey</b> 的一个服务器。"
 
-# apps/misskey/locales/ja-JP.yml (改行 + br)
+# apps/misskey/locales/zh-CN.yml (改行 + br)
 driveAboutTip: "网盘保存之前上传的文件。<br>\n发帖时可重复使用。<br>\n<b>删除文件会影响引用它的帖子。</b>"
 ```
 
@@ -140,74 +140,15 @@ i18n.tsx.iHaveReadXCarefullyAndAgree({ x: i18n.ts.serverRules })
 {{ name ? i18n.tsx._auth.shareAccess({ name }) : i18n.ts._auth.shareAccessAsk }}
 ```
 
-## Crowdin 安全措施
+## 语言文件维护
 
-除 ja-JP.yml 外的语言文件都是 Crowdin 自动分发目标。手动编辑或不谨慎修改源键会损失翻译资产。
+营地产品文案以 `apps/misskey/locales/zh-CN.yml` 为源语言。`ja-JP.yml` 保留为上游同步入口，其他语言 YAML 不手动编辑。本项目默认关闭 Crowdin 流程。
 
-### 同步机制
+新增键前先搜索已有文案。调整键名时同步迁移调用位置，检查简体中文显示与繁体中文缺失时的简中回退；避免为文案改写无谓更换已有键名。删除旧键前确认代码中已无引用。
 
-[crowdin.yml](../../../../../crowdin.yml)：
+执行 `node scripts/check-locales.mjs` 检查语言文件改动。发现误改时仅撤回本次引入的内容，保留用户已有工作。
 
-```yaml
-files:
-  - source: /apps/misskey/locales/ja-JP.yml
-    translation: /apps/misskey/locales/%locale%.yml
-    update_option: update_as_unapproved
-```
-
-- ja-JP.yml 为源语言。
-- en-US.yml、fr-FR.yml 等为翻译目标，由 Crowdin 自动 PR 更新。
-- 源字符串改变后，update_as_unapproved 将翻译恢复为待批准状态，需要重新审查。
-- 键名改变时被视为新键，旧翻译失去关联并在同步时删除。
-
-语言规则参考 [apps/misskey/locales/README.md](../../../../../apps/misskey/locales/README.md)。
-
-### 三阶段重命名
-
-在一个 PR 中删除旧键并新增新键，会失去各语言旧翻译。应分步：
-
-1. **PR A：新增键。** 保留旧键，在 ja-JP.yml 添加语义对应的新日语键，并将前端引用迁移。
-
-```yaml
-# 旧键（暂时保留）
-_settings:
-  theme: "主题"
-# 新增键
-  appearance: "外观"
-```
-
-2. **合并并等待 Crowdin。** 自动 PR 为其他语言添加 appearance。首次处于待批准状态，管理员批准前回退显示日语。通常需数天至数周，紧急时联系 Crowdin 管理者。
-3. **PR B：删除旧键。** 新翻译充分完成后，单独从 ja-JP.yml 删除 theme，下次同步会从其他语言移除。
-
-### 误做直接重命名时
-
-检查其他语言是否有差异：
-
-```bash
-# 用 git diff 检查其他语言 YAML 无修改，输出为空即通过
-git diff --name-only develop -- 'apps/misskey/locales/*.yml' | grep -v '^apps/misskey/locales/ja-JP\.yml$'
-```
-
-仅对 --name-only 的文件名过滤，不对 diff 正文过滤，否则新增行会导致误判。
-
-其他语言被改动时，恢复相应文件：
-
-  ```bash
-  git restore --source=develop -- apps/misskey/locales/en-US.yml apps/misskey/locales/<lang>.yml
-  ```
-
-若仅在 ja-JP.yml 删除旧键并新增新键，应拆分 PR 或重组为三阶段流程。合并前仍可调整。
-
-### 误改其他语言时
-
-```bash
-# 恢复为 develop 分支内容
-git restore --source=develop -- apps/misskey/locales/en-US.yml
-# 或仅恢复指定路径的暂存区和工作区
-git checkout HEAD -- apps/misskey/locales/zh-CN.yml
-```
-
-合并前应确认其他语言无差异；合并后会破坏 Crowdin 一致性，可能需要人工恢复。
+详细规则见[语言文件说明](../../../../../apps/misskey/locales/README.md)。
 
 ## 故障排查
 
@@ -253,7 +194,7 @@ i18n.tsx.save({...})
 
 ### Unexpected locale key: <key>
 
-开发模式 Proxy 检测到访问不存在的键。补充 ja-JP.yml 中的键或修复拼写，见[共享 i18n 实现](../../../../../apps/misskey/packages/frontend-shared/js/i18n.ts)。
+开发模式 Proxy 检测到访问不存在的键。补充 zh-CN.yml 中的键或修复拼写，见[共享 i18n 实现](../../../../../apps/misskey/packages/frontend-shared/js/i18n.ts)。
 
 ### Missing locale parameters: <param> at <key>
 
@@ -284,7 +225,7 @@ _lang_ 是语言自称的保留键，位于 [生成接口](../../../../../apps/m
 
 ### 修改后界面没有更新
 
-原因可能是只运行了前端 watch，i18n 未监听；或浏览器缓存了 built/_frontend_dist_/apps/misskey/locales/*.json。
+原因可能是只运行了前端 watch，i18n 未监听；或浏览器缓存了 apps/misskey/built/_frontend_dist_/locales/*.json。
 使用根目录 pnpm dev 启动前后端及 i18n 监听。仍无变化时清除浏览器缓存，或手动运行 pnpm --filter i18n build。
 
 ## 限制与补充
@@ -324,17 +265,17 @@ const text = files.length === 1
 位于每个语言文件顶层开头，存放该语言的自称：
 
 ```yaml
-# apps/misskey/locales/ja-JP.yml (顶层开头)
-_lang_: "日本語"
+# apps/misskey/locales/zh-CN.yml (顶层开头)
+_lang_: "简体中文"
 ```
 
 用于语言选择下拉框，不用于新增业务文案。
 
 ### Storybook
 
-Storybook 使用独立打包流程，通过 [preload-locale.ts](../../../../../apps/misskey/packages/frontend/.storybook/preload-locale.ts) 将 ja-JP 数据输出为 JSON，并生成同目录 locale.ts。
+Storybook 使用独立打包流程，通过 [preload-locale.ts](../../../../../apps/misskey/packages/frontend/.storybook/preload-locale.ts) 将 zh-CN 数据写入同目录 locale.ts。
 
-- 仅显示日语文案，无法验证其他语言。
+- 预加载简体中文文案；其他语言的显示在应用中验证。
 - 新增键后若预加载尚未执行，需重启 Storybook 或先构建 i18n。
 - 示例中调用方式相同，如 i18n.tsx._dialog.charactersBelow({ current: 0, min: 2 })。
 
