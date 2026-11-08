@@ -1,0 +1,94 @@
+// 旅人营地默认浅色主题：晴空下的星塔
+// 取色参考星塔旅人官网：青色 #0ABEC5 为主色，靛蓝 #4B5082 为文字色，星黄 #FFDE6D 为点缀。
+// 青色在白底上对比度偏低，主色略加深，链接与提及再加深一档以保证正文可读。
+{
+	id: 'e47c2220-4336-477f-932b-7c327799a962',
+
+	name: '营地·晴空',
+	author: '旅人营地',
+	desc: '旅人营地默认浅色主题',
+
+	base: 'light',
+
+	props: {
+		$teal: '#09a6ad',
+		$tealDeep: '#087f85',
+		$indigo: '#4b5082',
+		$star: '#ffde6d',
+
+		accent: '$teal',
+		accentedBg: ':alpha<0.12<@accent',
+		focus: ':alpha<0.35<@accent',
+		love: '#e0556f',
+
+		bg: '#eef2f8',
+		fg: '$indigo',
+		fgHighlighted: '#2e3366',
+		fgOnAccent: '#fff',
+		fgOnWhite: '$indigo',
+		divider: 'rgba(75, 80, 130, 0.12)',
+		indicator: '#f2b300',
+
+		panel: '#fff',
+		panelHighlight: '#f5f8fc',
+		panelHeaderBg: '@panel',
+		panelHeaderFg: '@fgHighlighted',
+		windowHeader: ':alpha<0.85<@panel',
+		popup: '@panel',
+		shadow: 'rgba(75, 80, 130, 0.12)',
+		header: ':alpha<0.8<@panel',
+
+		navBg: '#fff',
+		navFg: '#606597',
+		navActive: '@accent',
+		navIndicator: '@indicator',
+		pageHeaderBg: '@bg',
+		pageHeaderFg: '@fgHighlighted',
+
+		link: '$tealDeep',
+		hashtag: '#a86f00',
+		mention: '$tealDeep',
+		mentionMe: '#d2577a',
+		renote: '#3f7fd0',
+
+		modalBg: 'rgba(43, 48, 92, 0.35)',
+		scrollbarHandle: 'rgba(75, 80, 130, 0.3)',
+		scrollbarHandleHover: 'rgba(75, 80, 130, 0.5)',
+		dateLabelFg: '@fg',
+
+		infoBg: '#e3f6f7',
+		infoFg: '#2f6a70',
+		infoWarnBg: '#fff6d6',
+		infoWarnFg: '#86640c',
+
+		folderHeaderBg: 'rgba(75, 80, 130, 0.05)',
+		folderHeaderHoverBg: 'rgba(75, 80, 130, 0.1)',
+		buttonBg: '#e9eef6',
+		buttonHoverBg: '#dfe6f1',
+		buttonGradateA: '@accent',
+		buttonGradateB: '#12bcc3',
+		switchBg: 'rgba(75, 80, 130, 0.15)',
+		switchOffBg: 'rgba(75, 80, 130, 0.12)',
+		switchOffFg: '@panel',
+		switchOnBg: '@accent',
+		switchOnFg: '@fgOnAccent',
+		inputBorder: 'rgba(75, 80, 130, 0.18)',
+		inputBorderHover: 'rgba(75, 80, 130, 0.32)',
+		badge: '@accent',
+		messageBg: '@bg',
+		success: '#1fa774',
+		error: '#e0485a',
+		warn: '#e9a514',
+		codeString: '#a86f00',
+		codeNumber: '#087f85',
+		codeBoolean: '#5a62b5',
+		deckBg: '#e4e9f2',
+		htmlThemeColor: '@bg',
+		// 方格纸底纹 + 右上青色、左下星黄的柔光，呼应官网的地图网格
+		bgDecoration: '" radial-gradient(circle at 100% 0%, rgba(10, 190, 197, 0.10), transparent 42%), radial-gradient(circle at 0% 100%, rgba(255, 222, 109, 0.14), transparent 38%), linear-gradient(rgba(75, 80, 130, 0.045) 1px, transparent 1px) 0 0 / 32px 32px, linear-gradient(90deg, rgba(75, 80, 130, 0.045) 1px, transparent 1px) 0 0 / 32px 32px',
+	},
+
+	codeHighlighter: {
+		base: 'catppuccin-latte',
+	},
+}
