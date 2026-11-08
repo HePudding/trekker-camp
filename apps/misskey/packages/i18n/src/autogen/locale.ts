@@ -13756,4 +13756,102 @@ export interface Locale extends ILocale {
          */
         "mfm": string;
     };
+    "_longNote": {
+        /**
+         * 有未保存的修改
+         */
+        "autosavePending": string;
+        /**
+         * 正在保存到服务器草稿…
+         */
+        "autosaveSaving": string;
+        /**
+         * 已自动保存到服务器草稿
+         */
+        "autosaveSaved": string;
+        /**
+         * 服务器草稿已满，仅保存在本地
+         */
+        "autosaveFull": string;
+        /**
+         * 定时帖不自动保存到服务器
+         */
+        "autosaveScheduled": string;
+        /**
+         * 自动保存失败，已保存在本地
+         */
+        "autosaveError": string;
+        /**
+         * 管理草稿
+         */
+        "openDrafts": string;
+        /**
+         * 在正文中插入图片
+         */
+        "insertImage": string;
+        /**
+         * 插入表格
+         */
+        "insertTable": string;
+        /**
+         * 编辑表格
+         */
+        "editTable": string;
+        /**
+         * 表格编辑器
+         */
+        "tableEditor": string;
+        /**
+         * 添加行
+         */
+        "addRow": string;
+        /**
+         * 添加列
+         */
+        "addColumn": string;
+        /**
+         * 删除行
+         */
+        "removeRow": string;
+        /**
+         * 删除列
+         */
+        "removeColumn": string;
+        /**
+         * 第一行作为表头
+         */
+        "tableFirstRowIsHeader": string;
+        /**
+         * 请先添加附件，再插入到正文中
+         */
+        "noAttachmentsToInsert": string;
+        /**
+         * 选择要插入的附件
+         */
+        "selectImageToInsert": string;
+        /**
+         * 图片 {n} 不存在
+         */
+        "inlineImageMissing": ParameterizedString<"n">;
+        /**
+         * 长文模式
+         */
+        "longFormMode": string;
+        /**
+         * 退出长文模式
+         */
+        "exitLongFormMode": string;
+        /**
+         * 预览
+         */
+        "preview": string;
+        /**
+         * 编辑
+         */
+        "edit": string;
+        /**
+         * {n} / {max} 字
+         */
+        "charCount": ParameterizedString<"n" | "max">;
+    };
 }
