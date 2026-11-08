@@ -20,9 +20,11 @@ jobs:
       - uses: actions/checkout@v7.0.1
 
       - name: Download and install dockle v${{ env.DOCKLE_VERSION }}
+        env:
+          GH_TOKEN: ${{ github.token }}
         run: |
           set -eux
-          curl -L -o dockle.deb "https://github.com/goodwithtech/dockle/releases/download/v${DOCKLE_VERSION}/dockle_${DOCKLE_VERSION}_Linux-64bit.deb"
+          gh release download "v${DOCKLE_VERSION}" --repo goodwithtech/dockle --pattern "dockle_${DOCKLE_VERSION}_Linux-64bit.deb" --output dockle.deb
           sudo dpkg -i dockle.deb
 
       - name: Build web image (docker build)

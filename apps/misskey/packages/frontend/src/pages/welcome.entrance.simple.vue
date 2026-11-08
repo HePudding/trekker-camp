@@ -7,8 +7,8 @@ SPDX-License-Identifier: AGPL-3.0-only
 <div v-if="meta" :class="$style.root">
 	<MkFeaturedPhotos :class="$style.bg"/>
 	<div :class="$style.logoWrapper">
-		<div :class="$style.poweredBy">Powered by</div>
-		<img :src="misskeysvg" :class="$style.misskey"/>
+		<img v-if="!logoFailed" :key="logoUrl" :src="logoUrl" :class="$style.logo" alt="旅人营地" @error="logoFailed = true"/>
+		<span v-else :class="$style.logoFallback">旅人营地</span>
 	</div>
 	<div :class="$style.contents">
 		<MkVisitorDashboard/>
@@ -17,10 +17,14 @@ SPDX-License-Identifier: AGPL-3.0-only
 </template>
 
 <script lang="ts" setup>
+import { computed, ref } from 'vue';
 import MkFeaturedPhotos from '@/components/MkFeaturedPhotos.vue';
-import misskeysvg from '/client-assets/misskey.svg';
 import MkVisitorDashboard from '@/components/MkVisitorDashboard.vue';
 import { instance as meta } from '@/instance.js';
+import { store } from '@/store.js';
+
+const logoFailed = ref(false);
+const logoUrl = computed(() => `/client-assets/trekker-camp/branding/wordmark-${meta.backgroundImageUrl || store.s.darkMode ? 'light' : 'dark'}-v1.png`);
 </script>
 
 <style lang="scss" module>
@@ -45,20 +49,23 @@ import { instance as meta } from '@/instance.js';
 	top: 36px;
 	left: 36px;
 	flex: auto;
-	color: #fff;
+	color: var(--MI_THEME-fg);
 	user-select: none;
 	pointer-events: none;
 }
 
-.poweredBy {
-	margin-bottom: 2px;
+.logoFallback {
+	font-size: 24px;
+	font-weight: bold;
 }
 
-.misskey {
-	width: 120px;
+.logo {
+	display: block;
+	width: 200px;
+	height: auto;
 
 	@media (max-width: 450px) {
-		width: 100px;
+		width: 160px;
 	}
 }
 
