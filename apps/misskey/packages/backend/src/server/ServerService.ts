@@ -5,6 +5,7 @@
 
 import cluster from 'node:cluster';
 import * as fs from 'node:fs';
+import { resolve } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { Inject, Injectable, OnApplicationShutdown } from '@nestjs/common';
 import Fastify, { type FastifyInstance } from 'fastify';
@@ -240,8 +241,13 @@ export class ServerService implements OnApplicationShutdown {
 		});
 
 		fastify.get<{ Params: { x: string } }>('/identicon/:x', async (request, reply) => {
+			// Recheck the runtime mount so assets can be deployed independently.
+			reply.header('Cache-Control', 'no-cache');
+			if (fs.existsSync(resolve(this.config.rootDir, 'packages/frontend/assets/camp/avatars/default-v1.png'))) {
+				return reply.redirect('/client-assets/camp/avatars/default-v1.png');
+			}
+
 			reply.header('Content-Type', 'image/png');
-			reply.header('Cache-Control', 'public, max-age=86400');
 
 			if (this.meta.enableIdenticonGeneration) {
 				return await genIdenticon(request.params.x);

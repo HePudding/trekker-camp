@@ -387,7 +387,7 @@ export class UserEntityService implements OnModuleInit {
 		if ((user.host == null || user.host === this.config.host) && user.username.includes('.') && this.meta.iconUrl) { // ローカルのシステムアカウントの場合
 			return this.meta.iconUrl;
 		} else {
-			return `${this.config.url}/identicon/${user.username.toLowerCase()}@${user.host ?? this.config.host}`;
+			return `${this.config.url}/identicon/${user.username.toLowerCase()}@${user.host ?? this.config.host}?v=camp-avatar-1`;
 		}
 	}
 
