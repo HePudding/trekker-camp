@@ -13857,5 +13857,9 @@ export interface Locale extends ILocale {
          * 检测到表格数据，要转换为表格吗？
          */
         "pasteAsTable": string;
+        /**
+         * 收起
+         */
+        "collapse": string;
     };
 }

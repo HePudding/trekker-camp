@@ -1840,10 +1840,14 @@ html[data-color-scheme=light] .preview {
 }
 
 //#region long-form mode
-.longForm {
+.longForm.longForm {
 	position: fixed;
 	inset: 0;
-	z-index: 10000;
+	width: auto;
+	max-width: none;
+	max-height: none;
+	margin: 0;
+	border-radius: 0;
 	display: flex;
 	flex-direction: column;
 	overflow-y: auto;

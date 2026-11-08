@@ -3591,3 +3591,4 @@ _longNote:
   edit: "编辑"
   charCount: "{n} / {max} 字"
   pasteAsTable: "检测到表格数据，要转换为表格吗？"
+  collapse: "收起"

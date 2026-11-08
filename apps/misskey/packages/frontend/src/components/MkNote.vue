@@ -164,7 +164,7 @@ SPDX-License-Identifier: AGPL-3.0-only
 			:leaveToClass="prefer.s.animation ? $style.transition_floatingCollapse_leaveTo : ''"
 		>
 			<button v-show="floatingVisible" :class="$style.showLess" class="_button" @click.stop="collapseNote()">
-				<span :class="$style.showLessLabel"><i class="ti ti-chevron-up"></i> {{ i18n.ts.showLess }}</span>
+				<span :class="$style.showLessLabel"><i class="ti ti-chevron-up"></i> {{ i18n.ts._longNote.collapse }}</span>
 			</button>
 		</Transition>
 	</div>
