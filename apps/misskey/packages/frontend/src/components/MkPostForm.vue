@@ -101,6 +101,8 @@ SPDX-License-Identifier: AGPL-3.0-only
 			<button v-tooltip="i18n.ts.useCw" class="_button" :class="[$style.footerButton, { [$style.footerButtonActive]: useCw }]" @click="useCw = !useCw"><i class="ti ti-eye-off"></i></button>
 			<button v-tooltip="i18n.ts.hashtags" class="_button" :class="[$style.footerButton, { [$style.footerButtonActive]: withHashtags }]" @click="withHashtags = !withHashtags"><i class="ti ti-hash"></i></button>
 			<button v-tooltip="i18n.ts.mention" class="_button" :class="$style.footerButton" @click="insertMention"><i class="ti ti-at"></i></button>
+			<button v-tooltip="i18n.ts._longNote.insertImage" class="_button" :class="$style.footerButton" @click="insertInlineImage"><i class="ti ti-photo-down"></i></button>
+			<button v-tooltip="i18n.ts._longNote.insertTable" class="_button" :class="$style.footerButton" @click="insertOrEditTable"><i class="ti ti-table"></i></button>
 			<button v-if="showAddMfmFunction" v-tooltip="i18n.ts.addMfmFunction" :class="['_button', $style.footerButton]" @click="insertMfmFunction"><i class="ti ti-palette"></i></button>
 			<button v-if="postFormActions.length > 0" v-tooltip="i18n.ts.plugins" class="_button" :class="$style.footerButton" @click="showActions"><i class="ti ti-plug"></i></button>
 		</div>
@@ -159,6 +161,8 @@ import { checkDragDataType, getDragData } from '@/drag-and-drop.js';
 import { useUploader } from '@/composables/use-uploader.js';
 import { startTour } from '@/utility/tour.js';
 import { closeTip } from '@/tips.js';
+import { findTableAtCursor, serializeMfmTable, tsvToRows } from '@@/js/mfm-table.js';
+import { buildIndexMap, getInlineImageIndices, inlineImageToken, remapInlineImageIndices } from '@@/js/mfm-inline-image.js';
 import { createDraftAutosaver, AUTOSAVE_MIN_CHARS } from '@/utility/draft-autosave.js';
 
 const $i = ensureSignin();
@@ -727,6 +731,15 @@ async function onPaste(ev: ClipboardEvent) {
 
 	const paste = ev.clipboardData.getData('text');
 
+	// スプレッドシートからの貼り付けは表に変換できる
+	const tsvRows = tsvToRows(paste);
+	if (tsvRows != null) {
+		ev.preventDefault();
+		const { canceled } = await os.confirm({ type: 'question', text: i18n.ts._longNote.pasteAsTable });
+		insertTextAtCursor(textareaEl.value, canceled ? paste : serializeMfmTable(tsvRows));
+		return;
+	}
+
 	if (!renoteTargetNote.value && !quoteId.value && paste.startsWith(url + '/notes/')) {
 		ev.preventDefault();
 
@@ -1140,6 +1153,52 @@ async function postAsScheduled() {
 function cancel() {
 	emit('cancel');
 }
+
+function insertInlineImage(ev: PointerEvent) {
+	if (files.value.length === 0) {
+		os.toast(i18n.ts._longNote.noAttachmentsToInsert);
+		return;
+	}
+	os.popupMenu([{ type: 'label', text: i18n.ts._longNote.selectImageToInsert }, ...files.value.map((f, i) => ({
+		text: `${i + 1}. ${f.name}`,
+		icon: f.type.startsWith('image/') ? 'ti ti-photo' : 'ti ti-file',
+		action: () => {
+			if (textareaEl.value == null) return;
+			insertTextAtCursor(textareaEl.value, `
+${inlineImageToken(i + 1)}
+`);
+		},
+	}))], (ev.currentTarget ?? ev.target) as HTMLElement);
+}
+
+function insertOrEditTable() {
+	const el = textareaEl.value;
+	if (el == null) return;
+	const found = findTableAtCursor(text.value, el.selectionStart);
+	const { dispose } = os.popup(defineAsyncComponent(() => import('@/components/MkTableEditorDialog.vue')), {
+		initialRows: found?.rows ?? null,
+	}, {
+		done: (rows: string[][]) => {
+			const src = serializeMfmTable(rows);
+			if (found) {
+				text.value = text.value.slice(0, found.start) + src + text.value.slice(found.end);
+			} else {
+				el.focus();
+				insertTextAtCursor(el, `
+${src}
+`);
+			}
+		},
+		closed: () => dispose(),
+	});
+}
+
+// 添付の並べ替え・削除に合わせて本文中の $[img N] を付け替える
+watch(() => files.value.map(f => f.id), (next, prev) => {
+	if (prev == null || getInlineImageIndices(text.value).length === 0) return;
+	if (next.length === prev.length && next.every((id, i) => id === prev[i])) return;
+	text.value = remapInlineImageIndices(text.value, buildIndexMap(prev, next));
+});
 
 function insertMention() {
 	os.selectUser({ localOnly: true, includeSelf: true }).then(user => {
