@@ -1,0 +1,93 @@
+// 旅人营地默认深色主题：星夜中的星塔
+// 以长时间浏览的舒适度为先：底色取自官网靛蓝罗盘底图，但大幅压暗、降低饱和度，
+// 避免大面积高饱和蓝紫造成视觉疲劳；正文不用纯白，对比度约 10:1，兼顾清晰与不刺眼。
+// 青色 #10C7CD 略降饱和作为主色，星黄 #FFDE6D 柔化后用于话题与提醒；底纹只保留极淡的方格。
+{
+	id: '1b7d508f-dcbb-421b-afc8-f5ae5160b752',
+
+	name: '营地·星夜',
+	author: '旅人营地',
+	desc: '旅人营地默认深色主题',
+
+	base: 'dark',
+
+	props: {
+		$teal: '#3cc6cb',
+		$ink: '#14172a',
+		$star: '#e6c977',
+
+		accent: '$teal',
+		accentedBg: ':alpha<0.14<@accent',
+		focus: ':alpha<0.4<@accent',
+		love: '#f08a9c',
+
+		bg: '#181b2b',
+		fg: '#c9cee0',
+		fgHighlighted: '#e8ebf5',
+		fgOnAccent: '$ink',
+		fgOnWhite: '#3d4270',
+		divider: 'rgba(200, 210, 235, 0.08)',
+		indicator: '$star',
+
+		panel: '#1f2336',
+		panelHighlight: '#262b40',
+		panelHeaderBg: '@panel',
+		panelHeaderFg: '@fgHighlighted',
+		windowHeader: ':alpha<0.85<@panel',
+		popup: '#252a3e',
+		shadow: 'rgba(0, 0, 0, 0.35)',
+		header: ':alpha<0.8<@panel',
+
+		navBg: '#1c2031',
+		navFg: '#a9afc8',
+		navActive: '@accent',
+		navIndicator: '@indicator',
+		pageHeaderBg: '@bg',
+		pageHeaderFg: '@fgHighlighted',
+
+		link: '#6fd0d4',
+		hashtag: '$star',
+		mention: '@accent',
+		mentionMe: '#f29bb0',
+		renote: '#8fa9e8',
+
+		modalBg: 'rgba(6, 8, 18, 0.6)',
+		scrollbarHandle: 'rgba(200, 210, 235, 0.18)',
+		scrollbarHandleHover: 'rgba(200, 210, 235, 0.32)',
+		dateLabelFg: '@fg',
+
+		infoBg: '#1e3040',
+		infoFg: '#cfe0ea',
+		infoWarnBg: '#3a3322',
+		infoWarnFg: '$star',
+
+		folderHeaderBg: 'rgba(200, 210, 235, 0.04)',
+		folderHeaderHoverBg: 'rgba(200, 210, 235, 0.08)',
+		buttonBg: '#2a2f45',
+		buttonHoverBg: '#32384f',
+		buttonGradateA: '@accent',
+		buttonGradateB: '#4fc9b8',
+		switchBg: 'rgba(200, 210, 235, 0.15)',
+		switchOffBg: 'rgba(200, 210, 235, 0.12)',
+		switchOffFg: ':alpha<0.8<@fg',
+		switchOnBg: '@accentedBg',
+		switchOnFg: '@accent',
+		inputBorder: 'rgba(200, 210, 235, 0.12)',
+		inputBorderHover: 'rgba(200, 210, 235, 0.24)',
+		badge: '@accent',
+		messageBg: '@bg',
+		success: '#5fcf9c',
+		error: '#f07b88',
+		warn: '$star',
+		codeString: '$star',
+		codeNumber: '#6fd0d4',
+		codeBoolean: '#b4a9f0',
+		deckBg: '#141724',
+		htmlThemeColor: '@bg',
+		bgDecoration: '" radial-gradient(circle at 100% 0%, rgba(60, 198, 203, 0.05), transparent 45%), linear-gradient(rgba(200, 210, 235, 0.018) 1px, transparent 1px) 0 0 / 32px 32px, linear-gradient(90deg, rgba(200, 210, 235, 0.018) 1px, transparent 1px) 0 0 / 32px 32px',
+	},
+
+	codeHighlighter: {
+		base: 'github-dark-dimmed',
+	},
+}
