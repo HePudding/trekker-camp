@@ -13834,26 +13834,6 @@ export interface Locale extends ILocale {
          */
         "inlineImageMissing": ParameterizedString<"n">;
         /**
-         * 长文模式
-         */
-        "longFormMode": string;
-        /**
-         * 退出长文模式
-         */
-        "exitLongFormMode": string;
-        /**
-         * 预览
-         */
-        "preview": string;
-        /**
-         * 编辑
-         */
-        "edit": string;
-        /**
-         * {n} / {max} 字
-         */
-        "charCount": ParameterizedString<"n" | "max">;
-        /**
          * 检测到表格数据，要转换为表格吗？
          */
         "pasteAsTable": string;
