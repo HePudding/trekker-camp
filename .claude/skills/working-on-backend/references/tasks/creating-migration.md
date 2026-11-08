@@ -51,7 +51,7 @@ export class PascalCaseName1234567890123 {
 pnpm --filter backend exec typeorm migration:generate -d ormconfig.js -o --esm migration/<PascalName>
 ```
 
-推荐使用工作区已安装的 typeorm。CONTRIBUTING.md 中的 pnpm dlx 会临时下载包，版本可能与后端依赖不同。
+使用工作区已安装的 typeorm，保持与后端依赖版本一致。
 
 **必须同时指定 -o 和 --esm**：前者输出 JavaScript，后者输出 ESM，与现有迁移一致。遗漏 --esm 会生成 CommonJS。
 

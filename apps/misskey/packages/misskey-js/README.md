@@ -1,28 +1,12 @@
-# misskey.js
-**适用于浏览器和 Node.js 的强类型 Misskey 官方 SDK。**
+# misskey-js · 旅人营地 SDK
 
-[![Test](https://github.com/misskey-dev/misskey.js/actions/workflows/test.yml/badge.svg)](https://github.com/misskey-dev/misskey.js/actions/workflows/test.yml)
-[![codecov](https://codecov.io/gh/misskey-dev/misskey.js/branch/develop/graph/badge.svg?token=PbrTtk3nVD)](https://codecov.io/gh/misskey-dev/misskey.js)
+基于 Misskey 的 JavaScript / TypeScript SDK，供本站前后端共享 API 类型、请求客户端和实时流工具，可在浏览器和 Node.js 中使用。
 
-[![NPM](https://nodei.co/npm/misskey-js.png?downloads=true&downloadRank=true&stars=true)](https://www.npmjs.com/package/misskey-js)
+仓库内的应用通过 `"misskey-js": "workspace:*"` 引用此包。工作区版本包含营地的 API 定义，使用本仓库构建产物对接本站。npm 上的同名上游包按上游版本维护。
 
-这是面向 JavaScript（TypeScript）的 Misskey 官方 SDK，可在浏览器和 Node.js 中运行。
+维护步骤见 [DEVELOPMENT.md](DEVELOPMENT.md)，本包沿用 [MIT 许可证](LICENSE)。下文以本地开发服务 `http://localhost:3000` 为例，访问令牌使用测试账号授权获得的值。
 
-提供以下功能：
-- 用户认证
-- API 请求
-- 实时流
-- 工具函数
-- Misskey 的各类类型定义
-
-支持 Misskey 12 及以上版本。
-
-## 安装
-```
-npm i misskey-js
-```
-
-# 使用方法
+## 使用方法
 可以按以下方式统一导入：
 
 ``` ts
@@ -45,7 +29,7 @@ import { api as misskeyApi } from 'misskey-js';
 
 ``` ts
 const cli = new Misskey.api.APIClient({
-	origin: 'https://misskey.test',
+	origin: 'http://localhost:3000',
 	credential: 'TOKEN',
 });
 
@@ -59,7 +43,7 @@ misskey.js 的实时流提供两个类：`Stream` 管理连接本身，`Channel`
 使用时先初始化 `Stream` 实例，再通过其方法获取 `Channel` 实例。
 
 ``` ts
-const stream = new Misskey.Stream('https://misskey.test', { token: 'TOKEN' });
+const stream = new Misskey.Stream('http://localhost:3000', { token: 'TOKEN' });
 const mainChannel = stream.useChannel('main');
 mainChannel.on('notification', notification => {
 	console.log('notification received', notification);
@@ -73,14 +57,14 @@ mainChannel.on('notification', notification => {
 
 不带参数
 ``` ts
-const stream = new Misskey.Stream('https://misskey.test', { token: 'TOKEN' });
+const stream = new Misskey.Stream('http://localhost:3000', { token: 'TOKEN' });
 
 const mainChannel = stream.useChannel('main');
 ```
 
 带参数
 ``` ts
-const stream = new Misskey.Stream('https://misskey.test', { token: 'TOKEN' });
+const stream = new Misskey.Stream('http://localhost:3000', { token: 'TOKEN' });
 
 const chatChannel = stream.useChannel('chat', {
 	other: 'xxxxxxxxxx',
@@ -91,7 +75,7 @@ const chatChannel = stream.useChannel('chat', {
 调用 `Channel` 类的 `dispose` 方法。
 
 ``` ts
-const stream = new Misskey.Stream('https://misskey.test', { token: 'TOKEN' });
+const stream = new Misskey.Stream('http://localhost:3000', { token: 'TOKEN' });
 
 const mainChannel = stream.useChannel('main');
 
@@ -102,7 +86,7 @@ mainChannel.dispose();
 `Channel` 继承自 EventEmitter，收到服务器消息时，以收到的事件名触发事件并传递载荷。
 
 ``` ts
-const stream = new Misskey.Stream('https://misskey.test', { token: 'TOKEN' });
+const stream = new Misskey.Stream('http://localhost:3000', { token: 'TOKEN' });
 const mainChannel = stream.useChannel('main');
 mainChannel.on('notification', notification => {
 	console.log('notification received', notification);
@@ -113,7 +97,7 @@ mainChannel.on('notification', notification => {
 使用 `Channel` 类的 `send` 方法向服务器发送消息。
 
 ``` ts
-const stream = new Misskey.Stream('https://misskey.test', { token: 'TOKEN' });
+const stream = new Misskey.Stream('http://localhost:3000', { token: 'TOKEN' });
 const chatChannel = stream.useChannel('chat', {
 	other: 'xxxxxxxxxx',
 });
@@ -127,7 +111,7 @@ chatChannel.send('read', {
 监听 `Stream` 类的 `_connected_` 事件。
 
 ``` ts
-const stream = new Misskey.Stream('https://misskey.test', { token: 'TOKEN' });
+const stream = new Misskey.Stream('http://localhost:3000', { token: 'TOKEN' });
 stream.on('_connected_', () => {
 	console.log('connected');
 });
@@ -137,7 +121,7 @@ stream.on('_connected_', () => {
 监听 `Stream` 类的 `_disconnected_` 事件。
 
 ``` ts
-const stream = new Misskey.Stream('https://misskey.test', { token: 'TOKEN' });
+const stream = new Misskey.Stream('http://localhost:3000', { token: 'TOKEN' });
 stream.on('_disconnected_', () => {
 	console.log('disconnected');
 });
@@ -149,9 +133,3 @@ stream.on('_disconnected_', () => {
 - `initializing`: 尚未建立连接
 - `connected`: 已连接
 - `reconnecting`: 正在重连
-
----
-
-<div align="center">
-	<a href="https://github.com/misskey-dev/misskey/blob/develop/CONTRIBUTING.md"><img src="https://assets.misskey-hub.net/public/i-want-you.png" width="300"></a>
-</div>

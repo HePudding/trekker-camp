@@ -1,97 +1,29 @@
-name: 🐛 缺陷报告
-description: 提交报告，帮助我们改进
+name: 缺陷记录
+description: 记录旅人营地本站或团队开发环境中的问题
 labels: ["⚠️bug?"]
-
 body:
   - type: markdown
     attributes:
       value: |
-        感谢报告！
-        请先搜索是否已有相同的问题报告，避免重复创建 Issue。
-        如果你不是服务器所有者或管理员，请不要在这里报告特定服务器的问题，例如 misskey.example 的某项功能无法使用。请先在其他 Misskey 服务器尝试；若仅在某个服务器复现，请先联系该服务器的所有者或管理员。
-
+        用于团队跟踪营地问题，请先检查已有记录。安全问题按仓库 SECURITY.md 私下联系维护团队，不在此处披露细节。
   - type: textarea
     attributes:
-      label: 💡 概述
-      description: 请描述缺陷
+      label: 问题概述
+      description: 描述受影响的页面、功能和使用场景。
     validations:
       required: true
-
   - type: textarea
     attributes:
-      label: 🥰 预期行为
-      description: 请描述预期结果
+      label: 预期与实际行为
     validations:
       required: true
-
   - type: textarea
     attributes:
-      label: 🤬 实际行为
-      description: |
-        请描述实际发生的情况。
-        如果可以获取，请附上开发者控制台或服务器日志中的错误信息。
+      label: 复现步骤
+      description: 附必要的脱敏日志或截图，不包含账号令牌和用户隐私。
     validations:
       required: true
-
   - type: textarea
     attributes:
-      label: 📝 复现步骤
-      placeholder: |
-        1.
-        2.
-        3.
-    validations:
-      required: false
-
-  - type: textarea
-    attributes:
-      label: 💻 前端环境
-      description: |
-        请描述发生问题的运行环境
-        请填写具体版本号，不要填写“最新版”。
-
-        示例：
-          * 设备型号和操作系统： MacBook Pro (14inch, 2021), macOS Ventura 13.4
-          * 浏览器： Chrome 113.0.5672.126
-          * 服务器地址： misskey.example.com
-          * Misskey: 2026.x.x
-      value: |
-        * 设备型号和操作系统：
-        * 浏览器：
-        * 服务器地址：
-        * Misskey:
-      render: markdown
-    validations:
-      required: false
-
-  - type: textarea
-    attributes:
-      label: 🛰 后端环境（由服务器管理员填写）
-      description: |
-        请描述发生问题的运行环境
-        请填写具体版本号，不要填写“最新版”。
-        如果使用托管服务，请在版本号后注明。
-
-        示例：
-          * 安装方式或托管服务： docker compose, k8s/docker, systemd, "Misskey install shell script", 开发环境
-          * Misskey: 2026.x.x
-          * Node: 20.x.x
-          * PostgreSQL: 18.x.x
-          * Redis: 7.x.x
-          * 操作系统和架构： Ubuntu 24.04.2 LTS aarch64
-      value: |
-        * 安装方式或托管服务：
-        * Misskey:
-        * Node:
-        * PostgreSQL:
-        * Redis:
-        * 操作系统和架构：
-      render: markdown
-    validations:
-      required: false
-
-  - type: checkboxes
-    attributes:
-      label: 你愿意自行修复这个缺陷吗？
-      options:
-        - label: 是，我会自行修复并提交 Pull Request
+      label: 环境
+      description: 填写本站或本地测试环境、代码版本或提交号、设备与浏览器版本；后端问题补充相关运行环境。

@@ -16,11 +16,11 @@ SKILL.md 本身仅作为参考文件索引。具体步骤和规范应按需读�
 每份文件包含完整任务清单。
 
 - 添加或修改 `Mk*` Vue 组件 → [references/tasks/adding-mk-component.md](references/tasks/adding-mk-component.md)
-- 添加或修改国际化键（编辑 `apps/misskey/locales/ja-JP.yml`）→ [references/tasks/adding-i18n-key.md](references/tasks/adding-i18n-key.md)
+- 添加或修改国际化键（编辑 `apps/misskey/locales/zh-CN.yml`）→ [references/tasks/adding-i18n-key.md](references/tasks/adding-i18n-key.md)
 
 ## 通用知识（knowledge）
 
-营地独立授权美术的目录、运行时 URL、缺图回退、团队同步和 worktree 用法见 [ASSETS.md](../../../ASSETS.md)。涉及图片、字体或音频时先按该约定定位素材，阅读素材库的 `RIGHTS.md`。团队环境首次用 `pnpm assets:pull` 取得私有素材，之后按需同步；遇到本地修改或开发分支保留现场。`pnpm dev` 离线复用链接，公开贡献者可用 `assets:link` 创建空目录。私有素材通过 `/client-assets/camp/` 加载，保留无素材环境下的默认资源或回退，避免进入前端构建产物。
+营地独立授权美术的目录、运行时 URL、缺图回退、团队同步和 worktree 用法见 [ASSETS.md](../../../ASSETS.md)。涉及图片、字体或音频时先按该约定定位素材，阅读素材库的 `RIGHTS.md`。团队环境首次用 `pnpm assets:pull` 取得私有素材，之后按需同步；遇到本地修改或开发分支保留现场。`pnpm dev` 离线复用链接，无素材库权限时可用 `assets:link` 创建空目录。私有素材通过 `/client-assets/camp/` 加载，保留无素材环境下的默认资源或回退，避免进入前端构建产物。
 
 编辑单文件组件时需要遵守的通用规范，新建和修改组件均适用。
 
