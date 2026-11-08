@@ -7,6 +7,7 @@ import { h } from 'vue';
 import * as mfm from 'mfm-js';
 import * as Misskey from 'misskey-js';
 import { host } from './config.js';
+import { splitTableNodes } from './mfm-table.js';
 import type { Component, VNode, SetupContext } from 'vue';
 
 function safeParseFloat(str: unknown): number | null {
@@ -357,6 +358,22 @@ export function createMfmRenderer<P extends MfmBaseProps = MfmBaseProps>(config:
 									mode: 'detail',
 								}),
 							]);
+						}
+						case 'table': {
+							const rows = splitTableNodes(token.children);
+							const cols = Math.max(1, ...rows.map(r => r.length));
+							const cellStyle = 'border: solid 1px var(--MI_THEME-divider); padding: 4px 8px; text-align: left; vertical-align: top;';
+							return h('div', {
+								style: 'display: block; overflow-x: auto; max-width: 100%; margin: 0.5em 0;',
+							}, [h('table', {
+								style: 'border-collapse: collapse; white-space: normal; font-size: 0.95em;',
+							}, [
+								h('tbody', {}, rows.map((row, ri) => h('tr', {}, Array.from({ length: cols }, (_, ci) =>
+									h(ri === 0 ? 'th' : 'td', {
+										style: cellStyle + (ri === 0 ? ' font-weight: bold; background: var(--MI_THEME-bg);' : ''),
+									}, genEl(row[ci] ?? [], scale)),
+								)))),
+							])]);
 						}
 						case 'clickable': {
 							return h('span', {
