@@ -7,6 +7,8 @@ import { afterEach, assert, beforeEach, describe, test, vi } from 'vitest';
 import type { Theme } from '@@/js/theme.js';
 import lightTheme from '@@/themes/_light.json5';
 import darkTheme from '@@/themes/_dark.json5';
+import campLightTheme from '@@/themes/l-trekker.json5';
+import campDarkTheme from '@@/themes/d-trekker.json5';
 
 vi.mock('@/i18n.js', () => ({
 	i18n: {
@@ -98,6 +100,21 @@ describe('ThemeManager', () => {
 
 	afterEach(() => {
 		window.localStorage.clear();
+	});
+
+	test('camp themes apply decorations and clear them when switching to a plain theme', async () => {
+		const { themeManager } = await loadThemeModule();
+		for (const theme of [campLightTheme, campDarkTheme]) {
+			themeManager.updateTheme(theme);
+			assert.strictEqual(document.documentElement.dataset.colorScheme, theme.base);
+			const decoration = document.documentElement.style.getPropertyValue('--MI_THEME-bgDecoration');
+			assert.include(decoration, 'radial-gradient(');
+			assert.include(decoration, 'linear-gradient(');
+			assert.notInclude(decoration, '"');
+			assert.strictEqual(window.localStorage.getItem('themeId'), theme.id);
+		}
+		themeManager.updateTheme(primaryTheme);
+		assert.strictEqual(document.documentElement.style.getPropertyValue('--MI_THEME-bgDecoration'), 'none');
 	});
 
 	test('通常テーマ適用後のプレビューは現在テーマのみを切り替え、キャッシュは保持する', async () => {

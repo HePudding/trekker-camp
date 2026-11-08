@@ -71,6 +71,8 @@
 		codeBoolean: '#62b70c',
 		deckBg: ':darken<3<@bg',
 		htmlThemeColor: '@bg',
+		// 旅人营地：页面底纹（CSS background 图层，默认无）
+		bgDecoration: '" none',
 	},
 
 	codeHighlighter: {
