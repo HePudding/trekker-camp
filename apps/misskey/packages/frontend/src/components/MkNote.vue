@@ -8,10 +8,12 @@ SPDX-License-Identifier: AGPL-3.0-only
 	v-if="!hardMuted && !hideByPlugin && muted === false"
 	ref="rootEl"
 	v-hotkey="keymap"
-	:class="[$style.root, { [$style.showActionsOnlyHover]: prefer.s.showNoteActionsOnlyHover, [$style.skipRender]: prefer.s.skipNoteRender }]"
+	:class="[$style.root, { [$style.showActionsOnlyHover]: prefer.s.showNoteActionsOnlyHover, [$style.skipRender]: prefer.s.skipNoteRender, [$style.dense]: dense }]"
 	tabindex="0"
+	@click="onNoteClick"
+	@auxclick="onNoteClick"
 >
-	<MkNoteSub v-if="appearNote.replyId && !renoteCollapsed" :note="appearNote?.reply ?? null" :class="$style.replyTo"/>
+	<MkNoteSub v-if="appearNote.replyId && !renoteCollapsed && !hideReplyTo" :note="appearNote?.reply ?? null" :class="$style.replyTo"/>
 	<div v-if="pinned" :class="$style.tip"><i class="ti ti-pin"></i> {{ i18n.ts.pinnedNote }}</div>
 	<div v-if="isRenote" :class="$style.renote">
 		<div v-if="note.channel" :class="$style.colorBar" :style="{ background: note.channel.color }"></div>
@@ -65,7 +67,7 @@ SPDX-License-Identifier: AGPL-3.0-only
 				<div v-show="appearNote.cw == null || showContent" ref="contentEl" :class="[{ [$style.contentCollapsed]: collapsed }]">
 					<div :class="$style.text">
 						<span v-if="appearNote.isHidden" style="opacity: 0.5">({{ i18n.ts.private }})</span>
-						<MkA v-if="appearNote.replyId" :class="$style.replyIcon" :to="`/notes/${appearNote.replyId}`"><i class="ti ti-arrow-back-up"></i></MkA>
+						<MkA v-if="appearNote.replyId && !hideReplyTo" :class="$style.replyIcon" :to="`/notes/${appearNote.replyId}`"><i class="ti ti-arrow-back-up"></i></MkA>
 						<Mfm
 							v-if="appearNote.text"
 							:parsedNodes="collapsed ? collapsedParsed : parsed"
@@ -101,7 +103,7 @@ SPDX-License-Identifier: AGPL-3.0-only
 					<div v-if="isEnabledUrlPreview">
 						<MkUrlPreview v-for="url in urls" :key="url" :url="url" :compact="true" :detail="false" :class="$style.urlPreview"/>
 					</div>
-					<div v-if="appearNote.renoteId" :class="$style.quote"><MkNoteSimple :note="appearNote?.renote ?? null" :class="$style.quoteNote"/></div>
+					<div v-if="appearNote.renoteId" :class="$style.quote" @click="onQuoteClick" @auxclick="onQuoteClick"><MkNoteSimple :note="appearNote?.renote ?? null" :class="$style.quoteNote"/></div>
 					<button v-if="isLong && collapsed" :class="$style.collapsed" class="_button" @click="collapsed = false">
 						<span :class="$style.collapsedLabel">{{ i18n.ts.showMore }}</span>
 					</button>
@@ -224,6 +226,7 @@ import type { Keymap } from '@/utility/hotkey.js';
 import MkNoteSub from '@/components/MkNoteSub.vue';
 import MkNoteHeader from '@/components/MkNoteHeader.vue';
 import MkNoteSimple from '@/components/MkNoteSimple.vue';
+import { useNoteClick } from '@/composables/use-note-click.js';
 import MkReactionsViewer from '@/components/MkReactionsViewer.vue';
 import MkMediaList from '@/components/MkMediaList.vue';
 import MkCwButton from '@/components/MkCwButton.vue';
@@ -236,6 +239,10 @@ const props = withDefaults(defineProps<{
 	pinned?: boolean;
 	mock?: boolean;
 	withHardMute?: boolean;
+	/** 返信先のプレビューを出さない（詳細ページの評論区など、返信先が自明な場所で使う） */
+	hideReplyTo?: boolean;
+	/** 余白を詰めて表示する（楼中楼の返信用） */
+	dense?: boolean;
 }>(), {
 	mock: false,
 });
@@ -317,6 +324,10 @@ const { floatingVisible, collapse: collapseNote } = useFloatingCollapse({
 	collapsed,
 	isLong,
 });
+
+// 空白部分のクリックで詳細ページへ（モック表示では遷移しない）
+const onNoteClick = useNoteClick(() => props.mock ? null : appearNote);
+const onQuoteClick = useNoteClick(() => props.mock ? null : appearNote.renote);
 
 // provide
 provide(DI.mfmEmojiReactCallback, reactViaMfmEmoji);
@@ -578,6 +589,16 @@ const galleryFiles = filterUnreferencedFiles(appearNote.files ?? [], appearNote.
 	position: relative;
 	display: flex;
 	padding: 28px 32px;
+}
+
+.dense .article {
+	padding: 10px 16px;
+}
+
+.dense .avatar {
+	width: 40px;
+	height: 40px;
+	margin-right: 10px;
 }
 
 .colorBar {

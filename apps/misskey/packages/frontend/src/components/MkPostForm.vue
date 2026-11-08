@@ -43,7 +43,8 @@ SPDX-License-Identifier: AGPL-3.0-only
 			</button>
 		</div>
 	</header>
-	<MkNoteSimple v-if="replyTargetNote" :class="$style.targetNote" :note="replyTargetNote"/>
+	<!-- 固定表示（詳細ページの返信欄など）では返信先がすぐ上にあるので出さない -->
+	<MkNoteSimple v-if="replyTargetNote && !fixed" :class="$style.targetNote" :note="replyTargetNote"/>
 	<MkNoteSimple v-if="renoteTargetNote" :class="$style.targetNote" :note="renoteTargetNote"/>
 	<div v-if="quoteId" :class="$style.withQuote"><i class="ti ti-quote"></i> {{ i18n.ts.quoteAttached }}<button @click="quoteId = null; renoteTargetNote = null;"><i class="ti ti-x"></i></button></div>
 	<div v-if="visibility === 'specified'" :class="$style.toSpecified">

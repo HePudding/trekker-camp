@@ -3589,3 +3589,8 @@ _longNote:
   collapse: "收起"
   prevMedia: "上一张"
   nextMedia: "下一张"
+_noteComments:
+  empty: "还没有回复"
+  viewAllReplies: "共 {n} 条回复，点击查看"
+  collapseReplies: "收起回复"
+  replyTo: "回复 {user}"
