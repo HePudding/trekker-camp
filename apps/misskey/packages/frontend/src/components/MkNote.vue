@@ -68,7 +68,7 @@ SPDX-License-Identifier: AGPL-3.0-only
 						<MkA v-if="appearNote.replyId" :class="$style.replyIcon" :to="`/notes/${appearNote.replyId}`"><i class="ti ti-arrow-back-up"></i></MkA>
 						<Mfm
 							v-if="appearNote.text"
-							:parsedNodes="parsed"
+							:parsedNodes="collapsed ? collapsedParsed : parsed"
 							:text="appearNote.text"
 							:author="appearNote.user"
 							:nyaize="'respect'"
@@ -267,6 +267,7 @@ const {
 	collapsed,
 	renoteCollapsed,
 	parsed,
+	collapsedParsed,
 	urls,
 	isLong,
 	showTicker,
