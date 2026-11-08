@@ -5,17 +5,12 @@ SPDX-License-Identifier: AGPL-3.0-only
 
 <template>
 <div
-	:class="[$style.root, { [$style.longForm]: longFormMode }]"
+	:class="[$style.root]"
 	@dragover.stop="onDragover"
 	@dragenter="onDragenter"
 	@dragleave="onDragleave"
 	@drop.stop="onDrop"
 >
-	<div v-if="longFormMode" :class="$style.longFormBar">
-		<button v-tooltip="i18n.ts._longNote.exitLongFormMode" class="_button" :class="$style.footerButton" @click="setLongFormMode(false)"><i class="ti ti-arrows-minimize"></i></button>
-		<span :class="[$style.longFormCount, { [$style.longFormCountOver]: textLength > maxTextLength }]">{{ i18n.tsx._longNote.charCount({ n: textLength, max: maxTextLength }) }}</span>
-		<button class="_button" :class="[$style.footerButton, { [$style.footerButtonActive]: showPreview }]" @click="showPreview = !showPreview"><i class="ti ti-eye"></i> {{ i18n.ts._longNote.preview }}</button>
-	</div>
 	<header :class="$style.header">
 		<div :class="$style.headerLeft">
 			<button v-if="!fixed" :class="$style.cancel" class="_button" @click="cancel"><i class="ti ti-x"></i></button>
@@ -113,7 +108,6 @@ SPDX-License-Identifier: AGPL-3.0-only
 		</div>
 		<div :class="$style.footerRight">
 			<button v-tooltip="i18n.ts.emoji" :class="['_button', $style.footerButton]" @click="insertEmoji"><i class="ti ti-mood-happy"></i></button>
-			<button v-if="!longFormMode && !props.mock" v-tooltip="i18n.ts._longNote.longFormMode" :class="['_button', $style.footerButton]" @click="setLongFormMode(true)"><i class="ti ti-arrows-maximize"></i></button>
 		</div>
 	</footer>
 	<datalist id="hashtags">
@@ -238,7 +232,6 @@ const targetChannel = shallowRef(props.channel);
 
 const serverDraftId = ref<string | null>(null);
 const serverDraftActuallyScheduled = ref(false);
-const longFormMode = ref(false);
 const postFormActions = getPluginHandlers('post_form_action');
 
 let textAutocomplete: Autocomplete | null = null;
@@ -694,15 +687,7 @@ function onKeydown(ev: KeyboardEvent) {
 
 	// justEndedComposition.value is for Safari, which keyDown occurs after compositionend.
 	// ev.isComposing is for another browsers.
-	if (ev.key === 'Escape' && !justEndedComposition.value && !ev.isComposing) {
-		// 長文モード中の Esc はモードを抜けるだけにする（誤って閉じないように）
-		if (longFormMode.value) {
-			ev.stopPropagation();
-			setLongFormMode(false);
-		} else {
-			emit('esc');
-		}
-	}
+	if (ev.key === 'Escape' && !justEndedComposition.value && !ev.isComposing) emit('esc');
 }
 
 function onKeyup(ev: KeyboardEvent) {
@@ -934,7 +919,7 @@ async function saveServerDraft(options: {
 // 長文の書きかけを失わないよう、一定量を超えたらサーバー下書きへ自動保存する
 const autosaver = createDraftAutosaver({
 	serverDraftId,
-	enabled: () => !props.instant && !props.mock && !posted.value && (longFormMode.value || textLength.value >= AUTOSAVE_MIN_CHARS),
+	enabled: () => !props.instant && !props.mock && !posted.value && textLength.value >= AUTOSAVE_MIN_CHARS,
 	isActuallyScheduled: () => serverDraftActuallyScheduled.value,
 	save: async (draftId) => {
 		if (draftId == null) {
@@ -1213,12 +1198,6 @@ watch(() => files.value.map(f => f.id), (next, prev) => {
 	if (next.length === prev.length && next.every((id, i) => id === prev[i])) return;
 	text.value = remapInlineImageIndices(text.value, buildIndexMap(prev, next));
 });
-
-function setLongFormMode(on: boolean) {
-	longFormMode.value = on;
-	autosaver.notify();
-	nextTick(() => textareaEl.value?.focus());
-}
 
 function insertMention() {
 	os.selectUser({ localOnly: true, includeSelf: true }).then(user => {
@@ -1835,71 +1814,11 @@ html[data-color-scheme=light] .preview {
 	min-width: 100%;
 	width: 100%;
 	min-height: 90px;
-	max-height: 500px;
+	// 長文でも見通しよくスクロールできるよう、画面の高さに合わせて伸ばす
+	max-height: max(500px, 60dvh);
+	overscroll-behavior: contain;
 	field-sizing: content;
 }
-
-//#region long-form mode
-.longForm.longForm {
-	position: fixed;
-	inset: 0;
-	width: auto;
-	max-width: none;
-	max-height: none;
-	margin: 0;
-	border-radius: 0;
-	display: flex;
-	flex-direction: column;
-	overflow-y: auto;
-	background: var(--MI_THEME-panel);
-
-	> * {
-		box-sizing: border-box;
-		width: 100%;
-		max-width: 44em;
-		margin-inline: auto;
-	}
-
-	.text {
-		max-height: none;
-		min-height: 60vh;
-		font-size: 115%;
-		line-height: 1.9;
-	}
-
-	.footer {
-		position: sticky;
-		bottom: 0;
-		background: var(--MI_THEME-panel);
-		border-top: solid 0.5px var(--MI_THEME-divider);
-	}
-}
-
-.longFormBar {
-	position: sticky;
-	top: 0;
-	z-index: 1001;
-	display: flex;
-	align-items: center;
-	gap: 8px;
-	padding: 4px 12px;
-	background: var(--MI_THEME-panel);
-	border-bottom: solid 0.5px var(--MI_THEME-divider);
-}
-
-.longFormCount {
-	flex: 1;
-	text-align: center;
-	font-size: 0.85em;
-	opacity: 0.7;
-	font-variant-numeric: tabular-nums;
-}
-
-.longFormCountOver {
-	color: var(--MI_THEME-error);
-	opacity: 1;
-}
-//#endregion
 
 .autosaveStatus {
 	padding: 4px 24px;
