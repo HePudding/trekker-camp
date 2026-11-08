@@ -62,7 +62,7 @@ SPDX-License-Identifier: AGPL-3.0-only
 					/>
 					<MkCwButton v-model="showContent" :text="appearNote.text" :renote="appearNote.renote" :files="appearNote.files" :poll="appearNote.poll" style="margin: 4px 0;"/>
 				</p>
-				<div v-show="appearNote.cw == null || showContent" :class="[{ [$style.contentCollapsed]: collapsed }]">
+				<div v-show="appearNote.cw == null || showContent" ref="contentEl" :class="[{ [$style.contentCollapsed]: collapsed }]">
 					<div :class="$style.text">
 						<span v-if="appearNote.isHidden" style="opacity: 0.5">({{ i18n.ts.private }})</span>
 						<MkA v-if="appearNote.replyId" :class="$style.replyIcon" :to="`/notes/${appearNote.replyId}`"><i class="ti ti-arrow-back-up"></i></MkA>
@@ -104,9 +104,6 @@ SPDX-License-Identifier: AGPL-3.0-only
 					<div v-if="appearNote.renoteId" :class="$style.quote"><MkNoteSimple :note="appearNote?.renote ?? null" :class="$style.quoteNote"/></div>
 					<button v-if="isLong && collapsed" :class="$style.collapsed" class="_button" @click="collapsed = false">
 						<span :class="$style.collapsedLabel">{{ i18n.ts.showMore }}</span>
-					</button>
-					<button v-else-if="isLong && !collapsed" :class="$style.showLess" class="_button" @click="collapsed = true">
-						<span :class="$style.showLessLabel">{{ i18n.ts.showLess }}</span>
 					</button>
 				</div>
 				<MkA v-if="appearNote.channel && !inChannel" :class="$style.channel" :to="`/channels/${appearNote.channel.id}`"><i class="ti ti-device-tv"></i> {{ appearNote.channel.name }}</MkA>
@@ -159,6 +156,18 @@ SPDX-License-Identifier: AGPL-3.0-only
 			</footer>
 		</div>
 	</article>
+	<div v-if="isLong && !collapsed" :class="$style.floatingCollapse">
+		<Transition
+			:enterActiveClass="prefer.s.animation ? $style.transition_floatingCollapse_enterActive : ''"
+			:leaveActiveClass="prefer.s.animation ? $style.transition_floatingCollapse_leaveActive : ''"
+			:enterFromClass="prefer.s.animation ? $style.transition_floatingCollapse_enterFrom : ''"
+			:leaveToClass="prefer.s.animation ? $style.transition_floatingCollapse_leaveTo : ''"
+		>
+			<button v-show="floatingVisible" :class="$style.showLess" class="_button" @click.stop="collapseNote()">
+				<span :class="$style.showLessLabel"><i class="ti ti-chevron-up"></i> {{ i18n.ts.showLess }}</span>
+			</button>
+		</Transition>
+	</div>
 </div>
 <div v-else-if="!hardMuted && !hideByPlugin" :class="$style.muted" @click="muted = false">
 	<I18n v-if="muted === 'sensitiveMute'" :src="i18n.ts.userSaysSomethingSensitive" tag="small">
@@ -199,6 +208,7 @@ import { inject, ref, useTemplateRef, provide, computed } from 'vue';
 import type { Ref } from 'vue';
 import * as Misskey from 'misskey-js';
 import { useNote } from '@/composables/use-note.js';
+import { useFloatingCollapse } from '@/composables/use-floating-collapse.js';
 import { prefer } from '@/preferences.js';
 import { i18n } from '@/i18n.js';
 import { userPage } from '@@/js/user.js';
@@ -245,6 +255,7 @@ const currentAntenna = inject<Ref<Misskey.entities.Antenna | null> | null>('curr
 
 // Template Refsの定義
 const rootEl = useTemplateRef('rootEl');
+const contentEl = useTemplateRef('contentEl');
 const menuButton = useTemplateRef('menuButton');
 const renoteButton = useTemplateRef('renoteButton');
 const renoteTime = useTemplateRef('renoteTime');
@@ -297,6 +308,13 @@ const {
 	inChannel,
 	currentClip,
 	currentAntenna,
+});
+
+const { floatingVisible, collapse: collapseNote } = useFloatingCollapse({
+	rootEl,
+	contentEl,
+	collapsed,
+	isLong,
 });
 
 // provide
@@ -359,7 +377,8 @@ const keymap = {
 		} else if (appearNote.cw != null) {
 			showContent.value = !showContent.value;
 		} else if (isLong) {
-			collapsed.value = !collapsed.value;
+			if (collapsed.value) collapsed.value = false;
+			else collapseNote();
 		}
 	},
 	'esc': {
@@ -594,11 +613,31 @@ const keymap = {
 	overflow-wrap: break-word;
 }
 
-.showLess {
-	width: 100%;
-	margin-top: 14px;
+.floatingCollapse {
 	position: sticky;
 	bottom: calc(var(--MI-stickyBottom, 0px) + 14px);
+	height: 0;
+	z-index: 3;
+	pointer-events: none;
+}
+
+.showLess {
+	position: absolute;
+	bottom: 0;
+	left: 50%;
+	transform: translateX(-50%);
+	pointer-events: auto;
+}
+
+.transition_floatingCollapse_enterActive,
+.transition_floatingCollapse_leaveActive {
+	transition: opacity 150ms ease-out, transform 150ms ease-out;
+}
+
+.transition_floatingCollapse_enterFrom,
+.transition_floatingCollapse_leaveTo {
+	opacity: 0;
+	transform: translate(-50%, 6px);
 }
 
 .showLessLabel {
