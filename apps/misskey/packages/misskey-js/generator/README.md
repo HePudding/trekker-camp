@@ -1,19 +1,11 @@
-## misskey-js 类型生成模块
+# misskey-js 类型生成模块
 
-本模块根据后端输出的 OpenAPI 格式 api.json，生成 misskey-js 使用的类型别名。
-本模块不随 misskey-js 打包，而是将生成结果复制到 misskey-js 的 src 目录下使用。
+本模块根据本站后端的 OpenAPI `api.json` 生成 SDK 类型，结果写入 `misskey-js/src/autogen/`。生成器本身不随 SDK 分发。
 
-## 使用方法
+修改后端 API 定义后，在仓库根目录执行：
 
-首先从 Misskey 后端获取 api.json。可以从任意 Misskey 实例的 /api-doc 下载，
-也可以在 backend 模块下执行 `pnpm generate-api-json`。
-
-获取后，将 api.json 放到本文件所在目录。
-
-然后执行：
-
-```shell
-pnpm generate
+```sh
+pnpm build-misskey-js-with-types
 ```
 
-生成的 ts 文件将位于 `./built` 目录下。
+该命令串联后端 API 导出与 SDK 类型生成。生成结果与 API 实现一并审查和提交，具体见[团队维护说明](../DEVELOPMENT.md)。

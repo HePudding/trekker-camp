@@ -1,283 +1,63 @@
-# 贡献指南
+# 旅人营地 · 团队开发指南
 
-感谢你对参与 Misskey 开发感兴趣！本文提供贡献所需的信息。
+本仓库由项目团队维护，开发任务围绕星塔旅人简中第三方社区的实际需求安排，不征集外部代码贡献。本文记录团队成员和 AI 助手的工作约定。
 
-> [!NOTE]
-> 上游项目主要使用日语，**但你无需将 Issue 或 PR 翻译成日语。**
-> 即使收到日语评论，也无需用日语回复。\
-> 机器翻译成日语的准确度有限，使用原语言更便于理解，也方便读者选择自己偏好的翻译工具。
+## 开发入口
 
-<a id="roadmap"></a>
+- [本地环境](SETUP.zh-CN.md)：依赖、配置、启动和测试数据库。
+- [素材管理](ASSETS.md)：团队素材同步、运行时加载和部署挂载。
+- [AI 工作规则](AGENTS.md)：改动范围、授权边界与最低检查。
+- [维护方向](ROADMAP.md)：本站的产品范围。
+- [安全问题](SECURITY.md)：非公开报告与处理。
 
-## 路线图
+## 工作范围与协作
 
-见 [ROADMAP.md](./ROADMAP.md)。
+以项目负责人确认的需求为准，只完成当前任务所需的实现。产品文案使用简体中文，围绕“营地 / 旅人”的交流体验维护。默认不开展联邦、ActivityPub 或其他实例的兼容工作。
 
-## Issue
+Issue 用于团队记录已确认的问题和任务；已有明确任务时可直接实现，无需额外创建 Issue。PR 用于审查团队改动，目标分支为 `master`。代码公开与许可证约定见 [README](README.md#项目定位与支持范围)。
 
-创建前请检查：
+提交或 PR 说明使用简体中文描述问题、改动后的行为和验证结果；提交标题可使用 `fix`、`feat`、`docs`、`refactor`、`chore` 等类型前缀。引用已有任务时说明关联，保持改动范围集中。沟通围绕事实和代码，尊重隐私，不发布令牌、配置密钥或用户数据。
 
-- 搜索相似问题，避免重复创建。
-- Issue 用于功能请求、建议和缺陷跟踪。提问与故障排查请使用 [GitHub Discussions](https://github.com/misskey-dev/misskey/discussions) 或 [Discord](https://discord.gg/Wp8gVStHW3)。
+AI 仅在用户要求时提交、创建 Issue 或 PR、向外发送消息；合并、生产部署、数据删除和强制推送也须获得相应授权。
 
-> [!WARNING]
-> 不要提前关闭即将解决的 Issue；实际解决问题的提交合并后才能关闭。
+## 验证与交付
 
-### 建议先讨论再实现
-
-欢迎提出建议。添加功能或修复缺陷前，**先在 Issue 中审查设计和方案**；没有对应 Issue 时请创建。省略此步骤可能导致实现完成后 PR 无法合并。
-
-此时还应明确 PR 的目标，并让团队成员了解。未明确工作范围的 PR 容易膨胀且难以审查。
-
-开始实现时，将 Issue 指派给自己；没有权限时请有提交权限的成员协助。明确认领可避免重复工作。
-
-有提交权限的成员请注意：最终决策前不要指派人员。
-
-### Issue 分诊方式
-
-有提交权限的成员可以：
-
-- 关闭无法在最新稳定版复现的问题。
-- 将问题合并到其他 Issue。
-- 将问题拆分为多个 Issue。
-- 原关闭理由不再适用时重新打开 Issue。
-
-@syuilo 保留是否实现功能及如何实现的最终决定权，但并非每次都会行使。
-
-## 常用分支
-
-- **`master`** 跟踪最新发布版本，用于生产。
-- **`develop`** 用于开发下一个版本；上游 PR 通常以此为目标。
-- **`l10n_develop`** 专用于本地化管理。
-
-## 创建 PR
-
-感谢提交 PR！创建前请检查：
-
-- 尽可能在标题中使用类型前缀，如 `fix`、`refactor`、`feat`、`enhance`、`perf`、`chore`。
-- 保持合适粒度，避免一个 PR 混合多类修改或关注点。
-- 若解决已有 Issue，在正文中引用。
-- 在 [`CHANGELOG.md`](/CHANGELOG.md) 添加修改概述；重构等不影响用户的修改可省略。
-- 检查是否需要新增或更新文档。
-- 新增功能或修复缺陷时，尽可能添加测试。
-- 提前确认测试和 lint 通过。可运行 `pnpm test` 和 `pnpm lint`，详情见[测试](#testing)。
-- 涉及界面修改时，在正文中附上截图。
-
-感谢配合 🤗
-
-### ActivityPub 载荷修改的额外要求
-
-*本节针对 misskey-dev 的实现。其他 fork 或实现可能采用不同方式；misskey-hub 文档不记录非 misskey-dev 的扩展。*
-
-PR 修改 ActivityPub 载荷时，请向 [misskey-hub 文档](https://github.com/misskey-dev/misskey-hub-next/blob/master/content/ns.md)提交对应 PR。
-
-新增 ActivityPub 扩展属性名应以 `_misskey_` 开头，例如 `_misskey_quote`。
-
-`apps/misskey/packages/backend/src/core/activitypub/type.ts` 中的扩展属性**必须声明为可选**，因为旧版 Misskey 或其他实现发送的载荷可能不含它。
-
-扩展属性必须纳入 `apps/misskey/packages/backend/src/core/activitypub/misc/contexts.ts` 的上下文定义，键为扩展属性名，值为短 IRI。
-
-短 IRI 在 misskey-hub 文档中定义，通常为 `misskey:<扩展属性名>`，例如 `misskey:_misskey_quote`。
-
-不应添加其他实现已经定义的属性，也不应向通用属性添加自定义变体值。
-
-## 审查者指南
-
-除了需要修改的地方，也请积极评论优点 💯
-
-推荐阅读：
-
-- https://blog.lacolaco.net/posts/1e2cf439b3c2/
-- https://konifar-zatsu.hatenadiary.jp/entry/2024/11/05/192421
-
-### 审查角度
-
-- **范围**：目标是否明确？PR 粒度是否合适？
-- **安全**：合并是否引入漏洞？
-- **性能**：是否造成意外性能下降？是否存在更高效的方式？
-- **测试**：是否覆盖预期行为？是否有遗漏？是否检查异常情况？
-
-## 安全公告
-
-### 报告者须知
-
-感谢报告！如能提供修复补丁，请在私有 fork 中创建 PR。
-
-> [!note]
-> GitHub 存在一个问题：PR 未跟随上游 develop 分支时可能无法合并，请保持与该分支同步。
-
-### misskey-dev 成员须知
-
-修复 PR 未跟随 develop 时可能无法合并，此时可请求作者：
-
-> 请合并上游 develop 分支，或将你的分支变基到上游 develop。
-
-## 部署
-
-通过 Issue 评论中的 `/deploy` 命令，将 PR 内容部署到预览环境：
-
-```
-/deploy sha=<commit hash>
-```
-
-预览环境会分配实际域名，便于测试联邦。
-
-## 合并
-
-<a id="release"></a>
-
-## 发布
-
-### 发布步骤
-
-1. 在 `develop` 分支提交 [package.json](package.json) 的版本号变更。
-2. 创建从 `develop` 合入 `master` 的发布 PR，标题必须为 `Release: x.y.z`，其中 `x.y.z` 为新版本号。
-3. 部署并进行基本质量检查，确认测试通过。
-4. 合并，勿压缩提交。
-5. 创建 [GitHub 发布](https://github.com/misskey-dev/misskey/releases)，目标分支为 `master`，标签名为版本号。
-
-> [!NOTE]
-> 此流程用于最终质量检查、分担责任、检查直接提交到 develop 的改动，并共同庆祝发布 🎉
-
-## 本地化（l10n）
-
-Misskey 使用 [Crowdin](https://crowdin.com/project/misskey) 管理本地化。
-可使用 Crowdin 账户改进翻译，修改会自动以“New Crowdin translations”为标题提交 PR。
-负责人 [@syuilo](https://github.com/syuilo) 会在下次发布前将其合并到 develop。
-
-若 Crowdin 尚未列出你的语言，请创建 Issue 请求添加。新语言的翻译进度超过 70% 后，将正式纳入 Misskey 并向用户开放。
-
-![Crowdin](https://d322cqt584bo4o.cloudfront.net/misskey/localized.svg)
-
-## 开发
-
-### 环境搭建
-
-开发前需要 Redis、PostgreSQL 和 FFmpeg。
-如需试用相关功能，建议安装 Meilisearch。它不是严格的必需项，但部分功能和测试依赖它。
-
-可以选择以下方式。
-
-#### 使用系统软件
-
-通过系统包管理器等方式安装所需软件。
-
-#### 使用 `docker compose`
-
-运行 `docker compose -f $PROJECT_ROOT/compose.local-db.yml up -d` 获取中间件容器。
-
-#### 使用开发容器
-
-开发容器已包含必要设置，可从 VSCode 连接使用。
-
-安装 Dev Containers 扩展后，在 VSCode 打开项目目录，即可在容器中搭建开发环境。
-**注意：**Windows 用户请通过 WSL 克隆仓库。Git for Windows 的换行符处理差异可能损坏文件。
-
-容器会自动执行：
-
-``` bash
-git submodule update --init
-pnpm install --frozen-lockfile
-cp .devcontainer/devcontainer.yml .config/default.yml
-pnpm build
-pnpm migrate
-```
-
-迁移完成后即可继续。
-
-#### Cloudflare Tunnel
-
-Cloudflare Tunnel 可将本地 Misskey 服务器公开到互联网，便于验证仅支持 HTTPS 的功能，或从手机等其他设备访问本地服务器。
-
-##### 与 Cloudflare WARP 配合使用
-
-> cloudflared 通过 QUIC/HTTP2 向 region1.v2.argotunnel.com 和 region2.v2.argotunnel.com 发起出站连接。启用 WARP 后，这些流量可能经由 WARP 形成循环或断开。将两个主机加入 WARP 的分流排除列表，可让 cloudflared 绕过 WARP，直接连接 Cloudflare 边缘节点。
-
-### 开始开发
-
-开发时建议使用：
-
-```
-pnpm dev
-```
-
-- 监听服务端源码，修改后自动构建并启动服务器进程。
-- 使用 esbuild 监听 Service Worker。
-- 支持 Vite 热更新（`vite` 命令），行为可能与生产环境有差异。
-- Vite 位于后端代理之后，除热更新 WebSocket 外，后端通过 `/vite` 和 `/embed_vite` 代理访问。
-- 访问 `http://localhost:3000` 查看 Misskey；将 `3000` 替换为 `.config/default.yml` 中的 `port`。
-
-<a id="testing"></a>
-
-## 测试
-
-非后端测试：
+在仓库根目录执行 `pnpm check:shipping`，检查改动文件的 ESLint、SPDX、语言文件和素材分发安全。按实现范围运行相关测试：
 
 ```sh
 pnpm --filter frontend test
 pnpm --filter misskey-js test
+pnpm --filter backend test
+pnpm --filter backend test:e2e
 ```
 
-后端测试需要手动准备服务器，见下一节。
+后端测试前按[环境指南](SETUP.zh-CN.md#测试用配置)准备 `.config/test.yml` 和独立测试数据库。测试会使用测试数据，不连接生产数据库。仅执行当前改动需要的测试。
 
-### 后端
+- API 定义变化：运行 `pnpm build-misskey-js-with-types`，一并提交 `apps/misskey/packages/misskey-js/src/autogen/` 的差异。
+- 实体或迁移变化：运行 `pnpm --filter backend check-migrations`，待执行 DDL 为 0；新迁移同时实现 `up()` 和 `down()`。
+- 素材机制、忽略规则或部署挂载变化：运行 `pnpm assets:test`。
+- 产品文案：只编辑 `apps/misskey/locales/zh-CN.yml`。`ja-JP.yml` 仅用于同步上游，其他语言 YAML 不手动修改。
+- 用户未要求时不修改 `CHANGELOG.md`；用户可感知的修改在交接中附一行候选条目。
 
-后端包含三类测试：
+具体检查见 [shipping-misskey-change](.claude/skills/shipping-misskey-change/SKILL.md)。交接说明实际通过、失败和跳过的检查。
 
-- 单元测试：[`/apps/misskey/packages/backend/test/unit`](/apps/misskey/packages/backend/test/unit)
-- 单服务器端到端测试：[`/apps/misskey/packages/backend/test/e2e`](/apps/misskey/packages/backend/test/e2e)
-- 多服务器端到端测试：[`/apps/misskey/packages/backend/test-federation`](/apps/misskey/packages/backend/test-federation)
+## 发布与部署
 
-#### 运行单元测试或单服务器端到端测试
+团队以 `master` 为日常开发和交付目标。发布范围、版本号与部署时间由项目负责人确定。部署前核对代码版本、数据库迁移、素材版本与备份，使用本站现有配置；素材流程见 [ASSETS.md](ASSETS.md#docker-部署)。
 
-1. 创建配置文件：
+合并代码和部署是分别授权的操作。未授权生产部署时，完成代码与验证后交付结果。
 
-```sh
-cp .github/misskey/test.yml .config/
-```
+## 技术约定
 
-2. 启动测试数据库和 Redis：
-
-```sh
-docker compose -f apps/misskey/packages/backend/test/compose.yml up
-```
-
-也可以准备可清空的空数据库，并相应调整 `.config/test.yml`。
-
-3. 运行全部测试：
-
-```sh
-pnpm --filter backend test     # 单元测试
-pnpm --filter backend test:e2e # 单服务器端到端测试
-```
-
-运行指定测试：
-
-```sh
-pnpm --filter backend test -- apps/misskey/packages/backend/test/unit/activitypub.ts
-pnpm --filter backend test:e2e -- apps/misskey/packages/backend/test/e2e/nodeinfo.ts
-```
-
-#### 运行多服务器端到端测试
-
-见 [`/apps/misskey/packages/backend/test-federation/README.md`](/apps/misskey/packages/backend/test-federation/README.md)。
-
-## 环境变量
-
-- `MISSKEY_CONFIG_YML`：指定配置文件路径以替代 default.yml，例如 `2nd.yml`。
-- `MISSKEY_WEBFINGER_USE_HTTP`：设为 true 时，WebFinger 使用 HTTP，便于测试本机服务器间的联邦。严禁用于生产环境。
-
-## 持续集成
-
-Misskey 使用 GitHub Actions 执行自动化测试，配置位于 [`/.github/workflows`](/.github/workflows)。
+以下保留基于 Misskey 实现的开发知识，供维护现有应用使用。
 
 ## Vue
 
 Misskey 使用 Vue 3 作为前端框架。
 
 - 使用 TypeScript。
-- **新组件使用组合式 API，配合 [setup 语法糖](https://v3.vuejs.org/api/sfc-script-setup.html)及 [ref 语法糖](https://github.com/vuejs/rfcs/discussions/369)。**
-- 部分旧组件仍使用选项式 API，欢迎将其迁移至组合式 API。
+- **新组件使用组合式 API，配合 `<script setup lang="ts">` 和组合式 API。**
+- 修改旧组件时按当前任务需要调整，避免无关重构。
 
 ## Tabler Icons
 
@@ -519,7 +299,7 @@ pnpm build-misskey-js-with-types
 
 ### INSERT 操作使用 insert
 
-插入时使用 `insert`，避免使用 `save`，见 #6441。
+插入时使用 `insert`，避免使用 `save`。
 
 ### SQL 占位符
 
@@ -610,15 +390,7 @@ SQL 数组下标**从 1 开始**。访问 `[a, b, c]` 的第一个元素时使�
 
 ### 创建迁移
 
-在 apps/misskey/packages/backend 中执行：
-
-```sh
-pnpm dlx typeorm migration:generate -d ormconfig.js -o --esm <migration name>
-```
-
-- 将生成文件移动到 migration 目录。
-- 移除生成脚本中的无关修改。
-- `-o`（`--outputJs`）生成 JS，`--esm` 生成 ESM。已有迁移均为 ESM JS，因此两个选项都需要。
+使用新时间戳创建迁移，同时实现 `up()` 和 `down()`。不修改已合并的迁移；操作步骤见[创建迁移](.claude/skills/working-on-backend/references/tasks/creating-migration.md)。
 
 ### 对连接使用 `markRaw`
 

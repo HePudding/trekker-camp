@@ -2,11 +2,11 @@
 
 本指南记录旅人营地本站及团队的开发流程，其他使用者可自行参考。本项目不主动提供第三方部署、配置和运维支持；代码仍可依照适用许可证使用，详见 [项目定位与支持范围](README.md#项目定位与支持范围)。
 
-仓库：https://github.com/HePudding/trekker-camp  
-默认分支：`master`（对齐上游 Misskey 正式版线）  
-版本锚点（以仓库文件为准）：`.node-version` → Node **26.12.1**，`package.json#packageManager` → **pnpm@12.14.0**（当前 `2026.10.1` / nasubi）。
+- 仓库：[HePudding/trekker-camp](https://github.com/HePudding/trekker-camp)
+- 默认分支：`master`（本站日常开发与交付目标）
+- 版本锚点（以仓库文件为准）：`.node-version` → Node **26.12.1**，`package.json#packageManager` → **pnpm@12.14.0**（当前 `2026.10.1` / nasubi）。
 
-依赖中间件：**PostgreSQL**、**Redis**、**FFmpeg**。Meilisearch 可选（搜相关功能/测试才需要）。
+依赖中间件：**PostgreSQL**、**Redis**、**FFmpeg**。Meilisearch 可选（搜索功能和相关测试需要时启用）。
 
 ## 方式 A：本机 + Docker 只跑数据库
 
@@ -39,7 +39,7 @@ pnpm dev
 
 浏览器打开 `http://localhost:3000`（或你在 `default.yml` 里写的 `url` / `port`）。
 
-`pnpm dev` 会 watch 后端并透过 Vite HMR 跑前端；行为与生产构建不完全一致，属正常。
+`pnpm dev` 会 watch 后端并透过 Vite HMR 跑前端；生产行为应使用生产构建验证。
 
 团队成员先运行 `pnpm assets:pull` 从 `HePudding/trekker-camp-assets` 私有仓库取得素材。营地美术独立存放在 `private-assets/public/`，`pnpm dev` 会自动将其连接到 `/client-assets/camp/`，离线也可使用。该目录不进入公开 Git 仓库、源码包和 Docker 镜像。团队协作、多个 worktree 共用素材和自动部署步骤见 [素材开发与部署](ASSETS.md)。
 
@@ -55,9 +55,9 @@ pnpm --filter backend test
 
 仓库自带 `.devcontainer/`。用 Dev Containers 打开项目后会跑 `init.sh`：`pnpm install` → 拷配置 → `build` → `migrate`。
 
-注意：上游 `devcontainer.json` 里写死的 Node / pnpm **偏旧**（例如 Node 22 + pnpm 10），和当前 `.node-version` / `packageManager` 可能不一致。若 postCreate 失败，优先把 feature 版本改成与 `.node-version`、`package.json#packageManager` 一致，或改用方式 A。
+注意：上游 `devcontainer.json` 里写死的 Node / pnpm **偏旧**（例如 Node 22 + pnpm 10），与当前 `.node-version` / `packageManager` 不一致。若 postCreate 失败，优先把 feature 版本改成与 `.node-version`、`package.json#packageManager` 一致，或改用方式 A。
 
-Windows：请在 **WSL** 里 clone；Git for Windows 的换行会把仓库弄坏。
+使用 Devcontainer 的 Windows 环境建议在 **WSL** 中克隆仓库。直接在 Windows 开发时按仓库 `.gitattributes` 保持换行格式。
 
 ## 常用命令
 
@@ -74,6 +74,8 @@ Windows：请在 **WSL** 里 clone；Git for Windows 的换行会把仓库弄坏
 | 前端单测 | `pnpm --filter frontend test` |
 | 后端单测 | `pnpm --filter backend test` |
 | API 变更后重生 misskey-js | `pnpm build-misskey-js-with-types` |
+
+团队日常开发与交付见 [DEVELOPMENT.md](DEVELOPMENT.md)。
 
 ## 文案与 AI
 
