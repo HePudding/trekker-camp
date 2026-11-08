@@ -88,6 +88,12 @@ CAMP_ASSETS_DIR=/srv/trekker-assets/public pnpm assets:link
 
 未挂载清单时正常启动并使用已有表情；清单存在但图片缺失或数据无效时，启动会报错，避免注册无法显示的表情。图片只通过 `/client-assets/camp/` 运行时加载，不进入代码包或镜像。
 
+### 默认用户头像
+
+未设置自定义头像的用户使用私有素材库中的 `public/avatars/default-v1.png`。用户上传头像后显示其自定义头像，移除后恢复营地默认头像；无需修改已有账号数据。系统账号沿用实例图标。
+
+本次发布需要同时交付代码仓库与素材仓库：先同步包含该图片的素材版本到服务器，再部署配套代码，并沿用下述 `compose.assets.yml` 只读挂载。头像通过 `/client-assets/camp/avatars/default-v1.png` 加载，不进入镜像。未挂载图片时沿用原有默认头像；素材随后到位即可生效，无需再次重启应用。
+
 ### 同步与挂载
 
 私有素材库的 [Assets 工作流](https://github.com/HePudding/trekker-camp-assets/actions/workflows/assets.yml) 已配置为：PR 验证素材；`master` 更新时验证并同步到已配置的服务器。未配置服务器时只验证，不发布。代码镜像仍只构建公开代码。
