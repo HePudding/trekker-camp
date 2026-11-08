@@ -9,12 +9,12 @@ SPDX-License-Identifier: AGPL-3.0-only
 		<span v-if="note.isHidden" style="opacity: 0.5">({{ i18n.ts.private }})</span>
 		<span v-if="note.deletedAt" style="opacity: 0.5">({{ i18n.ts.deletedNote }})</span>
 		<MkA v-if="note.replyId" :class="$style.reply" :to="`/notes/${note.replyId}`"><i class="ti ti-arrow-back-up"></i></MkA>
-		<Mfm v-if="note.text" :text="note.text" :parsedNodes="collapsed ? collapsedParsed : null" :author="note.user" :nyaize="'respect'" :emojiUrls="note.emojis"/>
+		<Mfm v-if="note.text" :text="note.text" :files="note.files" :parsedNodes="collapsed ? collapsedParsed : null" :author="note.user" :nyaize="'respect'" :emojiUrls="note.emojis"/>
 		<MkA v-if="note.renoteId" :class="$style.rp" :to="`/notes/${note.renoteId}`">RN: ...</MkA>
 	</div>
-	<details v-if="note.files && note.files.length > 0">
-		<summary>({{ i18n.tsx.withNFiles({ n: note.files.length }) }})</summary>
-		<MkMediaList :mediaList="note.files" :user="note.user"/>
+	<details v-if="galleryFiles.length > 0">
+		<summary>({{ i18n.tsx.withNFiles({ n: galleryFiles.length }) }})</summary>
+		<MkMediaList :mediaList="galleryFiles" :user="note.user"/>
 	</details>
 	<details v-if="note.poll">
 		<summary>{{ i18n.ts.poll }}</summary>
@@ -46,6 +46,7 @@ SPDX-License-Identifier: AGPL-3.0-only
 </template>
 
 <script lang="ts" setup>
+import { filterUnreferencedFiles } from '@@/js/mfm-inline-image.js';
 import { ref, useTemplateRef } from 'vue';
 import * as Misskey from 'misskey-js';
 import * as mfm from 'mfm-js';
@@ -69,6 +70,8 @@ const { floatingVisible, collapse } = useFloatingCollapse({ rootEl, contentEl: r
 
 // 折りたたみ中は先頭部分だけを描画する（長文でタイムラインが重くならないように）
 const collapsedParsed = isLong && props.note.text ? truncateMfmNodes(mfm.parse(props.note.text), COLLAPSED_RENDER_CHARS).nodes : null;
+
+const galleryFiles = filterUnreferencedFiles(props.note.files ?? [], props.note.text);
 </script>
 
 <style lang="scss" module>

@@ -36,6 +36,8 @@ export type MfmBaseProps = {
 	rootScale?: number;
 	nyaize?: boolean | 'respect';
 	parsedNodes?: mfm.MfmNode[] | null;
+	/** $[img N] で参照する添付ファイル */
+	files?: Misskey.entities.DriveFile[] | null;
 };
 
 /** `supports` で有効にした場合のみ参照される props */
@@ -70,6 +72,8 @@ export type MfmRendererConfig = {
 		Search?: Component;
 		/** 省略時は sparkle を無視して子要素のみ描画する */
 		Sparkle?: Component;
+		/** 省略時は $[img N] をそのまま描画する */
+		InlineImage?: Component;
 	};
 	/** 描画のたびに呼ばれる (設定の変更をリアクティブに反映するため) 。省略時はすべて有効 */
 	getOptions?: () => {
@@ -94,7 +98,7 @@ export function createMfmRenderer<P extends MfmBaseProps = MfmBaseProps>(config:
 		//provide('linkNavigationBehavior', props.linkNavigationBehavior);
 
 		const props = _props as P & MfmOptionalProps;
-		const { Url, Link, Mention, A, Time, Emoji, CustomEmoji, Code, CodeInline, Search, Sparkle } = config.components();
+		const { Url, Link, Mention, A, Time, Emoji, CustomEmoji, Code, CodeInline, Search, Sparkle, InlineImage } = config.components();
 
 		const isNote = props.isNote ?? true;
 		const shouldNyaize = props.nyaize ? props.nyaize === 'respect' ? props.author?.isCat : false : false;
@@ -358,6 +362,16 @@ export function createMfmRenderer<P extends MfmBaseProps = MfmBaseProps>(config:
 									mode: 'detail',
 								}),
 							]);
+						}
+						case 'img': {
+							const child = token.children[0];
+							const index = parseInt(token.children.length === 1 && child.type === 'text' ? child.props.text : '', 10);
+							if (InlineImage == null || !Number.isInteger(index) || index < 1) break;
+							return h(InlineImage, {
+								file: props.files?.[index - 1] ?? null,
+								index,
+								user: props.author,
+							});
 						}
 						case 'table': {
 							const rows = splitTableNodes(token.children);

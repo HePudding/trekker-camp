@@ -69,7 +69,7 @@ SPDX-License-Identifier: AGPL-3.0-only
 						<Mfm
 							v-if="appearNote.text"
 							:parsedNodes="collapsed ? collapsedParsed : parsed"
-							:text="appearNote.text"
+							:text="appearNote.text" :files="appearNote.files"
 							:author="appearNote.user"
 							:nyaize="'respect'"
 							:emojiUrls="appearNote.emojis"
@@ -85,8 +85,8 @@ SPDX-License-Identifier: AGPL-3.0-only
 							</div>
 						</div>
 					</div>
-					<div v-if="appearNote.files && appearNote.files.length > 0" style="margin-top: 8px;">
-						<MkMediaList ref="galleryEl" :mediaList="appearNote.files" :user="appearNote.user"/>
+					<div v-if="galleryFiles.length > 0" style="margin-top: 8px;">
+						<MkMediaList ref="galleryEl" :mediaList="galleryFiles" :user="appearNote.user"/>
 					</div>
 					<MkPoll
 						v-if="appearNote.poll"
@@ -204,6 +204,7 @@ SPDX-License-Identifier: AGPL-3.0-only
 </template>
 
 <script lang="ts" setup>
+import { filterUnreferencedFiles } from '@@/js/mfm-inline-image.js';
 import { inject, ref, useTemplateRef, provide, computed } from 'vue';
 import type { Ref } from 'vue';
 import * as Misskey from 'misskey-js';
@@ -394,6 +395,9 @@ const keymap = {
 		callback: () => focusNext(rootEl.value),
 	},
 } as const satisfies Keymap;
+
+// 本文中に $[img N] で埋め込んだ添付は末尾の一覧に出さない
+const galleryFiles = filterUnreferencedFiles(appearNote.files ?? [], appearNote.text);
 </script>
 
 <style lang="scss" module>
