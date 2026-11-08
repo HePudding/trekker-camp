@@ -44,8 +44,13 @@ describe('api:notes/create', () => {
 					.toBe(INVALID);
 			});
 
-			test('over 3000 characters post', async () => {
-				expect(v({ text: await tooLong }))
+			test('20000 characters post', () => {
+				expect(v({ text: 'あ'.repeat(20000) }))
+					.toBe(VALID);
+			});
+
+			test('over 20000 characters post', () => {
+				expect(v({ text: 'あ'.repeat(20001) }))
 					.toBe(INVALID);
 			});
 
