@@ -43,7 +43,7 @@ import { antennasCache, userListsCache, favoritedChannelsCache } from '@/cache.j
 import { deviceKind } from '@/utility/device-kind.js';
 import { deepMerge } from '@/utility/merge.js';
 import { miLocalStorage } from '@/local-storage.js';
-import { hasWithReplies, isAvailableBasicTimeline, isBasicTimeline, basicTimelineIconClass } from '@/timelines.js';
+import { canShowRepliesToOthers, hasWithReplies, isAvailableBasicTimeline, isBasicTimeline, basicTimelineIconClass } from '@/timelines.js';
 import { prefer } from '@/preferences.js';
 
 const tlComponent = useTemplateRef('tlComponent');
@@ -73,6 +73,8 @@ const localSocialTLFilterSwitchStore = ref<'withReplies' | 'onlyFiles' | false>(
 const withReplies = computed<boolean>({
 	get: () => {
 		if (!$i) return false;
+		// 首页では設定に関わらず他人への返信を出さない
+		if (isBasicTimeline(timelineSrc.value) && hasWithReplies(timelineSrc.value) && !canShowRepliesToOthers(timelineSrc.value)) return false;
 		if (['local', 'social'].includes(timelineSrc.value) && localSocialTLFilterSwitchStore.value === 'onlyFiles') {
 			return false;
 		} else {
@@ -83,7 +85,7 @@ const withReplies = computed<boolean>({
 });
 const onlyFiles = computed<boolean>({
 	get: () => {
-		if (['local', 'social'].includes(timelineSrc.value) && localSocialTLFilterSwitchStore.value === 'withReplies') {
+		if (isBasicTimeline(timelineSrc.value) && canShowRepliesToOthers(timelineSrc.value) && localSocialTLFilterSwitchStore.value === 'withReplies') {
 			return false;
 		} else {
 			return store.r.tl.value.filter.onlyFiles;
@@ -218,7 +220,7 @@ const headerActions = computed<PageHeaderItem[]>(() => {
 				ref: withRenotes,
 			});
 
-			if (isBasicTimeline(timelineSrc.value) && hasWithReplies(timelineSrc.value)) {
+			if (isBasicTimeline(timelineSrc.value) && canShowRepliesToOthers(timelineSrc.value)) {
 				menuItems.push({
 					type: 'switch',
 					icon: 'ti ti-messages',
@@ -238,7 +240,7 @@ const headerActions = computed<PageHeaderItem[]>(() => {
 				icon: 'ti ti-photo',
 				text: i18n.ts.fileAttachedOnly,
 				ref: onlyFiles,
-				disabled: isBasicTimeline(timelineSrc.value) && hasWithReplies(timelineSrc.value) ? withReplies : false,
+				disabled: isBasicTimeline(timelineSrc.value) && canShowRepliesToOthers(timelineSrc.value) ? withReplies : false,
 			}, {
 				type: 'divider',
 			}, {
