@@ -3587,3 +3587,5 @@ _longNote:
   inlineImageMissing: "图片 {n} 不存在"
   pasteAsTable: "检测到表格数据，要转换为表格吗？"
   collapse: "收起"
+  prevMedia: "上一张"
+  nextMedia: "下一张"
