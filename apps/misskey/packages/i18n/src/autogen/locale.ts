@@ -13841,5 +13841,13 @@ export interface Locale extends ILocale {
          * 收起
          */
         "collapse": string;
+        /**
+         * 上一张
+         */
+        "prevMedia": string;
+        /**
+         * 下一张
+         */
+        "nextMedia": string;
     };
 }
