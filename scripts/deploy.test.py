@@ -3,12 +3,17 @@
 
 """Run on Linux with: python3 scripts/deploy.test.py -v."""
 
+import errno
 import os
 from pathlib import Path
+import pty
+import select
 import shutil
+import signal
 import subprocess
 import tarfile
 import tempfile
+import time
 import unittest
 
 
@@ -346,6 +351,193 @@ deploy
         result = self.shell('main --help')
         self.assertIn("Ubuntu 22.04 / 24.04 / 26.04", result.stdout)
 
+    def terminal(self, body, interactions, unprivileged=False):
+        """Exercise keyboard input and signals through a real controlling terminal."""
+        pid, terminal = pty.fork()
+        if pid == 0:
+            if unprivileged and os.geteuid() == 0:
+                os.setgroups([])
+                os.setgid(65534)
+                os.setuid(65534)
+            os.execvpe("bash", ["bash", "-c", 'source "$SCRIPT"\n' + body], {
+                **self.env, "TERM": "xterm-256color", "LC_ALL": "C.UTF-8",
+            })
+        output = bytearray()
+        consumed = 0
+        reaped = False
+
+        def read_output(deadline):
+            ready, _, _ = select.select([terminal], [], [], max(0, deadline - time.monotonic()))
+            self.assertTrue(ready, "Terminal timed out:\n" + output.decode(errors="replace"))
+            try:
+                chunk = os.read(terminal, 65536)
+            except OSError as error:
+                if error.errno != errno.EIO:
+                    raise
+                return False
+            output.extend(chunk)
+            return bool(chunk)
+
+        try:
+            for expected, reply in interactions:
+                expected = expected.encode()
+                deadline = time.monotonic() + 10
+                while (position := output.find(expected, consumed)) < 0:
+                    self.assertTrue(read_output(deadline), "Terminal closed:\n" + output.decode(errors="replace"))
+                consumed = position + len(expected)
+                os.write(terminal, reply.encode())
+            deadline = time.monotonic() + 10
+            while read_output(deadline):
+                pass
+            _, status = os.waitpid(pid, 0)
+            reaped = True
+            return os.waitstatus_to_exitcode(status), output.decode(errors="replace")
+        finally:
+            if not reaped:
+                try:
+                    os.killpg(pid, signal.SIGKILL)
+                except ProcessLookupError:
+                    pass
+                os.waitpid(pid, 0)
+            os.close(terminal)
+
+    def menu_command(self, body):
+        entry = self.root / "camp-command"
+        entry.write_text('#!/usr/bin/env bash\nset -Eeuo pipefail\n' + body)
+        return 'cli_entry="$TEST_ROOT/camp-command"\n'
+
+    def test_no_command_opens_tui_only_with_a_terminal(self):
+        result = self.shell('main')
+        self.assertIn("Ubuntu 22.04 / 24.04 / 26.04", result.stdout)
+        result = self.shell('main tui', success=False)
+        self.assertIn("交互菜单需要终端", result.stderr)
+        code, output = self.terminal('main', [("更新和备份会短暂停站。", "q")])
+        self.assertEqual(code, 0, output)
+        self.assertIn("旅人营地 · VPS 管理", output)
+        self.assertIn("\x1b[?25h\x1b[?1049l", output)
+
+    def test_tui_arrows_select_version_and_return_to_custom_directory(self):
+        code, output = self.terminal('main --dir "$TEST_ROOT/custom checkout"', [
+            ("更新和备份会短暂停站。", "\x1b[A\x1b[A\x1b[A\n"),
+            ("camp CLI", ""),
+            ("按回车返回菜单。", "\n"),
+            ("更新和备份会短暂停站。", "\x1b"),
+        ])
+        self.assertEqual(code, 0, output)
+        self.assertIn(str(self.root / "custom checkout"), output)
+        self.assertEqual(output.count("\x1b[?1049h"), 2)
+        self.assertEqual(output.count("\x1b[?1049l"), 2)
+
+    def test_tui_install_wizard_preserves_paths_and_private_environment(self):
+        self.env.update(GH_TOKEN="test-github-secret", CLOUDFLARE_API_TOKEN=CLOUDFLARE_TEST_TOKEN,
+                        R2_BACKUP_PASSWORD="test-r2-secret")
+        command = self.menu_command('''
+printf '%s\n' "$@" > "$TEST_ROOT/arguments"
+printf '%s\n' "$GH_TOKEN" "$CLOUDFLARE_API_TOKEN" "$R2_BACKUP_PASSWORD" > "$TEST_ROOT/credentials"
+''')
+        # This fixture exercises dispatch without invoking the system sudo command.
+        code, output = self.terminal(command + '''
+sudo() { shift 2; "$@"; }
+main tui
+''', [
+            ("更新和备份会短暂停站。", "7"),
+            ("代码目录 [/opt/trekker-camp]：", str(self.root / "code disk") + "\n"),
+            ("站点域名（如 camp.example.com）：", "camp.example.com\n"),
+            ("数据目录 [", ""),
+            ("：", str(self.root / "data disk") + "\n"),
+            ("按回车返回菜单。", "\n"),
+            ("更新和备份会短暂停站。", "0"),
+        ])
+        self.assertEqual(code, 0, output)
+        self.assertEqual((self.root / "arguments").read_text().splitlines(), [
+            "install", "--dir", str(self.root / "code disk"), "--url", "https://camp.example.com",
+            "--data-dir", str(self.root / "data disk"),
+        ])
+        secrets = ["test-github-secret", CLOUDFLARE_TEST_TOKEN, "test-r2-secret"]
+        self.assertEqual((self.root / "credentials").read_text().splitlines(), secrets)
+        for secret in secrets:
+            self.assertNotIn(secret, output)
+
+    def test_tui_failed_action_stops_child_and_keeps_menu_usable(self):
+        command = self.menu_command('''
+false
+touch "$TEST_ROOT/should-not-run"
+''')
+        code, output = self.terminal(command + '''
+sudo() { shift 2; "$@"; }
+main
+''', [
+            ("更新和备份会短暂停站。", "3"),
+            ("退出码 1", ""),
+            ("按回车返回菜单。", "\n"),
+            ("更新和备份会短暂停站。", "q"),
+        ])
+        self.assertEqual(code, 0, output)
+        self.assertFalse((self.root / "should-not-run").exists())
+
+    def test_tui_switches_checkout_without_overriding_saved_data_location(self):
+        command = self.menu_command('printf "%s\\n" "$@" > "$TEST_ROOT/arguments"')
+        code, output = self.terminal(command + '''
+sudo() { shift 2; "$@"; }
+main
+''', [
+            ("更新和备份会短暂停站。", "c"),
+            ("代码目录 [/opt/trekker-camp]：", str(self.root / "other checkout") + "\n"),
+            ("更新和备份会短暂停站。", "1"),
+            ("按回车返回菜单。", "\n"),
+            ("更新和备份会短暂停站。", "q"),
+        ])
+        self.assertEqual(code, 0, output)
+        self.assertEqual((self.root / "arguments").read_text().splitlines(), [
+            "status", "--dir", str(self.root / "other checkout"),
+        ])
+
+    def test_tui_ctrl_c_stops_logs_and_returns_to_menu(self):
+        command = self.menu_command('''
+printf 'Log stream ready\n'
+sleep 30
+''')
+        code, output = self.terminal(command + '''
+sudo() { shift 2; "$@"; }
+main
+''', [
+            ("更新和备份会短暂停站。", "2"),
+            ("Log stream ready", "\x03"),
+            ("按回车返回菜单。", "\n"),
+            ("更新和备份会短暂停站。", "q"),
+        ])
+        self.assertEqual(code, 0, output)
+        self.assertIn("退出码 130", output)
+
+    def test_tui_non_root_uses_sudo_for_operations_and_preserves_environment(self):
+        self.root.chmod(0o755)
+        self.env["GH_TOKEN"] = "test-github-secret"
+        self.env["R2_BACKUP_PASSWORD"] = "test-r2-secret"
+        command = self.menu_command('printf "Action: %s\\n" "$1"')
+        code, output = self.terminal(command + '''
+sudo() {
+  [[ $1 == --preserve-env=GH_TOKEN,*R2_BACKUP_PASSWORD && $2 == -- ]]
+  [[ $GH_TOKEN == test-github-secret && $R2_BACKUP_PASSWORD == test-r2-secret ]]
+  printf 'Sudo requested\n'
+  shift 2
+  "$@"
+}
+main
+''', [
+            ("更新和备份会短暂停站。", "9"),
+            ("Action: version", ""),
+            ("按回车返回菜单。", "\n"),
+            ("更新和备份会短暂停站。", "4"),
+            ("Sudo requested", ""),
+            ("Action: backup", ""),
+            ("按回车返回菜单。", "\n"),
+            ("更新和备份会短暂停站。", "q"),
+        ], unprivileged=True)
+        self.assertEqual(code, 0, output)
+        self.assertEqual(output.count("Sudo requested"), 1)
+        self.assertNotIn("test-github-secret", output)
+        self.assertNotIn("test-r2-secret", output)
+
     def test_custom_storage_is_persisted_outside_source_and_keeps_secrets_private(self):
         data_dir = self.root / "data disk"
         checkout = self.configuration(data_dir)
@@ -463,6 +655,33 @@ self_update "$TEST_ROOT/prefix"
         self.assertEqual(result.returncode, 0, result.stderr)
         self.assertIn(revision, result.stdout)
         self.assertFalse((self.root / "checkout").exists())
+
+    def test_open_tui_uses_new_bundle_after_cli_update(self):
+        self.cli_repository()
+        self.env["NEXT_REVISION"] = "b" * 40
+        # The real bundle installer switches the entry point while the menu stays open.
+        code, output = self.terminal('''
+source "$TEST_ROOT/prefix/bin/camp"
+sudo() { shift 2; "$@"; }
+tui_run_original=$(declare -f tui_run)
+eval "${tui_run_original/tui_run/tui_run_original}"
+tui_run() {
+  if [[ $1 == self-update ]]; then
+    install_cli "$TEST_CLI_SOURCE/scripts" "$NEXT_REVISION" "$TEST_ROOT/prefix"
+  else
+    tui_run_original "$@"
+  fi
+}
+main
+''', [
+            ("更新和备份会短暂停站。", "8"),
+            ("按回车返回菜单。", "\n"),
+            ("更新和备份会短暂停站。", "9"),
+            (self.env["NEXT_REVISION"], ""),
+            ("按回车返回菜单。", "\n"),
+            ("更新和备份会短暂停站。", "q"),
+        ])
+        self.assertEqual(code, 0, output)
 
     def test_failed_download_and_invalid_bundle_preserve_installed_cli(self):
         source = self.cli_repository()

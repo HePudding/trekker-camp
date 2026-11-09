@@ -56,6 +56,21 @@ bash /tmp/camp-deploy.sh install --url https://camp.example.com --data-dir /srv/
 
 ## 更新与日常操作
 
+### 交互式菜单
+
+安装后直接输入 `camp` 打开终端菜单，也可显式运行 `camp tui`。使用 **↑ / ↓ 和回车**，或菜单中的 **数字 / C** 选择操作，**Q / Esc / 0** 退出。菜单包含站点状态、实时日志、应用与素材更新、R2 备份与绑定、首次安装和 CLI 自更新。
+
+```bash
+camp
+camp --dir /srv/trekker-camp
+```
+
+菜单按需调用 `sudo`，版本查看和浏览菜单无需 root；凭据仍通过隐藏输入或环境变量提供。首次安装会询问代码目录、站点域名和数据目录。选择“切换代码目录”只改变当前菜单操作的站点，已有数据位置继续从该站点的 `.config/data-dir` 读取。
+
+每次执行结束后按回车返回菜单；查看实时日志时用 `Ctrl+C` 结束日志并返回。更新和备份沿用子命令的停站、备份、失败处理和操作锁。非交互环境中直接运行 `camp` 显示帮助，CI 和定时任务继续使用以下子命令。
+
+### 子命令
+
 ```bash
 sudo camp update
 sudo camp status
@@ -188,4 +203,4 @@ CLI 专项可在 Linux / WSL 中单独运行 `bash scripts/check-deploy.sh`。�
 
 部署相关文件发生改动时，`node scripts/check-shipping.mjs` 自动调用同一检查入口；Windows 使用默认 WSL 发行版。需在 Linux 环境安装 Bash、Python 3、Git、Git LFS 和 ShellCheck，Compose 检查需要 Docker CLI。Agent 依照 `AGENTS.md` 与交付技能使用实际数据路径，获得生产部署授权后通过 `camp update` 发布。
 
-`.github/workflows/deploy-cli.yml` 支持 PR、`master` 推送和手动触发，在 Ubuntu 22.04、24.04、26.04 容器中实际安装 Docker 官方 APT 软件包。检查覆盖 CLI 成套自更新、下载失败保留旧命令、自定义数据目录、旧安装路径、Git / LFS、Compose，以及备份 / 迁移 / 健康检查失败处理。R2 流程测试覆盖停站恢复、上传失败、凭据保存和北京时间调度，并使用真实 Restic 镜像离线验证加密、增量备份和恢复。另行构建 Caddy 镜像，在禁用网络的容器中验证 Cloudflare DNS 和访客 IP 配置。结果汇总到 `VPS CLI checks`。测试使用临时仓库和模拟服务命令；实际 R2 连接在 VPS 绑定时验证。
+`.github/workflows/deploy-cli.yml` 支持 PR、`master` 推送和手动触发，在 Ubuntu 22.04、24.04、26.04 容器中实际安装 Docker 官方 APT 软件包。检查覆盖终端菜单键盘操作、安装向导、普通用户提权、日志中断、失败后返回菜单、CLI 成套自更新、下载失败保留旧命令、自定义数据目录、旧安装路径、Git / LFS、Compose，以及备份 / 迁移 / 健康检查失败处理。R2 流程测试覆盖停站恢复、上传失败、凭据保存和北京时间调度，并使用真实 Restic 镜像离线验证加密、增量备份和恢复。另行构建 Caddy 镜像，在禁用网络的容器中验证 Cloudflare DNS 和访客 IP 配置。结果汇总到 `VPS CLI checks`。测试使用临时仓库和模拟服务命令；实际 R2 连接在 VPS 绑定时验证。

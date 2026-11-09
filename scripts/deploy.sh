@@ -2,12 +2,15 @@
 # SPDX-FileCopyrightText: syuilo and misskey-project
 # SPDX-License-Identifier: AGPL-3.0-only
 
-cli_dir=$(dirname "$(realpath -- "${BASH_SOURCE[0]}")")
+cli_entry=$(realpath -s -- "${BASH_SOURCE[0]}")
+cli_dir=$(dirname "$(realpath -- "$cli_entry")")
 
 usage() {
 	cat <<'HELP'
 旅人营地 VPS 部署（Ubuntu 22.04 / 24.04 / 26.04 LTS，amd64 / arm64）
 
+  camp                         # 打开交互菜单
+  camp tui --dir /opt/trekker-camp
   sudo bash scripts/deploy.sh install --url https://camp.example.com
   sudo camp update
   sudo camp self-update
@@ -24,6 +27,8 @@ usage() {
   --url URL    首次部署的 HTTPS 域名；Cloudflare DNS 指向 VPS，开放 TCP 80/443
   -h, --help   显示帮助
 
+终端中直接运行 camp 使用方向键 / 回车或数字选择；非终端中不带命令时显示帮助。
+菜单按需调用 sudo，首次安装会询问域名和存储目录，子命令用法保持不变。
 认证依次读取 GH_TOKEN、GITHUB_TOKEN、gh auth token，或交互式隐藏输入。
 无人值守运行时通过环境变量注入 token，例如 sudo --preserve-env=GH_TOKEN camp update。
 首次安装读取 CLOUDFLARE_API_TOKEN 或隐藏输入，用于 DNS 验证及自动续期证书。
@@ -42,6 +47,88 @@ cli_version() {
 	else
 		printf 'camp CLI 源码版 %s\n' "$(git -C "$cli_dir" rev-parse --short HEAD 2>/dev/null || printf unknown)"
 	fi
+}
+
+tui_select() (
+	local selected=0 key i screen=false
+	local commands=(status logs update backup backup-status r2-bind install self-update version directory exit)
+	local labels=(
+		'1  查看站点状态和数据位置' '2  查看实时日志' '3  更新应用与素材（先备份）'
+		'4  立即备份到 R2' '5  查看备份状态' '6  绑定 R2 每日备份'
+		'7  首次安装' '8  更新 camp CLI' '9  查看 CLI 版本' 'C  切换代码目录' '0  退出'
+	)
+	if [[ ${TERM:-dumb} != dumb ]]; then
+		screen=true
+		trap 'printf "\033[?25h\033[?1049l" >&2' EXIT
+		printf '\033[?1049h\033[?25l' >&2
+	fi
+	trap 'exit 130' INT
+	trap 'exit 143' TERM
+	while true; do
+		if $screen; then printf '\033[H\033[2J' >&2; fi
+		printf '旅人营地 · VPS 管理\n\n代码目录：%s\n\n' "$camp_dir" >&2
+		for i in "${!labels[@]}"; do
+			if ((i == selected)); then printf ' > %s\n' "${labels[i]}" >&2
+			else printf '   %s\n' "${labels[i]}" >&2; fi
+		done
+		printf '\n↑ / ↓ 选择，回车执行；也可按数字 / C；Q 或 Esc 退出。\n更新和备份会短暂停站。\n' >&2
+		IFS= read -rsn1 key || { printf exit; return; }
+		case "$key" in
+			$'\033')
+				if ! IFS= read -rsn2 -t 0.2 key; then printf exit; return; fi
+				case "$key" in
+					'[A'|'OA') selected=$(((selected + ${#commands[@]} - 1) % ${#commands[@]})) ;;
+					'[B'|'OB') selected=$(((selected + 1) % ${#commands[@]})) ;;
+				esac ;;
+			'') printf '%s' "${commands[selected]}"; return ;;
+			[1-9]) printf '%s' "${commands[key - 1]}"; return ;;
+			c|C) printf directory; return ;;
+			0|q|Q) printf exit; return ;;
+		esac
+	done
+)
+
+tui_run() {
+	# A fresh Bash process preserves errexit inside deployment and backup commands.
+	local runner=(bash "$cli_entry")
+	if [[ $EUID != 0 && $1 != version ]]; then
+		if ! command -v sudo >/dev/null; then printf '请以 root 运行 camp，或先安装 sudo。\n' >&2; return 1; fi
+		runner=(sudo '--preserve-env=GH_TOKEN,CLOUDFLARE_API_TOKEN,R2_ENDPOINT,R2_BUCKET,R2_ACCESS_KEY_ID,R2_SECRET_ACCESS_KEY,R2_BACKUP_PASSWORD' -- "${runner[@]}")
+	fi
+	GH_TOKEN="$github_token" CLOUDFLARE_API_TOKEN="$cloudflare_token" "${runner[@]}" "$@"
+}
+
+tui_menu() {
+	local action value install_url install_data result
+	local args=()
+	while true; do
+		if ! action=$(tui_select); then return; fi
+		case "$action" in
+			exit) return ;;
+			directory)
+				read -r -p "代码目录 [$camp_dir]：" value || return
+				if [[ -n $value ]]; then camp_dir=$(realpath -m -- "$value"); fi
+				continue ;;
+			install)
+				read -r -p "代码目录 [$camp_dir]：" value || return
+				if [[ -n $value ]]; then camp_dir=$(realpath -m -- "$value"); fi
+				read -r -p '站点域名（如 camp.example.com）：' install_url || return
+				if [[ $install_url != *://* ]]; then install_url=https://$install_url; fi
+				read -r -p "数据目录 [$camp_dir]：" install_data || return
+				args=(install --dir "$camp_dir" --url "$install_url" --data-dir "${install_data:-$camp_dir}") ;;
+			*) args=("$action" --dir "$camp_dir") ;;
+		esac
+		# Keep the menu alive when Ctrl+C stops a log stream or another child command.
+		trap ':' INT
+		if tui_run "${args[@]}"; then
+			printf '\n操作完成。\n'
+		else
+			result=$?
+			printf '\n命令已结束（退出码 %s），请查看上方输出。\n' "$result"
+		fi
+		trap - INT
+		read -r -p '按回车返回菜单。' value || return
+	done
 }
 
 install_cli() {
@@ -327,7 +414,7 @@ main() {
 	set +x
 	set -Eeuo pipefail
 	umask 022
-	local action=${1:-help} option requested_data_dir=''
+	local action='' option requested_data_dir=''
 	camp_dir=/opt/trekker-camp
 	site_url=''
 	github_token=${GH_TOKEN:-${GITHUB_TOKEN:-}}
@@ -336,7 +423,7 @@ main() {
 	auth_dir='' backup_dir='' stage='初始化'
 	trap 'if [[ -n $auth_dir ]]; then rm -f -- "$auth_dir/askpass"; rmdir -- "$auth_dir"; fi' EXIT
 	trap 'printf "操作失败：%s。备份目录：%s\n" "$stage" "${backup_dir:-未创建}" >&2' ERR
-	(($# == 0)) || shift
+	if (($#)) && [[ $1 != -* ]]; then action=$1; shift; fi
 	while (($#)); do
 		option=$1
 		case "$option" in
@@ -345,12 +432,21 @@ main() {
 				case "$option" in --dir) camp_dir=$2 ;; --data-dir) requested_data_dir=$2 ;; --url) site_url=${2%/} ;; esac
 				shift 2 ;;
 			-h|--help) usage; return ;;
+			--version) cli_version; return ;;
 			*) fail "未知参数：$option" ;;
 		esac
 	done
+	if [[ -z $action ]]; then
+		if [[ -t 0 && -t 1 && -t 2 ]]; then action=tui; else usage; return; fi
+	fi
 	case "$action" in
 		help|-h|--help) usage; return ;;
 		version|--version) cli_version; return ;;
+		tui)
+			[[ -t 0 && -t 1 && -t 2 ]] || fail '交互菜单需要终端；自动化任务请使用子命令或 --help。'
+			[[ -z $site_url && -z $requested_data_dir ]] || fail '交互菜单只接受 --dir；域名和数据目录请在首次安装菜单中填写。'
+			camp_dir=$(realpath -m -- "$camp_dir")
+			tui_menu; return ;;
 		install|update|self-update|status|logs|r2-bind|backup|backup-status) ;;
 		*) fail "未知命令：$action" ;;
 	esac
