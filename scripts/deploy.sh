@@ -50,28 +50,27 @@ cli_version() {
 }
 
 tui_select() (
-	local selected=0 key i screen=false
+	local selected=0 previous key i
 	local commands=(status logs update backup backup-status r2-bind install self-update version directory exit)
 	local labels=(
 		'1  查看站点状态和数据位置' '2  查看实时日志' '3  更新应用与素材（先备份）'
 		'4  立即备份到 R2' '5  查看备份状态' '6  绑定 R2 每日备份'
 		'7  首次安装' '8  更新 camp CLI' '9  查看 CLI 版本' 'C  切换代码目录' '0  退出'
 	)
-	if [[ ${TERM:-dumb} != dumb ]]; then
-		screen=true
-		trap 'printf "\033[?25h\033[?1049l" >&2' EXIT
-		printf '\033[?1049h\033[?25l' >&2
-	fi
+	# The entry point requires a TTY. Windows OpenSSH can still report TERM=dumb.
+	# Keep each row on one line so long paths do not move the menu coordinates.
+	trap 'printf "\033[0m\033[?7h\033[?25h\033[?1049l" >&2' EXIT
+	printf '\033[?1049h\033[?25l\033[?7l\033[H\033[2J' >&2
 	trap 'exit 130' INT
 	trap 'exit 143' TERM
+	printf '旅人营地 · VPS 管理\n\n代码目录：%s\n\n' "$camp_dir" >&2
+	for i in "${!labels[@]}"; do
+		if ((i == selected)); then printf ' > \033[7m%s\033[0m\n' "${labels[i]}" >&2
+		else printf '   %s\n' "${labels[i]}" >&2; fi
+	done
+	printf '\n↑ / ↓ 选择，回车执行；也可按数字 / C；Q 或 Esc 退出。\n更新和备份会短暂停站。\n' >&2
 	while true; do
-		if $screen; then printf '\033[H\033[2J' >&2; fi
-		printf '旅人营地 · VPS 管理\n\n代码目录：%s\n\n' "$camp_dir" >&2
-		for i in "${!labels[@]}"; do
-			if ((i == selected)); then printf ' > %s\n' "${labels[i]}" >&2
-			else printf '   %s\n' "${labels[i]}" >&2; fi
-		done
-		printf '\n↑ / ↓ 选择，回车执行；也可按数字 / C；Q 或 Esc 退出。\n更新和备份会短暂停站。\n' >&2
+		previous=$selected
 		IFS= read -rsn1 key || { printf exit; return; }
 		case "$key" in
 			$'\033')
@@ -85,6 +84,10 @@ tui_select() (
 			c|C) printf directory; return ;;
 			0|q|Q) printf exit; return ;;
 		esac
+		if ((selected != previous)); then
+			printf '\033[%d;1H\033[2K   %s\033[%d;1H\033[2K > \033[7m%s\033[0m' \
+				"$((previous + 5))" "${labels[previous]}" "$((selected + 5))" "${labels[selected]}" >&2
+		fi
 	done
 )
 

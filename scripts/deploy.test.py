@@ -428,6 +428,19 @@ deploy
         self.assertEqual(output.count("\x1b[?1049h"), 2)
         self.assertEqual(output.count("\x1b[?1049l"), 2)
 
+    def test_tui_updates_selection_in_place_with_windows_ssh_terminal_type(self):
+        code, output = self.terminal('export TERM=dumb\nmain', [
+            ("更新和备份会短暂停站。", "\x1b[B"),
+            ("\x1b[6;1H\x1b[2K > \x1b[7m2  查看实时日志", "\x1b[A"),
+            ("\x1b[5;1H\x1b[2K > \x1b[7m1  查看站点状态和数据位置", "xq"),
+        ])
+        self.assertEqual(code, 0, output)
+        self.assertEqual(output.count("旅人营地 · VPS 管理"), 1)
+        self.assertEqual(output.count("\x1b[2J"), 1)
+        self.assertEqual(output.count("\x1b[?1049h"), 1)
+        self.assertEqual(output.count("\x1b[?1049l"), 1)
+        self.assertIn("\x1b[0m\x1b[?7h\x1b[?25h", output)
+
     def test_tui_install_wizard_preserves_paths_and_private_environment(self):
         self.env.update(GH_TOKEN="test-github-secret", CLOUDFLARE_API_TOKEN=CLOUDFLARE_TEST_TOKEN,
                         R2_BACKUP_PASSWORD="test-r2-secret")

@@ -58,7 +58,7 @@ bash /tmp/camp-deploy.sh install --url https://camp.example.com --data-dir /srv/
 
 ### 交互式菜单
 
-安装后直接输入 `camp` 打开终端菜单，也可显式运行 `camp tui`。使用 **↑ / ↓ 和回车**，或菜单中的 **数字 / C** 选择操作，**Q / Esc / 0** 退出。菜单包含站点状态、实时日志、应用与素材更新、R2 备份与绑定、首次安装和 CLI 自更新。
+安装后直接输入 `camp` 打开终端菜单，也可显式运行 `camp tui`。使用 **↑ / ↓ 和回车**，或菜单中的 **数字 / C** 选择操作，**Q / Esc / 0** 退出。方向键在当前界面更新高亮，不向终端滚动记录追加菜单；Windows Terminal 的 SSH 连接同样适用。菜单包含站点状态、实时日志、应用与素材更新、R2 备份与绑定、首次安装和 CLI 自更新。
 
 ```bash
 camp
