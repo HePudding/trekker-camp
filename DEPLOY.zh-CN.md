@@ -20,7 +20,7 @@ curl -fsSL https://raw.githubusercontent.com/HePudding/trekker-camp/master/scrip
 bash /tmp/camp-deploy.sh install --url https://camp.example.com
 ```
 
-将示例域名替换为本站域名。CLI 会隐藏输入 GitHub token 和 Cloudflare token，也会读取已有的 `GH_TOKEN`、`GITHUB_TOKEN`、`CLOUDFLARE_API_TOKEN`；GitHub 认证还可使用当前执行用户的 `gh auth token`。首次安装后通过 `camp` 命令操作。
+将示例域名替换为本站域名。CLI 会隐藏输入 GitHub 细粒度 PAT 和 Cloudflare token，也会读取已有的 `GH_TOKEN`、`GITHUB_TOKEN`、`CLOUDFLARE_API_TOKEN`。私有素材访问成功后，GitHub PAT 自动保存到数据目录的 `.config/github-token`，权限为 root `0600`；后续自动读取，无需安装或登录 `gh`。首次安装后通过 `camp` 命令操作。
 
 安装自动完成：
 
@@ -126,9 +126,13 @@ CLI 成套安装到 `/usr/local/lib/trekker-camp/<提交号>-<随机后缀>/`，
 
 尚无 `self-update` 命令的旧安装，可重新下载上面的入口脚本，执行 `bash /tmp/camp-deploy.sh self-update`，随后使用 `camp` 命令。
 
-### 无人值守的 token 注入
+### GitHub PAT 保存与更换
 
-在运行 CLI 的终端或部署任务中注入 token：
+GitHub 认证依次使用 `GH_TOKEN`、`GITHUB_TOKEN`、数据目录的 `.config/github-token`，都没有时在终端隐藏询问。使用仅授权 `HePudding/trekker-camp-assets`、权限为 **Contents: Read-only** 的细粒度 PAT（`github_pat_` 开头）。CLI 不读取 `gh` 登录状态。
+
+首次安装或更新成功读取私有素材及 LFS 文件后，CLI 自动保存本次 PAT。重开终端、服务器重启和 `camp self-update` 后继续使用该文件。PAT 以明文存放在宿主机的独立文件中，仅 root 可读写；与站点配置一起纳入本地配置备份和 R2 加密备份。
+
+更换 PAT 或首次无人值守部署时，可从终端或部署系统注入新值。新值优先于已保存的 PAT，访问素材成功后替换旧文件，认证失败时保留原文件：
 
 ```bash
 read -r -s -p 'GitHub token: ' GH_TOKEN
@@ -138,7 +142,7 @@ sudo --preserve-env=GH_TOKEN camp update
 unset GH_TOKEN
 ```
 
-也可由部署系统的 Secret 环境变量提供 `GH_TOKEN`。CLI 通过临时 `GIT_ASKPASS` 向 Git / Git LFS 提供凭据，token 不写入仓库 URL、Git 配置、应用配置或镜像；运行结束删除临时 helper。`status` / `logs` 不需要 token。
+也可由部署系统的 Secret 环境变量提供 `GH_TOKEN`。CLI 通过临时 `GIT_ASKPASS` 向 Git / Git LFS 提供凭据，PAT 不写入仓库 URL、Git 配置、日志或镜像，临时 helper 不含 PAT，运行结束后删除。`status`、`logs`、启停、自启管理和 CLI 自更新不需要 GitHub PAT。
 
 Cloudflare token 在首次安装时从 `CLOUDFLARE_API_TOKEN` 或隐藏输入读取，保存在仅 root 可读写的 `.config/cloudflare.env`，只注入 Caddy 容器，用于证书续期；普通更新沿用该文件。轮换 token 时更新此文件后执行 `camp update`。首次无人值守安装可使用 `sudo --preserve-env=GH_TOKEN,CLOUDFLARE_API_TOKEN bash /tmp/camp-deploy.sh install --url https://camp.example.com`。
 
@@ -152,6 +156,7 @@ Cloudflare token 在首次安装时从 `CLOUDFLARE_API_TOKEN` 或隐藏输入读
 | `/opt/trekker-camp/.config/docker.env` | PostgreSQL 初始化凭据，仅 root 可读写 |
 | `/opt/trekker-camp/.config/Caddyfile` | HTTPS 反向代理配置 |
 | `/opt/trekker-camp/.config/cloudflare.env` | 证书申请 / 续期的 Cloudflare token，仅 root 可读写 |
+| `/opt/trekker-camp/.config/github-token` | 私有素材仓库的细粒度 PAT，仅 root 可读写 |
 | `/opt/trekker-camp/private-assets/public/` | 运行时只读挂载的私有素材 |
 | `/opt/trekker-camp/files/` | 上传文件 |
 | `/opt/trekker-camp/db/`、`redis/` | 数据库和 Redis 数据 |
@@ -161,7 +166,7 @@ Cloudflare token 在首次安装时从 `CLOUDFLARE_API_TOKEN` 或隐藏输入读
 
 更新前的本地备份放在代码与 Docker 构建上下文之外，仅 root 可访问，更新不会自动清理。每日 R2 备份同时保存上传文件和运行时素材，设置见下节。数据库恢复使用 PostgreSQL 的 `pg_restore`，由维护者确定恢复版本与停机窗口。
 
-需要其他安装位置时，为首次安装与每次后续操作都传入同一个 `--dir /你的目录`。使用 root / sudo 执行命令；CLI 只管理这套部署，不更改防火墙规则。
+需要其他安装位置时，首次安装传入 `--dir /你的目录`，后续自动使用记录的目录，也可显式传入 `--dir`。使用 root / sudo 执行命令；CLI 只管理这套部署，不更改防火墙规则。
 
 ## R2 每日自动备份
 

@@ -37,8 +37,10 @@ usage() {
 终端中直接运行 camp 使用方向键 / 回车或数字选择；非终端中不带命令时显示帮助。
 菜单按需调用 sudo，首次安装会询问域名和存储目录，子命令用法保持不变。
 首次安装默认站点为 https://camp.stellasora.cafe；方括号内的默认值可直接回车采用。
-认证依次读取 GH_TOKEN、GITHUB_TOKEN、gh auth token，或交互式隐藏输入。
-无人值守运行时通过环境变量注入 token，例如 sudo --preserve-env=GH_TOKEN camp update。
+认证依次读取 GH_TOKEN、GITHUB_TOKEN、数据目录 .config/github-token，或交互式隐藏输入。
+使用仅授权私有素材仓库 Contents: Read-only 的细粒度 PAT，无需安装 gh。
+访问素材成功后自动保存 PAT（仅 root 可读写），重开终端和 CLI 自更新后继续使用。
+更换 PAT 时注入 GH_TOKEN，例如 sudo --preserve-env=GH_TOKEN camp update。
 首次安装读取 CLOUDFLARE_API_TOKEN 或隐藏输入，用于 DNS 验证及自动续期证书。
 Cloudflare SSL/TLS 模式使用 Full (strict)。
 R2 绑定读取 R2_ENDPOINT、R2_BUCKET、R2_ACCESS_KEY_ID、R2_SECRET_ACCESS_KEY、
@@ -342,14 +344,15 @@ install_dependencies() {
 }
 
 prepare_auth() {
-	if [[ -z $github_token ]] && command -v gh >/dev/null; then
-		github_token=$(gh auth token --hostname github.com 2>/dev/null || true)
+	if [[ -z $github_token && -s $config_dir/github-token ]]; then
+		github_token=$(< "$config_dir/github-token")
 	fi
 	if [[ -z $github_token && -t 0 ]]; then
-		read -r -s -p 'GitHub token（私有素材仓库只读权限）：' github_token
+		read -r -s -p 'GitHub 细粒度 PAT（私有素材仓库 Contents: Read-only，验证后保存）：' github_token
 		printf '\n'
 	fi
-	[[ -n $github_token ]] || fail '请通过 GH_TOKEN 或 GITHUB_TOKEN 提供私有素材仓库的读取 token。'
+	[[ -n $github_token ]] || fail '尚未保存 GitHub PAT，请交互输入或通过 GH_TOKEN / GITHUB_TOKEN 提供。'
+	[[ $github_token =~ ^github_pat_[a-zA-Z0-9_]+$ ]] || fail '请提供 github_pat_ 开头的 GitHub 细粒度 PAT。'
 	auth_dir=$(mktemp -d)
 	cat > "$auth_dir/askpass" <<'ASKPASS'
 #!/bin/sh
@@ -362,6 +365,16 @@ esac
 ASKPASS
 	chmod 0700 "$auth_dir/askpass"
 }
+
+save_github_token() (
+	local candidate
+	umask 077
+	candidate=$(mktemp "$config_dir/.github-token-XXXXXX")
+	trap 'rm -f -- "$candidate"' EXIT
+	printf '%s\n' "$github_token" > "$candidate"
+	chmod 0600 "$candidate"
+	mv -f -- "$candidate" "$config_dir/github-token"
+)
 
 github_git() {
 	LC_ALL=C CAMP_GH_TOKEN="$github_token" GIT_ASKPASS="$auth_dir/askpass" GIT_TERMINAL_PROMPT=0 GIT_LFS_SKIP_SMUDGE=1 \
@@ -684,6 +697,9 @@ main() {
 	[[ -d $assets_dir/public ]] || fail '素材仓库缺少 public/ 目录。'
 	chmod -R a+rX "$assets_dir/public"
 	if [[ $action == install ]]; then create_configuration; fi
+	# Persist only after Git and LFS have successfully read the private assets.
+	stage='保存 GitHub PAT'
+	save_github_token
 	install -d -m 0700 "$backup_root"
 	deploy
 }

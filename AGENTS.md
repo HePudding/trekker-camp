@@ -41,6 +41,7 @@
    - 运维入口和存储布局见 [DEPLOY.zh-CN.md](DEPLOY.zh-CN.md)。终端中直接运行 `camp` 打开交互菜单；Agent 自动化使用子命令。首次部署用 `camp install`，应用与素材更新用 `camp update`，CLI 自身更新用 `camp self-update`，版本用 `camp version` 查看。
    - 启停使用 `camp start`、`camp stop`、`camp restart`；开机自启使用 `camp autostart on/off`，状态由 `camp status` 显示。保留数据目录中的 `.config/compose.autostart.yml`，启停和自启设置与更新、备份共用锁；不要通过停用整个 Docker 服务来关闭本站自启。
    - `--dir` 指定代码目录，未指定时使用 CLI 保存的 `deployment-dir`；自更新保留该记录。首次安装的 `--data-dir` 指定数据根目录，后续命令读取代码目录 `.config/data-dir`。保留已有数据位置，禁止通过修改路径标记或 Compose 挂载来代替数据迁移。
+   - 私有素材使用仅限该仓库读取的细粒度 PAT；CLI 在访问成功后保存到数据目录 `.config/github-token`（root `0600`），环境变量可提供替换值。保留已保存的 PAT，不依赖 `gh`，不输出凭据内容。
    - 获得生产部署授权后，使用 CLI 完成素材同步、迁移前备份和健康检查；按 `camp status` 显示的实际路径操作。CLI 管理的素材工作副本由 `camp update` 更新，独立 rsync 发布使用独立挂载目录。
    - R2 备份使用同一数据根目录，每天北京时间 04:00 执行。CLI 更新需成套交付 `deploy.sh` 与 `backup.sh`，保留备份与更新共用锁、失败恢复和旧安装路径兼容。
    - 修改部署脚本、Compose 或 Caddy 时运行 `bash scripts/check-deploy.sh`；该入口由部署 CI 和 `node scripts/check-shipping.mjs` 共用，Windows 交付检查通过默认 WSL 发行版执行。公开 CI 使用临时数据和测试凭据。

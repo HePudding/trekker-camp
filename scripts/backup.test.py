@@ -54,6 +54,7 @@ class BackupTests(unittest.TestCase):
             ".config/default.yml": "url: https://camp.example.com\n",
             ".config/docker.env": "POSTGRES_PASSWORD=test-database-password\n",
             ".config/cloudflare.env": "CLOUDFLARE_API_TOKEN=test-dns-token\n",
+            ".config/github-token": "github_pat_test_read_only\n",
             "compose.yml": "services: {}\n",
             "compose.assets.yml": "services: {}\n",
             "files/upload.bin": "immutable-upload-content",
@@ -65,6 +66,8 @@ class BackupTests(unittest.TestCase):
             path = self.camp / name
             path.parent.mkdir(parents=True, exist_ok=True)
             path.write_text(content)
+            if name == ".config/github-token":
+                path.chmod(0o600)
         self.r2.mkdir(parents=True)
         (self.r2 / "repository.env").write_text("existing-repository-config\n")
         (self.r2 / "password").write_text("existing-encryption-password\n")
@@ -116,6 +119,8 @@ apt-get() { :; }
         self.assertEqual((uploaded / "files/upload.bin").read_bytes(), (self.camp / "files/upload.bin").read_bytes())
         self.assertEqual([p.name for p in (uploaded / "assets").iterdir()], ["image.png"])
         self.assertEqual((uploaded / "config/docker.env").read_text(), (self.camp / ".config/docker.env").read_text())
+        self.assertEqual((uploaded / "config/github-token").read_text(), "github_pat_test_read_only\n")
+        self.assertEqual((uploaded / "config/github-token").stat().st_mode & 0o777, 0o600)
         self.assertEqual(list((self.r2 / "runs").iterdir()), [])
         self.assertTrue((self.r2 / "last-success").is_file())
 

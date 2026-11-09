@@ -21,6 +21,7 @@ ROOT = Path(__file__).resolve().parent.parent
 CODE_REPO = "https://github.com/HePudding/trekker-camp.git"
 ASSETS_REPO = "https://github.com/HePudding/trekker-camp-assets.git"
 CLOUDFLARE_TEST_TOKEN = "test-cloudflare-token".ljust(40, "x")
+GITHUB_TEST_PAT = "github_pat_test_read_only"
 
 
 class DeployTests(unittest.TestCase):
@@ -33,6 +34,7 @@ class DeployTests(unittest.TestCase):
             "SCRIPT": str(ROOT / "scripts/deploy.sh"),
             "TEST_ROOT": str(self.root),
             "TEST_CF_TOKEN": CLOUDFLARE_TEST_TOKEN,
+            "TEST_GITHUB_PAT": GITHUB_TEST_PAT,
             "TMPDIR": str(self.root),
             "GIT_CONFIG_GLOBAL": "/dev/null",
             "GIT_CONFIG_SYSTEM": "/dev/null",
@@ -122,15 +124,82 @@ install_dependencies
 
     def test_credentials_reach_git_only_and_are_not_saved_in_helper(self):
         result = self.shell('''
-github_token=fake-test-token
+github_token=$TEST_GITHUB_PAT
 prepare_auth
 printf 'protocol=https\nhost=github.com\n\n' | github_git credential fill
-! grep -q fake-test-token "$auth_dir/askpass"
+! grep -q "$TEST_GITHUB_PAT" "$auth_dir/askpass"
 ! CAMP_GH_TOKEN="$github_token" "$auth_dir/askpass" "Password for 'https://github.com.evil.invalid':"
 ! CAMP_GH_TOKEN="$github_token" "$auth_dir/askpass" "Password for 'https://evilgithub.com':"
 ''')
         self.assertIn("username=x-access-token", result.stdout)
-        self.assertIn("password=fake-test-token", result.stdout)
+        self.assertIn("password=" + GITHUB_TEST_PAT, result.stdout)
+
+    def test_pat_is_saved_privately_and_reused_without_environment_or_gh(self):
+        data_dir = self.root / "data disk"
+        self.configuration(data_dir)
+        result = self.shell('github_token=$TEST_GITHUB_PAT\nsave_github_token')
+        saved = data_dir / ".config/github-token"
+        self.assertEqual(saved.read_text(), GITHUB_TEST_PAT + "\n")
+        self.assertEqual(saved.stat().st_mode & 0o777, 0o600)
+        self.assertFalse(list(saved.parent.glob(".github-token-*")))
+        self.assertFalse((self.root / "checkout/.config/github-token").exists())
+        self.assertNotIn(GITHUB_TEST_PAT, result.stdout + result.stderr)
+        result = self.shell('''
+github_token=''
+gh() { fail 'gh must not be used'; }
+prepare_auth
+[[ $github_token == "$TEST_GITHUB_PAT" ]]
+credentials=$(printf 'protocol=https\\nhost=github.com\\n\\n' | github_git credential fill)
+[[ $credentials == *"password=$TEST_GITHUB_PAT"* ]]
+''')
+        self.assertNotIn(GITHUB_TEST_PAT, result.stdout + result.stderr)
+
+    def test_explicit_pat_overrides_saved_value_and_invalid_input_is_not_echoed(self):
+        checkout = self.configuration()
+        saved = checkout / ".config/github-token"
+        saved.write_text(GITHUB_TEST_PAT + "\n")
+        for token in ("github_pat_replacement_read_only", "ghp_classic_token", "github_pat_line\nbreak"):
+            with self.subTest(token=token):
+                self.env["TEST_REPLACEMENT_PAT"] = token
+                result = self.shell('''
+github_token=$TEST_REPLACEMENT_PAT
+prepare_auth
+[[ $github_token == "$TEST_REPLACEMENT_PAT" ]]
+''', success=token.startswith("github_pat_") and "\n" not in token)
+                self.assertEqual(saved.read_text(), GITHUB_TEST_PAT + "\n")
+                self.assertNotIn(token, result.stdout + result.stderr)
+
+    @unittest.skipUnless(os.geteuid() == 0, "CLI entry point requires root")
+    def test_update_saves_pat_only_after_private_git_and_lfs_succeed(self):
+        data_dir = self.root / "data disk"
+        self.configuration(data_dir)
+        (data_dir / "private-assets/public").mkdir(parents=True)
+        saved = data_dir / ".config/github-token"
+        saved.write_text("github_pat_previous_read_only\n")
+        self.env["GH_TOKEN"] = GITHUB_TEST_PAT
+        for failure in ("private-git", "lfs", ""):
+            with self.subTest(failure=failure):
+                self.env["TEST_AUTH_FAILURE"] = failure
+                result = self.shell('''
+detect_ubuntu() { :; }
+flock() { :; }
+docker() { :; }
+gh() { fail 'gh must not be used'; }
+sync_checkout() {
+  [[ $github_token == "$TEST_GITHUB_PAT" ]]
+  [[ $1 != "$assets_dir" || $TEST_AUTH_FAILURE != private-git ]]
+}
+git() {
+  if [[ $* == *'lfs pull'* && $TEST_AUTH_FAILURE == lfs ]]; then return 42; fi
+}
+deploy() { printf 'deployment-dispatched\\n'; }
+main update --dir "$TEST_ROOT/checkout"
+''', success=not failure)
+                expected = "github_pat_previous_read_only" if failure else GITHUB_TEST_PAT
+                self.assertEqual(saved.read_text(), expected + "\n")
+                self.assertNotIn(GITHUB_TEST_PAT, result.stdout + result.stderr)
+                self.assertFalse(list(saved.parent.glob(".github-token-*")))
+        self.assertEqual(saved.stat().st_mode & 0o777, 0o600)
 
     def test_fast_forward_updates_preserve_origin_and_refuse_local_changes(self):
         source = self.repository("source", {"README": "one"})
@@ -920,6 +989,29 @@ self_update "$TEST_ROOT/prefix"
         self.assertIn(f"代码目录：{self.root / 'new checkout'}", output)
         self.assertIn("状态：尚未配置", output)
         self.assertEqual(record.read_text(), str(checkout) + "\n")
+
+    def test_saved_pat_survives_self_update_and_authenticates_in_new_process(self):
+        data_dir = self.root / "data disk"
+        checkout = self.configuration(data_dir)
+        self.shell('github_token=$TEST_GITHUB_PAT\nsave_github_token')
+        source = self.cli_repository(deployment_dir=checkout)
+        (source / "scripts/backup.sh").write_text((source / "scripts/backup.sh").read_text() + "\n# New fixture version\n")
+        self.git(source, "commit", "-am", "Update CLI fixture")
+        self.update_cli()
+        result = self.shell('''
+source "$TEST_ROOT/prefix/bin/camp"
+camp_dir=$(< "$cli_dir/../deployment-dir")
+resolve_storage
+github_token=''
+gh() { fail 'gh must not be used'; }
+prepare_auth
+credentials=$(printf 'protocol=https\\nhost=github.com\\n\\n' | github_git credential fill)
+[[ $credentials == *"password=$TEST_GITHUB_PAT"* ]]
+''')
+        saved = data_dir / ".config/github-token"
+        self.assertEqual(saved.read_text(), GITHUB_TEST_PAT + "\n")
+        self.assertEqual(saved.stat().st_mode & 0o777, 0o600)
+        self.assertNotIn(GITHUB_TEST_PAT, result.stdout + result.stderr)
 
     @unittest.skipUnless(os.geteuid() == 0, "CLI entry point requires root")
     def test_legacy_cli_records_valid_directory_and_reuses_it_for_commands(self):

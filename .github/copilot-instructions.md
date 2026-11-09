@@ -20,6 +20,8 @@
 
 CLI 更新成套包含 `deploy.sh` 与 `backup.sh`，下载或校验失败应保留旧命令。R2 定时备份保持每天北京时间 04:00，使用部署共用锁，采集后恢复应用再上传。修改部署脚本、Compose、Caddy 时执行 `bash scripts/check-deploy.sh`；`node scripts/check-shipping.mjs` 会自动调用同一入口，Windows 使用默认 WSL 发行版。完整运行与恢复步骤见 `DEPLOY.zh-CN.md`。
 
+GitHub 认证使用限定私有素材仓库读取的细粒度 PAT，访问成功后保存在数据目录 `.config/github-token`（root `0600`），重开终端和 CLI 自更新后继续使用；环境变量可提供替换值，认证失败保留旧文件。CLI 不依赖 `gh`，不输出凭据内容。
+
 ## 严格禁止的操作
 
 违反要求会导致 CI 失败或生产事故。
