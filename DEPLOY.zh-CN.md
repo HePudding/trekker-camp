@@ -20,6 +20,8 @@ curl -fsSL https://raw.githubusercontent.com/HePudding/trekker-camp/master/scrip
 bash /tmp/camp-deploy.sh install --url https://camp.example.com
 ```
 
+CLI 会在下载私有素材、生成首次配置前检查代码中的部署文件是否齐全。测试尚未合并的 PR 时，测试终端的 CLI 与代码来源需指向同一 PR 版本；仅安装测试版 CLI 再拉取正式 `master` 会被预检拒绝。
+
 将示例域名替换为本站域名。CLI 会隐藏输入 GitHub 细粒度 PAT 和 Cloudflare token，也会读取已有的 `GH_TOKEN`、`GITHUB_TOKEN`、`CLOUDFLARE_API_TOKEN`。私有素材访问成功后，GitHub PAT 自动保存到数据目录的 `.config/github-token`，权限为 root `0600`；后续自动读取，无需安装或登录 `gh`。首次安装后通过 `camp` 命令操作。
 
 安装自动完成：

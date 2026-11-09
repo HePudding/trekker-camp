@@ -409,6 +409,15 @@ sync_checkout() {
 	GIT_LFS_SKIP_SMUDGE=1 git -C "$directory" merge --ff-only origin/master
 }
 
+check_deployment_source() {
+	local file
+	for file in compose.vps.yml compose.assets.yml .config/docker_example.yml .config/docker_example.env \
+		scripts/deploy.sh scripts/backup.sh scripts/caddy/Dockerfile scripts/caddy/cloudflare-proxies.caddy; do
+		[[ -s $camp_dir/$file ]] ||
+			fail "代码目录缺少部署文件：$file。请确认部署 CLI 已合入 master；测试未合并的 PR 时，CLI 与代码来源需使用同一测试版本。"
+	done
+}
+
 create_configuration() {
 	local password
 	[[ ! -e $camp_dir/compose.yml && ! -e $config_dir/default.yml && ! -e $config_dir/docker.env &&
@@ -712,13 +721,19 @@ main() {
 	if [[ -e $assets_dir/.git ]]; then check_checkout "$assets_dir" https://github.com/HePudding/trekker-camp-assets.git; fi
 	stage='同步代码和私有素材'
 	sync_checkout "$camp_dir" https://github.com/HePudding/trekker-camp.git
+	stage='检查部署文件'
+	check_deployment_source
+	stage='同步私有素材'
 	install -d -m 0755 "$data_dir"
 	sync_checkout "$assets_dir" https://github.com/HePudding/trekker-camp-assets.git
 	git -C "$assets_dir" lfs install --local --skip-smudge
 	github_git -C "$assets_dir" lfs pull --include='public/**' --exclude=
 	[[ -d $assets_dir/public ]] || fail '素材仓库缺少 public/ 目录。'
 	chmod -R a+rX "$assets_dir/public"
-	if [[ $action == install ]]; then create_configuration; fi
+	if [[ $action == install ]]; then
+		stage='生成首次部署配置'
+		create_configuration
+	fi
 	# Persist only after Git and LFS have successfully read the private assets.
 	stage='保存 GitHub PAT'
 	save_github_token

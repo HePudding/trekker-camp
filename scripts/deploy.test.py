@@ -267,6 +267,10 @@ check_checkout "$TEST_ROOT/checkout" https://github.com/HePudding/trekker-camp-a
         (checkout / ".config").mkdir()
         for name in ("docker_example.yml", "docker_example.env"):
             shutil.copy(ROOT / ".config" / name, checkout / ".config" / name)
+        for name in ("deploy.sh", "backup.sh", "caddy/Dockerfile", "caddy/cloudflare-proxies.caddy"):
+            destination = checkout / "scripts" / name
+            destination.parent.mkdir(parents=True, exist_ok=True)
+            shutil.copy(ROOT / "scripts" / name, destination)
         self.env["TEST_DATA_DIR"] = str(data_dir) if data_dir else ""
         self.shell('''
 camp_dir="$TEST_ROOT/checkout"
@@ -801,6 +805,30 @@ main install --dir "$TEST_ROOT/new checkout" --url https://camp.stellasora.cafe
 ''', success=False)
         self.assertIn("GH_TOKEN", result.stderr)
         self.assertFalse((self.root / "should-not-run").exists())
+
+    @unittest.skipUnless(os.geteuid() == 0, "CLI entry point requires root")
+    def test_install_rejects_source_without_deployment_files_before_assets_or_configuration(self):
+        source = self.repository("source", {"README": "master without the deployment PR"})
+        self.redirect(source, CODE_REPO)
+        self.env["GH_TOKEN"] = GITHUB_TEST_PAT
+        self.env["CLOUDFLARE_API_TOKEN"] = CLOUDFLARE_TEST_TOKEN
+        result = self.shell('''
+detect_ubuntu() { :; }
+flock() { :; }
+install_dependencies() { :; }
+systemctl() { :; }
+docker() { :; }
+main install --dir "$TEST_ROOT/checkout" --url https://camp.example.com
+''', success=False)
+        checkout = self.root / "checkout"
+        self.assertEqual(self.git(checkout, "rev-parse", "HEAD"), self.git(source, "rev-parse", "HEAD"))
+        self.assertIn("compose.vps.yml", result.stderr)
+        self.assertIn("master", result.stderr)
+        self.assertFalse((checkout / ".config").exists())
+        self.assertFalse((checkout / "compose.yml").exists())
+        self.assertFalse((checkout / "private-assets").exists())
+        self.assertNotIn(GITHUB_TEST_PAT, result.stdout + result.stderr)
+        self.assertNotIn(CLOUDFLARE_TEST_TOKEN, result.stdout + result.stderr)
 
     def test_tui_failed_action_stops_child_and_keeps_menu_usable(self):
         command = self.menu_command('''
