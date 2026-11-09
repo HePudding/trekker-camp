@@ -404,6 +404,9 @@ deploy
     def menu_command(self, body):
         entry = self.root / "camp-command"
         entry.write_text('#!/usr/bin/env bash\nset -Eeuo pipefail\n' + body)
+        checkout = self.root / "checkout"
+        checkout.mkdir(exist_ok=True)
+        (checkout / "compose.yml").touch()
         return 'cli_entry="$TEST_ROOT/camp-command"\n'
 
     def test_no_command_opens_tui_only_with_a_terminal(self):
@@ -429,7 +432,8 @@ deploy
         self.assertEqual(output.count("\x1b[?1049l"), 2)
 
     def test_tui_updates_selection_in_place_with_windows_ssh_terminal_type(self):
-        code, output = self.terminal('export TERM=dumb\nmain', [
+        self.configuration()
+        code, output = self.terminal('export TERM=dumb\nmain --dir "$TEST_ROOT/checkout"', [
             ("更新和备份会短暂停站。", "\x1b[B"),
             ("\x1b[6;1H\x1b[2K > \x1b[7m2  查看实时日志", "\x1b[A"),
             ("\x1b[5;1H\x1b[2K > \x1b[7m1  查看站点状态和数据位置", "xq"),
@@ -455,7 +459,7 @@ main tui
 ''', [
             ("更新和备份会短暂停站。", "7"),
             ("代码目录 [/opt/trekker-camp]：", str(self.root / "code disk") + "\n"),
-            ("站点域名（如 camp.example.com）：", "camp.example.com\n"),
+            ("站点地址 [https://camp.stellasora.cafe]：", "camp.example.com\n"),
             ("数据目录 [", ""),
             ("：", str(self.root / "data disk") + "\n"),
             ("按回车返回菜单。", "\n"),
@@ -471,6 +475,84 @@ main tui
         for secret in secrets:
             self.assertNotIn(secret, output)
 
+    def test_tui_first_install_accepts_default_configuration_with_enter(self):
+        command = self.menu_command('printf "%s\\n" "$@" > "$TEST_ROOT/arguments"')
+        checkout = self.root / "new checkout"
+        code, output = self.terminal(command + '''
+sudo() { shift 2; "$@"; }
+main --dir "$TEST_ROOT/new checkout"
+''', [
+            ("更新和备份会短暂停站。", "\n"),
+            (f"代码目录 [{checkout}]：", "\n"),
+            ("站点地址 [https://camp.stellasora.cafe]：", "\n"),
+            (f"数据目录 [{checkout}]：", "\n"),
+            ("按回车返回菜单。", "\n"),
+            ("更新和备份会短暂停站。", "q"),
+        ])
+        self.assertEqual(code, 0, output)
+        self.assertIn("状态：尚未配置，按回车开始首次安装", output)
+        self.assertIn(" > \x1b[7m7  首次安装", output)
+        self.assertEqual((self.root / "arguments").read_text().splitlines(), [
+            "install", "--dir", str(checkout), "--url", "https://camp.stellasora.cafe",
+            "--data-dir", str(checkout),
+        ])
+
+    def test_tui_unconfigured_actions_are_disabled_and_wizard_can_be_cancelled(self):
+        command = self.menu_command('touch "$TEST_ROOT/should-not-run"')
+        code, output = self.terminal(command + 'main --dir "$TEST_ROOT/new checkout"', [
+            ("更新和备份会短暂停站。", "123456\n"),
+            (f"代码目录 [{self.root / 'new checkout'}]：", ":q\n"),
+            ("更新和备份会短暂停站。", "q"),
+        ])
+        self.assertEqual(code, 0, output)
+        self.assertIn("需先安装", output)
+        self.assertNotIn("部署配置不存在", output)
+        self.assertFalse((self.root / "should-not-run").exists())
+
+    def test_tui_wizard_reprompts_invalid_fields_and_keeps_values_after_failure(self):
+        command = self.menu_command('printf "%s\\n" "$@" >> "$TEST_ROOT/arguments"\nexit 42')
+        checkout = self.root / "new checkout"
+        data = self.root / "data disk"
+        code, output = self.terminal(command + '''
+sudo() { shift 2; "$@"; }
+main --dir "$TEST_ROOT/new checkout"
+''', [
+            ("更新和备份会短暂停站。", "\n"),
+            (f"代码目录 [{checkout}]：", "/\n"),
+            (f"代码目录 [{checkout}]：", "\n"),
+            ("站点地址 [https://camp.stellasora.cafe]：", "http://camp.example.com\n"),
+            ("请输入 HTTPS 站点域名", ""),
+            ("站点地址 [https://camp.stellasora.cafe]：", "camp.example.com\n"),
+            (f"数据目录 [{checkout}]：", str(checkout / "data") + "\n"),
+            ("自定义数据目录需位于代码目录之外", ""),
+            (f"数据目录 [{checkout}]：", str(data) + "\n"),
+            ("退出码 42", ""),
+            ("按回车返回菜单。", "\n"),
+            ("更新和备份会短暂停站。", "\n"),
+            (f"代码目录 [{checkout}]：", "\n"),
+            ("站点地址 [https://camp.example.com]：", "\n"),
+            (f"数据目录 [{data}]：", "\n"),
+            ("退出码 42", ""),
+            ("按回车返回菜单。", "\n"),
+            ("更新和备份会短暂停站。", "q"),
+        ])
+        self.assertEqual(code, 0, output)
+        self.assertEqual((self.root / "arguments").read_text().splitlines(), [
+            "install", "--dir", str(checkout), "--url", "https://camp.example.com", "--data-dir", str(data),
+        ] * 2)
+
+    @unittest.skipUnless(os.geteuid() == 0, "CLI entry point requires root")
+    def test_install_requires_credentials_before_changing_system_packages(self):
+        result = self.shell('''
+detect_ubuntu() { :; }
+flock() { :; }
+gh() { return 1; }
+install_dependencies() { touch "$TEST_ROOT/should-not-run"; }
+main install --dir "$TEST_ROOT/new checkout" --url https://camp.stellasora.cafe
+''', success=False)
+        self.assertIn("GH_TOKEN", result.stderr)
+        self.assertFalse((self.root / "should-not-run").exists())
+
     def test_tui_failed_action_stops_child_and_keeps_menu_usable(self):
         command = self.menu_command('''
 false
@@ -478,17 +560,21 @@ touch "$TEST_ROOT/should-not-run"
 ''')
         code, output = self.terminal(command + '''
 sudo() { shift 2; "$@"; }
-main
+main --dir "$TEST_ROOT/checkout"
 ''', [
             ("更新和备份会短暂停站。", "3"),
             ("退出码 1", ""),
-            ("按回车返回菜单。", "\n"),
+            ("按回车返回菜单。", "\x1b[A\n"),
             ("更新和备份会短暂停站。", "q"),
         ])
         self.assertEqual(code, 0, output)
         self.assertFalse((self.root / "should-not-run").exists())
+        self.assertNotIn("^[[A", output)
 
     def test_tui_switches_checkout_without_overriding_saved_data_location(self):
+        other = self.root / "other checkout"
+        other.mkdir()
+        (other / "compose.yml").touch()
         command = self.menu_command('printf "%s\\n" "$@" > "$TEST_ROOT/arguments"')
         code, output = self.terminal(command + '''
 sudo() { shift 2; "$@"; }
@@ -512,7 +598,7 @@ sleep 30
 ''')
         code, output = self.terminal(command + '''
 sudo() { shift 2; "$@"; }
-main
+main --dir "$TEST_ROOT/checkout"
 ''', [
             ("更新和备份会短暂停站。", "2"),
             ("Log stream ready", "\x03"),
@@ -535,7 +621,7 @@ sudo() {
   shift 2
   "$@"
 }
-main
+main --dir "$TEST_ROOT/checkout"
 ''', [
             ("更新和备份会短暂停站。", "9"),
             ("Action: version", ""),

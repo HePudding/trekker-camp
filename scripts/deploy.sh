@@ -4,6 +4,7 @@
 
 cli_entry=$(realpath -s -- "${BASH_SOURCE[0]}")
 cli_dir=$(dirname "$(realpath -- "$cli_entry")")
+default_site_url=https://camp.stellasora.cafe
 
 usage() {
 	cat <<'HELP'
@@ -29,6 +30,7 @@ usage() {
 
 终端中直接运行 camp 使用方向键 / 回车或数字选择；非终端中不带命令时显示帮助。
 菜单按需调用 sudo，首次安装会询问域名和存储目录，子命令用法保持不变。
+首次安装默认站点为 https://camp.stellasora.cafe；方括号内的默认值可直接回车采用。
 认证依次读取 GH_TOKEN、GITHUB_TOKEN、gh auth token，或交互式隐藏输入。
 无人值守运行时通过环境变量注入 token，例如 sudo --preserve-env=GH_TOKEN camp update。
 首次安装读取 CLOUDFLARE_API_TOKEN 或隐藏输入，用于 DNS 验证及自动续期证书。
@@ -50,22 +52,26 @@ cli_version() {
 }
 
 tui_select() (
-	local selected=0 previous key i
+	local selected=0 previous key i step configured=false
 	local commands=(status logs update backup backup-status r2-bind install self-update version directory exit)
 	local labels=(
 		'1  查看站点状态和数据位置' '2  查看实时日志' '3  更新应用与素材（先备份）'
 		'4  立即备份到 R2' '5  查看备份状态' '6  绑定 R2 每日备份'
 		'7  首次安装' '8  更新 camp CLI' '9  查看 CLI 版本' 'C  切换代码目录' '0  退出'
 	)
+	if [[ -f $camp_dir/compose.yml ]]; then configured=true; else selected=6; fi
 	# The entry point requires a TTY. Windows OpenSSH can still report TERM=dumb.
 	# Keep each row on one line so long paths do not move the menu coordinates.
 	trap 'printf "\033[0m\033[?7h\033[?25h\033[?1049l" >&2' EXIT
 	printf '\033[?1049h\033[?25l\033[?7l\033[H\033[2J' >&2
 	trap 'exit 130' INT
 	trap 'exit 143' TERM
-	printf '旅人营地 · VPS 管理\n\n代码目录：%s\n\n' "$camp_dir" >&2
+	printf '旅人营地 · VPS 管理\n\n代码目录：%s\n' "$camp_dir" >&2
+	if $configured; then printf '状态：已有部署配置\n' >&2
+	else printf '状态：尚未配置，按回车开始首次安装\n' >&2; fi
 	for i in "${!labels[@]}"; do
-		if ((i == selected)); then printf ' > \033[7m%s\033[0m\n' "${labels[i]}" >&2
+		if ! $configured && ((i < 6)); then printf '   \033[2m%s（需先安装）\033[0m\n' "${labels[i]}" >&2
+		elif ((i == selected)); then printf ' > \033[7m%s\033[0m\n' "${labels[i]}" >&2
 		else printf '   %s\n' "${labels[i]}" >&2; fi
 	done
 	printf '\n↑ / ↓ 选择，回车执行；也可按数字 / C；Q 或 Esc 退出。\n更新和备份会短暂停站。\n' >&2
@@ -76,11 +82,17 @@ tui_select() (
 			$'\033')
 				if ! IFS= read -rsn2 -t 0.2 key; then printf exit; return; fi
 				case "$key" in
-					'[A'|'OA') selected=$(((selected + ${#commands[@]} - 1) % ${#commands[@]})) ;;
-					'[B'|'OB') selected=$(((selected + 1) % ${#commands[@]})) ;;
-				esac ;;
+					'[A'|'OA') step=-1 ;;
+					'[B'|'OB') step=1 ;;
+					*) continue ;;
+				esac
+				while true; do
+					selected=$(((selected + ${#commands[@]} + step) % ${#commands[@]}))
+					if $configured || ((selected >= 6)); then break; fi
+				done ;;
 			'') printf '%s' "${commands[selected]}"; return ;;
-			[1-9]) printf '%s' "${commands[key - 1]}"; return ;;
+			[1-9])
+				if $configured || ((key >= 7)); then printf '%s' "${commands[key - 1]}"; return; fi ;;
 			c|C) printf directory; return ;;
 			0|q|Q) printf exit; return ;;
 		esac
@@ -101,24 +113,69 @@ tui_run() {
 	GH_TOKEN="$github_token" CLOUDFLARE_API_TOKEN="$cloudflare_token" "${runner[@]}" "$@"
 }
 
+tui_read_default() {
+	local variable=$1 label=$2 fallback=$3 response
+	read -r -e -p "$label [$fallback]：" response || return 1
+	[[ $response != :q ]] || return 1
+	printf -v "$variable" '%s' "${response:-$fallback}"
+}
+
+valid_site_url() {
+	[[ $1 =~ ^https://[a-zA-Z0-9][a-zA-Z0-9.-]*\.[a-zA-Z]{2,63}$ && $1 != *..* ]]
+}
+
+tui_install_wizard() {
+	local previous_dir=$camp_dir candidate
+	printf '\033[H\033[2J首次安装\n\n方括号内为默认值，直接回车采用；输入 :q 返回菜单。\n\n'
+	while true; do
+		candidate=$camp_dir
+		tui_read_default candidate '代码目录' "$camp_dir" || return 1
+		candidate=$(realpath -m -- "$candidate") || continue
+		if (camp_dir=$candidate; resolve_storage); then camp_dir=$candidate; break; fi
+	done
+	if [[ -z $install_data || $install_data == "$previous_dir" ]]; then install_data=$camp_dir; fi
+	while true; do
+		candidate=$install_url
+		tui_read_default candidate '站点地址' "$install_url" || return 1
+		candidate=${candidate%/}
+		if [[ $candidate != *://* ]]; then candidate=https://$candidate; fi
+		if valid_site_url "$candidate"; then install_url=$candidate; break; fi
+		printf '请输入 HTTPS 站点域名，不含端口或子路径；也可直接回车使用默认值。\n' >&2
+	done
+	while true; do
+		candidate=$install_data
+		tui_read_default candidate '数据目录' "$install_data" || return 1
+		candidate=$(realpath -m -- "$candidate") || continue
+		if (resolve_storage "$candidate"); then install_data=$candidate; break; fi
+	done
+	printf '\n站点地址：%s\n代码目录：%s\n数据目录：%s\n\n' "$install_url" "$camp_dir" "$install_data"
+}
+
+tui_wait() {
+	local key
+	printf '按回车返回菜单。'
+	while IFS= read -rsn1 key; do
+		case "$key" in
+			'') printf '\n'; return ;;
+			$'\033') IFS= read -rsn2 -t 0.2 key || true ;;
+		esac
+	done
+	return 1
+}
+
 tui_menu() {
-	local action value install_url install_data result
+	local action value install_url=$default_site_url install_data='' result
 	local args=()
 	while true; do
 		if ! action=$(tui_select); then return; fi
 		case "$action" in
 			exit) return ;;
 			directory)
-				read -r -p "代码目录 [$camp_dir]：" value || return
-				if [[ -n $value ]]; then camp_dir=$(realpath -m -- "$value"); fi
+				if tui_read_default value '代码目录' "$camp_dir"; then camp_dir=$(realpath -m -- "$value"); fi
 				continue ;;
 			install)
-				read -r -p "代码目录 [$camp_dir]：" value || return
-				if [[ -n $value ]]; then camp_dir=$(realpath -m -- "$value"); fi
-				read -r -p '站点域名（如 camp.example.com）：' install_url || return
-				if [[ $install_url != *://* ]]; then install_url=https://$install_url; fi
-				read -r -p "数据目录 [$camp_dir]：" install_data || return
-				args=(install --dir "$camp_dir" --url "$install_url" --data-dir "${install_data:-$camp_dir}") ;;
+				if ! tui_install_wizard; then continue; fi
+				args=(install --dir "$camp_dir" --url "$install_url" --data-dir "$install_data") ;;
 			*) args=("$action" --dir "$camp_dir") ;;
 		esac
 		# Keep the menu alive when Ctrl+C stops a log stream or another child command.
@@ -130,7 +187,7 @@ tui_menu() {
 			printf '\n命令已结束（退出码 %s），请查看上方输出。\n' "$result"
 		fi
 		trap - INT
-		read -r -p '按回车返回菜单。' value || return
+		tui_wait || return
 	done
 }
 
@@ -477,7 +534,7 @@ main() {
 			load_backup
 			r2_backup_status; return ;;
 		install)
-			[[ $site_url =~ ^https://[a-zA-Z0-9][a-zA-Z0-9.-]*\.[a-zA-Z]{2,63}$ && $site_url != *..* ]] || fail '--url 需为 HTTPS 域名，不含端口或子路径。' ;;
+			valid_site_url "$site_url" || fail '--url 需为 HTTPS 域名，不含端口或子路径。' ;;
 	esac
 	exec 9>/run/lock/trekker-camp-deploy.lock
 	if [[ $action == backup || $action == r2-bind ]]; then
@@ -489,12 +546,6 @@ main() {
 		return
 	fi
 	flock -n 9 || fail '另一项营地部署或备份正在运行。'
-	stage='准备系统依赖'
-	if [[ $action == install ]]; then
-		install_dependencies
-		systemctl enable --now docker
-	fi
-	docker info >/dev/null
 	stage='读取 GitHub 凭据'
 	prepare_auth
 	stage='读取 Cloudflare 凭据'
@@ -504,6 +555,12 @@ main() {
 		[[ -n $cloudflare_token ]] || fail '.config/cloudflare.env 缺少 CLOUDFLARE_API_TOKEN。'
 	fi
 	prepare_cloudflare
+	stage='准备系统依赖'
+	if [[ $action == install ]]; then
+		install_dependencies
+		systemctl enable --now docker
+	fi
+	docker info >/dev/null
 	# Validate both worktrees before advancing either repository.
 	if [[ -e $camp_dir/.git ]]; then check_checkout "$camp_dir" https://github.com/HePudding/trekker-camp.git; fi
 	if [[ -e $assets_dir/.git ]]; then check_checkout "$assets_dir" https://github.com/HePudding/trekker-camp-assets.git; fi
