@@ -104,6 +104,8 @@ CLI 管理的服务器使用 `camp update` 统一发布素材和应用；下面�
 
 本次发布需要同时交付代码仓库与素材仓库：先同步包含该图片的素材版本到服务器，再部署配套代码，并沿用下述 `compose.assets.yml` 只读挂载。头像通过 `/client-assets/camp/avatars/default-v1.png` 加载，不进入镜像。未挂载图片时沿用原有默认头像；素材随后到位即可生效，无需再次重启应用。
 
+默认头像源文件固定由本站的 `/client-assets/camp/avatars/default-v1.png` 提供，CLI 部署的文件位于 `<数据目录>/private-assets/public/avatars/default-v1.png`。启用网盘对象存储或外部媒体代理后，源文件地址和挂载位置仍保持不变；省流和禁用动画模式沿用 Misskey 的媒体代理转换流程，代理需能解析并访问本站 HTTPS 地址及其重定向目标。用户上传的自定义头像按网盘存储设置处理。
+
 ### 同步与挂载
 
 私有素材库的 [Assets 工作流](https://github.com/HePudding/trekker-camp-assets/actions/workflows/assets.yml) 已配置为：PR 验证素材；`master` 更新时验证并同步到已配置的服务器。未配置服务器时只验证，不发布。代码镜像仍只构建公开代码。

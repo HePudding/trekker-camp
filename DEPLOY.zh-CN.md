@@ -58,7 +58,7 @@ bash /tmp/camp-deploy.sh install --url https://camp.example.com --data-dir /srv/
 
 ### 交互式菜单
 
-安装后直接输入 `camp` 打开终端菜单，也可显式运行 `camp tui`。使用 **↑ / ↓ 和回车**，或菜单中的 **数字 / C** 选择操作，**Q / Esc / 0** 退出。方向键在当前界面更新高亮，不向终端滚动记录追加菜单；Windows Terminal 的 SSH 连接同样适用。菜单包含站点状态、实时日志、应用与素材更新、R2 备份与绑定、首次安装和 CLI 自更新。
+安装后直接输入 `camp` 打开终端菜单，也可显式运行 `camp tui`。使用 **↑ / ↓ 和回车**，或菜单标注的数字和字母选择操作，**Q / Esc / 0** 退出。方向键在当前界面更新高亮，不向终端滚动记录追加菜单；Windows Terminal 的 SSH 连接同样适用。菜单包含站点状态、启停和重启、开机自启、实时日志、应用与素材更新、R2 备份与绑定、首次安装和 CLI 自更新。
 
 ```bash
 camp
@@ -81,6 +81,25 @@ sudo camp status
 sudo camp logs
 camp version
 ```
+
+### 启停和开机自启
+
+```bash
+sudo camp start                 # 启动应用、数据库、Redis 和 Caddy，检查 HTTPS
+sudo camp stop                  # 停止这套站点，保留容器和持久化数据
+sudo camp restart               # 停止后重新启动，检查 HTTPS
+sudo camp autostart on          # 开启开机自启，不立即启动已停止的站点
+sudo camp autostart off         # 关闭开机自启，不立即停止正在运行的站点
+sudo camp autostart             # 查看 Docker 和各服务的开机自启状态
+```
+
+菜单快捷键为 **S 启动、T 停止、R 重启、A 开启自启、D 关闭自启**。这些操作不需要 GitHub 或 Cloudflare token，与更新和备份共用操作锁。启动复用本机已有镜像，不拉取代码、不构建镜像、不执行数据库迁移。`camp status` 同时列出已停止的容器和开机自启状态。
+
+新安装默认开启自启。开启时使用 Docker `always` 重启策略，并启用 Docker 服务随系统启动；关闭时使用 `no` 策略，仅改变本站容器。开机自启设置保存到数据目录的 `.config/compose.autostart.yml`，更新、容器重建及配置备份都会保留。旧安装未切换设置时沿用原来的 `unless-stopped` 策略，手动停止的容器会保持停止，状态中会注明。
+
+使用 `always` 时，`camp stop` 停止本次运行，Docker 或 VPS 重启后会再次启动；需要跨重启保持停站时，先执行 `camp autostart off`，再执行 `camp stop`。R2 定时备份的开关独立管理，关闭站点自启不会关闭备份任务；整套站点停止期间备份任务将因数据库未运行而报错。
+
+### 更新应用与素材
 
 `update` 同步两个仓库的 `master`，构建新镜像后停止应用，备份数据库、执行迁移并重新创建应用容器。素材清单中的新增表情会在应用启动时自动注册。数据库、上传文件、配置和证书持续保存在原有目录 / Docker 卷中。
 

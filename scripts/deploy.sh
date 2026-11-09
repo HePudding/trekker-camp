@@ -18,6 +18,12 @@ usage() {
   camp version
   sudo camp status
   sudo camp logs
+  sudo camp start              # 启动整套站点并检查健康状态
+  sudo camp stop               # 停止整套站点，保留容器和数据
+  sudo camp restart            # 重启整套站点并检查健康状态
+  sudo camp autostart on       # 开启开机自启
+  sudo camp autostart off      # 关闭开机自启，保持当前运行状态
+  sudo camp autostart          # 查看开机自启状态
   sudo camp r2-bind
   sudo camp backup
   sudo camp backup-status
@@ -53,11 +59,14 @@ cli_version() {
 
 tui_select() (
 	local selected=0 previous key i step configured=false
-	local commands=(status logs update backup backup-status r2-bind install self-update version directory exit)
+	local commands=(status logs update backup backup-status r2-bind install self-update version start stop restart autostart-on autostart-off directory exit)
+	local available=(0 0 0 0 0 0 1 1 1 0 0 0 0 0 1 1)
 	local labels=(
 		'1  查看站点状态和数据位置' '2  查看实时日志' '3  更新应用与素材（先备份）'
 		'4  立即备份到 R2' '5  查看备份状态' '6  绑定 R2 每日备份'
-		'7  首次安装' '8  更新 camp CLI' '9  查看 CLI 版本' 'C  切换代码目录' '0  退出'
+		'7  首次安装' '8  更新 camp CLI' '9  查看 CLI 版本'
+		'S  启动站点' 'T  停止站点' 'R  重启站点' 'A  开启开机自启' 'D  关闭开机自启'
+		'C  切换代码目录' '0  退出'
 	)
 	if [[ -f $camp_dir/compose.yml ]]; then configured=true; else selected=6; fi
 	# The entry point requires a TTY. Windows OpenSSH can still report TERM=dumb.
@@ -70,11 +79,11 @@ tui_select() (
 	if $configured; then printf '状态：已有部署配置\n' >&2
 	else printf '状态：尚未配置，按回车开始首次安装\n' >&2; fi
 	for i in "${!labels[@]}"; do
-		if ! $configured && ((i < 6)); then printf '   \033[2m%s（需先安装）\033[0m\n' "${labels[i]}" >&2
+		if ! $configured && ((! available[i])); then printf '   \033[2m%s（需先安装）\033[0m\n' "${labels[i]}" >&2
 		elif ((i == selected)); then printf ' > \033[7m%s\033[0m\n' "${labels[i]}" >&2
 		else printf '   %s\n' "${labels[i]}" >&2; fi
 	done
-	printf '\n↑ / ↓ 选择，回车执行；也可按数字 / C；Q 或 Esc 退出。\n更新和备份会短暂停站。\n' >&2
+	printf '\n↑ / ↓ 选择，回车执行；也可按菜单快捷键；Q 或 Esc 退出。\n更新和备份会短暂停站。\n' >&2
 	while true; do
 		previous=$selected
 		IFS= read -rsn1 key || { printf exit; return; }
@@ -88,11 +97,16 @@ tui_select() (
 				esac
 				while true; do
 					selected=$(((selected + ${#commands[@]} + step) % ${#commands[@]}))
-					if $configured || ((selected >= 6)); then break; fi
+					if $configured || ((available[selected])); then break; fi
 				done ;;
 			'') printf '%s' "${commands[selected]}"; return ;;
 			[1-9])
 				if $configured || ((key >= 7)); then printf '%s' "${commands[key - 1]}"; return; fi ;;
+			s|S|t|T|r|R|a|A|d|D)
+				if $configured; then
+					case "$key" in s|S) printf start ;; t|T) printf stop ;; r|R) printf restart ;; a|A) printf autostart-on ;; d|D) printf autostart-off ;; esac
+					return
+				fi ;;
 			c|C) printf directory; return ;;
 			0|q|Q) printf exit; return ;;
 		esac
@@ -180,6 +194,7 @@ tui_menu() {
 			install)
 				if ! tui_install_wizard; then continue; fi
 				args=(install --dir "$camp_dir" --url "$install_url" --data-dir "$install_data") ;;
+			autostart-on|autostart-off) args=(autostart "${action#autostart-}" --dir "$camp_dir") ;;
 			*) args=("$action" --dir "$camp_dir") ;;
 		esac
 		# Keep the menu alive when Ctrl+C stops a log stream or another child command.
@@ -422,6 +437,7 @@ ${site_url#https://} {
 }
 EOF
 	cp "$camp_dir/compose.vps.yml" "$camp_dir/compose.yml"
+	write_autostart_config always "$config_dir/compose.autostart.yml"
 	install -d -m 0755 -o 991 -g 991 "$data_dir/files"
 	if [[ $data_dir != "$camp_dir" ]]; then
 		install -d -m 0700 "$data_dir/caddy/data" "$data_dir/caddy/config"
@@ -430,10 +446,76 @@ EOF
 
 compose() {
 	local caddy_data=caddy_data caddy_config=caddy_config
+	local overrides=()
 	if [[ $data_dir != "$camp_dir" ]]; then caddy_data=$data_dir/caddy/data; caddy_config=$data_dir/caddy/config; fi
+	if [[ -f $config_dir/compose.autostart.yml ]]; then overrides=(-f "$config_dir/compose.autostart.yml"); fi
 	CAMP_DATA_DIR="$data_dir" CAMP_CADDY_DATA="$caddy_data" CAMP_CADDY_CONFIG="$caddy_config" \
 		CAMP_ASSETS_DIR="$assets_dir/public" docker compose --project-directory "$camp_dir" \
-		-f "$camp_dir/compose.yml" -f "$camp_dir/compose.assets.yml" "$@"
+		-f "$camp_dir/compose.yml" -f "$camp_dir/compose.assets.yml" "${overrides[@]}" "$@"
+}
+
+write_autostart_config() {
+	local policy=$1 destination=$2 service
+	{
+		printf '# Managed by camp autostart.\nservices:\n'
+		for service in web db redis caddy; do printf '  %s:\n    restart: "%s"\n' "$service" "$policy"; done
+	} > "$destination"
+}
+
+autostart_status() {
+	local container_ids
+	local containers=()
+	if systemctl is-enabled --quiet docker; then printf 'Docker 开机启动：已开启\n'
+	else printf 'Docker 开机启动：未开启\n'; fi
+	container_ids=$(compose ps --all --quiet)
+	if [[ -z $container_ids ]]; then
+		printf '站点尚未创建容器，请运行 camp start。\n'
+		return
+	fi
+	mapfile -t containers <<< "$container_ids"
+	printf '站点开机自启：\n'
+	docker inspect --format '{{.Name}}：{{if eq .HostConfig.RestartPolicy.Name "always"}}已开启{{else if eq .HostConfig.RestartPolicy.Name "unless-stopped"}}已开启（手动停止后保持停止）{{else}}已关闭{{end}}' "${containers[@]}"
+}
+
+set_autostart() (
+	local mode=$1 policy candidate container_ids
+	local containers=()
+	case "$mode" in on) policy=always ;; off) policy=no ;; *) fail 'autostart 接受 on、off 或 status。' ;; esac
+	stage='保存开机自启设置'
+	candidate=$(mktemp "$config_dir/.compose.autostart-XXXXXX.yml")
+	trap 'rm -f -- "$candidate"' EXIT
+	write_autostart_config "$policy" "$candidate"
+	compose -f "$candidate" config --quiet
+	container_ids=$(compose ps --all --quiet)
+	if [[ $mode == on ]]; then systemctl enable docker; fi
+	if [[ -n $container_ids ]]; then
+		mapfile -t containers <<< "$container_ids"
+		docker update --restart="$policy" "${containers[@]}" >/dev/null
+	fi
+	mv -f -- "$candidate" "$config_dir/compose.autostart.yml"
+	if [[ $mode == on ]]; then log '已开启站点开机自启；当前运行状态保持不变。'
+	else log '已关闭站点开机自启；当前运行状态保持不变。'; fi
+)
+
+check_https() {
+	stage='检查 HTTPS 入口'
+	site_url=$(sed -n 's/^url:[[:space:]]*//p' "$config_dir/default.yml")
+	curl --fail --silent --show-error --output /dev/null --retry 60 --retry-max-time 300 --retry-delay 5 --retry-all-errors \
+		--connect-timeout 5 --max-time 10 --resolve "${site_url#https://}:443:127.0.0.1" "$site_url/healthz"
+}
+
+start_site() {
+	stage='启动站点并检查健康状态'
+	compose config --quiet
+	compose up -d --no-build --pull never --wait --wait-timeout 180
+	check_https
+	log "站点已启动：$site_url"
+}
+
+stop_site() {
+	stage='停止站点'
+	compose stop --timeout 60
+	log '站点已停止，容器和数据已保留。'
 }
 
 deploy() {
@@ -463,10 +545,7 @@ deploy() {
 	compose up -d --no-deps --force-recreate --wait --wait-timeout 180 web
 	stage='启动 HTTPS 入口'
 	compose up -d --wait --wait-timeout 60 caddy
-	stage='检查 HTTPS 入口'
-	site_url=$(sed -n 's/^url:[[:space:]]*//p' "$config_dir/default.yml")
-	curl --fail --silent --show-error --output /dev/null --retry 60 --retry-max-time 300 --retry-delay 5 --retry-all-errors \
-		--connect-timeout 5 --max-time 10 --resolve "${site_url#https://}:443:127.0.0.1" "$site_url/healthz"
+	check_https
 	stage='安装 camp 命令'
 	install_cli "$camp_dir/scripts" "$(git -C "$camp_dir" rev-parse HEAD)"
 	log "部署完成：$site_url。数据目录：$data_dir。使用 camp status 查看状态，camp logs 查看日志。"
@@ -478,7 +557,7 @@ main() {
 	set +x
 	set -Eeuo pipefail
 	umask 022
-	local action='' option requested_data_dir=''
+	local action='' option requested_data_dir='' autostart_mode=status
 	camp_dir=/opt/trekker-camp
 	site_url=''
 	github_token=${GH_TOKEN:-${GITHUB_TOKEN:-}}
@@ -488,6 +567,7 @@ main() {
 	trap 'if [[ -n $auth_dir ]]; then rm -f -- "$auth_dir/askpass"; rmdir -- "$auth_dir"; fi' EXIT
 	trap 'printf "操作失败：%s。备份目录：%s\n" "$stage" "${backup_dir:-未创建}" >&2' ERR
 	if (($#)) && [[ $1 != -* ]]; then action=$1; shift; fi
+	if [[ $action == autostart ]] && (($#)) && [[ $1 != -* ]]; then autostart_mode=$1; shift; fi
 	while (($#)); do
 		option=$1
 		case "$option" in
@@ -511,7 +591,9 @@ main() {
 			[[ -z $site_url && -z $requested_data_dir ]] || fail '交互菜单只接受 --dir；域名和数据目录请在首次安装菜单中填写。'
 			camp_dir=$(realpath -m -- "$camp_dir")
 			tui_menu; return ;;
-		install|update|self-update|status|logs|r2-bind|backup|backup-status) ;;
+		install|update|self-update|status|logs|r2-bind|backup|backup-status|start|stop|restart) ;;
+		autostart)
+			case "$autostart_mode" in on|off|status) ;; *) fail 'autostart 接受 on、off 或 status。' ;; esac ;;
 		*) fail "未知命令：$action" ;;
 	esac
 	[[ $EUID == 0 ]] || fail '请通过 sudo 或 root 运行。'
@@ -531,7 +613,8 @@ main() {
 		[[ -f $camp_dir/compose.yml && -f $config_dir/default.yml ]] || fail '部署配置不存在，请先运行 install --url https://你的域名。'
 	fi
 	case "$action" in
-		status) printf '代码目录：%s\n数据目录：%s\n备份目录：%s\n' "$camp_dir" "$data_dir" "$backup_root"; compose ps; return ;;
+		status) printf '代码目录：%s\n数据目录：%s\n备份目录：%s\n' "$camp_dir" "$data_dir" "$backup_root"; compose ps --all; autostart_status; return ;;
+		autostart) if [[ $autostart_mode == status ]]; then autostart_status; return; fi ;;
 		logs) compose logs --tail 100 --follow web caddy; return ;;
 		backup-status)
 			r2_dir=$backup_root/r2
@@ -550,6 +633,14 @@ main() {
 		return
 	fi
 	flock -n 9 || fail '另一项营地部署或备份正在运行。'
+	case "$action" in
+		start|restart)
+			systemctl start docker
+			if [[ $action == restart ]]; then stop_site; fi
+			start_site; return ;;
+		stop) stop_site; return ;;
+		autostart) set_autostart "$autostart_mode"; return ;;
+	esac
 	stage='读取 GitHub 凭据'
 	prepare_auth
 	stage='读取 Cloudflare 凭据'

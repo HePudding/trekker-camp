@@ -351,6 +351,128 @@ deploy
         result = self.shell('main --help')
         self.assertIn("Ubuntu 22.04 / 24.04 / 26.04", result.stdout)
 
+    @unittest.skipUnless(os.geteuid() == 0, "CLI entry point requires root")
+    def test_lifecycle_commands_use_lock_and_need_no_credentials(self):
+        self.configuration()
+        for action in ("start", "stop", "restart", "autostart on", "autostart off"):
+            with self.subTest(action=action):
+                self.env["TEST_ACTION"] = action
+                result = self.shell('''
+detect_ubuntu() { :; }
+flock() { printf 'lock %s\\n' "$*"; }
+prepare_auth() { fail 'credentials must not be requested'; }
+systemctl() { printf 'systemctl %s\\n' "$*"; }
+compose() {
+  if [[ $1 == ps ]]; then printf 'web-id\\ndb-id\\nredis-id\\ncaddy-id\\n'
+  else printf 'compose %s\\n' "$*"; fi
+}
+docker() { printf 'docker %s\\n' "$*" >> "$TEST_ROOT/docker-events"; }
+curl() { printf 'HTTPS checked\\n'; }
+read -ra action <<< "$TEST_ACTION"
+main "${action[@]}" --dir "$TEST_ROOT/checkout"
+''')
+                self.assertIn("lock -n 9", result.stdout)
+                if action in ("start", "restart"):
+                    self.assertLess(result.stdout.index("lock -n 9"), result.stdout.index("systemctl start docker"))
+                    self.assertIn("compose up -d --no-build --pull never --wait --wait-timeout 180", result.stdout)
+                    self.assertIn("HTTPS checked", result.stdout)
+                if action in ("stop", "restart"):
+                    self.assertIn("compose stop --timeout 60", result.stdout)
+                if action.startswith("autostart"):
+                    self.assertNotIn("compose up", result.stdout)
+                    self.assertNotIn("compose stop", result.stdout)
+                    self.assertNotIn("systemctl disable", result.stdout)
+
+    @unittest.skipUnless(os.geteuid() == 0, "CLI entry point requires root")
+    def test_lifecycle_refuses_changes_during_deploy_or_backup(self):
+        self.configuration()
+        for action in ("start", "stop", "restart", "autostart off"):
+            with self.subTest(action=action):
+                self.env["TEST_ACTION"] = action
+                result = self.shell('''
+detect_ubuntu() { :; }
+flock() { return 1; }
+systemctl() { touch "$TEST_ROOT/should-not-run"; }
+compose() { touch "$TEST_ROOT/should-not-run"; }
+read -ra action <<< "$TEST_ACTION"
+main "${action[@]}" --dir "$TEST_ROOT/checkout"
+''', success=False)
+                self.assertIn("另一项营地部署或备份正在运行", result.stderr)
+                self.assertFalse((self.root / "should-not-run").exists())
+
+    def test_autostart_persists_in_custom_storage_and_compose_uses_it(self):
+        import json
+
+        if subprocess.run(["bash", "-c", "docker compose version"], capture_output=True).returncode:
+            self.skipTest("Docker Compose unavailable; Ubuntu CI installs the official plugin")
+        data_dir = self.root / "data disk"
+        self.configuration(data_dir)
+        result = self.shell('''
+docker() {
+  if [[ $* == *'ps --all --quiet' ]]; then printf 'web-id\\ndb-id\\n'
+  elif [[ $1 == update ]]; then printf '%s\\n' "$*" >> "$TEST_ROOT/events"
+  else command docker "$@"; fi
+}
+set_autostart off >&2
+compose config --format json
+''')
+        config = json.loads(result.stdout)
+        self.assertEqual({service["restart"] for service in config["services"].values()}, {"no"})
+        self.assertTrue((data_dir / ".config/compose.autostart.yml").exists())
+        self.assertFalse((self.root / "checkout/.config/compose.autostart.yml").exists())
+        self.assertEqual((self.root / "events").read_text().strip(), "update --restart=no web-id db-id")
+        self.assertFalse(list((data_dir / ".config").glob(".compose.autostart-*")))
+
+    def test_failed_restart_policy_update_keeps_saved_configuration(self):
+        checkout = self.configuration()
+        saved = checkout / ".config/compose.autostart.yml"
+        previous = saved.read_bytes()
+        self.shell('''
+compose() { if [[ $1 == ps ]]; then printf 'web-id\\n'; fi; }
+docker() { return 42; }
+set_autostart off
+''', success=False)
+        self.assertEqual(saved.read_bytes(), previous)
+        self.assertFalse(list(saved.parent.glob(".compose.autostart-*")))
+
+    @unittest.skipUnless(os.environ.get("LIFECYCLE_TEST_IMAGE"), "Set LIFECYCLE_TEST_IMAGE for real Docker lifecycle tests")
+    def test_real_lifecycle_and_restart_policies_survive_container_recreation(self):
+        import json
+
+        checkout = self.configuration()
+        image = os.environ["LIFECYCLE_TEST_IMAGE"]
+        self.env["COMPOSE_PROJECT_NAME"] = self.root.name
+        (checkout / "compose.yml").write_text(json.dumps({"services": {
+            name: {"image": image, "init": True, "command": ["sleep", "3600"],
+                   "healthcheck": {"test": ["CMD", "true"], "interval": "1s"}}
+            for name in ("web", "db", "redis", "caddy")
+        }}))
+        (checkout / "compose.assets.yml").write_text("services: {}\n")
+        subprocess.run(["docker", "pull", image], env=self.env, check=True, capture_output=True, timeout=120)
+        try:
+            self.shell('''
+systemctl() { :; }
+check_https() { site_url=https://camp.example.com; }
+start_site
+ids=$(compose ps --all --quiet)
+set_autostart off
+[[ $(compose ps --all --quiet) == "$ids" ]]
+[[ $(compose ps --status running --quiet | wc -l) == 4 ]]
+compose up -d --force-recreate --no-build --pull never --wait --wait-timeout 15
+mapfile -t containers < <(compose ps --all --quiet)
+[[ $(docker inspect --format '{{.HostConfig.RestartPolicy.Name}}' "${containers[@]}" | sort -u) == no ]]
+stop_site
+[[ -z $(compose ps --status running --quiet) ]]
+set_autostart on
+[[ -z $(compose ps --status running --quiet) ]]
+start_site
+mapfile -t containers < <(compose ps --all --quiet)
+[[ $(docker inspect --format '{{.HostConfig.RestartPolicy.Name}}' "${containers[@]}" | sort -u) == always ]]
+[[ $(compose ps --status running --quiet | wc -l) == 4 ]]
+''')
+        finally:
+            self.shell('compose down --timeout 2')
+
     def terminal(self, body, interactions, unprivileged=False):
         """Exercise keyboard input and signals through a real controlling terminal."""
         pid, terminal = pty.fork()
@@ -617,6 +739,25 @@ main --dir "$TEST_ROOT/checkout"
         ])
         self.assertEqual(code, 0, output)
         self.assertIn("退出码 130", output)
+
+    def test_tui_dispatches_lifecycle_shortcuts_with_custom_directory(self):
+        command = self.menu_command('printf "%s\\n" "$*" >> "$TEST_ROOT/arguments"')
+        interactions = []
+        for key in ("s", "t", "r", "a", "d"):
+            interactions.extend([
+                ("更新和备份会短暂停站。", key),
+                ("按回车返回菜单。", "\n"),
+            ])
+        interactions.append(("更新和备份会短暂停站。", "q"))
+        code, output = self.terminal(command + '''
+sudo() { shift 2; "$@"; }
+main --dir "$TEST_ROOT/checkout"
+''', interactions)
+        self.assertEqual(code, 0, output)
+        self.assertEqual((self.root / "arguments").read_text().splitlines(), [
+            f"{action} --dir {self.root / 'checkout'}"
+            for action in ("start", "stop", "restart", "autostart on", "autostart off")
+        ])
 
     def test_tui_non_root_uses_sudo_for_operations_and_preserves_environment(self):
         self.root.chmod(0o755)

@@ -43,6 +43,16 @@ env:
   LC_ALL: C.UTF-8
 
 jobs:
+  lifecycle:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v7.0.1
+      - name: Verify service lifecycle and persistent autostart policies
+        env:
+          LIFECYCLE_TEST_IMAGE: alpine:3.23
+        run: python3 scripts/deploy.test.py DeployTests.test_real_lifecycle_and_restart_policies_survive_container_recreation -v
+
   backup:
     runs-on: ubuntu-latest
     timeout-minutes: 10
@@ -91,7 +101,7 @@ jobs:
   result:
     name: VPS CLI checks
     if: always()
-    needs: [test, caddy, backup]
+    needs: [test, caddy, backup, lifecycle]
     runs-on: ubuntu-latest
     steps:
       - name: Require every deployment check to pass
@@ -99,4 +109,5 @@ jobs:
           TEST_RESULT: ${{ needs.test.result }}
           CADDY_RESULT: ${{ needs.caddy.result }}
           BACKUP_RESULT: ${{ needs.backup.result }}
-        run: test "$TEST_RESULT" = success && test "$CADDY_RESULT" = success && test "$BACKUP_RESULT" = success
+          LIFECYCLE_RESULT: ${{ needs.lifecycle.result }}
+        run: test "$TEST_RESULT" = success && test "$CADDY_RESULT" = success && test "$BACKUP_RESULT" = success && test "$LIFECYCLE_RESULT" = success
