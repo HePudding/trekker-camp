@@ -16,6 +16,8 @@
 
 本站使用 `scripts/deploy.sh` 提供的 `camp` CLI，支持 Ubuntu 22.04 / 24.04 / 26.04 LTS。`camp update` 同步代码与素材、备份数据库、迁移并验证健康状态；`camp self-update` 独立更新 CLI，`camp version` 显示 CLI 提交号。部署授权仍需由用户明确提供。
 
+首次配置使用仓库随附的 Misskey Docker 示例模板，初始化调用 `pnpm run init`，Web 使用镜像默认 `migrateandstart` 入口。更新在备份后独立执行官方迁移，再启动应用；已有实例配置和数据保持原位。
+
 `--dir` 是代码目录，未指定时使用 CLI 保存的 `deployment-dir`，自更新保留该记录；首次安装可用 `--data-dir` 指定数据根目录，后续从代码目录 `.config/data-dir` 读取。配置、数据库、上传文件、私有素材和备份按实际数据路径管理，旧安装沿用原路径。路径标记和 Compose 挂载的修改不承担数据迁移。CLI 管理的素材通过 `camp update` 发布，独立 rsync 发布使用独立挂载目录。
 
 CLI 更新成套包含 `deploy.sh` 与 `backup.sh`，下载或校验失败应保留旧命令。R2 定时备份保持每天北京时间 04:00，使用部署共用锁，采集后恢复应用再上传。修改部署脚本、Compose、Caddy 时执行 `bash scripts/check-deploy.sh`；`node scripts/check-shipping.mjs` 会自动调用同一入口，Windows 使用默认 WSL 发行版。完整运行与恢复步骤见 `DEPLOY.zh-CN.md`。

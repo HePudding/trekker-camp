@@ -16,6 +16,8 @@ on:
       - compose.assets.yml
       - Dockerfile
       - .dockerignore
+      - .config/docker_example.yml
+      - .config/docker_example.env
       - DEPLOY.zh-CN.md
       - .github/workflows/deploy-cli.yml
   pull_request:
@@ -32,6 +34,8 @@ on:
       - compose.assets.yml
       - Dockerfile
       - .dockerignore
+      - .config/docker_example.yml
+      - .config/docker_example.env
       - DEPLOY.zh-CN.md
       - .github/workflows/deploy-cli.yml
 

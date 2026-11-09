@@ -264,6 +264,9 @@ check_checkout "$TEST_ROOT/checkout" https://github.com/HePudding/trekker-camp-a
         checkout.mkdir()
         shutil.copy(ROOT / "compose.vps.yml", checkout)
         shutil.copy(ROOT / "compose.assets.yml", checkout)
+        (checkout / ".config").mkdir()
+        for name in ("docker_example.yml", "docker_example.env"):
+            shutil.copy(ROOT / ".config" / name, checkout / ".config" / name)
         self.env["TEST_DATA_DIR"] = str(data_dir) if data_dir else ""
         self.shell('''
 camp_dir="$TEST_ROOT/checkout"
@@ -287,9 +290,16 @@ create_configuration
         checkout = self.configuration()
         config = (checkout / ".config/default.yml").read_text()
         database = (checkout / ".config/docker.env").read_text()
-        password = database.split("POSTGRES_PASSWORD=", 1)[1].strip()
+        password = database.split("POSTGRES_PASSWORD=", 1)[1].splitlines()[0]
         self.assertEqual(len(password), 64)
         self.assertIn(f"pass: '{password}'", config)
+        expected = (ROOT / ".config/docker_example.yml").read_text()
+        expected = expected.replace("url: https://example.tld/", "url: https://camp.example.com")
+        expected = expected.replace("user: example-misskey-user", "user: misskey")
+        expected = expected.replace("pass: example-misskey-pass", f"pass: '{password}'")
+        self.assertEqual(config, expected)
+        self.assertIn("POSTGRES_USER=misskey\n", database)
+        self.assertNotIn("example-misskey-", database)
         self.assertEqual((checkout / ".config/default.yml").stat().st_mode & 0o777, 0o640)
         self.assertEqual((checkout / ".config/docker.env").stat().st_mode & 0o777, 0o600)
         self.assertEqual((checkout / ".config/cloudflare.env").stat().st_mode & 0o777, 0o600)
@@ -316,7 +326,7 @@ compose config --format json
 ''')
         config = json.loads(result.stdout)
         web = config["services"]["web"]
-        self.assertEqual(web["command"], ["pnpm", "start"])
+        self.assertIsNone(web.get("command"))
         self.assertEqual(web["ports"][0]["host_ip"], "127.0.0.1")
         mount = next(mount for mount in web["volumes"] if mount["target"].endswith("/assets/camp"))
         self.assertEqual(mount["source"], str(self.root / "checkout/private-assets/public"))
@@ -354,18 +364,23 @@ compose config --format json
                 self.assertTrue(any(issuer.get("challenges", {}).get("dns", {}).get("provider", {}).get("name") == "cloudflare" for issuer in issuers))
                 self.assertNotIn(token, result.stdout)
 
-    def deployment(self, failure="", data_dir=None):
+    def deployment(self, failure="", data_dir=None, action="update", legacy=False):
         checkout = self.configuration(data_dir)
+        if legacy:
+            path = checkout / "compose.yml"
+            path.write_text(path.read_text().replace("  web:\n", "  web:\n    command: [pnpm, start]\n"))
         backup_root = data_dir / "backups" if data_dir else self.root / "checkout.backups"
         backup_root.mkdir()
         self.env["FAILURE"] = failure
+        self.env["TEST_ACTION"] = action
         result = self.shell('''
 camp_dir="$TEST_ROOT/checkout"
 backup_dir=''
 compose() {
   printf '%s\n' "$*" >> "$TEST_ROOT/events"
   case "$1:$FAILURE" in build:build|exec:backup) return 42 ;; esac
-  if [[ $FAILURE == migration && $* == 'run --rm --no-deps web pnpm migrate' ]]; then return 42; fi
+  if [[ $FAILURE == init && $* == 'run --rm --no-deps web pnpm run init' ]]; then return 42; fi
+  if [[ $FAILURE == migration && $* == 'run --rm --no-deps web pnpm run migrate' ]]; then return 42; fi
   if [[ $FAILURE == proxy-config && $* == *'caddy validate'* ]]; then return 42; fi
   if [[ $1 == exec ]]; then printf 'PGDMP-test-backup'; fi
   if [[ $FAILURE == health && $* == *--force-recreate* ]]; then return 42; fi
@@ -379,18 +394,19 @@ install_cli() {
   [[ ${4:-} == "$camp_dir" ]] || fail 'deployment directory must be saved with the CLI'
   printf 'install-cli\n' >> "$TEST_ROOT/events"
 }
-deploy
+deploy "$TEST_ACTION"
 ''', success=not failure)
         return checkout, (self.root / "events").read_text().splitlines(), result
 
     def test_deployment_orders_build_backup_migration_and_health_checks(self):
-        checkout, events, result = self.deployment()
+        checkout, events, result = self.deployment(legacy=True)
         def index(prefix):
             return next(i for i, event in enumerate(events) if event.startswith(prefix))
         self.assertLess(index("build"), index("stop web"))
         self.assertLess(index("stop web"), index("exec -T db"))
-        self.assertLess(index("exec -T db"), index("run --rm --no-deps web pnpm migrate"))
+        self.assertLess(index("exec -T db"), index("run --rm --no-deps web pnpm run migrate"))
         self.assertLess(index("run --rm --no-deps web"), index("up -d --no-deps --force-recreate --wait"))
+        self.assertFalse(any(event.endswith("pnpm run init") for event in events))
         self.assertLess(index("https"), index("install-cli"))
         self.assertIn("camp.example.com:443:127.0.0.1", events[index("https")])
         backup = next((self.root / "checkout.backups").iterdir())
@@ -399,25 +415,54 @@ deploy
         with tarfile.open(backup / "config.tar.gz") as archive:
             saved = archive.extractfile(".config/default.yml").read().decode()
             self.assertEqual(saved, (checkout / ".config/default.yml").read_text())
+            self.assertIn("command: [pnpm, start]", archive.extractfile("compose.yml").read().decode())
+        self.assertNotIn("command: [pnpm, start]", (checkout / "compose.yml").read_text())
         self.assertIn("部署完成", result.stdout)
 
     def test_failures_stop_before_later_deployment_steps(self):
-        for failure in ("build", "proxy-config", "backup", "migration", "health", "https"):
+        for failure in ("build", "proxy-config", "backup", "init", "migration", "health", "https"):
             with self.subTest(failure=failure):
                 # Each attempt needs its own generated configuration and event log.
                 for path in (self.root / "checkout", self.root / "checkout.backups"):
                     if path.exists():
                         shutil.rmtree(path)
                 (self.root / "events").unlink(missing_ok=True)
-                _, events, result = self.deployment(failure)
+                _, events, result = self.deployment(failure, action="install" if failure == "init" else "update")
                 self.assertNotIn("部署完成", result.stdout)
                 self.assertNotIn("install-cli", events)
                 if failure in ("build", "proxy-config"):
                     self.assertNotIn("stop web", events)
                 if failure in ("build", "proxy-config", "backup"):
                     self.assertFalse(any(event.startswith("run --rm --no-deps web") for event in events))
-                if failure in ("build", "proxy-config", "backup", "migration"):
+                if failure in ("build", "proxy-config", "backup", "init", "migration"):
                     self.assertFalse(any("--force-recreate" in event for event in events))
+                if failure == "health":
+                    self.assertEqual(events[-1], "stop web")
+
+    def test_fresh_install_initializes_before_starting_the_official_entrypoint(self):
+        _, events, _ = self.deployment(action="install")
+        init = events.index("run --rm --no-deps web pnpm run init")
+        backup = next(i for i, event in enumerate(events) if event.startswith("exec -T db"))
+        start = next(i for i, event in enumerate(events) if "--force-recreate" in event)
+        self.assertLess(backup, init)
+        self.assertLess(init, start)
+
+    def test_legacy_start_command_upgrade_preserves_custom_storage_and_proxy_settings(self):
+        checkout = self.configuration()
+        path = checkout / "compose.yml"
+        expected = path.read_text().replace('"127.0.0.1:3000:3000"', '"127.0.0.1:3100:3000"')
+        expected += "\n# Site-specific proxy configuration is preserved.\n"
+        for command in ("    command: [pnpm, start]\n", "    command:\n    - pnpm\n    - start\n",
+                        "    command:\n      - pnpm\n      - start\n"):
+            with self.subTest(command=command):
+                path.write_text(expected.replace("  web:\n", "  web:\n" + command))
+                self.shell("use_image_start_command\nuse_image_start_command")
+                self.assertEqual(path.read_text(), expected)
+        for command in ("    command: [pnpm, start:inspect]\n", "    command:\n    - pnpm\n    - start:inspect\n"):
+            custom = expected.replace("  web:\n", "  web:\n" + command)
+            path.write_text(custom)
+            self.shell("use_image_start_command")
+            self.assertEqual(path.read_text(), custom)
 
     def test_help_needs_no_credentials_or_root(self):
         result = self.shell('main --help')

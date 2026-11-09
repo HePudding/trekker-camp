@@ -421,27 +421,13 @@ create_configuration() {
 		umask 077
 		printf '%s\n' "$data_dir" > "$camp_dir/.config/data-dir"
 		printf 'CLOUDFLARE_API_TOKEN=%s\n' "$cloudflare_token" > "$config_dir/cloudflare.env"
-		cat > "$config_dir/docker.env" <<EOF
-POSTGRES_DB=misskey
-POSTGRES_USER=misskey
-POSTGRES_PASSWORD=$password
-EOF
-		cat > "$config_dir/default.yml" <<EOF
-url: $site_url
-port: 3000
-db:
-  host: db
-  port: 5432
-  db: misskey
-  user: misskey
-  pass: '$password'
-redis:
-  host: redis
-  port: 6379
-id: aidx
-fulltextSearch:
-  provider: sqlLike
-EOF
+		sed -e "s|^POSTGRES_PASSWORD=example-misskey-pass$|POSTGRES_PASSWORD=$password|" \
+			-e 's/^POSTGRES_USER=example-misskey-user$/POSTGRES_USER=misskey/' \
+			"$camp_dir/.config/docker_example.env" > "$config_dir/docker.env"
+		sed -e "s|^url: https://example.tld/$|url: $site_url|" \
+			-e 's/^  user: example-misskey-user$/  user: misskey/' \
+			-e "s/^  pass: example-misskey-pass$/  pass: '$password'/" \
+			"$camp_dir/.config/docker_example.yml" > "$config_dir/default.yml"
 	)
 	chown root:991 "$config_dir/default.yml"
 	chmod 0640 "$config_dir/default.yml"
@@ -540,7 +526,32 @@ stop_site() {
 	log '站点已停止，容器和数据已保留。'
 }
 
+use_image_start_command() (
+	local candidate
+	candidate=$(mktemp "$camp_dir/.compose-XXXXXX")
+	trap 'rm -f -- "$candidate"' EXIT
+	# Remove the old camp override, preserving other settings and custom commands.
+	# Support the flow list we generated and its equivalent block-list spelling.
+	awk '
+		/^  web:$/ { web = 1; print; next }
+		/^  [^[:space:]]/ { web = 0 }
+		web && /^    command: \[pnpm, start\]$/ { next }
+		web && /^    command:$/ {
+			line = $0
+			getline first
+			getline second
+			if (first ~ /^    (  )?- pnpm$/ && second ~ /^    (  )?- start$/) next
+			print line; print first; print second; next
+		}
+		{ print }
+	' "$camp_dir/compose.yml" > "$candidate"
+	if cmp -s "$candidate" "$camp_dir/compose.yml"; then return; fi
+	chmod --reference="$camp_dir/compose.yml" "$candidate"
+	mv -f -- "$candidate" "$camp_dir/compose.yml"
+)
+
 deploy() {
+	local action=$1
 	stage='构建应用镜像'
 	compose config --quiet
 	compose build web caddy
@@ -561,10 +572,21 @@ deploy() {
 	)
 	[[ -s $backup_dir/database.dump ]] || fail "数据库备份为空：$backup_dir/database.dump"
 	log "备份已保存：$backup_dir"
-	stage='迁移数据库'
-	compose run --rm --no-deps web pnpm migrate
+	stage='使用 Misskey 镜像默认启动入口'
+	use_image_start_command
+	if [[ $action == install ]]; then
+		stage='初始化数据库'
+		compose run --rm --no-deps web pnpm run init
+	else
+		stage='迁移数据库'
+		# Keep long migrations outside the startup health-check timeout.
+		compose run --rm --no-deps web pnpm run migrate
+	fi
 	stage='启动应用并检查健康状态'
-	compose up -d --no-deps --force-recreate --wait --wait-timeout 180 web
+	if ! compose up -d --no-deps --force-recreate --wait --wait-timeout 180 web; then
+		compose stop web
+		fail "应用迁移或启动失败，已停止应用。请查看 camp logs；备份保存在 $backup_dir。"
+	fi
 	stage='启动 HTTPS 入口'
 	compose up -d --wait --wait-timeout 60 caddy
 	check_https
@@ -701,7 +723,7 @@ main() {
 	stage='保存 GitHub PAT'
 	save_github_token
 	install -d -m 0700 "$backup_root"
-	deploy
+	deploy "$action"
 }
 
 if [[ ${BASH_SOURCE[0]} == "$0" ]]; then

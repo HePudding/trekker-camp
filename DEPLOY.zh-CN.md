@@ -26,11 +26,17 @@ bash /tmp/camp-deploy.sh install --url https://camp.example.com
 
 1. 检测 Ubuntu 版本，安装缺少的 Git / Git LFS 等工具；没有 Docker 时通过官方 APT 源安装 Docker Engine、Compose 和 Buildx。版本对应 `jammy` / `noble` / `resolute`，依据 [Docker Ubuntu 安装文档](https://docs.docker.com/engine/install/ubuntu/)。已有可用 Docker 会被复用。
 2. 拉取代码和私有素材，仅下载 `public/` 下的 LFS 文件。
-3. 生成随机数据库密码、应用配置和 Caddy / Cloudflare DNS 配置，将 `compose.vps.yml` 复制为本站的 `compose.yml`。
-4. 构建应用及包含 Cloudflare 插件的 Caddy 镜像，验证代理配置，启动 PostgreSQL 18 和 Redis，备份数据库与配置，执行迁移。
-5. 挂载素材并启动应用，等待容器健康检查和本机 HTTPS `/healthz` 检查成功。
+3. 从仓库随附的 `.config/docker_example.yml` 和 `.config/docker_example.env` 生成配置，填入域名和随机数据库密码，保留官方模板的其他默认值与注释；生成 Caddy / Cloudflare DNS 配置，将 `compose.vps.yml` 复制为本站的 `compose.yml`。
+4. 构建应用及包含 Cloudflare 插件的 Caddy 镜像，验证代理配置，启动 PostgreSQL 18 和 Redis，备份数据库与配置，运行 `pnpm run init` 初始化数据库。
+5. 挂载素材，以镜像默认的 `pnpm run migrateandstart` 启动应用，等待容器健康检查和本机 HTTPS `/healthz` 检查成功。
 
 首次打开站点时创建管理员账号。站点创建后保持配置中的 `url` 不变。
+
+### 与 Misskey 官方 Docker 部署的关系
+
+CLI 沿用 [Misskey 官方 Docker Compose 安装流程](https://misskey-hub.net/en/docs/for-admin/install/guides/docker/)的源码构建、配置模板、`init` 初始化和镜像默认启动入口。上传文件、PostgreSQL 与 Redis 继续使用持久化挂载；Web 容器使用 Misskey 的非 root 用户。程序仍按 Misskey 配置处理媒体代理与对象存储。
+
+本站增加的运维步骤包括：Caddy / Cloudflare 自动 HTTPS、私有素材只读挂载、细粒度 PAT 保存、更新前本地备份、R2 定时备份、健康检查和交互管理。Redis 额外启用 AOF 持久化，应用端口只绑定本机，通过 Caddy 对外提供 HTTPS。更新在停止应用、完成备份后独立执行官方 `pnpm run migrate`；这样迁移失败会保留停站状态，耗时迁移也不会占用启动健康检查的等待时间。随后镜像的 `migrateandstart` 再检查待执行迁移并启动应用。
 
 ### 自定义数据目录
 
@@ -95,7 +101,7 @@ sudo camp autostart off         # 关闭开机自启，不立即停止正在运�
 sudo camp autostart             # 查看 Docker 和各服务的开机自启状态
 ```
 
-菜单快捷键为 **S 启动、T 停止、R 重启、A 开启自启、D 关闭自启**。这些操作不需要 GitHub 或 Cloudflare token，与更新和备份共用操作锁。启动复用本机已有镜像，不拉取代码、不构建镜像、不执行数据库迁移。`camp status` 同时列出已停止的容器和开机自启状态。
+菜单快捷键为 **S 启动、T 停止、R 重启、A 开启自启、D 关闭自启**。这些操作不需要 GitHub 或 Cloudflare token，与更新和备份共用操作锁。启动复用本机已有镜像，使用官方 `migrateandstart` 入口检查待执行迁移后启动；已完成部署的镜像通常没有待执行迁移。`camp status` 同时列出已停止的容器和开机自启状态。
 
 新安装默认开启自启。开启时使用 Docker `always` 重启策略，并启用 Docker 服务随系统启动；关闭时使用 `no` 策略，仅改变本站容器。开机自启设置保存到数据目录的 `.config/compose.autostart.yml`，更新、容器重建及配置备份都会保留。旧安装未切换设置时沿用原来的 `unless-stopped` 策略，手动停止的容器会保持停止，状态中会注明。
 
@@ -105,9 +111,9 @@ sudo camp autostart             # 查看 Docker 和各服务的开机自启状�
 
 `update` 同步两个仓库的 `master`，构建新镜像后停止应用，备份数据库、执行迁移并重新创建应用容器。素材清单中的新增表情会在应用启动时自动注册。数据库、上传文件、配置和证书持续保存在原有目录 / Docker 卷中。
 
-代码或素材有未提交修改、未发布提交、分叉或处于其他分支时，CLI 会停止并保留现场。更新使用已有配置；`compose.vps.yml` 的后续变化由维护者审查后应用到服务器 `compose.yml`。
+代码或素材有未提交修改、未发布提交、分叉或处于其他分支时，CLI 会停止并保留现场。更新使用已有配置；旧版 CLI 生成的 Web `command: [pnpm, start]` 覆盖会在备份后移除，恢复镜像默认启动入口。其他自定义设置保留，`compose.vps.yml` 的其他变化由维护者审查后应用到服务器 `compose.yml`。
 
-构建失败时现有应用继续运行。备份或迁移失败时应用保持停止；修复报错后再次执行 `camp update`。首次部署在安装 `camp` 命令前失败时，可以使用 `bash /tmp/camp-deploy.sh update` 继续；尚未生成配置时重新执行 `install`。
+构建失败时现有应用继续运行。备份、迁移或应用健康检查失败时应用保持停止；修复报错后再次执行 `camp update`。首次部署在安装 `camp` 命令前失败时，可以使用 `bash /tmp/camp-deploy.sh update` 继续；尚未生成配置时重新执行 `install`。
 
 HTTPS 检查失败时，检查域名解析、80 / 443 端口及 `camp logs` 中的 Caddy 日志。首次安装尚无 `camp` 命令时，使用 `bash /tmp/camp-deploy.sh logs`。脚本不会自动还原数据库迁移。
 

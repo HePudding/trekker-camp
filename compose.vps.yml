@@ -3,7 +3,6 @@ services:
   web:
     build: .
     restart: unless-stopped
-    command: [pnpm, start]
     depends_on:
       db:
         condition: service_healthy

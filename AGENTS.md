@@ -39,6 +39,7 @@
 
 7. **本站 VPS 使用部署 CLI**
    - 运维入口和存储布局见 [DEPLOY.zh-CN.md](DEPLOY.zh-CN.md)。终端中直接运行 `camp` 打开交互菜单；Agent 自动化使用子命令。首次部署用 `camp install`，应用与素材更新用 `camp update`，CLI 自身更新用 `camp self-update`，版本用 `camp version` 查看。
+   - 首次配置使用仓库随附的 Misskey Docker 示例模板，初始化调用 `pnpm run init`，Web 使用镜像默认 `migrateandstart` 入口；更新先备份、独立执行官方迁移，再启动并检查健康状态。保留已有实例配置和数据。
    - 启停使用 `camp start`、`camp stop`、`camp restart`；开机自启使用 `camp autostart on/off`，状态由 `camp status` 显示。保留数据目录中的 `.config/compose.autostart.yml`，启停和自启设置与更新、备份共用锁；不要通过停用整个 Docker 服务来关闭本站自启。
    - `--dir` 指定代码目录，未指定时使用 CLI 保存的 `deployment-dir`；自更新保留该记录。首次安装的 `--data-dir` 指定数据根目录，后续命令读取代码目录 `.config/data-dir`。保留已有数据位置，禁止通过修改路径标记或 Compose 挂载来代替数据迁移。
    - 私有素材使用仅限该仓库读取的细粒度 PAT；CLI 在访问成功后保存到数据目录 `.config/github-token`（root `0600`），环境变量可提供替换值。保留已保存的 PAT，不依赖 `gh`，不输出凭据内容。
