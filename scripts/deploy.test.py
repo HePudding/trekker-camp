@@ -516,8 +516,8 @@ main
         command = self.menu_command('printf "Action: %s\\n" "$1"')
         code, output = self.terminal(command + '''
 sudo() {
-  [[ $1 == --preserve-env=GH_TOKEN,*R2_BACKUP_PASSWORD && $2 == -- ]]
-  [[ $GH_TOKEN == test-github-secret && $R2_BACKUP_PASSWORD == test-r2-secret ]]
+  [[ $1 == --preserve-env=GH_TOKEN,*R2_BACKUP_PASSWORD && $2 == -- ]] || return 1
+  [[ $GH_TOKEN == test-github-secret && $R2_BACKUP_PASSWORD == test-r2-secret ]] || return 1
   printf 'Sudo requested\n'
   shift 2
   "$@"
