@@ -451,6 +451,29 @@ deploy "$TEST_ACTION"
         self.assertLess(backup, init)
         self.assertLess(init, start)
 
+    def test_https_wait_suppresses_transient_errors_and_reports_final_failure(self):
+        self.configuration()
+        for exit_code in (0, 35):
+            with self.subTest(exit_code=exit_code):
+                self.env["TEST_CURL_EXIT"] = str(exit_code)
+                result = self.shell('''
+curl() {
+  printf 'transient TLS failure\nretrying HTTPS\nfinal TLS failure\n' >&2
+  return "$TEST_CURL_EXIT"
+}
+check_https
+''', success=exit_code == 0)
+                self.assertIn("等待 HTTPS 入口就绪", result.stdout)
+                self.assertNotIn("transient TLS failure", result.stderr)
+                self.assertNotIn("retrying HTTPS", result.stderr)
+                if exit_code == 0:
+                    self.assertEqual(result.stderr, "")
+                else:
+                    self.assertEqual(result.stderr.count("final TLS failure"), 1)
+                    self.assertIn("camp logs", result.stderr)
+                    self.assertIn(f'--dir "{self.root / "checkout"}"', result.stderr)
+                self.assertFalse(list(self.root.glob("camp-https-*")))
+
     def test_legacy_start_command_upgrade_preserves_custom_storage_and_proxy_settings(self):
         checkout = self.configuration()
         path = checkout / "compose.yml"

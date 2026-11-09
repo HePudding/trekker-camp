@@ -117,7 +117,7 @@ sudo camp autostart             # 查看 Docker 和各服务的开机自启状�
 
 构建失败时现有应用继续运行。备份、迁移或应用健康检查失败时应用保持停止；修复报错后再次执行 `camp update`。首次部署在安装 `camp` 命令前失败时，可以使用 `bash /tmp/camp-deploy.sh update` 继续；尚未生成配置时重新执行 `install`。
 
-HTTPS 检查失败时，检查域名解析、80 / 443 端口及 `camp logs` 中的 Caddy 日志。首次安装尚无 `camp` 命令时，使用 `bash /tmp/camp-deploy.sh logs`。脚本不会自动还原数据库迁移。
+首次签发证书时，CLI 显示一条等待提示并重试 HTTPS 检查；超时后显示最终连接错误。此时检查域名解析、80 / 443 端口及 `camp logs` 中的 Caddy 日志，修复后运行 `camp start` 重新检查。首次安装尚无 `camp` 命令时，使用 `bash /tmp/camp-deploy.sh logs --dir <代码目录>` 查看日志。脚本不会自动还原数据库迁移。
 
 Caddy 只信任 [Cloudflare 官方网段](https://www.cloudflare.com/ips/)传来的 `CF-Connecting-IP`，将解析后的访客 IP 传给应用；直接连接 VPS 的请求使用连接来源地址。WebSocket 由 Caddy 正常转发，Cloudflare 保持 WebSockets 启用。缓存规则沿用应用响应头，为 `/api/*`、`/streaming*` 和登录页面保留动态访问，避免设置整站强制缓存。
 

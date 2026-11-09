@@ -517,8 +517,18 @@ set_autostart() (
 check_https() {
 	stage='检查 HTTPS 入口'
 	site_url=$(sed -n 's/^url:[[:space:]]*//p' "$config_dir/default.yml")
-	curl --fail --silent --show-error --output /dev/null --retry 60 --retry-max-time 300 --retry-delay 5 --retry-all-errors \
-		--connect-timeout 5 --max-time 10 --resolve "${site_url#https://}:443:127.0.0.1" "$site_url/healthz"
+	log '等待 HTTPS 入口就绪；首次申请证书可能需要几分钟。'
+	(
+		local error_log
+		umask 077
+		error_log=$(mktemp "${TMPDIR:-/tmp}/camp-https-XXXXXX")
+		trap 'rm -f -- "$error_log"' EXIT
+		if ! curl --fail --silent --show-error --output /dev/null --retry 60 --retry-max-time 300 --retry-delay 5 --retry-all-errors \
+			--connect-timeout 5 --max-time 10 --resolve "${site_url#https://}:443:127.0.0.1" "$site_url/healthz" 2> "$error_log"; then
+			tail -n 1 "$error_log" >&2
+			fail "HTTPS 入口等待超时。请运行 camp logs --dir \"$camp_dir\" 查看证书或 DNS 验证错误；修复后用 camp start --dir \"$camp_dir\" 重新检查。"
+		fi
+	)
 }
 
 start_site() {
