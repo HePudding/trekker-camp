@@ -126,6 +126,27 @@ function normalizeStatus(status) {
 }
 
 /**
+ * VPS CLI の変更時に CI と同じ検査を実行する。Windows は WSL を使用する。
+ * @param {string[]} changedFiles
+ * @param {string} repoRoot
+ * @returns {{ status: number, summary: string }}
+ */
+function runDeploymentChecks(changedFiles, repoRoot) {
+	if (!changedFiles.some(file => /^(scripts\/(deploy\.|backup\.|check-(deploy\.sh|shipping\.mjs)$|caddy\/)|compose\.(vps|assets)\.yml$|Dockerfile$|\.dockerignore$|\.config\/docker_example\.(yml|env)$|\.github\/workflows\/deploy-cli\.yml$)/.test(file))) {
+		return { status: 0, summary: 'SKIPPED' };
+	}
+	try {
+		const status = normalizeStatus(process.platform === 'win32'
+			? runCommand('wsl', ['--cd', repoRoot, 'bash', 'scripts/check-deploy.sh'], repoRoot)
+			: runCommand('bash', ['scripts/check-deploy.sh'], repoRoot));
+		return { status, summary: status === 0 ? 'PASS' : status === 1 ? 'FAIL' : 'ERROR' };
+	} catch (error) {
+		console.error(`VPS CLI: 検査不能 — ${error.message}`);
+		return { status: 2, summary: 'ERROR' };
+	}
+}
+
+/**
  * 変更ファイルを package ごとに分け、対象限定 ESLint を実行する。
  *
  * @param {string[]} changedFiles
@@ -218,6 +239,7 @@ function main() {
 		const base = resolveMergeBase(baseRef);
 		const changedFiles = filterUnchangedRelocations(listChangedFiles(base), base);
 		const lint = runChangedFileLint(changedFiles, repoRoot);
+		const deployment = runDeploymentChecks(changedFiles, repoRoot);
 		const spdxStatus = runSpdx(base, repoRoot);
 		const localeStatus = runLocaleSafety(changedFiles);
 		let assetStatus = 0;
@@ -231,12 +253,13 @@ function main() {
 		console.log('');
 		console.log('Shipping checks:');
 		console.log(`Lint:          ${lint.summary}`);
+		console.log(`VPS CLI:       ${deployment.summary}`);
 		console.log(`SPDX:          ${spdxStatus === 0 ? 'PASS' : spdxStatus === 1 ? 'FAIL' : 'ERROR'}`);
 		console.log(`Locale safety: ${localeStatus === 0 ? 'PASS' : 'FAIL'}`);
 		console.log(`Private assets: ${assetStatus === 0 ? 'PASS' : 'FAIL'}`);
 
-		if (lint.status === 2 || spdxStatus === 2) return 2;
-		if (lint.status === 1 || spdxStatus === 1 || localeStatus === 1 || assetStatus === 1) return 1;
+		if (lint.status === 2 || deployment.status === 2 || spdxStatus === 2) return 2;
+		if (lint.status === 1 || deployment.status === 1 || spdxStatus === 1 || localeStatus === 1 || assetStatus === 1) return 1;
 		return 0;
 	} catch (error) {
 		const message = error instanceof Error ? error.message : String(error);

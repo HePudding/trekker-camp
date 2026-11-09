@@ -32,6 +32,7 @@ node scripts/check-shipping.mjs
 脚本完成以下独立检查，并以退出码 0（通过）、1（违规）、2（检查无法执行）汇总结果：
 
 - 以 NUL 分隔安全枚举已提交、未提交和未跟踪的改动，仅对改动文件从所属包根目录运行 `eslint --quiet`。
+- 部署脚本、Compose、Caddy 或部署 CI 改动时，执行与 CI 共用的 `bash scripts/check-deploy.sh`；Windows 自动通过默认 WSL 发行版执行，需在该环境提供 Bash、Python 3、Git LFS 和 ShellCheck。工具缺失会报告检查错误。
 - SPDX 检查失败时，仅对本地改动中缺失的头运行 `check-spdx.mjs --fix`，然后重新执行常规检查。
 - 无论 SPDX 结果如何，都检查语言 YAML 改动：允许产品文案源 `apps/misskey/locales/zh-CN.yml` 和上游同步源 `apps/misskey/locales/ja-JP.yml`，其余语言禁止修改。
 - 检查 `private-assets` 和 `apps/misskey/packages/frontend/assets/camp` 的 Git 排除规则，拒绝已进入索引的素材、链接和私有素材子仓库。也可单独运行 `pnpm assets:check`。
@@ -43,6 +44,7 @@ node scripts/check-shipping.mjs
 
 ## 2. 按修改类型检查
 
+- VPS CLI：覆盖成套自更新及失败保留旧命令、自定义数据目录和旧安装兼容、更新前备份、迁移与健康检查、R2 备份及北京时间调度。`check-shipping.mjs` 已调用 `check-deploy.sh`，通过后无需重复执行；真实 Caddy 与 Restic 镜像测试由部署 CI 分别运行。运维路径按 [DEPLOY.zh-CN.md](../../../DEPLOY.zh-CN.md) 和 `camp status` 确认，获得部署授权后使用 `camp update` 完成应用和素材发布。
 - 素材脚本、Git/Docker 忽略规则、源码打包或素材部署挂载：运行 `pnpm assets:test`。Docker 不可用时明确记录镜像排除测试为 `SKIPPED`；开发与部署约定见 [ASSETS.md](../../../ASSETS.md)。
 - 私有素材库中的修改：分别遵循其 `AGENTS.md` 进行素材验证和提交，主仓库检查保持通过。不要向主仓库添加素材、链接或私有仓库文件；配置服务器后，素材库的 `master` 推送会触发自动发布。
 - 后端 API 的 `meta`、`paramDef` 或 `res`：执行 `pnpm build-misskey-js-with-types`。

@@ -82,6 +82,12 @@ CAMP_ASSETS_DIR=/srv/trekker-assets/public pnpm assets:link
 
 ## Docker 部署
 
+本站 Ubuntu VPS 可使用 [部署 CLI](DEPLOY.zh-CN.md) 完成首次安装与更新。CLI 通过 GitHub token 拉取私有素材，沿用下述 `compose.assets.yml` 只读挂载，并在启动应用前完成素材同步。
+
+CLI 部署的素材工作副本位于数据根目录下的 `private-assets/`，默认数据根目录与代码目录相同；首次安装使用 `--data-dir` 时，素材随数据库、上传文件和备份一起放到指定目录。`camp update` 自动设置素材挂载路径，Agent 通过 `camp status` 确认实际位置。
+
+CLI 管理的服务器使用 `camp update` 统一发布素材和应用；下面的 rsync 工作流用于独立部署的素材目录。将 rsync 直接指向 CLI 的 Git 工作副本会留下未提交改动，使后续 CLI 更新停止。部署授权明确后按对应入口发布，保持素材与代码的独立提交。
+
 ### 星塔旅人表情
 
 私有素材库的 `public/emojis/stella-sora/manifest.json` 记录表情名称、中文搜索别名、分类及图片文件名，图片保存在同一目录。静态表情使用 PNG，动态表情使用 GIF；来源与授权记录留在素材库的 `RIGHTS.md` 和 `originals/` 中。
@@ -97,6 +103,8 @@ CAMP_ASSETS_DIR=/srv/trekker-assets/public pnpm assets:link
 未设置自定义头像的用户使用私有素材库中的 `public/avatars/default-v1.png`。用户上传头像后显示其自定义头像，移除后恢复营地默认头像；无需修改已有账号数据。系统账号沿用实例图标。
 
 本次发布需要同时交付代码仓库与素材仓库：先同步包含该图片的素材版本到服务器，再部署配套代码，并沿用下述 `compose.assets.yml` 只读挂载。头像通过 `/client-assets/camp/avatars/default-v1.png` 加载，不进入镜像。未挂载图片时沿用原有默认头像；素材随后到位即可生效，无需再次重启应用。
+
+默认头像源文件固定由本站的 `/client-assets/camp/avatars/default-v1.png` 提供，CLI 部署的文件位于 `<数据目录>/private-assets/public/avatars/default-v1.png`。启用网盘对象存储或外部媒体代理后，源文件地址和挂载位置仍保持不变；省流和禁用动画模式沿用 Misskey 的媒体代理转换流程，代理需能解析并访问本站 HTTPS 地址及其重定向目标。用户上传的自定义头像按网盘存储设置处理。
 
 ### 同步与挂载
 
