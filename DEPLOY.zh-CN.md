@@ -40,7 +40,9 @@ bash /tmp/camp-deploy.sh install --url https://camp.example.com
 bash /tmp/camp-deploy.sh install --url https://camp.example.com --data-dir /srv/trekker-camp-data
 ```
 
-`--dir` 管理代码目录，默认 `/opt/trekker-camp`；`--data-dir` 管理持久化数据，默认沿用代码目录。自定义数据目录需位于代码目录之外，两个目录不能互相包含。示例中的存储布局为：
+`--dir` 管理代码目录，首次默认 `/opt/trekker-camp`；安装或更新成功后，CLI 会记住实际代码目录，后续直接运行 `camp` 或子命令即可使用。记录保存在 `/usr/local/lib/trekker-camp/deployment-dir`，CLI 自更新会保留，显式 `--dir` 优先于记录。旧版 CLI 升级后，先执行一次 `sudo camp status --dir <已有代码目录>` 即可补存记录。
+
+`--data-dir` 管理持久化数据，默认沿用代码目录。自定义数据目录需位于代码目录之外，两个目录不能互相包含。示例中的存储布局为：
 
 | 位置 | 内容 |
 | --- | --- |

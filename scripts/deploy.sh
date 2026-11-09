@@ -29,7 +29,7 @@ usage() {
   sudo camp backup-status
 
 选项：
-  --dir PATH   部署目录，默认 /opt/trekker-camp；后续命令需使用同一路径
+  --dir PATH   覆盖本次操作的代码目录；默认使用已记录目录，首次为 /opt/trekker-camp
   --data-dir PATH  首次安装的数据目录，默认与部署目录相同；后续自动读取
   --url URL    首次部署的 HTTPS 域名；Cloudflare DNS 指向 VPS，开放 TCP 80/443
   -h, --help   显示帮助
@@ -210,8 +210,14 @@ tui_menu() {
 	done
 }
 
+save_deployment_dir() {
+	local directory=$1 record=$2
+	printf '%s\n' "$directory" > "$record"
+	chmod 0644 "$record"
+}
+
 install_cli() {
-	local source_dir=$1 revision=$2 prefix=${3:-/usr/local} release
+	local source_dir=$1 revision=$2 prefix=${3:-/usr/local} deployment_dir=${4:-} release
 	[[ $revision =~ ^[a-f0-9]{40}$ ]] || fail 'CLI 版本需为 Git 提交号。'
 	[[ -s $source_dir/deploy.sh && -s $source_dir/backup.sh ]] || fail 'CLI 更新文件不完整。'
 	# Validate the complete bundle before changing the installed entry point.
@@ -228,6 +234,9 @@ install_cli() {
 	mv -Tf "$release.link" "$prefix/lib/trekker-camp/current"
 	ln -s "$prefix/lib/trekker-camp/current/deploy.sh" "$release/camp-entry"
 	mv -Tf "$release/camp-entry" "$prefix/bin/camp"
+	if [[ -n $deployment_dir ]]; then
+		save_deployment_dir "$deployment_dir" "$prefix/lib/trekker-camp/deployment-dir"
+	fi
 }
 
 self_update() (
@@ -547,7 +556,7 @@ deploy() {
 	compose up -d --wait --wait-timeout 60 caddy
 	check_https
 	stage='安装 camp 命令'
-	install_cli "$camp_dir/scripts" "$(git -C "$camp_dir" rev-parse HEAD)"
+	install_cli "$camp_dir/scripts" "$(git -C "$camp_dir" rev-parse HEAD)" /usr/local "$camp_dir"
 	log "部署完成：$site_url。数据目录：$data_dir。使用 camp status 查看状态，camp logs 查看日志。"
 	compose ps
 }
@@ -559,6 +568,9 @@ main() {
 	umask 022
 	local action='' option requested_data_dir='' autostart_mode=status
 	camp_dir=/opt/trekker-camp
+	if [[ -f $cli_dir/VERSION && -s $cli_dir/../deployment-dir ]]; then
+		camp_dir=$(< "$cli_dir/../deployment-dir")
+	fi
 	site_url=''
 	github_token=${GH_TOKEN:-${GITHUB_TOKEN:-}}
 	cloudflare_token=${CLOUDFLARE_API_TOKEN:-}
@@ -611,6 +623,10 @@ main() {
 	if [[ $action != install ]]; then
 		[[ -z $site_url ]] || fail '--url 仅用于首次 install。'
 		[[ -f $camp_dir/compose.yml && -f $config_dir/default.yml ]] || fail '部署配置不存在，请先运行 install --url https://你的域名。'
+		# Adopt an existing deployment once when upgrading an older CLI bundle.
+		if [[ -f $cli_dir/VERSION && ! -e $cli_dir/../deployment-dir ]]; then
+			save_deployment_dir "$camp_dir" "$cli_dir/../deployment-dir"
+		fi
 	fi
 	case "$action" in
 		status) printf '代码目录：%s\n数据目录：%s\n备份目录：%s\n' "$camp_dir" "$data_dir" "$backup_root"; compose ps --all; autostart_status; return ;;

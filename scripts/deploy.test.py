@@ -306,7 +306,10 @@ curl() {
   [[ $FAILURE != https ]]
 }
 git() { printf '%040d\n' 1; }
-install_cli() { printf 'install-cli\n' >> "$TEST_ROOT/events"; }
+install_cli() {
+  [[ ${4:-} == "$camp_dir" ]] || fail 'deployment directory must be saved with the CLI'
+  printf 'install-cli\n' >> "$TEST_ROOT/events"
+}
 deploy
 ''', success=not failure)
         return checkout, (self.root / "events").read_text().splitlines(), result
@@ -853,7 +856,7 @@ main --dir "$TEST_ROOT/checkout"
                 self.assertEqual(mount["type"], "bind")
         self.assertEqual(config["services"]["web"]["build"]["context"], str(self.root / "checkout"))
 
-    def cli_repository(self):
+    def cli_repository(self, deployment_dir=None):
         source = self.repository("cli-source", {
             "scripts/deploy.sh": (ROOT / "scripts/deploy.sh").read_text(),
             "scripts/backup.sh": (ROOT / "scripts/backup.sh").read_text(),
@@ -862,7 +865,8 @@ main --dir "$TEST_ROOT/checkout"
         self.env["TEST_CLI_SOURCE"] = str(source)
         self.env["DOWNLOAD_FAILURE"] = ""
         self.env["CLI_REVISION"] = self.git(source, "rev-parse", "HEAD")
-        self.shell('install_cli "$TEST_CLI_SOURCE/scripts" "$CLI_REVISION" "$TEST_ROOT/prefix"')
+        self.env["CLI_DEPLOYMENT"] = str(deployment_dir) if deployment_dir else ""
+        self.shell('install_cli "$TEST_CLI_SOURCE/scripts" "$CLI_REVISION" "$TEST_ROOT/prefix" "$CLI_DEPLOYMENT"')
         return source
 
     def update_cli(self, success=True):
@@ -887,6 +891,58 @@ curl() {
 docker() { fail 'CLI self-update must not contact Docker'; }
 self_update "$TEST_ROOT/prefix"
 ''', success=success)
+
+    def test_installed_menu_remembers_custom_directory_across_self_update(self):
+        checkout = self.configuration(self.root / "data disk")
+        source = self.cli_repository(deployment_dir=checkout)
+        record = self.root / "prefix/lib/trekker-camp/deployment-dir"
+        self.root.chmod(0o755)
+        for updated in (False, True):
+            with self.subTest(updated=updated):
+                if updated:
+                    backup = source / "scripts/backup.sh"
+                    backup.write_text(backup.read_text() + "\n# New fixture version\n")
+                    self.git(source, "commit", "-am", "Update CLI fixture")
+                    self.update_cli()
+                code, output = self.terminal('exec "$TEST_ROOT/prefix/bin/camp"', [
+                    ("更新和备份会短暂停站。", "q"),
+                ], unprivileged=os.geteuid() == 0)
+                self.assertEqual(code, 0, output)
+                self.assertIn(f"代码目录：{checkout}", output)
+                self.assertIn("状态：已有部署配置", output)
+                self.assertNotIn("状态：尚未配置", output)
+                self.assertEqual(record.read_text(), str(checkout) + "\n")
+                self.assertEqual(record.stat().st_mode & 0o777, 0o644)
+        code, output = self.terminal('exec "$TEST_ROOT/prefix/bin/camp" --dir "$TEST_ROOT/new checkout"', [
+            ("更新和备份会短暂停站。", "q"),
+        ])
+        self.assertEqual(code, 0, output)
+        self.assertIn(f"代码目录：{self.root / 'new checkout'}", output)
+        self.assertIn("状态：尚未配置", output)
+        self.assertEqual(record.read_text(), str(checkout) + "\n")
+
+    @unittest.skipUnless(os.geteuid() == 0, "CLI entry point requires root")
+    def test_legacy_cli_records_valid_directory_and_reuses_it_for_commands(self):
+        checkout = self.configuration(self.root / "data disk")
+        self.cli_repository()
+        record = self.root / "prefix/lib/trekker-camp/deployment-dir"
+        self.shell('''
+source "$TEST_ROOT/prefix/bin/camp"
+detect_ubuntu() { :; }
+main status --dir "$TEST_ROOT/missing"
+''', success=False)
+        self.assertFalse(record.exists())
+        result = self.shell('''
+source "$TEST_ROOT/prefix/bin/camp"
+detect_ubuntu() { :; }
+compose() { printf 'selected: %s\\n' "$camp_dir"; }
+autostart_status() { :; }
+main status --dir "$TEST_ROOT/checkout"
+main status
+''')
+        self.assertEqual(record.read_text(), str(checkout) + "\n")
+        self.assertEqual(result.stdout.count(f"selected: {checkout}"), 2)
+        self.assertEqual(result.stdout.count(f"数据目录：{self.root / 'data disk'}"), 2)
 
     def test_self_update_installs_matching_bundle_atomically_without_touching_app(self):
         source = self.cli_repository()
