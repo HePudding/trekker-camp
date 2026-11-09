@@ -171,7 +171,11 @@ tui_menu() {
 		case "$action" in
 			exit) return ;;
 			directory)
-				if tui_read_default value '代码目录' "$camp_dir"; then camp_dir=$(realpath -m -- "$value"); fi
+				if tui_read_default value '代码目录' "$camp_dir"; then
+					value=$(realpath -m -- "$value")
+					if [[ $install_data == "$camp_dir" ]]; then install_data=$value; fi
+					camp_dir=$value
+				fi
 				continue ;;
 			install)
 				if ! tui_install_wizard; then continue; fi

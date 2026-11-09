@@ -476,8 +476,9 @@ main tui
             self.assertNotIn(secret, output)
 
     def test_tui_first_install_accepts_default_configuration_with_enter(self):
-        command = self.menu_command('printf "%s\\n" "$@" > "$TEST_ROOT/arguments"')
+        command = self.menu_command('printf "%s\\n" "$@" >> "$TEST_ROOT/arguments"')
         checkout = self.root / "new checkout"
+        next_checkout = self.root / "next checkout"
         code, output = self.terminal(command + '''
 sudo() { shift 2; "$@"; }
 main --dir "$TEST_ROOT/new checkout"
@@ -487,6 +488,13 @@ main --dir "$TEST_ROOT/new checkout"
             ("站点地址 [https://camp.stellasora.cafe]：", "\n"),
             (f"数据目录 [{checkout}]：", "\n"),
             ("按回车返回菜单。", "\n"),
+            ("更新和备份会短暂停站。", "c"),
+            (f"代码目录 [{checkout}]：", str(next_checkout) + "\n"),
+            ("更新和备份会短暂停站。", "\n"),
+            (f"代码目录 [{next_checkout}]：", "\n"),
+            ("站点地址 [https://camp.stellasora.cafe]：", "\n"),
+            (f"数据目录 [{next_checkout}]：", "\n"),
+            ("按回车返回菜单。", "\n"),
             ("更新和备份会短暂停站。", "q"),
         ])
         self.assertEqual(code, 0, output)
@@ -495,6 +503,8 @@ main --dir "$TEST_ROOT/new checkout"
         self.assertEqual((self.root / "arguments").read_text().splitlines(), [
             "install", "--dir", str(checkout), "--url", "https://camp.stellasora.cafe",
             "--data-dir", str(checkout),
+            "install", "--dir", str(next_checkout), "--url", "https://camp.stellasora.cafe",
+            "--data-dir", str(next_checkout),
         ])
 
     def test_tui_unconfigured_actions_are_disabled_and_wizard_can_be_cancelled(self):
