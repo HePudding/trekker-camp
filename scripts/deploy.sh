@@ -37,6 +37,7 @@ usage() {
 终端中直接运行 camp 使用方向键 / 回车或数字选择；非终端中不带命令时显示帮助。
 菜单按需调用 sudo，首次安装会询问域名和存储目录，子命令用法保持不变。
 首次安装默认站点为 https://camp.stellasora.cafe；方括号内的默认值可直接回车采用。
+首次安装自动生成管理员初始化密码；部署完成或运行 camp status 时查看。
 认证依次读取 GH_TOKEN、GITHUB_TOKEN、数据目录 .config/github-token，或交互式隐藏输入。
 使用仅授权私有素材仓库 Contents: Read-only 的细粒度 PAT，无需安装 gh。
 访问素材成功后自动保存 PAT（仅 root 可读写），重开终端和 CLI 自更新后继续使用。
@@ -59,6 +60,10 @@ cli_version() {
 	fi
 }
 
+tui_clear() {
+	printf '\033[0m\033[?7h\033[?25h\033[H\033[2J' >&2
+}
+
 tui_select() (
 	local selected=0 previous key i step configured=false
 	local commands=(status logs update backup backup-status r2-bind install self-update version start stop restart autostart-on autostart-off directory exit)
@@ -73,8 +78,9 @@ tui_select() (
 	if [[ -f $camp_dir/compose.yml ]]; then configured=true; else selected=6; fi
 	# The entry point requires a TTY. Windows OpenSSH can still report TERM=dumb.
 	# Keep each row on one line so long paths do not move the menu coordinates.
-	trap 'printf "\033[0m\033[?7h\033[?25h\033[?1049l" >&2' EXIT
-	printf '\033[?1049h\033[?25l\033[?7l\033[H\033[2J' >&2
+	trap 'printf "\033[0m\033[?7h\033[?25h" >&2' EXIT
+	tui_clear
+	printf '\033[?25l\033[?7l' >&2
 	trap 'exit 130' INT
 	trap 'exit 143' TERM
 	printf '旅人营地 · VPS 管理\n\n代码目录：%s\n' "$camp_dir" >&2
@@ -142,7 +148,7 @@ valid_site_url() {
 
 tui_install_wizard() {
 	local previous_dir=$camp_dir candidate
-	printf '\033[H\033[2J首次安装\n\n方括号内为默认值，直接回车采用；输入 :q 返回菜单。\n\n'
+	printf '首次安装\n\n方括号内为默认值，直接回车采用；输入 :q 返回菜单。\n\n'
 	while true; do
 		candidate=$camp_dir
 		tui_read_default candidate '代码目录' "$camp_dir" || return 1
@@ -182,11 +188,18 @@ tui_wait() {
 tui_menu() {
 	local action value install_url=$default_site_url install_data='' result
 	local args=()
+	# Keep menus, prompts and command output off the caller's scrollback.
+	trap 'printf "\033[0m\033[?7h\033[?25h\033[?1049l" >&2' EXIT
+	trap 'exit 130' INT
+	trap 'exit 143' TERM
+	printf '\033[?1049h' >&2
 	while true; do
 		if ! action=$(tui_select); then return; fi
+		[[ $action != exit ]] || return 0
+		tui_clear
 		case "$action" in
-			exit) return ;;
 			directory)
+				printf '切换代码目录\n\n'
 				if tui_read_default value '代码目录' "$camp_dir"; then
 					value=$(realpath -m -- "$value")
 					if [[ $install_data == "$camp_dir" ]]; then install_data=$value; fi
@@ -207,7 +220,7 @@ tui_menu() {
 			result=$?
 			printf '\n命令已结束（退出码 %s），请查看上方输出。\n' "$result"
 		fi
-		trap - INT
+		trap 'exit 130' INT
 		tui_wait || return
 	done
 }
@@ -419,11 +432,12 @@ check_deployment_source() {
 }
 
 create_configuration() {
-	local password
+	local password setup_password
 	[[ ! -e $camp_dir/compose.yml && ! -e $config_dir/default.yml && ! -e $config_dir/docker.env &&
 		! -e $config_dir/Caddyfile && ! -e $config_dir/cloudflare.env ]] ||
 		fail '部署配置已存在。请使用 update 继续部署；已有配置保持原样。'
 	password=$(openssl rand -hex 32)
+	setup_password=$(openssl rand -hex 24)
 	install -d -m 0750 -g 991 "$config_dir"
 	if [[ $data_dir != "$camp_dir" ]]; then install -d -m 0755 "$camp_dir/.config"; fi
 	(
@@ -433,7 +447,7 @@ create_configuration() {
 		sed -e "s|^POSTGRES_PASSWORD=example-misskey-pass$|POSTGRES_PASSWORD=$password|" \
 			-e 's/^POSTGRES_USER=example-misskey-user$/POSTGRES_USER=misskey/' \
 			"$camp_dir/.config/docker_example.env" > "$config_dir/docker.env"
-		sed -e "s|^url: https://example.tld/$|url: $site_url|" \
+		sed -e "s|^url: https://example.tld/$|url: $site_url\nsetupPassword: '$setup_password'|" \
 			-e 's/^  user: example-misskey-user$/  user: misskey/' \
 			-e "s/^  pass: example-misskey-pass$/  pass: '$password'/" \
 			"$camp_dir/.config/docker_example.yml" > "$config_dir/default.yml"
@@ -514,6 +528,39 @@ set_autostart() (
 	else log '已关闭站点开机自启；当前运行状态保持不变。'; fi
 )
 
+show_setup_status() {
+	# Read the running application's effective configuration and setup state.
+	# Only the initialization password is displayed, and only before setup completes.
+	# shellcheck disable=SC2016
+	if ! compose exec -T web node --input-type=module -e '
+import { loadConfig } from "/misskey/apps/misskey/packages/backend/built/config.js";
+const config = loadConfig();
+const response = await fetch(`http://127.0.0.1:${config.port}/api/meta`, {
+	method: "POST",
+	headers: { "Content-Type": "application/json" },
+	body: "{}",
+	signal: AbortSignal.timeout(5000),
+});
+if (!response.ok) throw new Error("Cannot read setup state");
+const meta = await response.json();
+if (typeof meta.requireSetup !== "boolean") throw new Error("Missing setup state");
+console.log(`\n站点地址：${config.url}`);
+if (meta.requireSetup) {
+	console.log("管理员初始化：待完成，请打开站点创建管理员账号。");
+	if (config.setupPassword != null && config.setupPassword !== "") {
+		console.log(`初始化密码：${config.setupPassword}`);
+	} else {
+		console.log("初始化密码：未设置，网页上的初始化密码输入框请留空。");
+	}
+	console.log("管理员用户名和登录密码请在网页上自行设置。");
+} else {
+	console.log("管理员初始化：已完成。");
+}
+' 2>/dev/null; then
+		printf '\n管理员初始化状态暂不可读；站点启动后可运行 camp status 查看。\n' >&2
+	fi
+}
+
 check_https() {
 	stage='检查 HTTPS 入口'
 	site_url=$(sed -n 's/^url:[[:space:]]*//p' "$config_dir/default.yml")
@@ -537,6 +584,7 @@ start_site() {
 	compose up -d --no-build --pull never --wait --wait-timeout 180
 	check_https
 	log "站点已启动：$site_url"
+	show_setup_status
 }
 
 stop_site() {
@@ -613,6 +661,7 @@ deploy() {
 	install_cli "$camp_dir/scripts" "$(git -C "$camp_dir" rev-parse HEAD)" /usr/local "$camp_dir"
 	log "部署完成：$site_url。数据目录：$data_dir。使用 camp status 查看状态，camp logs 查看日志。"
 	compose ps
+	show_setup_status
 }
 
 main() {
@@ -683,7 +732,7 @@ main() {
 		fi
 	fi
 	case "$action" in
-		status) printf '代码目录：%s\n数据目录：%s\n备份目录：%s\n' "$camp_dir" "$data_dir" "$backup_root"; compose ps --all; autostart_status; return ;;
+		status) printf '代码目录：%s\n数据目录：%s\n备份目录：%s\n' "$camp_dir" "$data_dir" "$backup_root"; compose ps --all; autostart_status; show_setup_status; return ;;
 		autostart) if [[ $autostart_mode == status ]]; then autostart_status; return; fi ;;
 		logs) compose logs --tail 100 --follow web caddy; return ;;
 		backup-status)
