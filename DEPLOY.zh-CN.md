@@ -28,11 +28,11 @@ CLI 会在下载私有素材、生成首次配置前检查代码中的部署文�
 
 1. 检测 Ubuntu 版本，安装缺少的 Git / Git LFS 等工具；没有 Docker 时通过官方 APT 源安装 Docker Engine、Compose 和 Buildx。版本对应 `jammy` / `noble` / `resolute`，依据 [Docker Ubuntu 安装文档](https://docs.docker.com/engine/install/ubuntu/)。已有可用 Docker 会被复用。
 2. 拉取代码和私有素材，仅下载 `public/` 下的 LFS 文件。
-3. 从仓库随附的 `.config/docker_example.yml` 和 `.config/docker_example.env` 生成配置，填入域名和随机数据库密码，保留官方模板的其他默认值与注释；生成 Caddy / Cloudflare DNS 配置，将 `compose.vps.yml` 复制为本站的 `compose.yml`。
+3. 从仓库随附的 `.config/docker_example.yml` 和 `.config/docker_example.env` 生成配置，填入域名、随机数据库密码和独立的随机管理员初始化密码 `setupPassword`，保留官方模板的其他默认值与注释；生成 Caddy / Cloudflare DNS 配置，将 `compose.vps.yml` 复制为本站的 `compose.yml`。
 4. 构建应用及包含 Cloudflare 插件的 Caddy 镜像，验证代理配置，启动 PostgreSQL 18 和 Redis，备份数据库与配置，运行 `pnpm run init` 初始化数据库。
 5. 挂载素材，以镜像默认的 `pnpm run migrateandstart` 启动应用，等待容器健康检查和本机 HTTPS `/healthz` 检查成功。
 
-首次打开站点时创建管理员账号。站点创建后保持配置中的 `url` 不变。
+首次打开站点时，输入 CLI 显示的 **初始化密码**，再自行设置管理员用户名和登录密码。初始化密码在应用启动前生成并写入数据目录的 `.config/default.yml`，使用 24 字节随机数；空白或错误的密码会被拒绝。尚未完成管理员创建时，安装完成输出、`camp status` 和菜单中的“查看站点状态”会显示该密码；管理员创建完成后只显示完成状态。已有部署的配置和管理员账号保持原样，更新与 CLI 自更新不会补写或更换初始化密码。站点创建后保持配置中的 `url` 不变。
 
 ### 与 Misskey 官方 Docker 部署的关系
 
@@ -68,7 +68,7 @@ bash /tmp/camp-deploy.sh install --url https://camp.example.com --data-dir /srv/
 
 ### 交互式菜单
 
-安装后直接输入 `camp` 打开终端菜单，也可显式运行 `camp tui`。使用 **↑ / ↓ 和回车**，或菜单标注的数字和字母选择操作，**Q / Esc / 0** 退出。方向键在当前界面更新高亮，不向终端滚动记录追加菜单；Windows Terminal 的 SSH 连接同样适用。菜单包含站点状态、启停和重启、开机自启、实时日志、应用与素材更新、R2 备份与绑定、首次安装和 CLI 自更新。
+安装后直接输入 `camp` 打开终端菜单，也可显式运行 `camp tui`。使用 **↑ / ↓ 和回车**，或菜单标注的数字和字母选择操作，**Q / Esc / 0** 退出。整个菜单会话（含子界面、输入提示和命令输出）使用独立终端屏幕，切换页面时清除上一页内容，退出后恢复原来的终端画面。方向键在当前界面更新高亮；Windows Terminal 的 SSH 连接同样适用。菜单包含站点状态、启停和重启、开机自启、实时日志、应用与素材更新、R2 备份与绑定、首次安装和 CLI 自更新。
 
 ```bash
 camp

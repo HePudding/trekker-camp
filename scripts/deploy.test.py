@@ -7,6 +7,7 @@ import errno
 import os
 from pathlib import Path
 import pty
+import re
 import select
 import shutil
 import signal
@@ -46,10 +47,10 @@ class DeployTests(unittest.TestCase):
         for name in ("GH_TOKEN", "GITHUB_TOKEN", "CAMP_GH_TOKEN", "CLOUDFLARE_API_TOKEN"):
             self.env.pop(name, None)
 
-    def shell(self, body, success=True):
+    def shell(self, body, success=True, timeout=30):
         result = subprocess.run(
             ["bash", "-c", 'set -Eeuo pipefail\nsource "$SCRIPT"\ncamp_dir="$TEST_ROOT/checkout"\nresolve_storage\n' + body],
-            env=self.env, text=True, capture_output=True, timeout=30,
+            env=self.env, text=True, capture_output=True, timeout=timeout,
         )
         if success:
             self.assertEqual(result.returncode, 0, result.stdout + result.stderr)
@@ -295,10 +296,16 @@ create_configuration
         config = (checkout / ".config/default.yml").read_text()
         database = (checkout / ".config/docker.env").read_text()
         password = database.split("POSTGRES_PASSWORD=", 1)[1].splitlines()[0]
+        setup_match = re.search(r"^setupPassword: '([0-9a-f]{48})'$", config, re.MULTILINE)
+        self.assertIsNotNone(setup_match)
+        setup_password = setup_match.group(1)
         self.assertEqual(len(password), 64)
         self.assertIn(f"pass: '{password}'", config)
+        self.assertNotIn(setup_password, password)
+        self.assertNotIn(setup_password, database)
+        self.assertEqual(config.count("\nsetupPassword:"), 1)
         expected = (ROOT / ".config/docker_example.yml").read_text()
-        expected = expected.replace("url: https://example.tld/", "url: https://camp.example.com")
+        expected = expected.replace("url: https://example.tld/", f"url: https://camp.example.com\nsetupPassword: '{setup_password}'")
         expected = expected.replace("user: example-misskey-user", "user: misskey")
         expected = expected.replace("pass: example-misskey-pass", f"pass: '{password}'")
         self.assertEqual(config, expected)
@@ -368,8 +375,11 @@ compose config --format json
                 self.assertTrue(any(issuer.get("challenges", {}).get("dns", {}).get("provider", {}).get("name") == "cloudflare" for issuer in issuers))
                 self.assertNotIn(token, result.stdout)
 
-    def deployment(self, failure="", data_dir=None, action="update", legacy=False):
+    def deployment(self, failure="", data_dir=None, action="update", legacy=False, setup_password=True):
         checkout = self.configuration(data_dir)
+        if not setup_password:
+            config = (data_dir or checkout) / ".config/default.yml"
+            config.write_text(re.sub(r"^setupPassword:.*\n", "", config.read_text(), flags=re.MULTILINE))
         if legacy:
             path = checkout / "compose.yml"
             path.write_text(path.read_text().replace("  web:\n", "  web:\n    command: [pnpm, start]\n"))
@@ -450,6 +460,93 @@ deploy "$TEST_ACTION"
         start = next(i for i, event in enumerate(events) if "--force-recreate" in event)
         self.assertLess(backup, init)
         self.assertLess(init, start)
+
+    def test_update_keeps_existing_setup_password_configuration(self):
+        for configured in (False, True):
+            with self.subTest(configured=configured):
+                for path in (self.root / "checkout", self.root / "checkout.backups"):
+                    if path.exists():
+                        shutil.rmtree(path)
+                (self.root / "events").unlink(missing_ok=True)
+                checkout, _, _ = self.deployment(setup_password=configured)
+                config = (checkout / ".config/default.yml").read_bytes()
+                self.assertEqual(b"setupPassword:" in config, configured)
+                backup = next((self.root / "checkout.backups").iterdir())
+                with tarfile.open(backup / "config.tar.gz") as archive:
+                    self.assertEqual(archive.extractfile(".config/default.yml").read(), config)
+
+    @unittest.skipUnless(os.geteuid() == 0 and os.environ.get("SETUP_TEST_IMAGE"),
+                         "SETUP_TEST_IMAGE enables real administrator initialization checks")
+    def test_real_initialization_requires_password_and_hides_it_after_setup(self):
+        import json
+
+        checkout = self.configuration()
+        (checkout / "private-assets/public").mkdir(parents=True)
+        os.chown(checkout / ".config", 0, 991)
+        os.chown(checkout / ".config/default.yml", 0, 991)
+        os.chown(checkout / "files", 991, 991)
+        config = (checkout / ".config/default.yml").read_text()
+        password = re.search(r"^setupPassword: '([0-9a-f]{48})'$", config, re.MULTILINE).group(1)
+        self.env["COMPOSE_PROJECT_NAME"] = self.root.name
+        (self.root / "setup.compose.yml").write_text(
+            "services:\n"
+            "  web:\n"
+            f"    image: {json.dumps(os.environ['SETUP_TEST_IMAGE'])}\n"
+            '    restart: "no"\n'
+            "    ports: !reset []\n"
+            '  db:\n    restart: "no"\n'
+            '  redis:\n    restart: "no"\n'
+            "networks:\n  external_network:\n    internal: true\n"
+        )
+        prelude = '''
+eval "$(declare -f compose | sed '1s/compose/fixture_compose/')"
+compose() { fixture_compose -f "$TEST_ROOT/setup.compose.yml" "$@"; }
+'''
+        self.addCleanup(lambda: self.shell(prelude + 'compose down --volumes --timeout 10', timeout=60))
+        self.shell(prelude + '''
+compose up -d --no-build --pull never --wait --wait-timeout 60 db redis
+compose run --rm --no-deps --pull never web pnpm run init
+compose up -d --no-deps --no-build --pull never --wait --wait-timeout 180 web
+''', timeout=300)
+        before = self.shell(prelude + 'show_setup_status').stdout
+        self.assertIn("管理员初始化：待完成", before)
+        self.assertIn("初始化密码：" + password, before)
+
+        # Exercise the real anonymous setup API without printing account tokens.
+        result = self.shell(prelude + '''
+compose exec -T web node --input-type=module <<'JS'
+import assert from 'node:assert/strict';
+import { loadConfig } from '/misskey/apps/misskey/packages/backend/built/config.js';
+const config = loadConfig();
+async function post(path, body) {
+  const response = await fetch(`http://127.0.0.1:${config.port}/api/${path}`, {
+    method: 'POST', headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify(body), signal: AbortSignal.timeout(10000),
+  });
+  return { status: response.status, data: await response.json() };
+}
+const account = { username: 'camp_setup_probe', password: 'fixture-admin-password' };
+for (const setupPassword of [undefined, null, '', 'incorrect-password']) {
+  const result = await post('admin/accounts/create', { ...account, setupPassword });
+  assert.notEqual(result.status, 200);
+  assert.equal(result.data.error?.code, 'INCORRECT_INITIAL_PASSWORD');
+  assert.equal((await post('meta', {})).data.requireSetup, true);
+}
+const created = await post('admin/accounts/create', { ...account, setupPassword: config.setupPassword });
+assert.equal(created.status, 200);
+assert.equal(created.data.username, account.username);
+assert.equal((await post('meta', {})).data.requireSetup, false);
+console.log('Initialization password checks passed');
+JS
+''', timeout=60)
+        self.assertIn("Initialization password checks passed", result.stdout)
+        after = self.shell(prelude + 'show_setup_status').stdout
+        self.assertIn("管理员初始化：已完成", after)
+        self.assertNotIn(password, after)
+        self.assertNotIn("初始化密码：", after)
+        stopped = self.shell(prelude + 'compose stop --timeout 10 web\nshow_setup_status')
+        self.assertIn("管理员初始化状态暂不可读", stopped.stderr)
+        self.assertNotIn(password, stopped.stdout + stopped.stderr)
 
     def test_https_wait_suppresses_transient_errors_and_reports_final_failure(self):
         self.configuration()
@@ -694,8 +791,54 @@ mapfile -t containers < <(compose ps --all --quiet)
         ])
         self.assertEqual(code, 0, output)
         self.assertIn(str(self.root / "custom checkout"), output)
-        self.assertEqual(output.count("\x1b[?1049h"), 2)
-        self.assertEqual(output.count("\x1b[?1049l"), 2)
+        self.assertEqual(output.count("\x1b[?1049h"), 1)
+        self.assertEqual(output.count("\x1b[?1049l"), 1)
+
+    def test_tui_subpages_clear_previous_output_and_stay_in_alternate_screen(self):
+        command = self.menu_command('''
+case "$1" in
+  status) for ((i=0; i<80; i++)); do printf 'previous-status-line-%s\\n' "$i"; done ;;
+  r2-bind) read -r -s -p 'R2 hidden key: ' key; printf '\\nR2 page finished\\n' ;;
+esac
+''')
+        code, output = self.terminal(command + '''
+sudo() { shift 2; "$@"; }
+main --dir "$TEST_ROOT/checkout"
+''', [
+            ("更新和备份会短暂停站。", "1"),
+            ("previous-status-line-79", ""),
+            ("按回车返回菜单。", "\n"),
+            ("更新和备份会短暂停站。", "6"),
+            ("R2 hidden key: ", "private-test-key\n"),
+            ("按回车返回菜单。", "\n"),
+            ("更新和备份会短暂停站。", "c"),
+            ("代码目录 [", ""),
+            ("：", ":q\n"),
+            ("更新和备份会短暂停站。", "q"),
+        ])
+        self.assertEqual(code, 0, output)
+        self.assertEqual(output.count("\x1b[?1049h"), 1)
+        self.assertEqual(output.count("\x1b[?1049l"), 1)
+        opened = output.index("\x1b[?1049h")
+        closed = output.index("\x1b[?1049l")
+        previous = output.index("previous-status-line-79")
+        prompt = output.index("R2 hidden key: ")
+        directory = output.index("切换代码目录\r\n\r\n", prompt)
+        self.assertLess(opened, previous)
+        self.assertLess(directory, closed)
+        self.assertEqual(output[previous:prompt].count("\x1b[2J"), 2)
+        self.assertEqual(output[prompt:directory].count("\x1b[2J"), 2)
+        self.assertNotIn("private-test-key", output)
+
+    def test_tui_cancelled_wizard_restores_terminal(self):
+        code, output = self.terminal('main --dir "$TEST_ROOT/new checkout"', [
+            ("更新和备份会短暂停站。", "\n"),
+            (f"代码目录 [{self.root / 'new checkout'}]：", "\x03"),
+        ])
+        self.assertEqual(code, 130, output)
+        self.assertEqual(output.count("\x1b[?1049h"), 1)
+        self.assertEqual(output.count("\x1b[?1049l"), 1)
+        self.assertIn("\x1b[0m\x1b[?7h\x1b[?25h", output)
 
     def test_tui_updates_selection_in_place_with_windows_ssh_terminal_type(self):
         self.configuration()
@@ -1125,6 +1268,7 @@ source "$TEST_ROOT/prefix/bin/camp"
 detect_ubuntu() { :; }
 compose() { printf 'selected: %s\\n' "$camp_dir"; }
 autostart_status() { :; }
+show_setup_status() { :; }
 main status --dir "$TEST_ROOT/checkout"
 main status
 ''')
