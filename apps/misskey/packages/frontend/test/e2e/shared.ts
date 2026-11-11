@@ -10,11 +10,19 @@ import type { Locator, Page } from 'playwright';
 export const ADMIN_SETUP_PASSWORD = 'example_password_please_change_this_or_you_will_get_hacked';
 export const DEFAULT_INVITATION_CODE = 'test-invitation-code';
 
-async function signupProof() {
+async function signupProof(invitationCode: string = randomUUID()) {
 	const { loadConfig } = await import(new URL('../../../backend/built/config.js', import.meta.url).href);
 	const config = loadConfig();
 	if (config.db.db !== 'test-misskey') throw new Error('Phone fixtures require the isolated test database');
 	const requireBackend = createRequire(new URL('../../../backend/package.json', import.meta.url));
+	const { Client } = requireBackend('pg');
+	const db = new Client({ ...config.db, database: config.db.db, password: config.db.pass });
+	await db.connect();
+	try {
+		await db.query('INSERT INTO registration_ticket (id, code) VALUES ($1, $2)', [randomUUID().replaceAll('-', ''), invitationCode]);
+	} finally {
+		await db.end();
+	}
 	const { Redis } = requireBackend('ioredis');
 	const redis = new Redis(config.redis);
 	const phone = `139${randomInt(0, 100000000).toString().padStart(8, '0')}`;
@@ -30,16 +38,19 @@ async function signupProof() {
 	} finally {
 		await redis.quit();
 	}
-	return { phone, challengeId, code };
+	return { phone, challengeId, code, invitationCode };
 }
 
 export async function fillSignupPhone(page: Page): Promise<void> {
-	const proof = await signupProof();
+	const proof = await signupProof(await locateMkInput(page, 'signup-invitation-code').inputValue());
 	await page.route('**/api/auth/send-code', async route => {
 		await route.fulfill({ json: { challengeId: proof.challengeId, retryAfter: 60 } });
 	});
 	await locateMkInput(page, 'signup-phone').fill(proof.phone);
+	const sent = page.waitForResponse(response => response.url().endsWith('/api/auth/send-code'));
 	await page.getByRole('button', { name: '获取验证码', exact: true }).click();
+	await sent;
+	await page.getByRole('status').waitFor({ state: 'visible' });
 	await page.locator('input[autocomplete="one-time-code"]').fill(proof.code);
 }
 
@@ -83,7 +94,7 @@ export async function registerUser(
 		username,
 		password,
 		...(isAdmin ? { setupPassword: ADMIN_SETUP_PASSWORD } : {}),
-		...(proof ? { invitationCode: DEFAULT_INVITATION_CODE, phoneChallengeId: proof.challengeId, phoneCode: proof.code } : {}),
+		...(proof ? { invitationCode: proof.invitationCode, phoneChallengeId: proof.challengeId, phoneCode: proof.code } : {}),
 	});
 	return result as RegisteredUser;
 }

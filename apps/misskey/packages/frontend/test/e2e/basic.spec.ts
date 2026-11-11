@@ -76,7 +76,7 @@ test.describe('After setup instance', () => {
 		test.expect(await page.getByTestId('signup-submit').isDisabled()).toBeTruthy();
 		await locateMkInput(page, 'signup-invitation-code').fill('test-invitation-code');
 		await fillSignupPhone(page);
-		test.expect(await page.getByTestId('signup-submit').isDisabled()).toBeFalsy();
+		await test.expect(page.getByTestId('signup-submit')).toBeEnabled();
 
 		const signupResponse = waitApiResponse(page, '/api/signup');
 		await page.getByTestId('signup-submit').click();
