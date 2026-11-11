@@ -27,7 +27,7 @@ export class SignupApiService {
 
 	@bindThis
 	public async signup(request: FastifyRequest<{ Body: {
-		username: string; password: string; invitationCode?: string;
+		username: string; password: string; invitationCode?: string; host?: string;
 		phoneChallengeId?: string; phoneCode?: string;
 	} }>, reply: FastifyReply) {
 		const body = request.body;
@@ -53,6 +53,7 @@ export class SignupApiService {
 				await this.codes.consume([body.phoneChallengeId]);
 				const { account, secret } = await this.signupService.signup({
 					username: body.username, password: body.password, phoneNumber: challenge.address,
+					host: process.env.NODE_ENV === 'test' ? body.host : undefined,
 				});
 				if (ticket) await this.tickets.update(ticket.id, { usedById: account.id });
 				const result = await this.userEntityService.pack(account, account, { schema: 'MeDetailed', includeSecrets: true });
