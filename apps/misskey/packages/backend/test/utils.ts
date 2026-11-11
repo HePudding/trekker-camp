@@ -6,7 +6,7 @@
 import * as assert from 'node:assert';
 import { readFile } from 'node:fs/promises';
 import { basename, isAbsolute } from 'node:path';
-import { randomUUID } from 'node:crypto';
+import { randomUUID, randomInt } from 'node:crypto';
 import { inspect } from 'node:util';
 import WebSocket, { ClientOptions } from 'ws';
 import fetch, { Blob, FormData } from 'node-fetch';
@@ -19,6 +19,9 @@ import { loadConfig } from '@/config.js';
 import type * as misskey from 'misskey-js';
 import { DEFAULT_POLICIES } from '@/core/RoleService.js';
 import { validateContentTypeSetAsActivityPub } from '@/core/activitypub/misc/validator.js';
+import { IdService } from '@/core/IdService.js';
+import { MiRegistrationTicket } from '@/models/RegistrationTicket.js';
+import { verificationCode } from './misc/verification-code.js';
 import { ApiError } from '@/server/api/error.js';
 
 export { server as startServer, jobQueue as startJobQueue } from '@/boot/common.js';
@@ -137,14 +140,24 @@ function timeoutPromise<T>(p: Promise<T>, timeout: number): Promise<T> {
 	]);
 }
 
+export async function signupParameters(params?: Partial<misskey.Endpoints['signup']['req']>): Promise<misskey.Endpoints['signup']['req']> {
+	const proof = await verificationCode('signup', `139${randomInt(0, 100000000).toString().padStart(8, '0')}`);
+	const invitationCode = randomUUID();
+	const db = await initTestDb(true);
+	try {
+		await db.getRepository(MiRegistrationTicket).insert({ id: new IdService(config).gen(), code: invitationCode });
+	} finally {
+		await db.destroy();
+	}
+	return {
+		username: randomString(), password: 'test', invitationCode,
+		phoneChallengeId: proof.challengeId, phoneCode: proof.code, ...params,
+	};
+}
+
 export const signup = async (params?: Partial<misskey.Endpoints['signup']['req']>): Promise<NonNullable<misskey.Endpoints['signup']['res']>> => {
-	const q = Object.assign({
-		username: randomString(),
-		password: 'test',
-	}, params);
-
-	const res = await api('signup', q);
-
+	const res = await api('signup', await signupParameters(params));
+	assert.strictEqual(res.status, 200, inspect(res.body));
 	return res.body;
 };
 

@@ -624,6 +624,7 @@ export class UserEntityService implements OnModuleInit {
 			} : {}),
 
 			...(opts.includeSecrets ? {
+				phoneNumber: profile!.phoneNumber?.replace(/^(\d{3})\d{4}(\d{4})$/, '$1****$2') ?? null,
 				email: profile!.email,
 				emailVerified: profile!.emailVerified,
 				securityKeysList: profile!.twoFactorEnabled

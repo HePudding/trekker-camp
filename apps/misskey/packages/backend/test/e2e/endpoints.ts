@@ -10,7 +10,7 @@ import { describe, beforeAll, afterAll, test, expect, vi } from 'vitest';
 // node-fetch only supports it's own Blob yet
 // https://github.com/node-fetch/node-fetch/pull/1664
 import { Blob } from 'node-fetch';
-import { api, castAsError, initTestDb, post, role, signup, simpleGet, uploadFile } from '../utils.js';
+import { api, castAsError, initTestDb, post, role, signup, signupParameters, simpleGet, uploadFile } from '../utils.js';
 import type * as misskey from 'misskey-js';
 import { MiDriveFile, MiUser } from '@/models/_.js';
 import type { AchievementSettings } from '@/misc/achievement-rules.js';
@@ -138,18 +138,18 @@ describe('Endpoints', () => {
 
 	describe('signup', () => {
 		test('不正なユーザー名でアカウントが作成できない', async () => {
-			const res = await api('signup', {
+			const res = await api('signup', await signupParameters({
 				username: 'test.',
 				password: 'test',
-			});
+			}));
 			assert.strictEqual(res.status, 400);
 		});
 
 		test('空のパスワードでアカウントが作成できない', async () => {
-			const res = await api('signup', {
+			const res = await api('signup', await signupParameters({
 				username: 'test',
 				password: '',
-			});
+			}));
 			assert.strictEqual(res.status, 400);
 		});
 
@@ -159,7 +159,7 @@ describe('Endpoints', () => {
 				password: 'test1',
 			};
 
-			const res = await api('signup', me);
+			const res = await api('signup', await signupParameters(me));
 
 			assert.strictEqual(res.status, 200);
 			assert.strictEqual(typeof res.body === 'object' && !Array.isArray(res.body), true);
@@ -167,10 +167,10 @@ describe('Endpoints', () => {
 		});
 
 		test('同じユーザー名のアカウントは作成できない', async () => {
-			const res = await api('signup', {
+			const res = await api('signup', await signupParameters({
 				username: 'test1',
 				password: 'test1',
-			});
+			}));
 
 			assert.strictEqual(res.status, 400);
 		});

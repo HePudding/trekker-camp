@@ -102,6 +102,10 @@ export const ROUTE_DEF = [{
 		name: 'notifications',
 		component: page(() => import('@/pages/settings/notifications.vue')),
 	}, {
+		path: '/phone',
+		name: 'phone',
+		component: page(() => import('@/pages/settings/phone.vue')),
+	}, {
 		path: '/email',
 		name: 'email',
 		component: page(() => import('@/pages/settings/email.vue')),
@@ -459,6 +463,10 @@ export const ROUTE_DEF = [{
 		path: '/moderation',
 		name: 'moderation',
 		component: page(() => import('@/pages/admin/moderation.vue')),
+	}, {
+		path: '/verification-settings',
+		name: 'verification-settings',
+		component: page(() => import('@/pages/admin/verification-settings.vue')),
 	}, {
 		path: '/email-settings',
 		name: 'email-settings',

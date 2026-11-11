@@ -9,6 +9,8 @@ import bcrypt from 'bcryptjs';
 import { Endpoint } from '@/server/api/endpoint-base.js';
 import type { MiMeta, UserProfilesRepository } from '@/models/_.js';
 import { UserEntityService } from '@/core/entities/UserEntityService.js';
+import { normalizeEmail } from '@/core/VerificationCodeService.js';
+import { verificationErrors, handleVerificationError } from '@/server/api/verification-errors.js';
 import { EmailService } from '@/core/EmailService.js';
 import type { Config } from '@/config.js';
 import { DI } from '@/di-symbols.js';
@@ -28,23 +30,20 @@ export const meta = {
 	},
 
 	errors: {
+		invalidEmail: verificationErrors.invalidEmail,
+		verificationUnavailable: verificationErrors.unavailable,
 		incorrectPassword: {
 			message: 'Incorrect password.',
 			code: 'INCORRECT_PASSWORD',
 			id: 'e54c1d7e-e7d6-4103-86b6-0a95069b4ad3',
 		},
 
-		unavailable: {
+		emailUnavailable: {
 			message: 'Unavailable email address.',
 			code: 'UNAVAILABLE',
 			id: 'a2defefb-f220-8849-0af6-17f816099323',
 		},
 
-		emailRequired: {
-			message: 'Email address is required.',
-			code: 'EMAIL_REQUIRED',
-			id: '324c7a88-59f2-492f-903f-89134f93e47e',
-		},
 	},
 
 	res: {
@@ -102,18 +101,22 @@ export default class extends Endpoint<typeof meta, typeof paramDef> { // eslint-
 			}
 
 			if (ps.email != null) {
+				try {
+					ps.email = normalizeEmail(ps.email);
+				} catch (err) {
+					handleVerificationError(err);
+				}
 				const res = await this.emailService.validateEmailForAccount(ps.email);
 				if (!res.available) {
-					throw new ApiError(meta.errors.unavailable);
+					throw new ApiError(meta.errors.emailUnavailable);
 				}
-			} else if (this.serverSettings.emailRequiredForSignup) {
-				throw new ApiError(meta.errors.emailRequired);
 			}
 
+			const code = ps.email != null ? secureRndstr(16, { chars: L_CHARS }) : null;
 			await this.userProfilesRepository.update(me.id, {
 				email: ps.email,
 				emailVerified: false,
-				emailVerifyCode: null,
+				emailVerifyCode: code,
 			});
 
 			const iObj = await this.userEntityService.pack(me.id, me, {
@@ -125,17 +128,13 @@ export default class extends Endpoint<typeof meta, typeof paramDef> { // eslint-
 			this.globalEventService.publishMainStream(me.id, 'meUpdated', iObj);
 
 			if (ps.email != null) {
-				const code = secureRndstr(16, { chars: L_CHARS });
-
-				await this.userProfilesRepository.update(me.id, {
-					emailVerifyCode: code,
-				});
-
 				const link = `${this.config.url}/verify-email/${code}`;
 
-				this.emailService.sendEmail(ps.email, 'Email verification',
-					`To verify email, please click this link:<br><a href="${link}">${link}</a>`,
-					`To verify email, please click this link: ${link}`);
+				await this.emailService.sendEmail(ps.email, '旅人营地邮箱验证',
+					`<p>点击下方链接验证邮箱。</p><p><a href="${link}">验证邮箱</a></p><p>非本人操作请忽略。</p>`,
+					`验证邮箱：${link}\n非本人操作请忽略。`).catch(() => {
+					throw new ApiError(verificationErrors.unavailable);
+				});
 			}
 
 			return iObj;

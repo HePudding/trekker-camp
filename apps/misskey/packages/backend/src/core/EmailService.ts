@@ -3,6 +3,7 @@
  * SPDX-License-Identifier: AGPL-3.0-only
  */
 
+import { Raw } from 'typeorm';
 import { createTransport } from 'nodemailer';
 import juice from 'juice';
 import sanitizeHtml from 'sanitize-html';
@@ -133,7 +134,7 @@ export class EmailService {
 				<div>${ sanitizedHtml }</div>
 			</article>
 			<footer>
-				<a href="${ escapeHtml(emailSettingUrl) }">${ 'Email setting' }</a>
+				<a href="${ escapeHtml(emailSettingUrl) }">邮箱设置</a>
 			</footer>
 		</main>
 		<nav>
@@ -177,7 +178,7 @@ export class EmailService {
 
 		const exist = await this.userProfilesRepository.countBy({
 			emailVerified: true,
-			email: emailAddress,
+			email: Raw(alias => `LOWER(${alias}) = :email`, { email: emailAddress.toLowerCase() }),
 		});
 
 		if (exist !== 0) {

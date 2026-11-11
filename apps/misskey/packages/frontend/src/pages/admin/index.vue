@@ -186,6 +186,11 @@ const menuDef = computed<SuperMenuDef[]>(() => [{
 		to: '/admin/moderation',
 		active: currentPage.value?.route.name === 'moderation',
 	}, {
+		icon: 'ti ti-device-mobile',
+		text: i18n.ts._phoneAuth.settings,
+		to: '/admin/verification-settings',
+		active: currentPage.value?.route.name === 'verification-settings',
+	}, {
 		icon: 'ti ti-mail',
 		text: i18n.ts.emailServer,
 		to: '/admin/email-settings',

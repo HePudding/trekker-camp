@@ -3,10 +3,56 @@
  * SPDX-License-Identifier: AGPL-3.0-only
  */
 
+import { createHash, randomInt, randomUUID } from 'node:crypto';
+import { createRequire } from 'node:module';
 import type { Locator, Page } from 'playwright';
 
 export const ADMIN_SETUP_PASSWORD = 'example_password_please_change_this_or_you_will_get_hacked';
 export const DEFAULT_INVITATION_CODE = 'test-invitation-code';
+
+async function signupProof(invitationCode: string = randomUUID()) {
+	const { loadConfig } = await import(new URL('../../../backend/built/config.js', import.meta.url).href);
+	const config = loadConfig();
+	if (config.db.db !== 'test-misskey') throw new Error('Phone fixtures require the isolated test database');
+	const requireBackend = createRequire(new URL('../../../backend/package.json', import.meta.url));
+	const { Client } = requireBackend('pg');
+	const db = new Client({ ...config.db, database: config.db.db, password: config.db.pass });
+	await db.connect();
+	try {
+		await db.query('INSERT INTO registration_ticket (id, code) VALUES ($1, $2)', [randomUUID().replaceAll('-', ''), invitationCode]);
+	} finally {
+		await db.end();
+	}
+	const { Redis } = requireBackend('ioredis');
+	const redis = new Redis(config.redis);
+	const phone = `139${randomInt(0, 100000000).toString().padStart(8, '0')}`;
+	const challengeId = randomUUID();
+	const code = '123456';
+	const verifiedHash = createHash('sha256').update(`${challengeId}:${code}`).digest('hex');
+	const addressHash = createHash('sha256').update(phone).digest('hex');
+	try {
+		await redis.multi()
+			.set(`verification:code:${challengeId}`, JSON.stringify({ purpose: 'signup', address: phone, channel: 'sms', userId: null, schemeName: 'test', attempts: 0, maxAttempts: 5, verifiedHash }), 'EX', 300)
+			.set(`verification:current:sms:signup:${addressHash}`, challengeId, 'EX', 300)
+			.exec();
+	} finally {
+		await redis.quit();
+	}
+	return { phone, challengeId, code, invitationCode };
+}
+
+export async function fillSignupPhone(page: Page): Promise<void> {
+	const proof = await signupProof(await locateMkInput(page, 'signup-invitation-code').inputValue());
+	await page.route('**/api/auth/send-code', async route => {
+		await route.fulfill({ json: { challengeId: proof.challengeId, retryAfter: 60 } });
+	});
+	await locateMkInput(page, 'signup-phone').fill(proof.phone);
+	const sent = page.waitForResponse(response => response.url().endsWith('/api/auth/send-code'));
+	await page.getByRole('button', { name: '获取验证码', exact: true }).click();
+	await sent;
+	await page.getByRole('status').waitFor({ state: 'visible' });
+	await page.locator('input[autocomplete="one-time-code"]').fill(proof.code);
+}
 
 export interface RegisteredUser {
 	id: string;
@@ -43,10 +89,12 @@ export async function registerUser(
 	isAdmin = false,
 ): Promise<RegisteredUser> {
 	const route = isAdmin ? 'admin/accounts/create' : 'signup';
+	const proof = isAdmin ? null : await signupProof();
 	const result = await api(baseUrl, route, {
 		username,
 		password,
 		...(isAdmin ? { setupPassword: ADMIN_SETUP_PASSWORD } : {}),
+		...(proof ? { invitationCode: proof.invitationCode, phoneChallengeId: proof.challengeId, phoneCode: proof.code } : {}),
 	});
 	return result as RegisteredUser;
 }
@@ -64,6 +112,10 @@ export function locateMkSwitch(page: Page, testId: string): Locator {
 }
 
 export async function visitHome(page: Page, baseUrl: string): Promise<void> {
+	await page.route('**/api/meta', async route => {
+		const response = await route.fetch();
+		await route.fulfill({ response, json: { ...await response.json(), phoneVerificationAvailable: true } });
+	});
 	await page.goto(`${baseUrl}/`);
 	await page.locator('button').first().waitFor({ state: 'visible', timeout: 30_000 });
 }
@@ -109,6 +161,8 @@ export async function signupThroughUi(
 	await locateMkInput(page, 'signup-password').fill(options.password);
 	await locateMkInput(page, 'signup-password-retype').fill(options.password);
 	await locateMkInput(page, 'signup-invitation-code').fill(options.invitationCode ?? DEFAULT_INVITATION_CODE);
+	// Diagnostics also run this scenario against the base revision's registration form.
+	if (await page.getByTestId('signup-phone').count() > 0) await fillSignupPhone(page);
 
 	const signupResponse = waitApiResponse(page, '/api/signup');
 	await page.getByTestId('signup-submit').click();

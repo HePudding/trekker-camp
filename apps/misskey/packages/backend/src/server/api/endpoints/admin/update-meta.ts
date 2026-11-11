@@ -388,7 +388,7 @@ export default class extends Endpoint<typeof meta, typeof paramDef> { // eslint-
 			}
 
 			if (ps.emailRequiredForSignup !== undefined) {
-				set.emailRequiredForSignup = ps.emailRequiredForSignup;
+				set.emailRequiredForSignup = false;
 			}
 
 			if (ps.enableHcaptcha !== undefined) {
@@ -822,8 +822,8 @@ export default class extends Endpoint<typeof meta, typeof paramDef> { // eslint-
 			const after = await this.metaService.fetch(true);
 
 			this.moderationLogService.log(me, 'updateServerSettings', {
-				before,
-				after,
+				before: { ...before, verificationSettings: { ...before.verificationSettings, accessKeySecret: '[redacted]' } },
+				after: { ...after, verificationSettings: { ...after.verificationSettings, accessKeySecret: '[redacted]' } },
 			});
 		});
 	}

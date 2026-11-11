@@ -13868,4 +13868,234 @@ export interface Locale extends ILocale {
          */
         "replyTo": ParameterizedString<"user">;
     };
+    "_phoneAuth": {
+        /**
+         * 手机号
+         */
+        "phone": string;
+        /**
+         * 请输入11位中国大陆手机号
+         */
+        "phoneHint": string;
+        /**
+         * 仅支持中国大陆手机号
+         */
+        "signupHint": string;
+        /**
+         * 当前手机号
+         */
+        "currentPhone": string;
+        /**
+         * 新手机号
+         */
+        "newPhone": string;
+        /**
+         * 换绑需验证新旧手机号
+         */
+        "changeHint": string;
+        /**
+         * 验证码
+         */
+        "code": string;
+        /**
+         * 请输入6位验证码
+         */
+        "codePlaceholder": string;
+        /**
+         * 获取验证码
+         */
+        "sendCode": string;
+        /**
+         * 发送中…
+         */
+        "sending": string;
+        /**
+         * 重新获取
+         */
+        "resend": string;
+        /**
+         * {time}后重试
+         */
+        "resendAfter": ParameterizedString<"time">;
+        /**
+         * 请查收验证码
+         */
+        "sent": string;
+        /**
+         * 操作频繁，请稍后重试
+         */
+        "tooFrequent": string;
+        /**
+         * 操作频繁，{time}后重试
+         */
+        "tooFrequentWithWait": ParameterizedString<"time">;
+        /**
+         * {seconds}秒
+         */
+        "waitSeconds": ParameterizedString<"seconds">;
+        /**
+         * {minutes}分{seconds}秒
+         */
+        "waitMinutes": ParameterizedString<"minutes" | "seconds">;
+        /**
+         * {hours}小时{minutes}分
+         */
+        "waitHours": ParameterizedString<"hours" | "minutes">;
+        /**
+         * 验证码错误或已失效
+         */
+        "invalidCode": string;
+        /**
+         * 验证失败，请重试
+         */
+        "captchaFailed": string;
+        /**
+         * 验证失败，请稍后重试
+         */
+        "unavailable": string;
+        /**
+         * 手机号已被绑定
+         */
+        "phoneUnavailable": string;
+        /**
+         * 密码或验证码错误
+         */
+        "authenticationFailed": string;
+        /**
+         * 请输入有效的邀请码
+         */
+        "invitationRequired": string;
+        /**
+         * 短信验证码
+         */
+        "settings": string;
+        /**
+         * 使用阿里云号码认证服务发送短信。
+         */
+        "adminHint": string;
+        /**
+         * 已配置，留空不修改
+         */
+        "secretSaved": string;
+        /**
+         * 请输入 AccessKey Secret
+         */
+        "secretRequired": string;
+        /**
+         * 阿里云短信签名
+         */
+        "signName": string;
+        /**
+         * 注册模板（100001）
+         */
+        "templateCode": string;
+        /**
+         * 换绑模板（100002）
+         */
+        "changePhoneTemplateCode": string;
+        /**
+         * 重置密码模板（100003）
+         */
+        "resetPasswordTemplateCode": string;
+        /**
+         * 绑定新手机模板（100004）
+         */
+        "bindPhoneTemplateCode": string;
+        /**
+         * 验证原手机模板（100005）
+         */
+        "verifyPhoneTemplateCode": string;
+        /**
+         * 找回密码方式
+         */
+        "resetMethod": string;
+        /**
+         * 手机找回
+         */
+        "smsReset": string;
+        /**
+         * 邮箱找回
+         */
+        "emailReset": string;
+        /**
+         * 请输入绑定的手机号
+         */
+        "resetHint": string;
+        /**
+         * 请输入绑定的邮箱
+         */
+        "emailResetHint": string;
+        /**
+         * 换用手机验证
+         */
+        "useSmsRecovery": string;
+        /**
+         * 加载失败，请重试
+         */
+        "recoveryLoadFailed": string;
+        /**
+         * 今日短信次数已用完，{time}后重试
+         */
+        "smsDailyLimit": ParameterizedString<"time">;
+        /**
+         * 密码已重置，请重新登录
+         */
+        "passwordResetDone": string;
+        /**
+         * 认证方案前缀（1–12 位字母、数字、下划线或短横线）
+         */
+        "schemeName": string;
+        /**
+         * 发送间隔（秒）
+         */
+        "interval": string;
+        /**
+         * 验证码有效期（秒，60的倍数）
+         */
+        "validTime": string;
+        /**
+         * 单手机号每小时上限
+         */
+        "perAddressHourly": string;
+        /**
+         * 单手机号每日上限
+         */
+        "perAddressDaily": string;
+        /**
+         * 单 IP 每小时上限
+         */
+        "ipHourly": string;
+        /**
+         * 单 IP 每日上限
+         */
+        "ipDaily": string;
+        /**
+         * 单账号每小时上限
+         */
+        "accountHourly": string;
+        /**
+         * 单账号每日上限
+         */
+        "accountDaily": string;
+        /**
+         * 全站每日上限
+         */
+        "globalDaily": string;
+        /**
+         * 北京时间每日0点重置，失败请求也计入额度。
+         */
+        "globalDailyHint": string;
+        /**
+         * 验证码尝试次数上限
+         */
+        "attempts": string;
+        /**
+         * AccessKey ID
+         */
+        "accessKeyId": string;
+        /**
+         * AccessKey Secret
+         */
+        "accessKeySecret": string;
+    };
 }
