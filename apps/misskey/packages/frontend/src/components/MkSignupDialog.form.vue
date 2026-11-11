@@ -29,12 +29,23 @@ SPDX-License-Identifier: AGPL-3.0-only
 					<span v-else-if="usernameState === 'max-range'" style="color: var(--MI_THEME-error)"><i class="ti ti-alert-triangle ti-fw"></i> {{ i18n.ts.tooLong }}</span>
 				</template>
 			</MkInput>
-			<MkInfo v-if="!instance.phoneVerificationAvailable" warn>{{ i18n.ts._phoneAuth.unavailable }}</MkInfo>
-			<MkInput v-model="phone" type="tel" autocomplete="tel-national" required data-testid="signup-phone">
+			<MkRadios v-if="instance.enablePhoneVerification && instance.allowEmailSignup" v-model="selectedMethod" :options="[
+				{ value: 'sms', label: i18n.ts._registration.phoneSignup },
+				{ value: 'email', label: i18n.ts._registration.emailSignup },
+			]">
+				<template #label>{{ i18n.ts._registration.signupMethod }}</template>
+			</MkRadios>
+			<MkInfo v-if="!verificationAvailable" warn>{{ i18n.ts._phoneAuth.unavailable }}</MkInfo>
+			<MkInput v-if="channel === 'sms'" v-model="phone" type="tel" autocomplete="tel-national" required data-testid="signup-phone">
 				<template #label>{{ i18n.ts._phoneAuth.phone }}</template>
 				<template #caption>{{ i18n.ts._phoneAuth.signupHint }}</template>
 			</MkInput>
-			<MkVerificationCode v-model="phoneProof" channel="sms" purpose="signup" :address="phone" :invitationCode="invitationCode" :disabled="!phone || !instance.phoneVerificationAvailable"/>
+			<MkInput v-else v-model="email" type="email" autocomplete="email" :spellcheck="false" required data-testid="signup-email">
+				<template #label>{{ i18n.ts.emailAddress }}</template>
+				<template #caption>{{ i18n.ts._registration.verifyEmailBeforeSignup }}</template>
+			</MkInput>
+			<MkInfo v-if="channel === 'email' && emailPolicyError" warn>{{ verificationErrorMessage({ code: emailPolicyError }) }}</MkInfo>
+			<MkVerificationCode v-model="proof" :channel="channel" purpose="signup" :address="channel === 'sms' ? phone : email" :invitationCode="invitationCode" :disabled="!verificationAvailable || (channel === 'sms' ? !phone : !email || !!emailPolicyError)"/>
 
 			<MkInput v-model="password" type="password" autocomplete="new-password" required data-testid="signup-password" @update:modelValue="onChangePassword">
 				<template #label>{{ i18n.ts.password }}</template>
@@ -65,18 +76,19 @@ SPDX-License-Identifier: AGPL-3.0-only
 </template>
 
 <script lang="ts" setup>
-import { ref, computed } from 'vue';
+import { ref, computed, onMounted } from 'vue';
 import { toUnicode } from 'punycode.js';
 import * as Misskey from 'misskey-js';
 import * as config from '@@/js/config.js';
 import MkButton from './MkButton.vue';
 import MkInput from './MkInput.vue';
+import MkRadios from '@/components/MkRadios.vue';
 import MkVerificationCode from '@/components/MkVerificationCode.vue';
 import MkInfo from '@/components/MkInfo.vue';
 import { verificationErrorMessage } from '@/utility/verification-error.js';
 import * as os from '@/os.js';
 import { misskeyApi } from '@/utility/misskey-api.js';
-import { instance } from '@/instance.js';
+import { instance, fetchInstance } from '@/instance.js';
 import { i18n } from '@/i18n.js';
 import { login } from '@/accounts.js';
 
@@ -98,7 +110,19 @@ const password = ref<string>('');
 const retypedPassword = ref<string>('');
 const invitationCode = ref<string>('');
 const phone = ref('');
-const phoneProof = ref({ challengeId: '', code: '' });
+const email = ref('');
+const proof = ref({ challengeId: '', code: '' });
+const selectedMethod = ref<'sms' | 'email'>('sms');
+const channel = computed(() => !instance.enablePhoneVerification ? 'email' : instance.allowEmailSignup ? selectedMethod.value : 'sms');
+const verificationAvailable = computed(() => channel.value === 'sms' ? instance.phoneVerificationAvailable : instance.enableEmail);
+const emailPolicyError = computed(() => {
+	if (!email.value.includes('@')) return null;
+	const [local, domain] = email.value.trim().toLowerCase().split('@');
+	if (instance.restrictSignupEmailDomains && domain !== 'qq.com' && domain !== 'gmail.com') return 'EMAIL_DOMAIN_NOT_ALLOWED';
+	if (instance.requireNumericQqEmail && domain === 'qq.com' && !/^\d+$/.test(local)) return 'QQ_EMAIL_MUST_BE_NUMERIC';
+	return null;
+});
+onMounted(() => fetchInstance(true));
 const usernameState = ref<null | 'wait' | 'ok' | 'unavailable' | 'error' | 'invalid-format' | 'min-range' | 'max-range'>(null);
 const passwordStrength = ref<'' | 'low' | 'medium' | 'high'>('');
 const passwordRetypeState = ref<null | 'match' | 'not-match'>(null);
@@ -107,7 +131,7 @@ const usernameAbortController = ref<null | AbortController>(null);
 
 const shouldDisableSubmitting = computed((): boolean => {
 	return submitting.value ||
-		!instance.phoneVerificationAvailable || !phoneProof.value.challengeId || !/^[0-9]{6}$/.test(phoneProof.value.code) ||
+		!verificationAvailable.value || (channel.value === 'email' && !!emailPolicyError.value) || !proof.value.challengeId || !/^[0-9]{6}$/.test(proof.value.code) ||
 		instance.disableRegistration && invitationCode.value === '' ||
 		usernameState.value !== 'ok' ||
 		passwordRetypeState.value !== 'match';
@@ -193,14 +217,15 @@ function onChangePasswordRetype(): void {
 }
 
 async function onSubmit(): Promise<void> {
-	if (submitting.value) return;
+	if (shouldDisableSubmitting.value) return;
 	submitting.value = true;
 
 	const signupPayload: Misskey.entities.SignupRequest = {
 		username: username.value,
 		password: password.value,
-		phoneChallengeId: phoneProof.value.challengeId,
-		phoneCode: phoneProof.value.code,
+		...(channel.value === 'sms'
+			? { phoneChallengeId: proof.value.challengeId, phoneCode: proof.value.code }
+			: { emailChallengeId: proof.value.challengeId, emailCode: proof.value.code }),
 		invitationCode: invitationCode.value,
 	};
 
@@ -222,6 +247,7 @@ async function onSubmit(): Promise<void> {
 	} else if (res) {
 		const data = await res.json().catch(() => null);
 		onSignupApiError(data?.error);
+		fetchInstance(true).catch(() => {});
 	}
 
 	submitting.value = false;

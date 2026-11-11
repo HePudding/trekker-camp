@@ -7,12 +7,15 @@ import { Injectable } from '@nestjs/common';
 import { Endpoint } from '@/server/api/endpoint-base.js';
 import { VerificationCodeService } from '@/core/VerificationCodeService.js';
 import { verificationSettingsProperties } from '@/server/api/verification-settings.js';
+import { MetaService } from '@/core/MetaService.js';
 
 export const meta = {
 	tags: ['admin'], requireCredential: true, requireAdmin: true, secure: true,
 	res: {
 		type: 'object',
 		properties: {
+			enablePhoneVerification: { type: 'boolean', optional: false, nullable: false },
+			allowEmailSignup: { type: 'boolean', optional: false, nullable: false },
 			...Object.fromEntries(Object.entries(verificationSettingsProperties).map(([key, value]) => [key, { ...value, optional: false, nullable: false }])) as { [K in keyof typeof verificationSettingsProperties]: typeof verificationSettingsProperties[K] & { optional: false; nullable: false } },
 			hasAccessKeySecret: { type: 'boolean', optional: false, nullable: false },
 		},
@@ -22,10 +25,11 @@ export const paramDef = { type: 'object', properties: {}, required: [] } as cons
 
 @Injectable()
 export default class extends Endpoint<typeof meta, typeof paramDef> { // eslint-disable-line import/no-default-export
-	constructor(private codes: VerificationCodeService) {
+	constructor(private codes: VerificationCodeService, private metaService: MetaService) {
 		super(meta, paramDef, async () => {
 			const { accessKeySecret, ...settings } = await this.codes.settings();
-			return { ...settings, hasAccessKeySecret: accessKeySecret.length > 0 };
+			const instance = await this.metaService.fetch();
+			return { ...settings, hasAccessKeySecret: accessKeySecret.length > 0, enablePhoneVerification: instance.enablePhoneVerification, allowEmailSignup: instance.allowEmailSignup };
 		});
 	}
 }

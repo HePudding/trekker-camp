@@ -5,7 +5,8 @@ SPDX-License-Identifier: AGPL-3.0-only
 
 <template>
 <div class="_spacer" style="--MI_SPACER-w: 600px;">
-	<form class="_gaps_m" :inert="saving" @submit.prevent="save">
+	<MkInfo v-if="!instance.enablePhoneVerification">{{ i18n.ts._registration.phoneDisabled }}</MkInfo>
+	<form v-else class="_gaps_m" :inert="saving" @submit.prevent="save">
 		<MkInfo>{{ i18n.ts._phoneAuth.changeHint }}</MkInfo>
 		<div>{{ i18n.ts._phoneAuth.currentPhone }}: {{ $i.phoneNumber ?? i18n.ts.notSet }}</div>
 		<template v-if="$i.phoneNumber">
@@ -22,7 +23,8 @@ SPDX-License-Identifier: AGPL-3.0-only
 </template>
 
 <script setup lang="ts">
-import { ref } from 'vue';
+import { ref, onMounted } from 'vue';
+import { instance, fetchInstance } from '@/instance.js';
 import MkInfo from '@/components/MkInfo.vue';
 import MkInput from '@/components/MkInput.vue';
 import MkButton from '@/components/MkButton.vue';
@@ -39,6 +41,7 @@ const phone = ref('');
 const oldProof = ref({ challengeId: '', code: '' });
 const newProof = ref({ challengeId: '', code: '' });
 const saving = ref(false);
+onMounted(() => fetchInstance(true));
 
 async function save() {
 	if (saving.value) return;

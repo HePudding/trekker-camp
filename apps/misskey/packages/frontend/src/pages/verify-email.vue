@@ -45,6 +45,7 @@ import MkButton from '@/components/MkButton.vue';
 import { i18n } from '@/i18n.js';
 import * as os from '@/os.js';
 import { misskeyApi } from '@/utility/misskey-api.js';
+import { refreshCurrentAccount } from '@/accounts.js';
 
 const submitting = ref(false);
 const succeeded = ref(false);
@@ -59,7 +60,8 @@ function submit() {
 
 	misskeyApi('verify-email', {
 		code: props.code,
-	}).then(() => {
+	}).then(async () => {
+		await refreshCurrentAccount();
 		succeeded.value = true;
 		submitting.value = false;
 	}).catch(() => {

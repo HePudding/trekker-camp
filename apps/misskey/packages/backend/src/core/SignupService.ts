@@ -6,7 +6,7 @@
 import { generateKeyPair } from 'node:crypto';
 import { Inject, Injectable } from '@nestjs/common';
 import bcrypt from 'bcryptjs';
-import { DataSource, IsNull } from 'typeorm';
+import { DataSource, IsNull, Raw } from 'typeorm';
 import { DI } from '@/di-symbols.js';
 import type { MiMeta, UsedUsernamesRepository, UsersRepository } from '@/models/_.js';
 import { MiUser } from '@/models/User.js';
@@ -22,6 +22,7 @@ import { UtilityService } from '@/core/UtilityService.js';
 import { UserService } from '@/core/UserService.js';
 import { SystemAccountService } from '@/core/SystemAccountService.js';
 import { MetaService } from '@/core/MetaService.js';
+import { VerificationError } from '@/core/VerificationCodeService.js';
 
 @Injectable()
 export class SignupService {
@@ -52,6 +53,7 @@ export class SignupService {
 	public async signup(opts: {
 		username: MiUser['username'];
 		phoneNumber?: string;
+		verifiedEmail?: string;
 		password?: string | null;
 		passwordHash?: MiUserProfile['password'] | null;
 		host?: string | null;
@@ -138,6 +140,13 @@ export class SignupService {
 
 			if (exist) throw new Error(' the username is already used');
 
+			if (opts.verifiedEmail) {
+				await transactionalEntityManager.query('SELECT pg_advisory_xact_lock(hashtext($1))', [`verify-email:${opts.verifiedEmail}`]);
+				if (await transactionalEntityManager.existsBy(MiUserProfile, {
+					email: Raw(alias => `LOWER(${alias}) = :email`, { email: opts.verifiedEmail }), emailVerified: true,
+				})) throw new VerificationError('EMAIL_UNAVAILABLE');
+			}
+
 			account = await transactionalEntityManager.save(new MiUser({
 				id: this.idService.gen(),
 				username: username,
@@ -157,6 +166,8 @@ export class SignupService {
 				autoAcceptFollowed: true,
 				password: hash,
 				phoneNumber: opts.phoneNumber ?? null,
+				email: opts.verifiedEmail ?? null,
+				emailVerified: Boolean(opts.verifiedEmail),
 			}));
 
 			await transactionalEntityManager.save(new MiUsedUsername({
