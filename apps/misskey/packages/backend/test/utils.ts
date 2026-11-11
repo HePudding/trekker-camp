@@ -23,8 +23,17 @@ import { IdService } from '@/core/IdService.js';
 import { MiRegistrationTicket } from '@/models/RegistrationTicket.js';
 import { verificationCode } from './misc/verification-code.js';
 import { ApiError } from '@/server/api/error.js';
+import { jobQueue } from '@/boot/common.js';
+import { MetaService } from '@/core/MetaService.js';
 
-export { server as startServer, jobQueue as startJobQueue } from '@/boot/common.js';
+export { server as startServer } from '@/boot/common.js';
+
+export async function startJobQueue() {
+	const app = await jobQueue();
+	// Starting the queue rebuilds the test schema; restore the shared signup fixture.
+	await app.get(MetaService).update({ enablePhoneVerification: true });
+	return app;
+}
 
 export interface UserToken {
 	token: string;
