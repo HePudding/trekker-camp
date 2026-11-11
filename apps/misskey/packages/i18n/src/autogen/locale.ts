@@ -13878,7 +13878,7 @@ export interface Locale extends ILocale {
          */
         "phoneHint": string;
         /**
-         * 手机号用于注册和找回密码，注册后可绑定邮箱。
+         * 仅支持中国大陆手机号
          */
         "signupHint": string;
         /**
@@ -13890,7 +13890,7 @@ export interface Locale extends ILocale {
          */
         "newPhone": string;
         /**
-         * 请验证新手机号。更换手机号时，还需验证原手机号并完成安全验证。
+         * 换绑需验证新旧手机号
          */
         "changeHint": string;
         /**
@@ -13926,7 +13926,7 @@ export interface Locale extends ILocale {
          */
         "tooFrequent": string;
         /**
-         * 操作频繁，请在{time}后重试
+         * 操作频繁，{time}后重试
          */
         "tooFrequentWithWait": ParameterizedString<"time">;
         /**
@@ -13942,23 +13942,23 @@ export interface Locale extends ILocale {
          */
         "waitHours": ParameterizedString<"hours" | "minutes">;
         /**
-         * 验证码错误或已过期，请重新获取
+         * 验证码错误或已失效
          */
         "invalidCode": string;
         /**
-         * 安全验证未通过，请重试
+         * 验证失败，请重试
          */
         "captchaFailed": string;
         /**
-         * 暂时无法完成验证，请稍后重试
+         * 验证失败，请稍后重试
          */
         "unavailable": string;
         /**
-         * 该手机号已被使用，请更换手机号
+         * 手机号已被绑定
          */
         "phoneUnavailable": string;
         /**
-         * 验证未通过，请检查密码和验证码后重试
+         * 密码或验证码错误
          */
         "authenticationFailed": string;
         /**
@@ -13970,15 +13970,15 @@ export interface Locale extends ILocale {
          */
         "settings": string;
         /**
-         * 注册使用手机号验证，登录必须输入密码。短信用于注册、找回密码和换绑，发送前需完成人机验证，所有场景共用短信限额。找回密码优先使用已验证邮箱，未绑定已验证邮箱的账号直接使用短信。邮箱绑定、找回密码和通知继续使用邮件服务器。
+         * 使用阿里云号码认证服务发送短信。
          */
         "adminHint": string;
         /**
-         * 密钥已保存。留空保留现有密钥。
+         * 已配置，留空不修改
          */
         "secretSaved": string;
         /**
-         * 请输入阿里云 AccessKey Secret。
+         * 请输入 AccessKey Secret
          */
         "secretRequired": string;
         /**
@@ -13986,23 +13986,23 @@ export interface Locale extends ILocale {
          */
         "signName": string;
         /**
-         * 登录／注册模板 CODE（100001）
+         * 注册模板（100001）
          */
         "templateCode": string;
         /**
-         * 修改绑定手机号模板 CODE（100002）
+         * 换绑模板（100002）
          */
         "changePhoneTemplateCode": string;
         /**
-         * 重置密码模板 CODE（100003）
+         * 重置密码模板（100003）
          */
         "resetPasswordTemplateCode": string;
         /**
-         * 绑定新手机号模板 CODE（100004）
+         * 绑定新手机模板（100004）
          */
         "bindPhoneTemplateCode": string;
         /**
-         * 验证绑定手机号模板 CODE（100005）
+         * 验证原手机模板（100005）
          */
         "verifyPhoneTemplateCode": string;
         /**
@@ -14010,35 +14010,35 @@ export interface Locale extends ILocale {
          */
         "resetMethod": string;
         /**
-         * 通过手机号找回
+         * 手机找回
          */
         "smsReset": string;
         /**
-         * 通过邮箱找回
+         * 邮箱找回
          */
         "emailReset": string;
         /**
-         * 请验证已绑定的手机号，验证通过后即可设置新密码。
+         * 请输入绑定的手机号
          */
         "resetHint": string;
         /**
-         * 请输入该账号已绑定且验证通过的邮箱，获取验证码后即可设置新密码。
+         * 请输入绑定的邮箱
          */
         "emailResetHint": string;
         /**
-         * 无法使用邮箱？通过手机找回
+         * 换用手机验证
          */
         "useSmsRecovery": string;
         /**
-         * 暂时无法加载找回密码方式，请重试。
+         * 加载失败，请重试
          */
         "recoveryLoadFailed": string;
         /**
-         * 今日短信发送次数已达上限，请在{time}后重试。已绑定邮箱的用户可通过邮箱找回密码。
+         * 今日短信次数已用完，{time}后重试
          */
         "smsDailyLimit": ParameterizedString<"time">;
         /**
-         * 密码已重置，请使用新密码登录。
+         * 密码已重置，请重新登录
          */
         "passwordResetDone": string;
         /**
@@ -14046,47 +14046,47 @@ export interface Locale extends ILocale {
          */
         "schemeName": string;
         /**
-         * 同一手机号的最小短信发送间隔（秒）
+         * 发送间隔（秒）
          */
         "interval": string;
         /**
-         * 短信验证码有效期（秒，60 的倍数）
+         * 验证码有效期（秒，60的倍数）
          */
         "validTime": string;
         /**
-         * 同一手机号每小时短信发送上限
+         * 单手机号每小时上限
          */
         "perAddressHourly": string;
         /**
-         * 同一手机号每天短信发送上限
+         * 单手机号每日上限
          */
         "perAddressDaily": string;
         /**
-         * 同一 IP 每小时短信发送上限
+         * 单 IP 每小时上限
          */
         "ipHourly": string;
         /**
-         * 同一 IP 每天短信发送上限
+         * 单 IP 每日上限
          */
         "ipDaily": string;
         /**
-         * 同一已登录账号每小时短信发送上限
+         * 单账号每小时上限
          */
         "accountHourly": string;
         /**
-         * 同一已登录账号每天短信发送上限
+         * 单账号每日上限
          */
         "accountDaily": string;
         /**
-         * 全站每日短信发送上限
+         * 全站每日上限
          */
         "globalDaily": string;
         /**
-         * 所有 IP、账号和短信场景共同计数，北京时间每天 00:00 重置。发送请求失败也会计入，避免产生额外费用。
+         * 北京时间每日0点重置，失败请求也计入额度。
          */
         "globalDailyHint": string;
         /**
-         * 短信验证码最多尝试次数
+         * 验证码尝试次数上限
          */
         "attempts": string;
         /**

@@ -131,8 +131,8 @@ export default class extends Endpoint<typeof meta, typeof paramDef> { // eslint-
 				const link = `${this.config.url}/verify-email/${code}`;
 
 				await this.emailService.sendEmail(ps.email, '旅人营地邮箱验证',
-					`<p>请点击下方链接验证你的邮箱，验证后可用于找回密码和接收通知。</p><p><a href="${link}">验证邮箱</a></p><p>如非本人操作，请忽略此邮件。</p>`,
-					`请打开以下链接验证你的邮箱，验证后可用于找回密码和接收通知：${link}\n如非本人操作，请忽略此邮件。`).catch(() => {
+					`<p>点击下方链接验证邮箱。</p><p><a href="${link}">验证邮箱</a></p><p>非本人操作请忽略。</p>`,
+					`验证邮箱：${link}\n非本人操作请忽略。`).catch(() => {
 					throw new ApiError(verificationErrors.unavailable);
 				});
 			}

@@ -223,8 +223,8 @@ export class VerificationCodeService {
 			challenge.emailHash = digest(`${challengeId}:${code}`);
 			try {
 				await this.emailService.sendEmail(address, '旅人营地重置密码验证码',
-					`<p>你正在重置旅人营地的登录密码，验证码为 <b>${code}</b>，${s.validTime / 60} 分钟内有效。</p><p>请勿将验证码告诉他人。如非本人操作，请忽略此邮件。</p>`,
-					`你正在重置旅人营地的登录密码，验证码为 ${code}，${s.validTime / 60} 分钟内有效。请勿将验证码告诉他人。如非本人操作，请忽略此邮件。`);
+					`<p>重置密码验证码： <b>${code}</b>，${s.validTime / 60} 分钟内有效。</p><p>请勿泄露。非本人操作请忽略。</p>`,
+					`重置密码验证码： ${code}，${s.validTime / 60} 分钟内有效。请勿泄露。非本人操作请忽略。`);
 			} catch {
 				throw new VerificationError('VERIFICATION_UNAVAILABLE');
 			}

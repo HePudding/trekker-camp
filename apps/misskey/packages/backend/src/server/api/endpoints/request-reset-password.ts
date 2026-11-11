@@ -94,8 +94,8 @@ export default class extends Endpoint<typeof meta, typeof paramDef> { // eslint-
 			const link = `${this.config.url}/reset-password/${token}`;
 
 			await this.emailService.sendEmail(ps.email, '旅人营地重置密码',
-				`<p>你正在重置旅人营地的登录密码，请在 30 分钟内点击下方链接设置新密码：</p><p><a href="${link}">重置密码</a></p><p>如非本人操作，请忽略此邮件。</p>`,
-				`你正在重置旅人营地的登录密码，请在 30 分钟内打开以下链接设置新密码：${link}\n如非本人操作，请忽略此邮件。`).catch(() => {
+				`<p>点击下方链接重置密码，30 分钟内有效。</p><p><a href="${link}">重置密码</a></p><p>非本人操作请忽略。</p>`,
+				`重置密码（30 分钟内有效）：${link}\n非本人操作请忽略。`).catch(() => {
 					handleVerificationError(new VerificationError('VERIFICATION_UNAVAILABLE'));
 				});
 		});

@@ -51,8 +51,8 @@ export class SigninService {
 			const profile = await this.userProfilesRepository.findOneByOrFail({ userId: user.id });
 			if (profile.email && profile.emailVerified) {
 				this.emailService.sendEmail(profile.email, '旅人营地账号登录提醒',
-					'<p>你的旅人营地账号刚刚完成了一次登录。如非本人操作，请尽快修改密码，并检查账号安全设置。</p>',
-					'你的旅人营地账号刚刚完成了一次登录。如非本人操作，请尽快修改密码，并检查账号安全设置。');
+					'<p>你的账号刚刚登录。非本人操作请立即修改密码。</p>',
+					'你的账号刚刚登录。非本人操作请立即修改密码。');
 			}
 		});
 

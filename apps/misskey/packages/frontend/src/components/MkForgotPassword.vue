@@ -17,17 +17,16 @@ SPDX-License-Identifier: AGPL-3.0-only
 			<MkButton type="submit" primary :disabled="!username.trim()">{{ recoveryFailed ? i18n.ts.retry : i18n.ts.continue }}</MkButton>
 		</form>
 		<form v-else-if="method === 'email' ? emailAvailable : smsReady" class="_gaps" @submit.prevent="onSubmit">
-			<MkInfo>{{ method === 'email' ? i18n.ts._phoneAuth.emailResetHint : i18n.ts._phoneAuth.resetHint }}</MkInfo>
 			<template v-if="method === 'email'">
 				<MkInput v-model="username" autocomplete="username" :spellcheck="false" readonly>
 					<template #label>{{ i18n.ts.username }}</template>
 					<template #prefix>@</template>
 				</MkInput>
-				<MkInput v-model="email" type="email" autocomplete="email" :spellcheck="false" required>
+				<MkInput v-model="email" type="email" autocomplete="email" :spellcheck="false" :placeholder="i18n.ts._phoneAuth.emailResetHint" required>
 					<template #label>{{ i18n.ts.emailAddress }}</template>
 				</MkInput>
 			</template>
-			<MkInput v-else v-model="phone" type="tel" autocomplete="tel-national" required>
+			<MkInput v-else v-model="phone" type="tel" autocomplete="tel-national" :placeholder="i18n.ts._phoneAuth.resetHint" required>
 				<template #label>{{ i18n.ts._phoneAuth.phone }}</template>
 				<template #caption>{{ i18n.ts._phoneAuth.phoneHint }}</template>
 			</MkInput>
