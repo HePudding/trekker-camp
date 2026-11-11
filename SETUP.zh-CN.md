@@ -77,7 +77,7 @@ pnpm --filter backend test
 
 团队日常开发与交付见 [DEVELOPMENT.md](DEVELOPMENT.md)。
 
-手机号注册、密码登录、邮箱／短信找回密码与阿里云号码认证配置见 [AUTH.zh-CN.md](AUTH.zh-CN.md)。
+手机／邮箱验证注册、注册方式与邮箱限制开关、密码找回及阿里云号码认证配置见 [AUTH.zh-CN.md](AUTH.zh-CN.md)。
 
 ## 文案与 AI
 

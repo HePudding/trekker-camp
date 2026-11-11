@@ -116,6 +116,7 @@ export type AdminRolesUpdateDefaultPoliciesRequest = operations['admin___roles__
 export type AdminRolesUsersRequest = operations['admin___roles___users']['requestBody']['content']['application/json'];
 export type AdminRolesUsersResponse = operations['admin___roles___users']['responses']['200']['content']['application/json'];
 export type AdminSendEmailRequest = operations['admin___send-email']['requestBody']['content']['application/json'];
+export type AdminSendSmsRequest = operations['admin___send-sms']['requestBody']['content']['application/json'];
 export type AdminServerInfoResponse = operations['admin___server-info']['responses']['200']['content']['application/json'];
 export type AdminShowModerationLogsRequest = operations['admin___show-moderation-logs']['requestBody']['content']['application/json'];
 export type AdminShowModerationLogsResponse = operations['admin___show-moderation-logs']['responses']['200']['content']['application/json'];

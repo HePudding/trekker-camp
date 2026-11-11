@@ -6,6 +6,7 @@ SPDX-License-Identifier: AGPL-3.0-only
 <template>
 <div>
 	<div :class="$style.contents">
+		<XEmailVerificationBanner/>
 		<!--
 			デッキUIが設定されている場合はデッキUIに戻れるようにする (ただし?zenが明示された場合は表示しない)
 			See https://github.com/misskey-dev/misskey/issues/10905
@@ -25,6 +26,7 @@ SPDX-License-Identifier: AGPL-3.0-only
 import { computed, provide, ref } from 'vue';
 import { instanceName, ui } from '@@/js/config.js';
 import XCommon from './_common_/common.vue';
+import XEmailVerificationBanner from './_common_/email-verification-banner.vue';
 import type { PageMetadata } from '@/page.js';
 import { provideMetadataReceiver, provideReactiveMetadata } from '@/page.js';
 import { i18n } from '@/i18n.js';

@@ -5,12 +5,12 @@ SPDX-License-Identifier: AGPL-3.0-only
 
 <template>
 <div :class="$style.root">
-	<MkCaptchaGate v-if="channel === 'sms'" ref="captcha"/>
+	<MkCaptchaGate v-if="(channel === 'sms' || purpose === 'signup')" ref="captcha"/>
 	<div :class="$style.row">
 		<MkInput v-model="model.code" :class="$style.code" :placeholder="i18n.ts._phoneAuth.codePlaceholder" autocomplete="one-time-code" inputmode="numeric" pattern="[0-9]{6}" required>
 			<template #label>{{ i18n.ts._phoneAuth.code }}</template>
 		</MkInput>
-		<MkButton type="button" :class="$style.send" :disabled="sending || remaining > 0 || (channel === 'sms' && !captcha?.ready) || disabled" @click="send">
+		<MkButton type="button" :class="$style.send" :disabled="sending || remaining > 0 || ((channel === 'sms' || purpose === 'signup') && !captcha?.ready) || disabled" @click="send">
 			{{ remaining > 0 ? i18n.tsx._phoneAuth.resendAfter({ time: formatVerificationWait(remaining) }) : sending ? i18n.ts._phoneAuth.sending : sent ? i18n.ts._phoneAuth.resend : i18n.ts._phoneAuth.sendCode }}
 		</MkButton>
 	</div>
@@ -59,7 +59,7 @@ watch(() => [props.channel, props.purpose, props.address, props.invitationCode, 
 });
 
 async function send() {
-	if (sending.value || remaining.value > 0 || (props.channel === 'sms' && !captcha.value?.ready) || props.disabled) return;
+	if (sending.value || remaining.value > 0 || ((props.channel === 'sms' || props.purpose === 'signup') && !captcha.value?.ready) || props.disabled) return;
 	sending.value = true;
 	const currentRevision = revision;
 	try {

@@ -78,6 +78,10 @@ export const packedMetaLiteSchema = {
 			type: 'boolean',
 			optional: false, nullable: false,
 		},
+		enablePhoneVerification: { type: 'boolean', optional: false, nullable: false },
+		allowEmailSignup: { type: 'boolean', optional: false, nullable: false },
+		restrictSignupEmailDomains: { type: 'boolean', optional: false, nullable: false },
+		requireNumericQqEmail: { type: 'boolean', optional: false, nullable: false },
 		phoneVerificationAvailable: { type: 'boolean', optional: false, nullable: false },
 		emailRequiredForSignup: {
 			type: 'boolean',

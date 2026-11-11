@@ -24,6 +24,7 @@ import SendCode from '@/server/api/endpoints/auth/send-code.js';
 import BeginPasswordReset from '@/server/api/endpoints/auth/begin-password-reset.js';
 import UpdateEmail from '@/server/api/endpoints/i/update-email.js';
 import UpdateVerificationSettings from '@/server/api/endpoints/admin/update-verification-settings.js';
+import SendSms from '@/server/api/endpoints/admin/send-sms.js';
 import Logger from '@/logger.js';
 
 describe('Phone and email verification', () => {
@@ -44,6 +45,8 @@ describe('Phone and email verification', () => {
 		redis = new Redis({ ...loadConfig().redis, keyPrefix: `phone-auth-test:${randomUUID()}:` });
 		settings = { verificationSettings: { ...verificationDefaults, accessKeyId: 'test-id', accessKeySecret: 'test-secret', signName: '测试', templateCode: '100001' }, enableEmail: true, disableRegistration: false } as MiMeta;
 		meta.fetch.mockResolvedValue(settings);
+		settings.enablePhoneVerification = true;
+		email.validateEmailForAccount.mockResolvedValue({ available: true, reason: null });
 		captcha.get.mockResolvedValue({ provider: 'none' } as unknown as CaptchaSetting);
 		http.send.mockImplementation(async () => new Response(JSON.stringify({ Code: 'OK', Success: true, Model: { VerifyResult: 'PASS' } })));
 		email.sendEmail.mockResolvedValue(undefined);
@@ -55,6 +58,88 @@ describe('Phone and email verification', () => {
 	test('normalizes +86 and rejects other country codes and malformed numbers', () => {
 		expect(normalizePhone(' +8613800138000 ')).toBe('13800138000');
 		for (const invalid of ['+14155551234', '1380013800', 'abc', '12800138000']) expect(() => normalizePhone(invalid)).toThrow('INVALID_PHONE');
+	});
+
+	test('disabling SMS immediately rejects sends and already verified challenges', async () => {
+		const proof = await codes.send('sms', 'signup', '13800138000', null);
+		await codes.verify(proof.challengeId, '123456', 'signup');
+		settings.enablePhoneVerification = false;
+		http.send.mockClear();
+		await expect(codes.verify(proof.challengeId, '123456', 'signup')).rejects.toThrow('VERIFICATION_UNAVAILABLE');
+		await expect(send.exec({ channel: 'sms', purpose: 'password-reset', address: '13800138000' }, null, null)).rejects.toMatchObject({ code: 'VERIFICATION_UNAVAILABLE' });
+		expect(http.send).not.toHaveBeenCalled();
+		settings.enablePhoneVerification = true;
+		await expect(codes.verify(proof.challengeId, '123456', 'signup')).resolves.toHaveProperty('channel', 'sms');
+	});
+
+	test('email signup works with SMS disabled and requires a single-use signup proof', async () => {
+		settings.enablePhoneVerification = false;
+		settings.verificationSettings = {};
+		const proof = await send.exec({ channel: 'email', purpose: 'signup', address: ' Alice@GMAIL.COM ' }, null, null, undefined, '192.0.2.1');
+		expect(email.sendEmail.mock.calls[0].slice(0, 2)).toEqual(['alice@gmail.com', '旅人营地注册验证码']);
+		const code = email.sendEmail.mock.calls[0][3].match(/\d{6}/)![0];
+		await expect(codes.verify(proof.challengeId, code, 'password-reset')).rejects.toThrow('INVALID_CODE');
+		await expect(codes.verify(proof.challengeId, code, 'signup')).resolves.toMatchObject({ channel: 'email', address: 'alice@gmail.com', userId: null });
+		await codes.consume([proof.challengeId]);
+		await expect(codes.verify(proof.challengeId, code, 'signup')).rejects.toThrow('INVALID_CODE');
+		await expect(send.exec({ channel: 'email', purpose: 'signup', address: 'alice@gmail.com' }, null, null, undefined, '192.0.2.1')).rejects.toMatchObject({ code: 'RATE_LIMIT_EXCEEDED' });
+		expect(http.send).not.toHaveBeenCalled();
+	});
+
+	test('email signup requires its switch while SMS is enabled', async () => {
+		await expect(codes.validateSignup('email', 'alice@gmail.com')).rejects.toThrow('VERIFICATION_UNAVAILABLE');
+		settings.allowEmailSignup = true;
+		await expect(codes.validateSignup('email', 'alice@gmail.com')).resolves.toBeUndefined();
+		settings.enableEmail = false;
+		await expect(codes.validateSignup('email', 'alice@gmail.com')).rejects.toThrow('VERIFICATION_UNAVAILABLE');
+	});
+
+	test.each([
+		['123456@qq.com', null], ['alias@qq.com', 'QQ_EMAIL_MUST_BE_NUMERIC'],
+		['alice@gmail.com', null], ['alice@QQ.COM', 'QQ_EMAIL_MUST_BE_NUMERIC'],
+		['123@qq.com.example.org', 'EMAIL_DOMAIN_NOT_ALLOWED'], ['alice@foxmail.com', 'EMAIL_DOMAIN_NOT_ALLOWED'],
+		['alice@googlemail.com', 'EMAIL_DOMAIN_NOT_ALLOWED'], ['alice@example.org', 'EMAIL_DOMAIN_NOT_ALLOWED'],
+	] as const)('enforces signup email policies for %s', async (address, error) => {
+		Object.assign(settings, { enablePhoneVerification: false, restrictSignupEmailDomains: true, requireNumericQqEmail: true });
+		if (error) {
+			await expect(codes.validateSignup('email', address)).rejects.toThrow(error);
+			expect(email.validateEmailForAccount).not.toHaveBeenCalled();
+		} else {
+			await expect(codes.validateSignup('email', address)).resolves.toBeUndefined();
+		}
+	});
+
+	test('signup restrictions do not block recovery and can be disabled independently', async () => {
+		Object.assign(settings, { enablePhoneVerification: false, restrictSignupEmailDomains: false, requireNumericQqEmail: true });
+		await expect(codes.validateSignup('email', 'alice@example.org')).resolves.toBeUndefined();
+		await expect(codes.validateSignup('email', 'alias@qq.com')).rejects.toThrow('QQ_EMAIL_MUST_BE_NUMERIC');
+		settings.requireNumericQqEmail = false;
+		await expect(codes.validateSignup('email', 'alias@qq.com')).resolves.toBeUndefined();
+		settings.restrictSignupEmailDomains = true;
+		profiles.find.mockResolvedValue([{ userId: 'alice' }] as MiUserProfile[]);
+		users.findOneBy.mockResolvedValue({ id: 'alice' } as MiLocalUser);
+		await expect(send.exec({ channel: 'email', purpose: 'password-reset', username: 'alice', address: 'alice@example.org' }, null, null)).resolves.toHaveProperty('challengeId');
+	});
+
+	test('email signup checks CAPTCHA and never creates a proof after a failed delivery', async () => {
+		settings.enablePhoneVerification = false;
+		captcha.get.mockResolvedValue({ provider: 'testcaptcha' } as unknown as CaptchaSetting);
+		captcha.verifyTestcaptcha.mockRejectedValueOnce(new Error('failed'));
+		await expect(send.exec({ channel: 'email', purpose: 'signup', address: 'alice@gmail.com' }, null, null)).rejects.toMatchObject({ code: 'CAPTCHA_FAILED' });
+		expect(email.sendEmail).not.toHaveBeenCalled();
+		email.sendEmail.mockRejectedValueOnce(new Error('SMTP failed'));
+		await expect(send.exec({ channel: 'email', purpose: 'signup', address: 'alice@gmail.com', 'testcaptcha-response': 'passed' }, null, null)).rejects.toMatchObject({ code: 'VERIFICATION_UNAVAILABLE' });
+		expect(await redis.keys(`${redis.options.keyPrefix}verification:code:*`)).toEqual([]);
+	});
+
+	test('admin test SMS uses the saved signup template and cannot create an account', async () => {
+		const endpoint = new SendSms(codes);
+		await endpoint.exec({ to: '+8613800138000' }, { id: 'admin' } as MiLocalUser, null, undefined, '192.0.2.1');
+		const params = new URLSearchParams(http.send.mock.calls[0][1]?.body as string);
+		expect(params.get('TemplateCode')).toBe('100001');
+		expect(params.get('SchemeName')).toBe('camp-test');
+		await expect(codes.verify(params.get('OutId')!, '123456', 'signup')).rejects.toThrow('INVALID_CODE');
+		await expect(endpoint.exec({ to: '13800138000' }, { id: 'admin' } as MiLocalUser, null, undefined, '192.0.2.1')).rejects.toMatchObject({ code: 'RATE_LIMIT_EXCEEDED' });
 	});
 
 	test.each([

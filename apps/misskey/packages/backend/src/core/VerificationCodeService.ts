@@ -23,7 +23,7 @@ export const verificationDefaults = {
 	ipHourly: 20, ipDaily: 100, accountHourly: 10, accountDaily: 20, globalDaily: 100, attempts: 5,
 };
 export type VerificationSettings = typeof verificationDefaults;
-export type CodePurpose = 'signup' | 'phone-old' | 'phone-new' | 'password-reset';
+export type CodePurpose = 'signup' | 'phone-old' | 'phone-new' | 'password-reset' | 'test';
 export type CodeChannel = 'sms' | 'email';
 export type CaptchaTokens = Partial<Record<'hcaptcha-response' | 'm-captcha-response' | 'g-recaptcha-response' | 'turnstile-response' | 'testcaptcha-response', string | null>>;
 export type CodeChallenge = {
@@ -39,7 +39,7 @@ export type CodeChallenge = {
 };
 
 export class VerificationError extends Error {
-	constructor(public readonly code: 'INVALID_CODE' | 'CAPTCHA_FAILED' | 'RATE_LIMIT_EXCEEDED' | 'SMS_DAILY_LIMIT_EXCEEDED' | 'VERIFICATION_UNAVAILABLE' | 'INVALID_PHONE' | 'INVALID_EMAIL' | 'PHONE_UNAVAILABLE' | 'AUTHENTICATION_FAILED' | 'REGISTRATION_CLOSED', public readonly retryAfter?: number) {
+	constructor(public readonly code: 'INVALID_CODE' | 'CAPTCHA_FAILED' | 'RATE_LIMIT_EXCEEDED' | 'SMS_DAILY_LIMIT_EXCEEDED' | 'VERIFICATION_UNAVAILABLE' | 'INVALID_PHONE' | 'INVALID_EMAIL' | 'PHONE_UNAVAILABLE' | 'EMAIL_UNAVAILABLE' | 'EMAIL_DOMAIN_NOT_ALLOWED' | 'QQ_EMAIL_MUST_BE_NUMERIC' | 'AUTHENTICATION_FAILED' | 'REGISTRATION_CLOSED', public readonly retryAfter?: number) {
 		super(code);
 	}
 }
@@ -75,6 +75,32 @@ export class VerificationCodeService {
 		private emailService: EmailService,
 		private httpRequestService: HttpRequestService,
 	) {}
+
+	@bindThis
+	public async ensureSmsEnabled(): Promise<void> {
+		if (!(await this.metaService.fetch()).enablePhoneVerification) throw new VerificationError('VERIFICATION_UNAVAILABLE');
+	}
+
+	@bindThis
+	public async validateSignup(channel: CodeChannel, address: string): Promise<void> {
+		const instance = await this.metaService.fetch();
+		if (channel === 'sms') {
+			await this.ensureSmsEnabled();
+			return;
+		}
+		if (!instance.enableEmail || (instance.enablePhoneVerification && !instance.allowEmailSignup)) {
+			throw new VerificationError('VERIFICATION_UNAVAILABLE');
+		}
+		const [local, domain] = normalizeEmail(address).split('@');
+		if (instance.restrictSignupEmailDomains && domain !== 'qq.com' && domain !== 'gmail.com') {
+			throw new VerificationError('EMAIL_DOMAIN_NOT_ALLOWED');
+		}
+		if (instance.requireNumericQqEmail && domain === 'qq.com' && !/^\d+$/.test(local)) {
+			throw new VerificationError('QQ_EMAIL_MUST_BE_NUMERIC');
+		}
+		const validation = await this.emailService.validateEmailForAccount(address);
+		if (!validation.available) throw new VerificationError(validation.reason === 'used' ? 'EMAIL_UNAVAILABLE' : 'INVALID_EMAIL');
+	}
 
 	@bindThis
 	public async settings(): Promise<VerificationSettings> {
@@ -128,8 +154,8 @@ export class VerificationCodeService {
 	}
 
 	@bindThis
-	public async limit(address: string, ip: string, userId?: string): Promise<void> {
-		const s = await this.settings();
+	public async limit(address: string, ip: string, userId?: string, channel: CodeChannel = 'sms'): Promise<void> {
+		const s = channel === 'sms' ? await this.settings() : verificationDefaults;
 		const buckets: [string, number, number][] = [
 			[`address:${digest(address)}:interval`, s.interval, 1],
 			[`address:${digest(address)}:hour`, 3600, s.perAddressHourly],
@@ -196,10 +222,11 @@ export class VerificationCodeService {
 
 	@bindThis
 	public async send(channel: CodeChannel, purpose: CodePurpose, address: string, userId: string | null, replacingPhone = false): Promise<{ challengeId: string; retryAfter: number }> {
+		if (channel === 'sms') await this.ensureSmsEnabled();
 		const s = channel === 'sms' ? await this.settings() : verificationDefaults;
 		const challengeId = randomUUID();
 		const code = randomInt(0, 1000000).toString().padStart(6, '0');
-		const suffix = { signup: 'su', 'phone-old': 'old', 'phone-new': 'new', 'password-reset': 'pw' }[purpose];
+		const suffix = { signup: 'su', 'phone-old': 'old', 'phone-new': 'new', 'password-reset': 'pw', test: 'test' }[purpose];
 		const challenge: CodeChallenge = { channel, purpose, address, userId, schemeName: `${s.schemeName}-${suffix}`, attempts: 0, maxAttempts: s.attempts };
 		if (channel === 'sms') {
 			const templateCode = {
@@ -207,6 +234,7 @@ export class VerificationCodeService {
 				'phone-old': s.verifyPhoneTemplateCode,
 				'phone-new': replacingPhone ? s.changePhoneTemplateCode : s.bindPhoneTemplateCode,
 				'password-reset': s.resetPasswordTemplateCode,
+				test: s.templateCode,
 			}[purpose];
 			if (!s.accessKeyId || !s.accessKeySecret || !s.signName || !templateCode) throw new VerificationError('VERIFICATION_UNAVAILABLE');
 			await this.reserveDailySms(s.globalDaily);
@@ -218,13 +246,14 @@ export class VerificationCodeService {
 				DuplicatePolicy: '1', ReturnVerifyCode: 'false', AutoRetry: '0',
 			});
 		} else {
-			if (purpose !== 'password-reset') throw new VerificationError('INVALID_EMAIL');
+			if (purpose !== 'password-reset' && purpose !== 'signup') throw new VerificationError('INVALID_EMAIL');
 			if (!(await this.metaService.fetch()).enableEmail) throw new VerificationError('VERIFICATION_UNAVAILABLE');
 			challenge.emailHash = digest(`${challengeId}:${code}`);
 			try {
-				await this.emailService.sendEmail(address, '旅人营地重置密码验证码',
-					`<p>重置密码验证码： <b>${code}</b>，${s.validTime / 60} 分钟内有效。</p><p>请勿泄露。非本人操作请忽略。</p>`,
-					`重置密码验证码： ${code}，${s.validTime / 60} 分钟内有效。请勿泄露。非本人操作请忽略。`);
+				const action = purpose === 'signup' ? '注册' : '重置密码';
+				await this.emailService.sendEmail(address, `旅人营地${action}验证码`,
+					`<p>${action}验证码： <b>${code}</b>，${s.validTime / 60} 分钟内有效。</p><p>请勿泄露。非本人操作请忽略。</p>`,
+					`${action}验证码： ${code}，${s.validTime / 60} 分钟内有效。请勿泄露。非本人操作请忽略。`);
 			} catch {
 				throw new VerificationError('VERIFICATION_UNAVAILABLE');
 			}
@@ -233,7 +262,7 @@ export class VerificationCodeService {
 			.set(`verification:code:${challengeId}`, JSON.stringify(challenge), 'EX', s.validTime)
 			.set(this.currentKey(challenge), challengeId, 'EX', s.validTime)
 			.exec();
-		return { challengeId, retryAfter: channel === 'sms' ? s.interval : 0 };
+		return { challengeId, retryAfter: channel === 'sms' || purpose === 'signup' ? s.interval : 0 };
 	}
 
 	@bindThis
@@ -246,6 +275,7 @@ export class VerificationCodeService {
 			const data = await this.redis.get(key);
 			if (!data) throw new VerificationError('INVALID_CODE');
 			const challenge = JSON.parse(data) as CodeChallenge;
+			if (challenge.channel === 'sms') await this.ensureSmsEnabled();
 			if (challenge.purpose !== purpose || (userId !== undefined && challenge.userId !== userId)
 				|| await this.redis.get(this.currentKey(challenge)) !== challengeId) throw new VerificationError('INVALID_CODE');
 			const hash = digest(`${challengeId}:${code}`);

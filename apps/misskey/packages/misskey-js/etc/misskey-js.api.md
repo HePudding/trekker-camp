@@ -380,6 +380,9 @@ type AdminRolesUsersResponse = operations['admin___roles___users']['responses'][
 type AdminSendEmailRequest = operations['admin___send-email']['requestBody']['content']['application/json'];
 
 // @public (undocumented)
+type AdminSendSmsRequest = operations['admin___send-sms']['requestBody']['content']['application/json'];
+
+// @public (undocumented)
 type AdminServerInfoResponse = operations['admin___server-info']['responses']['200']['content']['application/json'];
 
 // @public (undocumented)
@@ -1661,6 +1664,7 @@ declare namespace entities {
         AdminRolesUsersRequest,
         AdminRolesUsersResponse,
         AdminSendEmailRequest,
+        AdminSendSmsRequest,
         AdminServerInfoResponse,
         AdminShowModerationLogsRequest,
         AdminShowModerationLogsResponse,
@@ -3490,8 +3494,10 @@ type SignupRequest = {
     password: string;
     host?: string;
     invitationCode?: string;
-    phoneChallengeId: string;
-    phoneCode: string;
+    phoneChallengeId?: string;
+    phoneCode?: string;
+    emailChallengeId?: string;
+    emailCode?: string;
     'hcaptcha-response'?: string | null;
     'g-recaptcha-response'?: string | null;
     'turnstile-response'?: string | null;

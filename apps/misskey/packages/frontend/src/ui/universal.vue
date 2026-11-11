@@ -15,6 +15,7 @@ SPDX-License-Identifier: AGPL-3.0-only
 				<XReloadSuggestion v-if="shouldSuggestReload"/>
 				<XPreferenceRestore v-if="shouldSuggestRestoreBackup"/>
 				<XThemePreviewing v-if="isThemePreviewMode"/>
+				<XEmailVerificationBanner/>
 				<XAnnouncements v-if="$i"/>
 				<XStatusBars :class="$style.statusbars"/>
 			</div>
@@ -37,6 +38,7 @@ import { defineAsyncComponent, provide, onMounted, computed, ref } from 'vue';
 import { instanceName } from '@@/js/config.js';
 import { isLink } from '@@/js/is-link.js';
 import XCommon from './_common_/common.vue';
+import XEmailVerificationBanner from './_common_/email-verification-banner.vue';
 import type { PageMetadata } from '@/page.js';
 import XMobileFooterMenu from '@/ui/_common_/mobile-footer-menu.vue';
 import XPreferenceRestore from '@/ui/_common_/PreferenceRestore.vue';

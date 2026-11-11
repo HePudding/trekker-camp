@@ -42,6 +42,7 @@ export default class extends Endpoint<typeof meta, typeof paramDef> { // eslint-
 	) {
 		super(meta, paramDef, async (ps, me) => {
 			try {
+				await this.codes.ensureSmsEnabled();
 				const profile = await this.profiles.findOneByOrFail({ userId: me.id });
 				if (!profile.password || !await bcrypt.compare(ps.password, profile.password)) throw new VerificationError('AUTHENTICATION_FAILED');
 				if (profile.twoFactorEnabled) {

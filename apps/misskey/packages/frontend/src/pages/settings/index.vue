@@ -98,12 +98,12 @@ const menuDef = computed<SuperMenuDef[]>(() => [{
 		text: i18n.ts.notifications,
 		to: '/settings/notifications',
 		active: currentPage.value?.route.name === 'notifications',
-	}, {
+	}, ...(instance.enablePhoneVerification ? [{
 		icon: 'ti ti-device-mobile',
 		text: i18n.ts._phoneAuth.phone,
 		to: '/settings/phone',
 		active: currentPage.value?.route.name === 'phone',
-	}, {
+	}] : []), {
 		icon: 'ti ti-mail',
 		text: i18n.ts.email,
 		to: '/settings/email',

@@ -111,6 +111,8 @@ export class ApiServerService {
 				invitationCode?: string;
 				phoneChallengeId?: string;
 				phoneCode?: string;
+				emailChallengeId?: string;
+				emailCode?: string;
 				'hcaptcha-response'?: string;
 				'g-recaptcha-response'?: string;
 				'turnstile-response'?: string;

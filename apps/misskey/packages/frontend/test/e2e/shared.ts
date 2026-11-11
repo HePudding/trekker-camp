@@ -96,6 +96,15 @@ export async function registerUser(
 		...(isAdmin ? { setupPassword: ADMIN_SETUP_PASSWORD } : {}),
 		...(proof ? { invitationCode: proof.invitationCode, phoneChallengeId: proof.challengeId, phoneCode: proof.code } : {}),
 	});
+	if (isAdmin) {
+		await api(baseUrl, 'admin/update-verification-settings', {
+			i: result.token,
+			enablePhoneVerification: true,
+			accessKeyId: 'test-pnvs-id',
+			accessKeySecret: 'test-pnvs-secret',
+			signName: 'test',
+		});
+	}
 	return result as RegisteredUser;
 }
 
@@ -112,10 +121,6 @@ export function locateMkSwitch(page: Page, testId: string): Locator {
 }
 
 export async function visitHome(page: Page, baseUrl: string): Promise<void> {
-	await page.route('**/api/meta', async route => {
-		const response = await route.fetch();
-		await route.fulfill({ response, json: { ...await response.json(), phoneVerificationAvailable: true } });
-	});
 	await page.goto(`${baseUrl}/`);
 	await page.locator('button').first().waitFor({ state: 'visible', timeout: 30_000 });
 }
