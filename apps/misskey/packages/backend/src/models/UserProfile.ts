@@ -75,6 +75,10 @@ export class MiUserProfile {
 	})
 	public url: string | null;
 
+	@Index('IDX_user_profile_phone_number', { unique: true })
+	@Column('varchar', { length: 11, nullable: true })
+	public phoneNumber: string | null;
+
 	@Column('varchar', {
 		length: 128, nullable: true,
 		comment: 'The email address of the User.',

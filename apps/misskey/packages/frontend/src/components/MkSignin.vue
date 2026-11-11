@@ -23,7 +23,6 @@ SPDX-License-Identifier: AGPL-3.0-only
 			:initialUsername="initialUsername"
 
 			@usernameSubmitted="onUsernameSubmitted"
-			@passkeyClick="onPasskeyLogin"
 		/>
 
 		<!-- 2. パスワード入力 -->
@@ -52,7 +51,7 @@ SPDX-License-Identifier: AGPL-3.0-only
 			key="passkey"
 
 			:credentialRequest="credentialRequest!"
-			:isPerformingPasswordlessLogin="doingPasskeyFromInputPage"
+			:isPerformingPasswordlessLogin="false"
 
 			@done="onPasskeyDone"
 			@useTotp="onUseTotp"
@@ -107,43 +106,12 @@ const needCaptcha = ref(false);
 const userInfo = ref<null | Misskey.entities.UserDetailed>(null);
 const password = ref('');
 
-//#region Passkey Passwordless
 const credentialRequest = shallowRef<PublicKeyCredentialRequestOptionsJSON | null>(null);
-const passkeyContext = ref('');
-const doingPasskeyFromInputPage = ref(false);
-
-function onPasskeyLogin(): void {
-	if (browserSupportsWebAuthn()) {
-		doingPasskeyFromInputPage.value = true;
-		waiting.value = true;
-		misskeyApi('signin-with-passkey', {})
-			.then((res) => {
-				passkeyContext.value = res.context ?? '';
-				credentialRequest.value = res.option;
-
-				page.value = 'passkey';
-				waiting.value = false;
-			})
-			.catch(onSigninApiError);
-	}
-}
 
 function onPasskeyDone(credential: AuthenticationResponseJSON): void {
 	waiting.value = true;
 
-	if (doingPasskeyFromInputPage.value) {
-		misskeyApi('signin-with-passkey', {
-			credential: credential,
-			context: passkeyContext.value,
-		}).then((res) => {
-			if (res.signinResponse == null) {
-				onSigninApiError();
-				return;
-			}
-			emit('login', res.signinResponse);
-			onLoginSucceeded(res.signinResponse);
-		}).catch(onSigninApiError);
-	} else if (userInfo.value != null) {
+	if (userInfo.value != null) {
 		tryLogin({
 			username: userInfo.value.username,
 			password: password.value,
@@ -155,7 +123,6 @@ function onPasskeyDone(credential: AuthenticationResponseJSON): void {
 function onUseTotp(): void {
 	page.value = 'totp';
 }
-//#endregion
 
 async function onUsernameSubmitted(username: string) {
 	waiting.value = true;
@@ -259,11 +226,6 @@ async function tryLogin(req: Partial<Misskey.entities.SigninFlowRequest>): Promi
 				}
 			}
 
-			if (doingPasskeyFromInputPage.value === true) {
-				doingPasskeyFromInputPage.value = false;
-				page.value = 'input';
-				password.value = '';
-			}
 			passwordPageEl.value?.resetCaptcha();
 			nextTick(() => {
 				waiting.value = false;
@@ -364,11 +326,6 @@ function onSigninApiError(err?: any): void {
 		}
 	}
 
-	if (doingPasskeyFromInputPage.value === true) {
-		doingPasskeyFromInputPage.value = false;
-		page.value = 'input';
-		password.value = '';
-	}
 	passwordPageEl.value?.resetCaptcha();
 	nextTick(() => {
 		waiting.value = false;

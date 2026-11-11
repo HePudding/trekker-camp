@@ -3,6 +3,7 @@
  * SPDX-License-Identifier: AGPL-3.0-only
  */
 
+import type { VerificationSettings } from '@/core/VerificationCodeService.js';
 import { Entity, Column, PrimaryColumn, ManyToOne } from 'typeorm';
 import { DEFAULT_ACHIEVEMENT_SETTINGS } from '@/misc/achievement-rules.js';
 import type { AchievementSettings } from '@/misc/achievement-rules.js';
@@ -16,6 +17,9 @@ export class MiMeta {
 		length: 32,
 	})
 	public id: string;
+
+	@Column('jsonb', { default: {} })
+	public verificationSettings: Partial<VerificationSettings>;
 
 	@Column({
 		...id(),

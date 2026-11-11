@@ -19,9 +19,7 @@ SPDX-License-Identifier: AGPL-3.0-only
 				</SearchMarker>
 
 				<SearchMarker :keywords="['email', 'required', 'signup']">
-					<MkSwitch v-model="emailRequiredForSignup" @change="onChange_emailRequiredForSignup">
-						<template #label><SearchLabel>{{ i18n.ts.emailRequiredForSignup }}</SearchLabel> ({{ i18n.ts.recommended }})</template>
-					</MkSwitch>
+					<MkA to="/admin/verification-settings">{{ i18n.ts._phoneAuth.signupHint }}</MkA>
 				</SearchMarker>
 
 				<SearchMarker :keywords="['ugc', 'content', 'visibility', 'visitor', 'guest']">
@@ -133,7 +131,6 @@ import MkSelect from '@/components/MkSelect.vue';
 const meta = await misskeyApi('admin/meta');
 
 const enableRegistration = ref(!meta.disableRegistration);
-const emailRequiredForSignup = ref(meta.emailRequiredForSignup);
 const {
 	model: ugcVisibilityForVisitor,
 	def: ugcVisibilityForVisitorDef,
@@ -167,14 +164,6 @@ async function onChange_enableRegistration(value: boolean) {
 
 	os.apiWithDialog('admin/update-meta', {
 		disableRegistration: !value,
-	}).then(() => {
-		fetchInstance(true);
-	});
-}
-
-function onChange_emailRequiredForSignup(value: boolean) {
-	os.apiWithDialog('admin/update-meta', {
-		emailRequiredForSignup: value,
 	}).then(() => {
 		fetchInstance(true);
 	});

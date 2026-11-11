@@ -13,6 +13,8 @@ import type { Config } from '@/config.js';
 import { DI } from '@/di-symbols.js';
 import { EmailService } from '@/core/EmailService.js';
 import { L_CHARS, secureRndstr } from '@/misc/secure-rndstr.js';
+import { VerificationError } from '@/core/VerificationCodeService.js';
+import { verificationErrors, handleVerificationError } from '@/server/api/verification-errors.js';
 
 export const meta = {
 	tags: ['reset password'],
@@ -26,9 +28,7 @@ export const meta = {
 		max: 3,
 	},
 
-	errors: {
-
-	},
+	errors: { verificationUnavailable: verificationErrors.unavailable },
 } as const;
 
 export const paramDef = {
@@ -58,10 +58,12 @@ export default class extends Endpoint<typeof meta, typeof paramDef> { // eslint-
 		private idService: IdService,
 		private emailService: EmailService,
 	) {
-		super(meta, paramDef, async (ps, me) => {
+		super(meta, paramDef, async (ps) => {
+			ps.email = ps.email.trim().toLowerCase();
 			const user = await this.usersRepository.findOneBy({
 				usernameLower: ps.username.toLowerCase(),
 				host: IsNull(),
+				isSuspended: false,
 			});
 
 			// 合致するユーザーが登録されていなかったら無視
@@ -72,7 +74,7 @@ export default class extends Endpoint<typeof meta, typeof paramDef> { // eslint-
 			const profile = await this.userProfilesRepository.findOneByOrFail({ userId: user.id });
 
 			// 合致するメアドが登録されていなかったら無視
-			if (profile.email !== ps.email) {
+			if (profile.email?.toLowerCase() !== ps.email) {
 				return;
 			}
 
@@ -91,9 +93,11 @@ export default class extends Endpoint<typeof meta, typeof paramDef> { // eslint-
 
 			const link = `${this.config.url}/reset-password/${token}`;
 
-			this.emailService.sendEmail(ps.email, 'Password reset requested',
-				`To reset password, please click this link:<br><a href="${link}">${link}</a>`,
-				`To reset password, please click this link: ${link}`);
+			await this.emailService.sendEmail(ps.email, '旅人营地重置密码',
+				`<p>点击下方链接重置密码，30 分钟内有效。</p><p><a href="${link}">重置密码</a></p><p>非本人操作请忽略。</p>`,
+				`重置密码（30 分钟内有效）：${link}\n非本人操作请忽略。`).catch(() => {
+					handleVerificationError(new VerificationError('VERIFICATION_UNAVAILABLE'));
+				});
 		});
 	}
 }

@@ -51,6 +51,7 @@ export class SignupService {
 	@bindThis
 	public async signup(opts: {
 		username: MiUser['username'];
+		phoneNumber?: string;
 		password?: string | null;
 		passwordHash?: MiUserProfile['password'] | null;
 		host?: string | null;
@@ -155,6 +156,7 @@ export class SignupService {
 				userId: account.id,
 				autoAcceptFollowed: true,
 				password: hash,
+				phoneNumber: opts.phoneNumber ?? null,
 			}));
 
 			await transactionalEntityManager.save(new MiUsedUsername({

@@ -10,7 +10,7 @@ import * as crypto from 'node:crypto';
 import { encode as encodeToCbor } from 'cbor2';
 import * as OTPAuth from 'otpauth';
 import { loadConfig } from '@/config.js';
-import { api, signup, sendEnvUpdateRequest } from '../utils.js';
+import { api, signup, sendEnvUpdateRequest, relativeFetch } from '../utils.js';
 import type {
 	AuthenticationResponseJSON,
 	AuthenticatorAssertionResponseJSON,
@@ -284,7 +284,7 @@ describe('2要素認証', () => {
 		}, alice);
 	});
 
-	test('が設定でき、セキュリティキーでパスワードレスログインできる。', async () => {
+	test('requires a password before using a security key and rejects passwordless configuration', async () => {
 		const registerResponse = await api('i/2fa/register', {
 			password,
 		}, alice);
@@ -311,18 +311,20 @@ describe('2要素認証', () => {
 		} as any) as any, alice);
 		assert.strictEqual(keyDoneResponse.status, 200);
 
-		const passwordLessResponse = await api('i/2fa/password-less', {
-			value: true,
-		}, alice);
-		assert.strictEqual(passwordLessResponse.status, 204);
+		const passwordLessResponse = await relativeFetch('api/i/2fa/password-less', {
+			method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ i: alice.token, value: true }),
+		});
+		assert.strictEqual(passwordLessResponse.status, 404);
 
 		const iResponse = await api('i', {}, alice);
 		assert.strictEqual(iResponse.status, 200);
-		assert.strictEqual(iResponse.body.usePasswordLessLogin, true);
+		assert.strictEqual(iResponse.body.usePasswordLessLogin, false);
+
+		const missingPassword = await api('signin-flow', { ...signinParam(), password: '' });
+		assert.strictEqual(missingPassword.status, 403);
 
 		const signinResponse = await api('signin-flow', {
 			...signinParam(),
-			password: '',
 		});
 		assert.strictEqual(signinResponse.status, 200);
 		assert.strictEqual(signinResponse.body.finished, false);
@@ -336,7 +338,6 @@ describe('2要素認証', () => {
 				credentialId,
 				requestOptions: signinResponse.body.authRequest,
 			} as any),
-			password: '',
 		});
 		assert.strictEqual(signinResponse2.status, 200);
 		assert.strictEqual(signinResponse2.body.finished, true);

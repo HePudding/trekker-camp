@@ -8,7 +8,7 @@ process.env.NODE_ENV = 'test';
 import * as assert from 'assert';
 import { beforeAll, beforeEach, describe, test } from 'vitest';
 import { inspect } from 'node:util';
-import { api, post, role, signup, successfulApiCall, uploadFile } from '../utils.js';
+import { api, post, role, signup, signupParameters, successfulApiCall, uploadFile } from '../utils.js';
 import type * as misskey from 'misskey-js';
 import { DEFAULT_POLICIES } from '@/core/RoleService.js';
 
@@ -156,6 +156,7 @@ describe('ユーザー', () => {
 			usePasswordLessLogin: user.usePasswordLessLogin,
 			securityKeys: user.securityKeys,
 			...(security ? {
+				phoneNumber: user.phoneNumber,
 				email: user.email,
 				emailVerified: user.emailVerified,
 				securityKeysList: user.securityKeysList,
@@ -299,7 +300,7 @@ describe('ユーザー', () => {
 		// SignupApiService.ts
 		const response = await successfulApiCall({
 			endpoint: 'signup',
-			parameters: { username: 'zoe', password: 'password' },
+			parameters: await signupParameters({ username: 'zoe', password: 'password' }),
 			user: undefined,
 		}) as unknown as misskey.entities.SignupResponse; // BUG MeDetailedに足りないキーがある
 

@@ -248,7 +248,6 @@ export * as 'hashtags/users' from './endpoints/hashtags/users.js';
 export * as 'i' from './endpoints/i.js';
 export * as 'i/2fa/done' from './endpoints/i/2fa/done.js';
 export * as 'i/2fa/key-done' from './endpoints/i/2fa/key-done.js';
-export * as 'i/2fa/password-less' from './endpoints/i/2fa/password-less.js';
 export * as 'i/2fa/register' from './endpoints/i/2fa/register.js';
 export * as 'i/2fa/register-key' from './endpoints/i/2fa/register-key.js';
 export * as 'i/2fa/remove-key' from './endpoints/i/2fa/remove-key.js';
@@ -448,3 +447,9 @@ export * as 'chat/rooms/invitations/outbox' from './endpoints/chat/rooms/invitat
 export * as 'chat/history' from './endpoints/chat/history.js';
 export * as 'chat/read-all' from './endpoints/chat/read-all.js';
 export * as 'v2/admin/emoji/list' from './endpoints/v2/admin/emoji/list.js';
+
+export * as 'auth/send-code' from './endpoints/auth/send-code.js';
+export * as 'auth/begin-password-reset' from './endpoints/auth/begin-password-reset.js';
+export * as 'i/update-phone' from './endpoints/i/update-phone.js';
+export * as 'admin/verification-settings' from './endpoints/admin/verification-settings.js';
+export * as 'admin/update-verification-settings' from './endpoints/admin/update-verification-settings.js';

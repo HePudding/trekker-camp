@@ -13,11 +13,12 @@ SPDX-License-Identifier: AGPL-3.0-only
 				<SearchMarker :keywords="['email', 'address']">
 					<FormSection first>
 						<template #label><SearchLabel>{{ i18n.ts.emailAddress }}</SearchLabel></template>
-						<MkInput v-model="emailAddress" type="email" manualSave>
+						<MkInput v-model="emailAddress" type="email">
 							<template #prefix><i class="ti ti-mail"></i></template>
 							<template v-if="$i.email && !$i.emailVerified" #caption>{{ i18n.ts.verificationEmailSent }}</template>
 							<template v-else-if="emailAddress === $i.email && $i.emailVerified" #caption><i class="ti ti-check" style="color: var(--MI_THEME-success);"></i> {{ i18n.ts.emailVerified }}</template>
 						</MkInput>
+						<MkButton primary :disabled="emailSaving" @click="saveEmailAddress">{{ i18n.ts.save }}</MkButton>
 					</FormSection>
 				</SearchMarker>
 
@@ -59,9 +60,10 @@ SPDX-License-Identifier: AGPL-3.0-only
 </template>
 
 <script lang="ts" setup>
-import { onMounted, ref, watch, computed } from 'vue';
+import { ref, watch, computed } from 'vue';
 import FormSection from '@/components/form/section.vue';
 import MkInfo from '@/components/MkInfo.vue';
+import MkButton from '@/components/MkButton.vue';
 import MkInput from '@/components/MkInput.vue';
 import MkSwitch from '@/components/MkSwitch.vue';
 import MkDisableSection from '@/components/MkDisableSection.vue';
@@ -75,6 +77,7 @@ import { instance } from '@/instance.js';
 const $i = ensureSignin();
 
 const emailAddress = ref($i.email ?? '');
+const emailSaving = ref(false);
 
 function onChangeReceiveAnnouncementEmail(v: boolean) {
 	misskeyApi('i/update', {
@@ -83,14 +86,19 @@ function onChangeReceiveAnnouncementEmail(v: boolean) {
 }
 
 async function saveEmailAddress() {
-	const auth = await os.authenticateDialog();
-	if (auth.canceled) return;
-
-	os.apiWithDialog('i/update-email', {
-		password: auth.result.password,
-		token: auth.result.token,
-		email: emailAddress.value,
-	});
+	if (emailSaving.value) return;
+	emailSaving.value = true;
+	try {
+		const auth = await os.authenticateDialog();
+		if (auth.canceled) return;
+		await os.apiWithDialog('i/update-email', {
+			password: auth.result.password,
+			token: auth.result.token,
+			email: emailAddress.value || null,
+		});
+	} finally {
+		emailSaving.value = false;
+	}
 }
 
 const emailNotification_mention = ref($i.emailNotificationTypes.includes('mention'));
@@ -113,12 +121,6 @@ const saveNotificationSettings = () => {
 
 watch([emailNotification_mention, emailNotification_reply, emailNotification_quote, emailNotification_follow, emailNotification_receiveFollowRequest], () => {
 	saveNotificationSettings();
-});
-
-onMounted(() => {
-	watch(emailAddress, () => {
-		saveEmailAddress();
-	});
 });
 
 const headerActions = computed(() => []);

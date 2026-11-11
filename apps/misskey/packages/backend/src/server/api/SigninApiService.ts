@@ -239,7 +239,7 @@ export class SigninApiService {
 
 			return this.signinService.signin(request, reply, user);
 		} else if (body.credential) {
-			if (!same && !profile.usePasswordLessLogin) {
+			if (!same) {
 				return await fail(403, {
 					id: '932c904e-9460-45b7-9ce6-7ed33be7eb2c',
 				});
@@ -255,7 +255,7 @@ export class SigninApiService {
 				});
 			}
 		} else if (securityKeysAvailable) {
-			if (!same && !profile.usePasswordLessLogin) {
+			if (!same) {
 				return await fail(403, {
 					id: '932c904e-9460-45b7-9ce6-7ed33be7eb2c',
 				});

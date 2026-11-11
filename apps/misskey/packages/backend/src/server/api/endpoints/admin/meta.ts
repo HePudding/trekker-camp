@@ -679,7 +679,7 @@ export default class extends Endpoint<typeof meta, typeof paramDef> { // eslint-
 				privacyPolicyUrl: instance.privacyPolicyUrl,
 				inquiryUrl: instance.inquiryUrl,
 				disableRegistration: instance.disableRegistration,
-				emailRequiredForSignup: instance.emailRequiredForSignup,
+				emailRequiredForSignup: false,
 				enableHcaptcha: instance.enableHcaptcha,
 				hcaptchaSiteKey: instance.hcaptchaSiteKey,
 				enableMcaptcha: instance.enableMcaptcha,

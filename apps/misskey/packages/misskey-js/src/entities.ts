@@ -118,7 +118,8 @@ export type SignupRequest = {
 	password: string;
 	host?: string;
 	invitationCode?: string;
-	emailAddress?: string;
+	phoneChallengeId: string;
+	phoneCode: string;
 	'hcaptcha-response'?: string | null;
 	'g-recaptcha-response'?: string | null;
 	'turnstile-response'?: string | null;
