@@ -154,6 +154,7 @@ import { miLocalStorage } from '@/local-storage.js';
 import { claimAchievement } from '@/utility/achievements.js';
 import { emojiPicker } from '@/utility/emoji-picker.js';
 import { mfmFunctionPicker } from '@/utility/mfm-function-picker.js';
+import { hasVisualEffects } from '@/utility/has-visual-effects.js';
 import { prefer } from '@/preferences.js';
 import { getPluginHandlers } from '@/plugin.js';
 import { DI } from '@/di.js';
@@ -945,14 +946,6 @@ const autosaveStatusText = computed((): string | null => {
 	}
 });
 
-function isAnnoying(text: string): boolean {
-	return text.includes('$[x2') ||
-		text.includes('$[x3') ||
-		text.includes('$[x4') ||
-		text.includes('$[scale') ||
-		text.includes('$[position');
-}
-
 async function uploadFiles() {
 	await uploader.upload();
 
@@ -994,8 +987,8 @@ async function post(ev?: PointerEvent) {
 	if (props.mock) return;
 
 	if (visibility.value === 'public' && (
-		(useCw.value && cw.value != null && cw.value.trim() !== '' && isAnnoying(cw.value)) || // CWが迷惑になる場合
-		((!useCw.value || cw.value == null || cw.value.trim() === '') && text.value != null && text.value.trim() !== '' && isAnnoying(text.value)) // CWが無い かつ 本文が迷惑になる場合
+		(useCw.value && cw.value != null && cw.value.trim() !== '' && hasVisualEffects(cw.value)) || // Check the visible CW, or the body when it is not hidden.
+		((!useCw.value || cw.value == null || cw.value.trim() === '') && text.value != null && text.value.trim() !== '' && hasVisualEffects(text.value))
 	)) {
 		const { canceled, result } = await os.actions({
 			type: 'warning',
