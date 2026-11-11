@@ -70,25 +70,16 @@ SPDX-License-Identifier: AGPL-3.0-only
 					</div>
 				</MkFolder>
 			</SearchMarker>
-
-			<SearchMarker :keywords="['password', 'less', 'key', 'passkey', 'login', 'signin']">
-				<MkSwitch :disabled="!$i.twoFactorEnabled || $i.securityKeysList!.length === 0" :modelValue="usePasswordLessLogin" @update:modelValue="v => updatePasswordLessLogin(v)">
-					<template #label><SearchLabel>{{ i18n.ts.passwordLessLogin }}</SearchLabel></template>
-					<template #caption><SearchText>{{ i18n.ts.passwordLessLoginDescription }}</SearchText></template>
-				</MkSwitch>
-			</SearchMarker>
 		</div>
 	</FormSection>
 </SearchMarker>
 </template>
 
 <script lang="ts" setup>
-import { computed } from 'vue';
 import { browserSupportsWebAuthn, startRegistration } from '@simplewebauthn/browser';
 import * as Misskey from 'misskey-js';
 import MkButton from '@/components/MkButton.vue';
 import MkInfo from '@/components/MkInfo.vue';
-import MkSwitch from '@/components/MkSwitch.vue';
 import FormSection from '@/components/form/section.vue';
 import MkFolder from '@/components/MkFolder.vue';
 import MkLink from '@/components/MkLink.vue';
@@ -106,8 +97,6 @@ withDefaults(defineProps<{
 }>(), {
 	first: false,
 });
-
-const usePasswordLessLogin = computed(() => $i.usePasswordLessLogin ?? false);
 
 async function registerTOTP(): Promise<void> {
 	const auth = await os.authenticateDialog();
@@ -229,9 +218,4 @@ async function addSecurityKey() {
 	});
 }
 
-async function updatePasswordLessLogin(value: boolean) {
-	await os.apiWithDialog('i/2fa/password-less', {
-		value,
-	});
-}
 </script>

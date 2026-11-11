@@ -13,9 +13,6 @@ import {
 	PartialRolePolicyOverride,
 	SigninFlowRequest,
 	SigninFlowResponse,
-	SigninWithPasskeyInitResponse,
-	SigninWithPasskeyRequest,
-	SigninWithPasskeyResponse,
 	SignupPendingRequest,
 	SignupPendingResponse,
 	SignupRequest,
@@ -96,22 +93,6 @@ export type Endpoints = Overwrite<
 		'signin-flow': {
 			req: SigninFlowRequest;
 			res: SigninFlowResponse;
-		},
-		'signin-with-passkey': {
-			req: SigninWithPasskeyRequest;
-			res: {
-				$switch: {
-					$cases: [
-						[
-							{
-								context: string;
-							},
-							SigninWithPasskeyResponse,
-						],
-					];
-					$default: SigninWithPasskeyInitResponse;
-				},
-			},
 		},
 		'i/2fa/register-key': {
 			req: I2faRegisterKeyRequest;

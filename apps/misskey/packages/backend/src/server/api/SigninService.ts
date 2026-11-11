@@ -50,9 +50,9 @@ export class SigninService {
 
 			const profile = await this.userProfilesRepository.findOneByOrFail({ userId: user.id });
 			if (profile.email && profile.emailVerified) {
-				this.emailService.sendEmail(profile.email, 'New login / ログインがありました',
-					'There is a new login. If you do not recognize this login, update the security status of your account, including changing your password. / 新しいログインがありました。このログインに心当たりがない場合は、パスワードを変更するなど、アカウントのセキュリティ状態を更新してください。',
-					'There is a new login. If you do not recognize this login, update the security status of your account, including changing your password. / 新しいログインがありました。このログインに心当たりがない場合は、パスワードを変更するなど、アカウントのセキュリティ状態を更新してください。');
+				this.emailService.sendEmail(profile.email, '旅人营地账号登录提醒',
+					'<p>你的旅人营地账号刚刚完成了一次登录。如非本人操作，请尽快修改密码，并检查账号安全设置。</p>',
+					'你的旅人营地账号刚刚完成了一次登录。如非本人操作，请尽快修改密码，并检查账号安全设置。');
 			}
 		});
 

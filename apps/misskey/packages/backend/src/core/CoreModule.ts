@@ -23,6 +23,7 @@ import { AnnouncementService } from './AnnouncementService.js';
 import { AntennaService } from './AntennaService.js';
 import { AchievementService } from './AchievementService.js';
 import { AvatarDecorationService } from './AvatarDecorationService.js';
+import { VerificationCodeService } from './VerificationCodeService.js';
 import { CaptchaService } from './CaptchaService.js';
 import { CustomEmojiService } from './CustomEmojiService.js';
 import { DeleteAccountService } from './DeleteAccountService.js';
@@ -322,6 +323,7 @@ const $ApQuestionService: Provider = { provide: 'ApQuestionService', useExisting
 		AntennaService,
 		AchievementService,
 		AvatarDecorationService,
+		VerificationCodeService,
 		CaptchaService,
 		CustomEmojiService,
 		DeleteAccountService,
@@ -624,6 +626,7 @@ const $ApQuestionService: Provider = { provide: 'ApQuestionService', useExisting
 		AntennaService,
 		AchievementService,
 		AvatarDecorationService,
+		VerificationCodeService,
 		CaptchaService,
 		CustomEmojiService,
 		DeleteAccountService,

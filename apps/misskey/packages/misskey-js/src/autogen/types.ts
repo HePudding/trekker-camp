@@ -932,6 +932,26 @@ export type paths = {
          */
         post: operations['admin___update-user-note'];
     };
+    '/admin/update-verification-settings': {
+        /**
+         * admin/update-verification-settings
+         * @description No description provided.
+         *
+         *     **Internal Endpoint**: This endpoint is an API for the misskey mainframe and is not intended for use by third parties.
+         *     **Credential required**: *Yes*
+         */
+        post: operations['admin___update-verification-settings'];
+    };
+    '/admin/verification-settings': {
+        /**
+         * admin/verification-settings
+         * @description No description provided.
+         *
+         *     **Internal Endpoint**: This endpoint is an API for the misskey mainframe and is not intended for use by third parties.
+         *     **Credential required**: *Yes*
+         */
+        post: operations['admin___verification-settings'];
+    };
     '/announcements': {
         /**
          * announcements
@@ -1058,6 +1078,24 @@ export type paths = {
          *     **Credential required**: *Yes*
          */
         post: operations['auth___accept'];
+    };
+    '/auth/begin-password-reset': {
+        /**
+         * auth/begin-password-reset
+         * @description No description provided.
+         *
+         *     **Credential required**: *No*
+         */
+        post: operations['auth___begin-password-reset'];
+    };
+    '/auth/send-code': {
+        /**
+         * auth/send-code
+         * @description No description provided.
+         *
+         *     **Credential required**: *No*
+         */
+        post: operations['auth___send-code'];
     };
     '/auth/session/generate': {
         /**
@@ -2386,16 +2424,6 @@ export type paths = {
          */
         post: operations['i___2fa___key-done'];
     };
-    '/i/2fa/password-less': {
-        /**
-         * i/2fa/password-less
-         * @description No description provided.
-         *
-         *     **Internal Endpoint**: This endpoint is an API for the misskey mainframe and is not intended for use by third parties.
-         *     **Credential required**: *Yes*
-         */
-        post: operations['i___2fa___password-less'];
-    };
     '/i/2fa/register': {
         /**
          * i/2fa/register
@@ -2845,6 +2873,16 @@ export type paths = {
          *     **Credential required**: *Yes*
          */
         post: operations['i___update-email'];
+    };
+    '/i/update-phone': {
+        /**
+         * i/update-phone
+         * @description No description provided.
+         *
+         *     **Internal Endpoint**: This endpoint is an API for the misskey mainframe and is not intended for use by third parties.
+         *     **Credential required**: *Yes*
+         */
+        post: operations['i___update-phone'];
     };
     '/i/webhooks/create': {
         /**
@@ -3500,7 +3538,7 @@ export type paths = {
     '/reset-password': {
         /**
          * reset-password
-         * @description Complete the password reset that was previously requested.
+         * @description Reset a password using a verified email or phone code, or an email reset link.
          *
          *     **Credential required**: *No*
          */
@@ -4360,6 +4398,7 @@ export type components = {
             usePasswordLessLogin: boolean;
             /** @default false */
             securityKeys: boolean;
+            phoneNumber?: string | null;
             email?: string | null;
             emailVerified?: boolean | null;
             securityKeysList?: {
@@ -5490,6 +5529,7 @@ export type components = {
             defaultLightTheme: string | null;
             clientOptions: components['schemas']['MetaClientOptions'];
             disableRegistration: boolean;
+            phoneVerificationAvailable: boolean;
             emailRequiredForSignup: boolean;
             enableHcaptcha: boolean;
             hcaptchaSiteKey: string | null;
@@ -13297,6 +13337,164 @@ export interface operations {
             };
         };
     };
+    'admin___update-verification-settings': {
+        requestBody: {
+            content: {
+                'application/json': {
+                    accessKeyId?: string;
+                    signName?: string;
+                    templateCode?: string;
+                    changePhoneTemplateCode?: string;
+                    resetPasswordTemplateCode?: string;
+                    bindPhoneTemplateCode?: string;
+                    verifyPhoneTemplateCode?: string;
+                    schemeName?: string;
+                    interval?: number;
+                    validTime?: number;
+                    perAddressHourly?: number;
+                    perAddressDaily?: number;
+                    ipHourly?: number;
+                    ipDaily?: number;
+                    accountHourly?: number;
+                    accountDaily?: number;
+                    globalDaily?: number;
+                    attempts?: number;
+                    accessKeySecret?: string;
+                };
+            };
+        };
+        responses: {
+            /** @description OK (without any results) */
+            204: {
+                headers: {
+                    [name: string]: unknown;
+                };
+            };
+            /** @description Client error */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    'application/json': components['schemas']['Error'];
+                };
+            };
+            /** @description Authentication error */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    'application/json': components['schemas']['Error'];
+                };
+            };
+            /** @description Forbidden error */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    'application/json': components['schemas']['Error'];
+                };
+            };
+            /** @description I'm Ai */
+            418: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    'application/json': components['schemas']['Error'];
+                };
+            };
+            /** @description Internal server error */
+            500: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    'application/json': components['schemas']['Error'];
+                };
+            };
+        };
+    };
+    'admin___verification-settings': {
+        responses: {
+            /** @description OK (with results) */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    'application/json': {
+                        accessKeyId: string;
+                        signName: string;
+                        templateCode: string;
+                        changePhoneTemplateCode: string;
+                        resetPasswordTemplateCode: string;
+                        bindPhoneTemplateCode: string;
+                        verifyPhoneTemplateCode: string;
+                        schemeName: string;
+                        interval: number;
+                        validTime: number;
+                        perAddressHourly: number;
+                        perAddressDaily: number;
+                        ipHourly: number;
+                        ipDaily: number;
+                        accountHourly: number;
+                        accountDaily: number;
+                        globalDaily: number;
+                        attempts: number;
+                        hasAccessKeySecret: boolean;
+                    };
+                };
+            };
+            /** @description Client error */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    'application/json': components['schemas']['Error'];
+                };
+            };
+            /** @description Authentication error */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    'application/json': components['schemas']['Error'];
+                };
+            };
+            /** @description Forbidden error */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    'application/json': components['schemas']['Error'];
+                };
+            };
+            /** @description I'm Ai */
+            418: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    'application/json': components['schemas']['Error'];
+                };
+            };
+            /** @description Internal server error */
+            500: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    'application/json': components['schemas']['Error'];
+                };
+            };
+        };
+    };
     announcements: {
         requestBody: {
             content: {
@@ -14224,6 +14422,153 @@ export interface operations {
             204: {
                 headers: {
                     [name: string]: unknown;
+                };
+            };
+            /** @description Client error */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    'application/json': components['schemas']['Error'];
+                };
+            };
+            /** @description Authentication error */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    'application/json': components['schemas']['Error'];
+                };
+            };
+            /** @description Forbidden error */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    'application/json': components['schemas']['Error'];
+                };
+            };
+            /** @description I'm Ai */
+            418: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    'application/json': components['schemas']['Error'];
+                };
+            };
+            /** @description Internal server error */
+            500: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    'application/json': components['schemas']['Error'];
+                };
+            };
+        };
+    };
+    'auth___begin-password-reset': {
+        requestBody: {
+            content: {
+                'application/json': {
+                    username: string;
+                };
+            };
+        };
+        responses: {
+            /** @description OK (with results) */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    'application/json': {
+                        preferEmail: boolean;
+                    };
+                };
+            };
+            /** @description Client error */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    'application/json': components['schemas']['Error'];
+                };
+            };
+            /** @description Authentication error */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    'application/json': components['schemas']['Error'];
+                };
+            };
+            /** @description Forbidden error */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    'application/json': components['schemas']['Error'];
+                };
+            };
+            /** @description I'm Ai */
+            418: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    'application/json': components['schemas']['Error'];
+                };
+            };
+            /** @description Internal server error */
+            500: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    'application/json': components['schemas']['Error'];
+                };
+            };
+        };
+    };
+    'auth___send-code': {
+        requestBody: {
+            content: {
+                'application/json': {
+                    /** @enum {string} */
+                    channel: 'sms' | 'email';
+                    /** @enum {string} */
+                    purpose: 'signup' | 'phone-old' | 'phone-new' | 'password-reset';
+                    /** @default  */
+                    address?: string;
+                    username?: string;
+                    invitationCode?: string;
+                    'hcaptcha-response'?: string | null;
+                    'm-captcha-response'?: string | null;
+                    'g-recaptcha-response'?: string | null;
+                    'turnstile-response'?: string | null;
+                    'testcaptcha-response'?: string | null;
+                };
+            };
+        };
+        responses: {
+            /** @description OK (with results) */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    'application/json': {
+                        challengeId: string;
+                        retryAfter: number;
+                    };
                 };
             };
             /** @description Client error */
@@ -24713,68 +25058,6 @@ export interface operations {
             };
         };
     };
-    'i___2fa___password-less': {
-        requestBody: {
-            content: {
-                'application/json': {
-                    value: boolean;
-                };
-            };
-        };
-        responses: {
-            /** @description OK (without any results) */
-            204: {
-                headers: {
-                    [name: string]: unknown;
-                };
-            };
-            /** @description Client error */
-            400: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    'application/json': components['schemas']['Error'];
-                };
-            };
-            /** @description Authentication error */
-            401: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    'application/json': components['schemas']['Error'];
-                };
-            };
-            /** @description Forbidden error */
-            403: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    'application/json': components['schemas']['Error'];
-                };
-            };
-            /** @description I'm Ai */
-            418: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    'application/json': components['schemas']['Error'];
-                };
-            };
-            /** @description Internal server error */
-            500: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    'application/json': components['schemas']['Error'];
-                };
-            };
-        };
-    };
     i___2fa___register: {
         requestBody: {
             content: {
@@ -28163,6 +28446,85 @@ export interface operations {
                     password: string;
                     email?: string | null;
                     token?: string | null;
+                };
+            };
+        };
+        responses: {
+            /** @description OK (with results) */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    'application/json': components['schemas']['MeDetailed'];
+                };
+            };
+            /** @description Client error */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    'application/json': components['schemas']['Error'];
+                };
+            };
+            /** @description Authentication error */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    'application/json': components['schemas']['Error'];
+                };
+            };
+            /** @description Forbidden error */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    'application/json': components['schemas']['Error'];
+                };
+            };
+            /** @description I'm Ai */
+            418: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    'application/json': components['schemas']['Error'];
+                };
+            };
+            /** @description Too many requests */
+            429: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    'application/json': components['schemas']['Error'];
+                };
+            };
+            /** @description Internal server error */
+            500: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    'application/json': components['schemas']['Error'];
+                };
+            };
+        };
+    };
+    'i___update-phone': {
+        requestBody: {
+            content: {
+                'application/json': {
+                    password: string;
+                    token?: string | null;
+                    oldChallengeId?: string;
+                    oldCode?: string;
+                    newChallengeId: string;
+                    newCode: string;
                 };
             };
         };
@@ -33371,9 +33733,11 @@ export interface operations {
         requestBody: {
             content: {
                 'application/json': {
-                    token: string;
+                    token?: string;
                     password: string;
-                };
+                    challengeId?: string;
+                    code?: string;
+                } & (unknown | unknown);
             };
         };
         responses: {
@@ -33412,6 +33776,15 @@ export interface operations {
             };
             /** @description I'm Ai */
             418: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    'application/json': components['schemas']['Error'];
+                };
+            };
+            /** @description Too many requests */
+            429: {
                 headers: {
                     [name: string]: unknown;
                 };

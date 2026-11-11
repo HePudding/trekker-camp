@@ -461,6 +461,12 @@ type AdminUpdateProxyAccountResponse = operations['admin___update-proxy-account'
 type AdminUpdateUserNoteRequest = operations['admin___update-user-note']['requestBody']['content']['application/json'];
 
 // @public (undocumented)
+type AdminUpdateVerificationSettingsRequest = operations['admin___update-verification-settings']['requestBody']['content']['application/json'];
+
+// @public (undocumented)
+type AdminVerificationSettingsResponse = operations['admin___verification-settings']['responses']['200']['content']['application/json'];
+
+// @public (undocumented)
 type Announcement = components['schemas']['Announcement'];
 
 // @public (undocumented)
@@ -580,6 +586,18 @@ type ApShowResponse = operations['ap___show']['responses']['200']['content']['ap
 
 // @public (undocumented)
 type AuthAcceptRequest = operations['auth___accept']['requestBody']['content']['application/json'];
+
+// @public (undocumented)
+type AuthBeginPasswordResetRequest = operations['auth___begin-password-reset']['requestBody']['content']['application/json'];
+
+// @public (undocumented)
+type AuthBeginPasswordResetResponse = operations['auth___begin-password-reset']['responses']['200']['content']['application/json'];
+
+// @public (undocumented)
+type AuthSendCodeRequest = operations['auth___send-code']['requestBody']['content']['application/json'];
+
+// @public (undocumented)
+type AuthSendCodeResponse = operations['auth___send-code']['responses']['200']['content']['application/json'];
 
 // @public (undocumented)
 type AuthSessionGenerateRequest = operations['auth___session___generate']['requestBody']['content']['application/json'];
@@ -1479,22 +1497,6 @@ export type Endpoints = Overwrite<Endpoints_2, {
         req: SigninFlowRequest;
         res: SigninFlowResponse;
     };
-    'signin-with-passkey': {
-        req: SigninWithPasskeyRequest;
-        res: {
-            $switch: {
-                $cases: [
-                [
-                    {
-                    context: string;
-                },
-                SigninWithPasskeyResponse
-                ]
-                ];
-                $default: SigninWithPasskeyInitResponse;
-            };
-        };
-    };
     'i/2fa/register-key': {
         req: I2faRegisterKeyRequest;
         res: I2faRegisterKeyResponse_2;
@@ -1686,6 +1688,8 @@ declare namespace entities {
         AdminUpdateProxyAccountRequest,
         AdminUpdateProxyAccountResponse,
         AdminUpdateUserNoteRequest,
+        AdminUpdateVerificationSettingsRequest,
+        AdminVerificationSettingsResponse,
         AnnouncementsRequest,
         AnnouncementsResponse,
         AnnouncementsShowRequest,
@@ -1710,6 +1714,10 @@ declare namespace entities {
         AppShowRequest,
         AppShowResponse,
         AuthAcceptRequest,
+        AuthBeginPasswordResetRequest,
+        AuthBeginPasswordResetResponse,
+        AuthSendCodeRequest,
+        AuthSendCodeResponse,
         AuthSessionGenerateRequest,
         AuthSessionGenerateResponse,
         AuthSessionShowRequest,
@@ -1952,7 +1960,6 @@ declare namespace entities {
         I2faDoneRequest,
         I2faDoneResponse,
         I2faKeyDoneResponse,
-        I2faPasswordLessRequest,
         I2faRegisterRequest,
         I2faRegisterResponse,
         I2faRegisterKeyRequest,
@@ -2014,6 +2021,8 @@ declare namespace entities {
         IUpdateResponse,
         IUpdateEmailRequest,
         IUpdateEmailResponse,
+        IUpdatePhoneRequest,
+        IUpdatePhoneResponse,
         IWebhooksCreateRequest,
         IWebhooksCreateResponse,
         IWebhooksDeleteRequest,
@@ -2570,9 +2579,6 @@ type I2faKeyDoneRequest_2 = {
 type I2faKeyDoneResponse = operations['i___2fa___key-done']['responses']['200']['content']['application/json'];
 
 // @public (undocumented)
-type I2faPasswordLessRequest = operations['i___2fa___password-less']['requestBody']['content']['application/json'];
-
-// @public (undocumented)
 type I2faRegisterKeyRequest = operations['i___2fa___register-key']['requestBody']['content']['application/json'];
 
 // @public (undocumented)
@@ -2833,6 +2839,12 @@ type IUpdateEmailRequest = operations['i___update-email']['requestBody']['conten
 
 // @public (undocumented)
 type IUpdateEmailResponse = operations['i___update-email']['responses']['200']['content']['application/json'];
+
+// @public (undocumented)
+type IUpdatePhoneRequest = operations['i___update-phone']['requestBody']['content']['application/json'];
+
+// @public (undocumented)
+type IUpdatePhoneResponse = operations['i___update-phone']['responses']['200']['content']['application/json'];
 
 // @public (undocumented)
 type IUpdateRequest = operations['i___update']['requestBody']['content']['application/json'];
@@ -3478,7 +3490,8 @@ type SignupRequest = {
     password: string;
     host?: string;
     invitationCode?: string;
-    emailAddress?: string;
+    phoneChallengeId: string;
+    phoneCode: string;
     'hcaptcha-response'?: string | null;
     'g-recaptcha-response'?: string | null;
     'turnstile-response'?: string | null;

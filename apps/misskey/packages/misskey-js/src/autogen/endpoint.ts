@@ -140,6 +140,8 @@ import type {
 	AdminUpdateProxyAccountRequest,
 	AdminUpdateProxyAccountResponse,
 	AdminUpdateUserNoteRequest,
+	AdminUpdateVerificationSettingsRequest,
+	AdminVerificationSettingsResponse,
 	AnnouncementsRequest,
 	AnnouncementsResponse,
 	AnnouncementsShowRequest,
@@ -164,6 +166,10 @@ import type {
 	AppShowRequest,
 	AppShowResponse,
 	AuthAcceptRequest,
+	AuthBeginPasswordResetRequest,
+	AuthBeginPasswordResetResponse,
+	AuthSendCodeRequest,
+	AuthSendCodeResponse,
 	AuthSessionGenerateRequest,
 	AuthSessionGenerateResponse,
 	AuthSessionShowRequest,
@@ -407,7 +413,6 @@ import type {
 	I2faDoneResponse,
 	I2faKeyDoneRequest,
 	I2faKeyDoneResponse,
-	I2faPasswordLessRequest,
 	I2faRegisterRequest,
 	I2faRegisterResponse,
 	I2faRegisterKeyRequest,
@@ -470,6 +475,8 @@ import type {
 	IUpdateResponse,
 	IUpdateEmailRequest,
 	IUpdateEmailResponse,
+	IUpdatePhoneRequest,
+	IUpdatePhoneResponse,
 	IWebhooksCreateRequest,
 	IWebhooksCreateResponse,
 	IWebhooksDeleteRequest,
@@ -770,6 +777,8 @@ export type Endpoints = {
 	'admin/update-meta': { req: AdminUpdateMetaRequest; res: EmptyResponse };
 	'admin/update-proxy-account': { req: AdminUpdateProxyAccountRequest; res: AdminUpdateProxyAccountResponse };
 	'admin/update-user-note': { req: AdminUpdateUserNoteRequest; res: EmptyResponse };
+	'admin/update-verification-settings': { req: AdminUpdateVerificationSettingsRequest; res: EmptyResponse };
+	'admin/verification-settings': { req: EmptyRequest; res: AdminVerificationSettingsResponse };
 	'announcements': { req: AnnouncementsRequest; res: AnnouncementsResponse };
 	'announcements/show': { req: AnnouncementsShowRequest; res: AnnouncementsShowResponse };
 	'antennas/create': { req: AntennasCreateRequest; res: AntennasCreateResponse };
@@ -784,6 +793,8 @@ export type Endpoints = {
 	'app/create': { req: AppCreateRequest; res: AppCreateResponse };
 	'app/show': { req: AppShowRequest; res: AppShowResponse };
 	'auth/accept': { req: AuthAcceptRequest; res: EmptyResponse };
+	'auth/begin-password-reset': { req: AuthBeginPasswordResetRequest; res: AuthBeginPasswordResetResponse };
+	'auth/send-code': { req: AuthSendCodeRequest; res: AuthSendCodeResponse };
 	'auth/session/generate': { req: AuthSessionGenerateRequest; res: AuthSessionGenerateResponse };
 	'auth/session/show': { req: AuthSessionShowRequest; res: AuthSessionShowResponse };
 	'auth/session/userkey': { req: AuthSessionUserkeyRequest; res: AuthSessionUserkeyResponse };
@@ -931,7 +942,6 @@ export type Endpoints = {
 	'i': { req: EmptyRequest; res: IResponse };
 	'i/2fa/done': { req: I2faDoneRequest; res: I2faDoneResponse };
 	'i/2fa/key-done': { req: I2faKeyDoneRequest; res: I2faKeyDoneResponse };
-	'i/2fa/password-less': { req: I2faPasswordLessRequest; res: EmptyResponse };
 	'i/2fa/register': { req: I2faRegisterRequest; res: I2faRegisterResponse };
 	'i/2fa/register-key': { req: I2faRegisterKeyRequest; res: I2faRegisterKeyResponse };
 	'i/2fa/remove-key': { req: I2faRemoveKeyRequest; res: EmptyResponse };
@@ -979,6 +989,7 @@ export type Endpoints = {
 	'i/unpin': { req: IUnpinRequest; res: IUnpinResponse };
 	'i/update': { req: IUpdateRequest; res: IUpdateResponse };
 	'i/update-email': { req: IUpdateEmailRequest; res: IUpdateEmailResponse };
+	'i/update-phone': { req: IUpdatePhoneRequest; res: IUpdatePhoneResponse };
 	'i/webhooks/create': { req: IWebhooksCreateRequest; res: IWebhooksCreateResponse };
 	'i/webhooks/delete': { req: IWebhooksDeleteRequest; res: EmptyResponse };
 	'i/webhooks/list': { req: EmptyRequest; res: IWebhooksListResponse };

@@ -671,6 +671,7 @@ export const packedMeDetailedOnlySchema = {
 			default: false,
 		},
 		//#region secrets
+		phoneNumber: { type: 'string', nullable: true, optional: true },
 		email: {
 			type: 'string',
 			nullable: true, optional: true,

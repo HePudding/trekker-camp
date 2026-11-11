@@ -99,6 +99,11 @@ const menuDef = computed<SuperMenuDef[]>(() => [{
 		to: '/settings/notifications',
 		active: currentPage.value?.route.name === 'notifications',
 	}, {
+		icon: 'ti ti-device-mobile',
+		text: i18n.ts._phoneAuth.phone,
+		to: '/settings/phone',
+		active: currentPage.value?.route.name === 'phone',
+	}, {
 		icon: 'ti ti-mail',
 		text: i18n.ts.email,
 		to: '/settings/email',

@@ -110,7 +110,7 @@ export class ApiCallService implements OnApplicationShutdown {
 		let statusCode = err.httpStatusCode;
 		if (err.httpStatusCode === 401) {
 			reply.header('WWW-Authenticate', 'Bearer realm="Misskey"');
-		} else if (err.code === 'RATE_LIMIT_EXCEEDED') {
+		} else if (['RATE_LIMIT_EXCEEDED', 'SMS_DAILY_LIMIT_EXCEEDED'].includes(err.code)) {
 			const info: unknown = err.info;
 			const unixEpochInSeconds = Date.now();
 			if (typeof(info) === 'object' && info && 'resetMs' in info && typeof(info.resetMs) === 'number') {
