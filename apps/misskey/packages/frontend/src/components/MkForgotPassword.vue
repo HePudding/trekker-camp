@@ -61,7 +61,7 @@ import MkVerificationCode from '@/components/MkVerificationCode.vue';
 import { misskeyApi } from '@/utility/misskey-api.js';
 import { verificationErrorMessage } from '@/utility/verification-error.js';
 import * as os from '@/os.js';
-import { instance } from '@/instance.js';
+import { instance, fetchInstance } from '@/instance.js';
 import { i18n } from '@/i18n.js';
 
 const emit = defineEmits<{
@@ -101,13 +101,16 @@ async function startRecovery() {
 	proof.value = { challengeId: '', code: '' };
 	recoveryFailed.value = false;
 	try {
-		const result = await misskeyApi('auth/begin-password-reset', { username: username.value.trim() });
+		const [, result] = await Promise.all([
+			fetchInstance(true),
+			misskeyApi('auth/begin-password-reset', { username: username.value.trim() }),
+		]);
 		if (disposed) return;
 		username.value = username.value.trim();
 		accountReady.value = true;
 		emailAvailable.value = result.preferEmail;
-		method.value = result.preferEmail ? 'email' : 'sms';
-		remaining.value = result.preferEmail ? 15 : 0;
+		method.value = result.preferEmail || !instance.enablePhoneVerification ? 'email' : 'sms';
+		remaining.value = result.preferEmail && instance.enablePhoneVerification ? 15 : 0;
 		const readyAt = Date.now() + remaining.value * 1000;
 		if (remaining.value > 0) {
 			timer = window.setInterval(() => { remaining.value = Math.max(0, Math.ceil((readyAt - Date.now()) / 1000)); }, 250);

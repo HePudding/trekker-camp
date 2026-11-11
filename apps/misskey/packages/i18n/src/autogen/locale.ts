@@ -4314,11 +4314,11 @@ export interface Locale extends ILocale {
      */
     "gotInvalidResponseErrorDescription": string;
     /**
-     * 该帖文可能会使他人感到不适。
+     * 文字特效可能引起视觉不适，仍要发布到全站首页吗？
      */
     "thisPostMayBeAnnoying": string;
     /**
-     * 发布到首页
+     * 不在首页展示
      */
     "thisPostMayBeAnnoyingHome": string;
     /**
@@ -4326,7 +4326,7 @@ export interface Locale extends ILocale {
      */
     "thisPostMayBeAnnoyingCancel": string;
     /**
-     * 就这样发布
+     * 发布到全站首页
      */
     "thisPostMayBeAnnoyingIgnore": string;
     /**
@@ -10626,15 +10626,15 @@ export interface Locale extends ILocale {
          */
         "public": string;
         /**
-         * 所有魔王均可见
+         * 所有人可见，显示在全站首页
          */
         "publicDescription": string;
         /**
-         * 首页
+         * 不在首页展示
          */
         "home": string;
         /**
-         * 仅发布至首页
+         * 所有人可见，可从关注动态或个人主页查看
          */
         "homeDescription": string;
         /**
@@ -14097,5 +14097,87 @@ export interface Locale extends ILocale {
          * AccessKey Secret
          */
         "accessKeySecret": string;
+    };
+    "_registration": {
+        /**
+         * 使用手机验证码
+         */
+        "enablePhoneVerification": string;
+        /**
+         * 保存后立即生效。关闭后仅使用邮箱验证注册，并停用手机绑定、换绑和短信找回。
+         */
+        "phoneSwitchHint": string;
+        /**
+         * 同时允许邮箱注册
+         */
+        "allowEmailSignup": string;
+        /**
+         * 启用手机验证码时，用户也可以选择验证邮箱后注册。请先配置邮件服务器。
+         */
+        "allowEmailSignupHint": string;
+        /**
+         * 手机注册
+         */
+        "phoneSignup": string;
+        /**
+         * 邮箱注册
+         */
+        "emailSignup": string;
+        /**
+         * 注册方式
+         */
+        "signupMethod": string;
+        /**
+         * 请先获取邮箱验证码，验证通过后才会创建账号。
+         */
+        "verifyEmailBeforeSignup": string;
+        /**
+         * 仅允许 QQ 邮箱和 Gmail 注册
+         */
+        "restrictSignupEmailDomains": string;
+        /**
+         * 仅限制新账号的邮箱注册，支持 @qq.com 和 @gmail.com。
+         */
+        "emailRestrictionHint": string;
+        /**
+         * QQ 邮箱仅允许数字邮箱注册
+         */
+        "requireNumericQqEmail": string;
+        /**
+         * QQ 邮箱须使用 QQ 号码@qq.com；Gmail 和其他已允许的邮箱不受此项影响。
+         */
+        "numericQqHint": string;
+        /**
+         * 请使用 QQ 邮箱（@qq.com）或 Gmail（@gmail.com）注册。
+         */
+        "emailDomainNotAllowed": string;
+        /**
+         * 请使用 QQ 号码@qq.com 格式的数字邮箱注册。
+         */
+        "qqEmailMustBeNumeric": string;
+        /**
+         * 请绑定并验证邮箱，以便接收通知和找回账号。完成验证后此提示会自动消失。
+         */
+        "bindEmailBanner": string;
+        /**
+         * 绑定并验证邮箱
+         */
+        "bindEmail": string;
+        /**
+         * 手机验证码功能已关闭，请使用邮箱管理和找回账号。
+         */
+        "phoneDisabled": string;
+        /**
+         * 发送测试短信
+         */
+        "testSms": string;
+        /**
+         * 将先保存当前配置，再使用注册模板发送一条测试短信。测试短信计入发送限额。
+         */
+        "testSmsHint": string;
+        /**
+         * 这是一封旅人营地测试邮件。收到此邮件表示邮件发送配置正常。
+         */
+        "testEmailBody": string;
     };
 }

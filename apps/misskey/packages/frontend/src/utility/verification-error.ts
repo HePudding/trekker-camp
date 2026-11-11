@@ -32,6 +32,9 @@ export function verificationErrorMessage(error: unknown): string {
 		case 'VERIFICATION_UNAVAILABLE': return i18n.ts._phoneAuth.unavailable;
 		case 'SMS_DAILY_LIMIT_EXCEEDED': return i18n.tsx._phoneAuth.smsDailyLimit({ time: formatVerificationWait(verificationRetryAfter(error)) });
 		case 'INVALID_PHONE': return i18n.ts._phoneAuth.phoneHint;
+		case 'EMAIL_DOMAIN_NOT_ALLOWED': return i18n.ts._registration.emailDomainNotAllowed;
+		case 'QQ_EMAIL_MUST_BE_NUMERIC': return i18n.ts._registration.qqEmailMustBeNumeric;
+		case 'EMAIL_UNAVAILABLE': return i18n.ts._emailUnavailable.used;
 		case 'INVALID_EMAIL': return i18n.ts._emailUnavailable.format;
 		case 'PHONE_UNAVAILABLE': return i18n.ts._phoneAuth.phoneUnavailable;
 		case 'REGISTRATION_CLOSED': return i18n.ts._phoneAuth.invitationRequired;

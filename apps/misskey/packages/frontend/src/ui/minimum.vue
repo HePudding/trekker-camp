@@ -5,6 +5,7 @@ SPDX-License-Identifier: AGPL-3.0-only
 
 <template>
 <div :class="$style.root">
+	<XEmailVerificationBanner/>
 	<RouterView/>
 
 	<XCommon/>
@@ -15,6 +16,7 @@ SPDX-License-Identifier: AGPL-3.0-only
 import { computed, provide, ref } from 'vue';
 import { instanceName } from '@@/js/config.js';
 import XCommon from './_common_/common.vue';
+import XEmailVerificationBanner from './_common_/email-verification-banner.vue';
 import type { PageMetadata } from '@/page.js';
 import { provideMetadataReceiver, provideReactiveMetadata } from '@/page.js';
 import { mainRouter } from '@/router.js';

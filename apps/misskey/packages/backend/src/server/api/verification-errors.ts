@@ -15,6 +15,9 @@ export const verificationErrors = {
 	invalidPhone: { message: 'Invalid mainland China phone number.', code: 'INVALID_PHONE', id: '026d2a72-2653-49d7-94f5-9ad73f99be1e' },
 	invalidEmail: { message: 'Invalid email address.', code: 'INVALID_EMAIL', id: '6504b22d-bbc1-48b7-9467-760b87658ee6' },
 	phoneUnavailable: { message: 'Phone number is already in use.', code: 'PHONE_UNAVAILABLE', id: 'c2a92d9b-5a09-40bc-81ce-2faf920b9634' },
+	emailUnavailable: { message: 'Email address is already in use.', code: 'EMAIL_UNAVAILABLE', id: 'd4fb2f64-bfee-4a4b-b17b-1d9228cba5df' },
+	emailDomainNotAllowed: { message: 'Please register with a QQ or Gmail address.', code: 'EMAIL_DOMAIN_NOT_ALLOWED', id: '59da55e8-17e4-4f1c-a648-59ddc54971c9' },
+	qqEmailMustBeNumeric: { message: 'Please use a numeric QQ email address.', code: 'QQ_EMAIL_MUST_BE_NUMERIC', id: '0de09af8-216d-40a2-947a-8642450f351f' },
 	authenticationFailed: { message: 'Authentication failed.', code: 'AUTHENTICATION_FAILED', id: 'f75cc773-51ef-4e70-8294-325b2b90d8f8' },
 	registrationClosed: { message: 'A valid invitation code is required.', code: 'REGISTRATION_CLOSED', id: 'cc2bb1d2-809c-4d34-88e1-b3ca8746d9b7' },
 } as const;

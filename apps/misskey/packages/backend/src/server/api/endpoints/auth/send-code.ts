@@ -55,8 +55,9 @@ export default class extends Endpoint<typeof meta, typeof paramDef> { // eslint-
 		super(meta, paramDef, async (ps, me, _token, _file, _cleanup, ip) => {
 			try {
 				if (_token !== null) throw new VerificationError('AUTHENTICATION_FAILED');
-				if (ps.channel === 'sms') await this.codes.verifyCaptcha(ps);
-				if (ps.channel === 'email' && (ps.purpose !== 'password-reset' || !ps.username)) throw new VerificationError('INVALID_EMAIL');
+				if (ps.channel === 'sms') await this.codes.ensureSmsEnabled();
+				if (ps.channel === 'sms' || ps.purpose === 'signup') await this.codes.verifyCaptcha(ps);
+				if (ps.channel === 'email' && ps.purpose !== 'signup' && (ps.purpose !== 'password-reset' || !ps.username)) throw new VerificationError('INVALID_EMAIL');
 				const changing = ps.purpose === 'phone-old' || ps.purpose === 'phone-new';
 				if (changing && !me) throw new VerificationError('AUTHENTICATION_FAILED');
 				const current = changing ? await this.profiles.findOneByOrFail({ userId: me!.id }) : null;
@@ -64,7 +65,8 @@ export default class extends Endpoint<typeof meta, typeof paramDef> { // eslint-
 					? current?.phoneNumber ?? ''
 					: ps.channel === 'sms' ? normalizePhone(ps.address) : normalizeEmail(ps.address);
 				if (!address) throw new VerificationError('INVALID_PHONE');
-				if (ps.channel === 'sms') await this.codes.limit(address, ip ?? 'unknown', me?.id);
+				if (ps.purpose === 'signup') await this.codes.validateSignup(ps.channel, address);
+				if (ps.channel === 'sms' || ps.purpose === 'signup') await this.codes.limit(address, ip ?? 'unknown', me?.id, ps.channel);
 				const instance = await this.metaService.fetch();
 				const settings = await this.codes.settings();
 				if (ps.channel === 'sms' ? !settings.accessKeyId || !settings.accessKeySecret || !settings.signName : !instance.enableEmail) {
@@ -89,7 +91,7 @@ export default class extends Endpoint<typeof meta, typeof paramDef> { // eslint-
 					}) : null;
 					userId = user?.id ?? null;
 					deliver = user != null;
-				} else if (ps.purpose === 'signup' || ps.purpose === 'phone-new') {
+				} else if (ps.channel === 'sms' && (ps.purpose === 'signup' || ps.purpose === 'phone-new')) {
 					deliver = !await this.profiles.existsBy({ phoneNumber: address });
 				}
 				// Uniform responses for unbound, suspended and already registered destinations.

@@ -13,6 +13,8 @@ export const meta = { tags: ['admin'], requireCredential: true, requireAdmin: tr
 export const paramDef = {
 	type: 'object',
 	properties: {
+		enablePhoneVerification: { type: 'boolean' },
+		allowEmailSignup: { type: 'boolean' },
 		...verificationSettingsProperties,
 		accessKeySecret: { type: 'string', maxLength: 256 },
 	},
@@ -23,10 +25,15 @@ export const paramDef = {
 export default class extends Endpoint<typeof meta, typeof paramDef> { // eslint-disable-line import/no-default-export
 	constructor(private codes: VerificationCodeService, private metaService: MetaService) {
 		super(meta, paramDef, async (ps) => {
-			const values = Object.fromEntries(Object.entries(ps)
+			const { enablePhoneVerification, allowEmailSignup, ...parameters } = ps;
+			const values = Object.fromEntries(Object.entries(parameters)
 				.filter(([key]) => Object.hasOwn(paramDef.properties, key))
 				.map(([key, value]) => [key, typeof value === 'string' ? value.trim() : value]));
-			await this.metaService.update({ verificationSettings: { ...await this.codes.settings(), ...values } });
+			await this.metaService.update({
+				verificationSettings: { ...await this.codes.settings(), ...values },
+				...(enablePhoneVerification === undefined ? {} : { enablePhoneVerification }),
+				...(allowEmailSignup === undefined ? {} : { allowEmailSignup }),
+			});
 		});
 	}
 }

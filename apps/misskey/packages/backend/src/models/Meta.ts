@@ -200,6 +200,18 @@ export class MiMeta {
 	})
 	public emailRequiredForSignup: boolean;
 
+	@Column('boolean', { default: false })
+	public enablePhoneVerification: boolean;
+
+	@Column('boolean', { default: false })
+	public allowEmailSignup: boolean;
+
+	@Column('boolean', { default: false })
+	public restrictSignupEmailDomains: boolean;
+
+	@Column('boolean', { default: false })
+	public requireNumericQqEmail: boolean;
+
 	@Column('boolean', {
 		default: false,
 	})

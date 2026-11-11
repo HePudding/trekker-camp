@@ -755,6 +755,16 @@ export type paths = {
          */
         post: operations['admin___send-email'];
     };
+    '/admin/send-sms': {
+        /**
+         * admin/send-sms
+         * @description No description provided.
+         *
+         *     **Internal Endpoint**: This endpoint is an API for the misskey mainframe and is not intended for use by third parties.
+         *     **Credential required**: *Yes*
+         */
+        post: operations['admin___send-sms'];
+    };
     '/admin/server-info': {
         /**
          * admin/server-info
@@ -5529,6 +5539,10 @@ export type components = {
             defaultLightTheme: string | null;
             clientOptions: components['schemas']['MetaClientOptions'];
             disableRegistration: boolean;
+            enablePhoneVerification: boolean;
+            allowEmailSignup: boolean;
+            restrictSignupEmailDomains: boolean;
+            requireNumericQqEmail: boolean;
             phoneVerificationAvailable: boolean;
             emailRequiredForSignup: boolean;
             enableHcaptcha: boolean;
@@ -9482,6 +9496,10 @@ export interface operations {
                         };
                         cacheRemoteFiles: boolean;
                         cacheRemoteSensitiveFiles: boolean;
+                        enablePhoneVerification: boolean;
+                        allowEmailSignup: boolean;
+                        restrictSignupEmailDomains: boolean;
+                        requireNumericQqEmail: boolean;
                         emailRequiredForSignup: boolean;
                         enableHcaptcha: boolean;
                         hcaptchaSiteKey: string | null;
@@ -11700,6 +11718,77 @@ export interface operations {
             };
         };
     };
+    'admin___send-sms': {
+        requestBody: {
+            content: {
+                'application/json': {
+                    to: string;
+                };
+            };
+        };
+        responses: {
+            /** @description OK (without any results) */
+            204: {
+                headers: {
+                    [name: string]: unknown;
+                };
+            };
+            /** @description Client error */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    'application/json': components['schemas']['Error'];
+                };
+            };
+            /** @description Authentication error */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    'application/json': components['schemas']['Error'];
+                };
+            };
+            /** @description Forbidden error */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    'application/json': components['schemas']['Error'];
+                };
+            };
+            /** @description I'm Ai */
+            418: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    'application/json': components['schemas']['Error'];
+                };
+            };
+            /** @description Too many requests */
+            429: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    'application/json': components['schemas']['Error'];
+                };
+            };
+            /** @description Internal server error */
+            500: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    'application/json': components['schemas']['Error'];
+                };
+            };
+        };
+    };
     'admin___server-info': {
         responses: {
             /** @description OK (with results) */
@@ -13038,6 +13127,10 @@ export interface operations {
                     };
                     cacheRemoteFiles?: boolean;
                     cacheRemoteSensitiveFiles?: boolean;
+                    enablePhoneVerification?: boolean;
+                    allowEmailSignup?: boolean;
+                    restrictSignupEmailDomains?: boolean;
+                    requireNumericQqEmail?: boolean;
                     emailRequiredForSignup?: boolean;
                     enableHcaptcha?: boolean;
                     hcaptchaSiteKey?: string | null;
@@ -13341,6 +13434,8 @@ export interface operations {
         requestBody: {
             content: {
                 'application/json': {
+                    enablePhoneVerification?: boolean;
+                    allowEmailSignup?: boolean;
                     accessKeyId?: string;
                     signName?: string;
                     templateCode?: string;
@@ -13426,6 +13521,8 @@ export interface operations {
                 };
                 content: {
                     'application/json': {
+                        enablePhoneVerification: boolean;
+                        allowEmailSignup: boolean;
                         accessKeyId: string;
                         signName: string;
                         templateCode: string;

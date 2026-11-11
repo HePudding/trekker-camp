@@ -16,6 +16,7 @@ SPDX-License-Identifier: AGPL-3.0-only
 			<XReloadSuggestion v-if="shouldSuggestReload"/>
 			<XPreferenceRestore v-if="shouldSuggestRestoreBackup"/>
 			<XThemePreviewing v-if="isThemePreviewMode"/>
+			<XEmailVerificationBanner/>
 			<XAnnouncements v-if="$i"/>
 			<XStatusBars/>
 			<div :class="$style.columnsWrapper">
@@ -88,6 +89,7 @@ SPDX-License-Identifier: AGPL-3.0-only
 <script lang="ts" setup>
 import { defineAsyncComponent, ref, useTemplateRef } from 'vue';
 import XCommon from './_common_/common.vue';
+import XEmailVerificationBanner from './_common_/email-verification-banner.vue';
 import { genId } from '@/utility/id.js';
 import XSidebar from '@/ui/_common_/navbar.vue';
 import XNavbarH from '@/ui/_common_/navbar-h.vue';

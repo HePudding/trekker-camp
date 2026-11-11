@@ -15,6 +15,15 @@ SPDX-License-Identifier: AGPL-3.0-only
 					</MkSwitch>
 				</SearchMarker>
 
+				<MkSwitch v-model="restrictSignupEmailDomains">
+					{{ i18n.ts._registration.restrictSignupEmailDomains }}
+					<template #caption>{{ i18n.ts._registration.emailRestrictionHint }}</template>
+				</MkSwitch>
+				<MkSwitch v-model="requireNumericQqEmail">
+					{{ i18n.ts._registration.requireNumericQqEmail }}
+					<template #caption>{{ i18n.ts._registration.numericQqHint }}</template>
+				</MkSwitch>
+
 				<template v-if="enableEmail">
 					<SearchMarker>
 						<MkInput v-model="email" type="email">
@@ -73,7 +82,7 @@ SPDX-License-Identifier: AGPL-3.0-only
 			<div class="_spacer" style="--MI_SPACER-w: 700px; --MI_SPACER-min: 16px; --MI_SPACER-max: 16px;">
 				<div class="_buttons">
 					<MkButton primary rounded @click="save"><i class="ti ti-check"></i> {{ i18n.ts.save }}</MkButton>
-					<MkButton rounded @click="testEmail"><i class="ti ti-send"></i> {{ i18n.ts.testEmail }}</MkButton>
+					<MkButton rounded :disabled="!enableEmail" @click="testEmail"><i class="ti ti-send"></i> {{ i18n.ts.testEmail }}</MkButton>
 				</div>
 			</div>
 		</div>
@@ -98,6 +107,8 @@ import MkButton from '@/components/MkButton.vue';
 const meta = await misskeyApi('admin/meta');
 
 const enableEmail = ref(meta.enableEmail);
+const restrictSignupEmailDomains = ref(meta.restrictSignupEmailDomains);
+const requireNumericQqEmail = ref(meta.requireNumericQqEmail);
 const email = ref(meta.email);
 const smtpSecure = ref(meta.smtpSecure);
 const smtpHost = ref(meta.smtpHost);
@@ -107,23 +118,26 @@ const smtpPass = ref(meta.smtpPass);
 
 async function testEmail() {
 	const { canceled, result: destination } = await os.inputText({
-		title: 'To',
+		title: i18n.ts.emailAddress,
 		type: 'email',
 		default: instance.maintainerEmail ?? '',
 		placeholder: 'test@example.com',
 		minLength: 1,
 	});
 	if (canceled) return;
-	os.apiWithDialog('admin/send-email', {
+	await save();
+	await os.apiWithDialog('admin/send-email', {
 		to: destination,
-		subject: 'Test email',
-		text: 'Yo',
+		subject: i18n.ts.testEmail,
+		text: i18n.ts._registration.testEmailBody,
 	});
 }
 
 function save() {
-	os.apiWithDialog('admin/update-meta', {
+	return os.apiWithDialog('admin/update-meta', {
 		enableEmail: enableEmail.value,
+		restrictSignupEmailDomains: restrictSignupEmailDomains.value,
+		requireNumericQqEmail: requireNumericQqEmail.value,
 		email: email.value,
 		smtpSecure: smtpSecure.value,
 		smtpHost: smtpHost.value,
@@ -131,7 +145,7 @@ function save() {
 		smtpUser: smtpUser.value,
 		smtpPass: smtpPass.value,
 	}).then(() => {
-		fetchInstance(true);
+		return fetchInstance(true);
 	});
 }
 

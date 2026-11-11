@@ -10,20 +10,31 @@ import MkCaptchaGate from '@/components/MkCaptchaGate.vue';
 import MkVerificationCode from '@/components/MkVerificationCode.vue';
 import EmailSettings from '@/pages/settings/email.vue';
 import MkForgotPassword from '@/components/MkForgotPassword.vue';
+import MkSignupForm from '@/components/MkSignupDialog.form.vue';
+import EmailVerificationBanner from '@/ui/_common_/email-verification-banner.vue';
 import { formatVerificationWait, verificationErrorMessage, verificationRetryAfter } from '@/utility/verification-error.js';
 
 const state = vi.hoisted(() => ({
-	instance: { enableMcaptcha: true, mcaptchaSiteKey: 'site', mcaptchaInstanceUrl: 'https://captcha.example', enableEmail: true, phoneVerificationAvailable: true },
-	user: { email: 'alice@example.com', emailVerified: false, receiveAnnouncementEmail: false, emailNotificationTypes: [] },
-	send: vi.fn(), alert: vi.fn(), authenticate: vi.fn(), updateEmail: vi.fn(), close: vi.fn(), mounts: 0,
+	instance: { enableMcaptcha: true, mcaptchaSiteKey: 'site', mcaptchaInstanceUrl: 'https://captcha.example', enableEmail: true, phoneVerificationAvailable: true, enablePhoneVerification: true, allowEmailSignup: false, restrictSignupEmailDomains: false, requireNumericQqEmail: false },
+	user: { phoneNumber: '138****8000', email: 'alice@example.com', emailVerified: false, receiveAnnouncementEmail: false, emailNotificationTypes: [] },
+	fetchInstance: vi.fn(), send: vi.fn(), alert: vi.fn(), authenticate: vi.fn(), updateEmail: vi.fn(), close: vi.fn(), mounts: 0,
 }));
-vi.mock('@/instance.js', () => ({ instance: state.instance }));
+vi.mock('@/instance.js', async () => {
+	const { reactive } = await import('vue');
+	state.instance = reactive(state.instance);
+	return { instance: state.instance, fetchInstance: state.fetchInstance };
+});
 vi.mock('@/utility/misskey-api.js', () => ({ misskeyApi: state.send }));
 vi.mock('@/os.js', () => ({ alert: state.alert, authenticateDialog: state.authenticate, apiWithDialog: state.updateEmail }));
-vi.mock('@/i.js', () => ({ ensureSignin: () => state.user }));
+vi.mock('@/i.js', async () => {
+	const { reactive } = await import('vue');
+	state.user = reactive(state.user);
+	return { $i: state.user, ensureSignin: () => state.user };
+});
+vi.mock('@/accounts.js', () => ({ login: vi.fn() }));
 vi.mock('@/page.js', () => ({ definePage: vi.fn() }));
 vi.mock('@/i18n.js', () => ({ i18n: {
-	ts: { _phoneAuth: { sendCode: '获取验证码', resend: '重新获取', code: '验证码', sent: '请查收验证码', invalidCode: '验证码错误', tooFrequent: '操作频繁，请稍后重试', useSmsRecovery: '通过手机找回', emailReset: '通过邮箱找回' }, _notification: { _types: {} }, _forgotPassword: {} },
+	ts: { _registration: { bindEmailBanner: '请绑定并验证邮箱', bindEmail: '绑定邮箱', emailDomainNotAllowed: '请使用 QQ 或 Gmail', qqEmailMustBeNumeric: '请使用数字 QQ 邮箱', phoneSignup: '手机注册', emailSignup: '邮箱注册', signupMethod: '注册方式' }, _phoneAuth: { sendCode: '获取验证码', resend: '重新获取', code: '验证码', sent: '请查收验证码', invalidCode: '验证码错误', tooFrequent: '操作频繁，请稍后重试', useSmsRecovery: '通过手机找回', emailReset: '通过邮箱找回' }, _notification: { _types: {} }, _forgotPassword: {} },
 	tsx: { _phoneAuth: {
 		resendAfter: ({ time }: { time: string }) => `${time}后重试`,
 		tooFrequentWithWait: ({ time }: { time: string }) => `操作频繁，请在${time}后重试`,
@@ -78,6 +89,13 @@ vi.mock('@/components/MkDisableSection.vue', async () => {
 });
 vi.mock('@/components/MkInfo.vue', () => ({ default: { render: () => null } }));
 vi.mock('@/components/MkSwitch.vue', () => ({ default: { render: () => null } }));
+vi.mock('@/components/MkRadios.vue', async () => {
+	const { defineComponent, h } = await import('vue');
+	return { default: defineComponent({
+		props: ['modelValue', 'options'], emits: ['update:modelValue'],
+		setup(props, { emit, slots }) { return () => h('label', [slots.label?.(), h('select', { 'data-method': '', value: props.modelValue, onChange: (event: Event) => emit('update:modelValue', (event.target as HTMLSelectElement).value) }, props.options.map((item: { value: string; label: string }) => h('option', { value: item.value }, item.label)))]); },
+	}) };
+});
 
 describe('Verification forms', () => {
 	let app: App;
@@ -85,6 +103,9 @@ describe('Verification forms', () => {
 	beforeEach(() => {
 		vi.useFakeTimers();
 		state.send.mockReset();
+		state.fetchInstance.mockReset().mockResolvedValue(state.instance);
+		Object.assign(state.instance, { enablePhoneVerification: true, phoneVerificationAvailable: true, allowEmailSignup: false, restrictSignupEmailDomains: false, requireNumericQqEmail: false });
+		state.user.emailVerified = false;
 		state.alert.mockReset();
 		state.authenticate.mockReset();
 		state.updateEmail.mockReset();
@@ -95,7 +116,7 @@ describe('Verification forms', () => {
 		host = document.createElement('div');
 		document.body.append(host);
 	});
-	afterEach(() => { app.unmount(); host.remove(); vi.useRealTimers(); });
+	afterEach(() => { app.unmount(); host.remove(); vi.restoreAllMocks(); vi.useRealTimers(); });
 
 	test('leaves no empty CAPTCHA container when verification is disabled', () => {
 		state.instance.enableMcaptcha = false;
@@ -376,6 +397,106 @@ describe('Verification forms', () => {
 		await vi.advanceTimersByTimeAsync(1);
 		expect(state.send.mock.calls.filter(([endpoint]) => endpoint === 'auth/begin-password-reset')).toHaveLength(2);
 		expect(host.querySelector('input[type="email"]')).not.toBeNull();
+	});
+
+	test('hides SMS recovery and its delay when phone verification is disabled', async () => {
+		state.instance.enablePhoneVerification = false;
+		state.instance.phoneVerificationAvailable = false;
+		mockRecovery();
+		app = createApp(MkForgotPassword, { initialUsername: 'alice' });
+		app.mount(host);
+		await vi.advanceTimersByTimeAsync(1);
+		expect(host.querySelector('input[type="email"]')).not.toBeNull();
+		expect(host.querySelector('input[type="tel"]')).toBeNull();
+		await vi.advanceTimersByTimeAsync(16000);
+		expect(smsOption()).toBeUndefined();
+	});
+
+	test('keeps the binding banner after SMS is disabled until the email is verified', async () => {
+		app = createApp(EmailVerificationBanner);
+		app.component('MkA', defineComponent({ props: ['to'], setup(props, { slots }) { return () => h('a', { href: props.to }, slots.default?.()); } }));
+		app.mount(host);
+		expect(host.querySelector('[role="status"]')).not.toBeNull();
+		expect(host.querySelector('a')?.getAttribute('href')).toBe('/settings/email');
+		expect(host.querySelector('button')).toBeNull();
+		state.instance.enablePhoneVerification = false;
+		await nextTick();
+		expect(host.querySelector('[role="status"]')).not.toBeNull();
+		state.user.emailVerified = true;
+		await nextTick();
+		expect(host.querySelector('[role="status"]')).toBeNull();
+	});
+
+	function mountSignup() {
+		state.send.mockImplementation(async (endpoint: string) => endpoint === 'username/available' ? { available: true } : { challengeId: 'signup-proof', retryAfter: 60 });
+		app = createApp(MkSignupForm);
+		app.directive('tooltip', {});
+		app.mount(host);
+	}
+
+	test('offers email-only registration and requires verification before submitting', async () => {
+		state.instance.enablePhoneVerification = false;
+		state.instance.enableMcaptcha = false;
+		mountSignup();
+		const fetch = vi.spyOn(window, 'fetch').mockResolvedValue(new Response(JSON.stringify({ token: 'registered' }), { status: 200 }));
+		await fill('[data-testid="signup-username"]', 'email_user');
+		await fill('[data-testid="signup-password"]', 'password123');
+		await fill('[data-testid="signup-password-retype"]', 'password123');
+		await fill('[data-testid="signup-email"]', 'alice@gmail.com');
+		expect(host.querySelector('[data-testid="signup-phone"]')).toBeNull();
+		expect(host.querySelector('[data-method]')).toBeNull();
+		host.querySelector('form')!.dispatchEvent(new Event('submit', { cancelable: true }));
+		expect(fetch).not.toHaveBeenCalled();
+		host.querySelector<HTMLButtonElement>('[data-send]')!.click();
+		await vi.advanceTimersByTimeAsync(1);
+		await fill('input[autocomplete="one-time-code"]', '123456');
+		host.querySelector('form')!.dispatchEvent(new Event('submit', { cancelable: true }));
+		await vi.advanceTimersByTimeAsync(1);
+		const payload = JSON.parse(fetch.mock.calls[0][1]!.body as string);
+		expect(payload).toMatchObject({ username: 'email_user', emailChallengeId: 'signup-proof', emailCode: '123456' });
+		expect(payload).not.toHaveProperty('phoneChallengeId');
+	});
+
+	test('clears proofs when switching signup methods and rejects non-numeric QQ aliases', async () => {
+		Object.assign(state.instance, { allowEmailSignup: true, restrictSignupEmailDomains: true, requireNumericQqEmail: true, enableMcaptcha: false });
+		mountSignup();
+		await fill('[data-testid="signup-phone"]', '13800138000');
+		host.querySelector<HTMLButtonElement>('[data-send]')!.click();
+		await vi.advanceTimersByTimeAsync(1);
+		await fill('input[autocomplete="one-time-code"]', '123456');
+		const select = host.querySelector<HTMLSelectElement>('[data-method]')!;
+		select.value = 'email';
+		select.dispatchEvent(new Event('change'));
+		await nextTick();
+		expect(host.querySelector<HTMLInputElement>('input[autocomplete="one-time-code"]')?.value).toBe('');
+		for (const [address, disabled] of [['alias@qq.com', true], ['alice@example.com', true], ['123456@qq.com', false], ['alice@gmail.com', false]] as const) {
+			await fill('[data-testid="signup-email"]', address);
+			expect(host.querySelector<HTMLButtonElement>('[data-send]')!.disabled).toBe(disabled);
+		}
+		state.instance.allowEmailSignup = false;
+		await nextTick();
+		expect(host.querySelector('[data-testid="signup-email"]')).toBeNull();
+		expect(host.querySelector('[data-testid="signup-phone"]')).not.toBeNull();
+	});
+
+	test('releases the signup form when refreshing settings after a server rejection fails', async () => {
+		state.instance.enablePhoneVerification = false;
+		state.instance.enableMcaptcha = false;
+		mountSignup();
+		const fetch = vi.spyOn(window, 'fetch').mockResolvedValue(new Response(JSON.stringify({ error: { code: 'INVALID_CODE' } }), { status: 400 }));
+		await fill('[data-testid="signup-username"]', 'retry_email');
+		await fill('[data-testid="signup-password"]', 'password123');
+		await fill('[data-testid="signup-password-retype"]', 'password123');
+		await fill('[data-testid="signup-email"]', 'retry@gmail.com');
+		host.querySelector<HTMLButtonElement>('[data-send]')!.click();
+		await vi.advanceTimersByTimeAsync(1);
+		await fill('input[autocomplete="one-time-code"]', '123456');
+		state.fetchInstance.mockRejectedValueOnce(new Error('offline'));
+		host.querySelector('form')!.dispatchEvent(new Event('submit', { cancelable: true }));
+		await vi.advanceTimersByTimeAsync(1);
+		expect(fetch).toHaveBeenCalledTimes(1);
+		expect(state.alert).toHaveBeenCalledWith({ type: 'error', text: '验证码错误' });
+		expect(host.querySelector<HTMLButtonElement>('[data-testid="signup-submit"]')?.disabled).toBe(false);
 	});
 
 	test('does not start a countdown when the recovery response arrives after closing', async () => {

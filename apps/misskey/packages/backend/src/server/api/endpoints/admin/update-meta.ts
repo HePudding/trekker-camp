@@ -97,6 +97,10 @@ export const paramDef = {
 		},
 		cacheRemoteFiles: { type: 'boolean' },
 		cacheRemoteSensitiveFiles: { type: 'boolean' },
+		enablePhoneVerification: { type: 'boolean' },
+		allowEmailSignup: { type: 'boolean' },
+		restrictSignupEmailDomains: { type: 'boolean' },
+		requireNumericQqEmail: { type: 'boolean' },
 		emailRequiredForSignup: { type: 'boolean' },
 		enableHcaptcha: { type: 'boolean' },
 		hcaptchaSiteKey: { type: 'string', nullable: true },
@@ -386,6 +390,11 @@ export default class extends Endpoint<typeof meta, typeof paramDef> { // eslint-
 			if (ps.cacheRemoteSensitiveFiles !== undefined) {
 				set.cacheRemoteSensitiveFiles = ps.cacheRemoteSensitiveFiles;
 			}
+
+			if (ps.enablePhoneVerification !== undefined) set.enablePhoneVerification = ps.enablePhoneVerification;
+			if (ps.allowEmailSignup !== undefined) set.allowEmailSignup = ps.allowEmailSignup;
+			if (ps.restrictSignupEmailDomains !== undefined) set.restrictSignupEmailDomains = ps.restrictSignupEmailDomains;
+			if (ps.requireNumericQqEmail !== undefined) set.requireNumericQqEmail = ps.requireNumericQqEmail;
 
 			if (ps.emailRequiredForSignup !== undefined) {
 				set.emailRequiredForSignup = false;
