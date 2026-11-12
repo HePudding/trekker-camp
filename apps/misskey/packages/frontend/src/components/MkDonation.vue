@@ -5,7 +5,6 @@ SPDX-License-Identifier: AGPL-3.0-only
 
 <template>
 <div class="_panel _shadow" :class="$style.root">
-	<!-- TODO: インスタンス運営者が任意のテキストとリンクを設定できるようにする -->
 	<div :class="$style.icon">
 		<svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-pig-money" width="40" height="40" viewBox="0 0 24 24" stroke-width="1" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
 			<path stroke="none" d="M0 0h24v24H0z" fill="none"></path>
@@ -23,7 +22,10 @@ SPDX-License-Identifier: AGPL-3.0-only
 				</template>
 			</I18n>
 			<div style="margin-top: 0.2em;">
-				<MkLink target="_blank" url="https://misskey-hub.net/docs/for-users/resources/donate/">{{ i18n.ts.learnMore }}</MkLink>
+				<MkLink target="_blank" url="https://misskey-hub.net/docs/for-users/resources/donate/">{{ i18n.ts._aboutMisskey.donate }}</MkLink>
+			</div>
+			<div style="margin-top: 0.2em;">
+				<MkLink target="_blank" url="https://camp.stellasora.cafe/announcements/athchyhd9meg003d">{{ i18n.ts.donateToCamp }}</MkLink>
 			</div>
 		</div>
 		<div class="_buttons">
