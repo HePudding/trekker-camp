@@ -3442,6 +3442,7 @@ type SigninFlowRequest = {
     'turnstile-response'?: string | null;
     'm-captcha-response'?: string | null;
     'testcaptcha-response'?: string | null;
+    'cap-token'?: string | null;
 };
 
 // @public (undocumented)
@@ -3503,6 +3504,7 @@ type SignupRequest = {
     'turnstile-response'?: string | null;
     'm-captcha-response'?: string | null;
     'testcaptcha-response'?: string | null;
+    'cap-token'?: string | null;
 };
 
 // @public (undocumented)

@@ -41,6 +41,7 @@ export class CommandService {
 			recaptchaSiteKey: null,
 			recaptchaSecretKey: null,
 			enableTurnstile: false,
+			enableCap: false,
 			turnstileSiteKey: null,
 			turnstileSecretKey: null,
 			enableTestcaptcha: false,

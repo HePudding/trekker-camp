@@ -25,13 +25,17 @@ SPDX-License-Identifier: AGPL-3.0-only
 			<button type="button" data-testid="testcaptcha-submit" @click="testcaptchaSubmit">Submit</button>
 		</div>
 	</div>
-	<div v-else ref="captchaEl"></div>
+	<div v-else ref="captchaEl" :class="props.provider === 'cap' ? $style.cap : undefined"></div>
 </div>
 </template>
 
 <script lang="ts" setup>
 import { ref, useTemplateRef, computed, onMounted, onBeforeUnmount, watch, onUnmounted, nextTick } from 'vue';
 import type Reciever_typeReferenceOnly from '@mcaptcha/core-glue';
+import type { CapWidget } from 'cap-widget';
+import capWasmUrl from '@cap.js/wasm/browser/cap_wasm_bg.wasm?url';
+import hashwxUrl from '@cap.js/wasm/browser/hashwx.wasm?url';
+import pakoUrl from 'pako/dist/pako_inflate.min.js?url';
 import { store } from '@/store.js';
 
 // APIs provided by Captcha services
@@ -48,7 +52,7 @@ export type Captcha = {
 	getResponse(id: string): string;
 };
 
-export type CaptchaProvider = 'hcaptcha' | 'recaptcha' | 'turnstile' | 'mcaptcha' | 'testcaptcha';
+export type CaptchaProvider = 'hcaptcha' | 'recaptcha' | 'turnstile' | 'mcaptcha' | 'testcaptcha' | 'cap';
 
 type CaptchaContainer = {
 	readonly [_ in CaptchaProvider]?: Captcha;
@@ -76,6 +80,7 @@ const available = ref(false);
 
 const captchaEl = useTemplateRef('captchaEl');
 const captchaWidgetId = ref<string | undefined>(undefined);
+let capWidget: CapWidget | null = null;
 
 let mCaptchaReciever: Reciever_typeReferenceOnly | null = null;
 const mCaptchaIframe = useTemplateRef('mCaptchaIframe');
@@ -99,6 +104,7 @@ const variable = computed(() => {
 		case 'turnstile': return 'turnstile';
 		case 'mcaptcha': return 'mcaptcha';
 		case 'testcaptcha': return 'testcaptcha';
+		case 'cap': return 'cap';
 	}
 });
 
@@ -111,6 +117,7 @@ const src = computed(() => {
 		case 'turnstile': return 'https://challenges.cloudflare.com/turnstile/v0/api.js?render=explicit';
 		case 'mcaptcha': return null;
 		case 'testcaptcha': return null;
+		case 'cap': return null;
 	}
 });
 
@@ -127,7 +134,7 @@ watch(() => [props.instanceUrl, props.sitekey, props.secretKey], async () => {
 	}
 });
 
-if (loaded || props.provider === 'mcaptcha' || props.provider === 'testcaptcha') {
+if (loaded || props.provider === 'mcaptcha' || props.provider === 'testcaptcha' || props.provider === 'cap') {
 	available.value = true;
 } else if (src.value !== null) {
 	(window.document.getElementById(scriptId.value) ?? window.document.head.appendChild(Object.assign(window.document.createElement('script'), {
@@ -139,6 +146,10 @@ if (loaded || props.provider === 'mcaptcha' || props.provider === 'testcaptcha')
 }
 
 function reset() {
+	if (props.provider === 'cap') {
+		callback(undefined);
+		capWidget?.reset();
+	}
 	if (captcha.value.reset && captchaWidgetId.value !== undefined) {
 		try {
 			captcha.value.reset(captchaWidgetId.value);
@@ -158,6 +169,8 @@ function reset() {
 }
 
 function remove() {
+	capWidget?.remove();
+	capWidget = null;
 	if (captcha.value.remove && captchaWidgetId.value) {
 		try {
 			if (_DEV_) console.log('remove', props.provider, captchaWidgetId.value);
@@ -174,6 +187,21 @@ function remove() {
 }
 
 async function requestRender() {
+	if (props.provider === 'cap') {
+		window.CAP_CUSTOM_WASM_URL = capWasmUrl;
+		window.CAP_CUSTOM_HASHWX_URL = hashwxUrl;
+		window.CAP_PAKO_URL = pakoUrl;
+		await import('cap-widget');
+		if (!captchaEl.value || capWidget) return;
+		capWidget = window.document.createElement('cap-widget');
+		capWidget.setAttribute('data-cap-api-endpoint', '/api/cap/');
+		capWidget.setAttribute('data-cap-lang', 'zh-CN');
+		capWidget.addEventListener('solve', event => callback(event.detail.token));
+		capWidget.addEventListener('reset', () => callback(undefined));
+		capWidget.addEventListener('error', () => callback(undefined));
+		captchaEl.value.appendChild(capWidget);
+		return;
+	}
 	if (captcha.value.render && captchaEl.value instanceof Element && props.sitekey) {
 		// reCAPTCHAのレンダリング重複判定を回避するため、captchaEl配下に仮のdivを用意する.
 		// （同じdivに対して複数回renderを呼び出すとreCAPTCHAはエラーを返すので）
@@ -254,3 +282,17 @@ defineExpose({
 });
 
 </script>
+
+<style lang="scss" module>
+.cap {
+	--cap-background: var(--MI_THEME-panel);
+	--cap-color: var(--MI_THEME-fg);
+	--cap-border-color: var(--MI_THEME-divider);
+	--cap-checkbox-background: var(--MI_THEME-bg);
+	--cap-checkbox-border: 1px solid var(--MI_THEME-inputBorder);
+	--cap-spinner-color: var(--MI_THEME-accent);
+	--cap-spinner-background-color: var(--MI_THEME-divider);
+	--cap-focus-ring: var(--MI_THEME-accent);
+	--cap-troubleshoot-color: var(--MI_THEME-accent);
+}
+</style>

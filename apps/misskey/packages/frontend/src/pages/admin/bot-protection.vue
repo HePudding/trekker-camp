@@ -4,7 +4,7 @@ SPDX-License-Identifier: AGPL-3.0-only
 -->
 
 <template>
-<SearchMarker markerId="botProtection" :keywords="['bot', 'protection', 'captcha', 'hcaptcha', 'mcaptcha', 'recaptcha', 'turnstile']">
+<SearchMarker markerId="botProtection" :keywords="['bot', 'protection', 'captcha', 'hcaptcha', 'mcaptcha', 'recaptcha', 'turnstile', 'cap']">
 	<MkFolder>
 		<template #icon><SearchIcon><i class="ti ti-shield"></i></SearchIcon></template>
 		<template #label><SearchLabel>{{ i18n.ts.botProtection }}</SearchLabel></template>
@@ -13,6 +13,7 @@ SPDX-License-Identifier: AGPL-3.0-only
 		<template v-else-if="botProtectionForm.savedState.provider === 'recaptcha'" #suffix>reCAPTCHA</template>
 		<template v-else-if="botProtectionForm.savedState.provider === 'turnstile'" #suffix>Turnstile</template>
 		<template v-else-if="botProtectionForm.savedState.provider === 'testcaptcha'" #suffix>testCaptcha</template>
+		<template v-else-if="botProtectionForm.savedState.provider === 'cap'" #suffix>Cap</template>
 		<template v-else #suffix>{{ i18n.ts.none }} ({{ i18n.ts.notRecommended }})</template>
 		<template v-if="botProtectionForm.modified.value" #footer>
 			<MkFormFooter :canSaving="canSaving" :form="botProtectionForm"/>
@@ -27,6 +28,7 @@ SPDX-License-Identifier: AGPL-3.0-only
 					{ value: 'mcaptcha', label: 'mCaptcha' },
 					{ value: 'recaptcha', label: 'reCAPTCHA' },
 					{ value: 'turnstile', label: 'Turnstile' },
+					{ value: 'cap', label: 'Cap' },
 					{ value: 'testcaptcha', label: 'testCaptcha' },
 				]"
 			>
@@ -147,6 +149,14 @@ SPDX-License-Identifier: AGPL-3.0-only
 				</MkInfo>
 			</template>
 
+			<template v-else-if="botProtectionForm.state.provider === 'cap'">
+				<MkInfo>{{ i18n.ts._captcha.capDescription }}</MkInfo>
+				<FormSlot>
+					<template #label>{{ i18n.ts._captcha.verify }}</template>
+					<MkCaptcha v-model="captchaResult" provider="cap" :sitekey="null"/>
+				</FormSlot>
+			</template>
+
 			<template v-else-if="botProtectionForm.state.provider === 'testcaptcha'">
 				<MkInfo warn><span v-html="i18n.ts.testCaptchaWarning"></span></MkInfo>
 				<FormSlot>
@@ -261,6 +271,7 @@ watch(botProtectionForm.state, () => {
 
 const canSaving = computed((): boolean => {
 	return (botProtectionForm.state.provider === 'none') ||
+		(botProtectionForm.state.provider === 'cap' && !!captchaResult.value) ||
 		(botProtectionForm.state.provider === 'hcaptcha' && !!captchaResult.value) ||
 		(botProtectionForm.state.provider === 'mcaptcha' && !!captchaResult.value) ||
 		(botProtectionForm.state.provider === 'recaptcha' && !!captchaResult.value) ||

@@ -291,6 +291,9 @@ export class MiMeta {
 	})
 	public enableTestcaptcha: boolean;
 
+	@Column('boolean', { default: false })
+	public enableCap: boolean;
+
 	// chaptcha系を追加した際にはnodeinfoのレスポンスに追加するのを忘れないようにすること
 
 	@Column('enum', {

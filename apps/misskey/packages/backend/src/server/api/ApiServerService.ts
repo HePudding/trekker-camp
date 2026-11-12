@@ -12,6 +12,9 @@ import type { Config } from '@/config.js';
 import type { InstancesRepository, AccessTokensRepository } from '@/models/_.js';
 import { DI } from '@/di-symbols.js';
 import { UserEntityService } from '@/core/entities/UserEntityService.js';
+import { CaptchaService } from '@/core/CaptchaService.js';
+import type { ValidateChallengeBody } from 'capjs-core';
+import { RateLimiterService } from './RateLimiterService.js';
 import { bindThis } from '@/decorators.js';
 import endpoints from './endpoints.js';
 import { ApiCallService } from './ApiCallService.js';
@@ -37,6 +40,8 @@ export class ApiServerService {
 		private apiCallService: ApiCallService,
 		private signupApiService: SignupApiService,
 		private signinApiService: SigninApiService,
+		private captchaService: CaptchaService,
+		private rateLimiterService: RateLimiterService,
 	) {
 		//this.createServer = this.createServer.bind(this);
 	}
@@ -58,6 +63,20 @@ export class ApiServerService {
 		fastify.addHook('onRequest', (request, reply, done) => {
 			reply.header('Cache-Control', 'private, max-age=0, must-revalidate');
 			done();
+		});
+
+		fastify.post('/cap/challenge', async (request, reply) => {
+			const limited = await this.rateLimiterService.limit({ key: 'cap-challenge', duration: 60000, max: 30 }, request.ip);
+			if (limited) return reply.code(429).send({ success: false });
+			return this.captchaService.capChallenge();
+		});
+		fastify.post<{ Body: ValidateChallengeBody }>('/cap/redeem', { bodyLimit: 65536 }, async (request, reply) => {
+			const limited = await this.rateLimiterService.limit({ key: 'cap-redeem', duration: 60000, max: 30 }, request.ip);
+			if (limited) return reply.code(429).send({ success: false });
+			if (!request.body || typeof request.body.token !== 'string' || !Array.isArray(request.body.solutions)) {
+				return reply.code(400).send({ success: false });
+			}
+			return this.captchaService.capRedeem(request.body);
 		});
 
 		for (const endpoint of endpoints) {
@@ -118,6 +137,7 @@ export class ApiServerService {
 				'turnstile-response'?: string;
 				'm-captcha-response'?: string;
 				'testcaptcha-response'?: string;
+				'cap-token'?: string;
 			}
 		}>('/signup', (request, reply) => this.signupApiService.signup(request, reply));
 
@@ -132,6 +152,7 @@ export class ApiServerService {
 				'turnstile-response'?: string;
 				'm-captcha-response'?: string;
 				'testcaptcha-response'?: string;
+				'cap-token'?: string;
 			};
 		}>('/signin-flow', (request, reply) => this.signinApiService.signin(request, reply));
 

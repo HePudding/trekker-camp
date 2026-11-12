@@ -19,6 +19,7 @@
 	},
 	"dependencies": {
 		"@analytics/google-analytics": "1.1.0",
+		"@cap.js/wasm": "0.0.8",
 		"@mcaptcha/core-glue": "0.1.0-alpha-5",
 		"@misskey-dev/browser-image-resizer": "2024.1.0",
 		"@misskey-dev/emoji-data": "17.0.3",
@@ -32,6 +33,7 @@
 		"analytics": "0.8.19",
 		"buraha": "0.0.1",
 		"canvas-confetti": "1.9.4",
+		"cap-widget": "0.1.58",
 		"chart.js": "4.6.1",
 		"chartjs-adapter-date-fns": "3.0.0",
 		"chartjs-chart-matrix": "3.1.0",
@@ -57,6 +59,7 @@
 		"misskey-bubble-game": "workspace:*",
 		"misskey-js": "workspace:*",
 		"misskey-reversi": "workspace:*",
+		"pako": "2.1.0",
 		"punycode.js": "2.3.1",
 		"qr-scanner": "1.4.2",
 		"sanitize-html": "2.18.1",

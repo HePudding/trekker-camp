@@ -3,7 +3,12 @@
  * SPDX-License-Identifier: AGPL-3.0-only
  */
 
-import { Injectable } from '@nestjs/common';
+import { createHash, randomBytes } from 'node:crypto';
+import { Inject, Injectable } from '@nestjs/common';
+import * as Redis from 'ioredis';
+import { generateChallenge, validateChallenge } from 'capjs-core';
+import type { ValidateChallengeBody } from 'capjs-core';
+import { DI } from '@/di-symbols.js';
 import { HttpRequestService } from '@/core/HttpRequestService.js';
 import { bindThis } from '@/decorators.js';
 import { MetaService } from '@/core/MetaService.js';
@@ -11,7 +16,7 @@ import { MiMeta } from '@/models/Meta.js';
 import Logger from '@/logger.js';
 import { LoggerService } from './LoggerService.js';
 
-export const supportedCaptchaProviders = ['none', 'hcaptcha', 'mcaptcha', 'recaptcha', 'turnstile', 'testcaptcha'] as const;
+export const supportedCaptchaProviders = ['none', 'hcaptcha', 'mcaptcha', 'recaptcha', 'turnstile', 'cap', 'testcaptcha'] as const;
 export type CaptchaProvider = typeof supportedCaptchaProviders[number];
 
 export const captchaErrorCodes = {
@@ -76,11 +81,61 @@ export class CaptchaService {
 	private readonly logger: Logger;
 
 	constructor(
+		@Inject(DI.redis) private redis: Redis.Redis,
 		private httpRequestService: HttpRequestService,
 		private metaService: MetaService,
 		loggerService: LoggerService,
 	) {
 		this.logger = loggerService.getLogger('captcha');
+	}
+
+	@bindThis
+	private async capSecret(): Promise<string> {
+		const key = 'captcha:cap:secret';
+		const existing = await this.redis.get(key);
+		if (existing) return existing;
+		// Share one signing secret across workers; losing Redis invalidates outstanding challenges.
+		await this.redis.set(key, randomBytes(32).toString('hex'), 'NX');
+		const secret = await this.redis.get(key);
+		if (!secret) throw new Error('Cap signing secret unavailable');
+		return secret;
+	}
+
+	@bindThis
+	public async capChallenge() {
+		return generateChallenge(await this.capSecret(), {
+			scope: 'camp-captcha',
+			format: 2,
+			protocols: ['hashwx', 'instrumentation'],
+		});
+	}
+
+	@bindThis
+	public async capRedeem(body: ValidateChallengeBody) {
+		const result = await validateChallenge(await this.capSecret(), body, {
+			scope: 'camp-captcha',
+			consumeNonce: async (signature, ttlMs) => (await this.redis.set(`captcha:cap:nonce:${signature}`, '1', 'PX', ttlMs, 'NX')) === 'OK',
+		});
+		if (!result.success) return { success: false, reason: result.reason };
+		if (!result.tokenKey || result.expires <= Date.now()) throw new Error('Invalid Cap token');
+		await this.redis.set(`captcha:cap:token:${result.tokenKey}`, '1', 'PX', result.expires - Date.now());
+		return { success: true, token: result.token, expires: result.expires };
+	}
+
+	@bindThis
+	public async verifyCap(response: string | null | undefined): Promise<void> {
+		if (typeof response !== 'string' || !response) {
+			throw new CaptchaError(captchaErrorCodes.noResponseProvided, 'cap-failed: no response provided');
+		}
+		const parts = response.split(':');
+		if (parts.length !== 2 || !parts[0] || !parts[1] || response.length > 1024) {
+			throw new CaptchaError(captchaErrorCodes.verificationFailed, 'cap-failed: invalid token');
+		}
+		const key = `${parts[0]}:${createHash('sha256').update(parts[1]).digest('hex')}`;
+		const valid = await this.redis.getdel(`captcha:cap:token:${key}`).catch(() => {
+			throw new CaptchaError(captchaErrorCodes.requestFailed, 'cap-failed: token store unavailable');
+		});
+		if (valid !== '1') throw new CaptchaError(captchaErrorCodes.verificationFailed, 'cap-failed: invalid or expired token');
 	}
 
 	@bindThis
@@ -223,6 +278,10 @@ export class CaptchaService {
 				provider = 'testcaptcha';
 				break;
 			}
+			case meta.enableCap: {
+				provider = 'cap';
+				break;
+			}
 			default: {
 				provider = 'none';
 				break;
@@ -285,6 +344,10 @@ export class CaptchaService {
 		}
 
 		const operation = {
+			cap: async () => {
+				await this.verifyCap(params?.captchaResult);
+				await this.updateMeta(provider, params);
+			},
 			none: async () => {
 				await this.updateMeta(provider, params);
 			},
@@ -360,7 +423,7 @@ export class CaptchaService {
 				('enableMcaptcha' | 'mcaptchaSitekey' | 'mcaptchaSecretKey' | 'mcaptchaInstanceUrl') |
 				('enableRecaptcha' | 'recaptchaSiteKey' | 'recaptchaSecretKey') |
 				('enableTurnstile' | 'turnstileSiteKey' | 'turnstileSecretKey') |
-				('enableTestcaptcha')
+				('enableTestcaptcha' | 'enableCap')
 			>
 		> = {
 			enableHcaptcha: provider === 'hcaptcha',
@@ -368,6 +431,7 @@ export class CaptchaService {
 			enableRecaptcha: provider === 'recaptcha',
 			enableTurnstile: provider === 'turnstile',
 			enableTestcaptcha: provider === 'testcaptcha',
+			enableCap: provider === 'cap',
 		};
 
 		const updateIfNotUndefined = <K extends keyof typeof metaPartial>(key: K, value: typeof metaPartial[K]) => {

@@ -78,6 +78,7 @@ export class SigninApiService {
 				'turnstile-response'?: string;
 				'm-captcha-response'?: string;
 				'testcaptcha-response'?: string;
+				'cap-token'?: string;
 			};
 		}>,
 		reply: FastifyReply,
@@ -202,6 +203,12 @@ export class SigninApiService {
 
 				if (this.meta.enableTurnstile && this.meta.turnstileSecretKey) {
 					await this.captchaService.verifyTurnstile(this.meta.turnstileSecretKey, body['turnstile-response']).catch(err => {
+						throw new FastifyReplyError(400, err);
+					});
+				}
+
+				if (this.meta.enableCap) {
+					await this.captchaService.verifyCap(body['cap-token']).catch(err => {
 						throw new FastifyReplyError(400, err);
 					});
 				}
