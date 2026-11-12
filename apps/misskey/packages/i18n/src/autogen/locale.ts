@@ -4210,11 +4210,15 @@ export interface Locale extends ILocale {
      */
     "remindMeLater": string;
     /**
-     * 您喜欢 Misskey 吗？
+     * 一起支持营地与 Misskey
      */
     "didYouLikeMisskey": string;
     /**
-     * Misskey 是 {host} 所使用的免费软件。为了今后也能够维持 Misskey 的开发，请在有余力的情况下进行捐助！
+     * 赞助旅人营地
+     */
+    "donateToCamp": string;
+    /**
+     * {host} 基于免费开源软件 Misskey 构建。如果你喜欢这里，欢迎在力所能及的范围内，支持营地的日常运营或 Misskey 的持续开发。感谢每一份心意！
      */
     "pleaseDonate": ParameterizedString<"host">;
     /**
