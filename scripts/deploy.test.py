@@ -265,10 +265,11 @@ check_checkout "$TEST_ROOT/checkout" https://github.com/HePudding/trekker-camp-a
         checkout.mkdir()
         shutil.copy(ROOT / "compose.vps.yml", checkout)
         shutil.copy(ROOT / "compose.assets.yml", checkout)
+        shutil.copy(ROOT / "compose.maintenance.yml", checkout)
         (checkout / ".config").mkdir()
         for name in ("docker_example.yml", "docker_example.env"):
             shutil.copy(ROOT / ".config" / name, checkout / ".config" / name)
-        for name in ("deploy.sh", "backup.sh", "caddy/Dockerfile", "caddy/cloudflare-proxies.caddy"):
+        for name in ("deploy.sh", "backup.sh", "caddy/Dockerfile", "caddy/cloudflare-proxies.caddy", "caddy/camp-site.caddy"):
             destination = checkout / "scripts" / name
             destination.parent.mkdir(parents=True, exist_ok=True)
             shutil.copy(ROOT / "scripts" / name, destination)
@@ -379,15 +380,15 @@ compose config --format json
         checkout = self.configuration()
         config = checkout / ".config/Caddyfile"
         config.write_text(config.read_text().replace(
-            "\timport camp_reverse_proxy web:3000",
+            "\timport /etc/caddy/camp-site.caddy",
             "\treverse_proxy web:3000 {\n\t\theader_up X-Forwarded-For {client_ip}\n\t}"))
-        self.shell("prepare_cdn")
+        self.shell("prepare_cdn; upgrade_maintenance_config")
         credentials = (checkout / ".config/cloudflare.env").read_text()
         self.assertIn(f"CLOUDFLARE_API_TOKEN={CLOUDFLARE_TEST_TOKEN}", credentials)
         self.assertRegex(credentials, r"CAMP_EDGEONE_ORIGIN_SECRET=[a-f0-9]{64}\n")
-        self.assertIn("import camp_reverse_proxy web:3000", config.read_text())
+        self.assertIn("import /etc/caddy/camp-site.caddy", config.read_text())
         self.assertNotIn("header_up", config.read_text())
-        self.shell("prepare_cdn")
+        self.shell("prepare_cdn; upgrade_maintenance_config")
         self.assertEqual((checkout / ".config/cloudflare.env").read_text(), credentials)
         self.assertEqual((checkout / ".config/cloudflare.env").stat().st_mode & 0o777, 0o600)
 
@@ -403,7 +404,7 @@ compose config --format json
                 config = policy.replace("trusted_proxies static ", "trusted_proxies static 127.0.0.1/32 " if trusted else "trusted_proxies static ")
                 config += '''
 http://:8080 {
-    import camp_reverse_proxy 127.0.0.1:8081
+    import /tmp/camp-site.caddy
 }
 http://:8081 {
     respond "{http.request.header.X-Forwarded-For}|{http.request.header.X-Camp-Origin-Secret}"
@@ -417,6 +418,9 @@ http://:8081 {
                 try:
                     subprocess.run(["docker", "exec", "-i", container, "sh", "-c", "cat > /tmp/Caddyfile"],
                                    input=config, text=True, check=True)
+                    site = (ROOT / "scripts/caddy/camp-site.caddy").read_text().replace("web:3000", "127.0.0.1:8081")
+                    subprocess.run(["docker", "exec", "-i", container, "sh", "-c", "cat > /tmp/camp-site.caddy"],
+                                   input=site, text=True, check=True)
                     subprocess.run(["docker", "exec", "-d", container, "caddy", "run",
                                     "--config", "/tmp/Caddyfile", "--adapter", "caddyfile"], check=True)
                     def request(headers):
@@ -449,6 +453,20 @@ http://:8081 {
                 finally:
                     subprocess.run(["docker", "rm", "-f", container], capture_output=True, check=True)
 
+    def test_maintenance_upgrade_preserves_settings_and_is_idempotent(self):
+        checkout = self.configuration()
+        path = checkout / ".config/Caddyfile"
+        legacy = path.read_text().replace("import /etc/caddy/camp-site.caddy", "reverse_proxy web:3000 {\n\t\theader_up X-Forwarded-For {client_ip}\n\t}")
+        path.write_text(legacy)
+        self.shell("upgrade_maintenance_config; upgrade_maintenance_config")
+        self.assertEqual(path.read_text().count("import /etc/caddy/camp-site.caddy"), 1)
+        self.assertIn("dns cloudflare", path.read_text())
+        self.assertEqual(path.with_name("Caddyfile.before-maintenance").read_text(), legacy)
+        custom = legacy.replace("web:3000", "custom:4000")
+        path.write_text(custom)
+        self.shell("upgrade_maintenance_config", success=False)
+        self.assertEqual(path.read_text(), custom)
+
     def deployment(self, failure="", data_dir=None, action="update", legacy=False, setup_password=True):
         checkout = self.configuration(data_dir)
         if not setup_password:
@@ -457,6 +475,8 @@ http://:8081 {
         if legacy:
             path = checkout / "compose.yml"
             path.write_text(path.read_text().replace("  web:\n", "  web:\n    command: [pnpm, start]\n"))
+            path = (data_dir or checkout) / ".config/Caddyfile"
+            path.write_text(path.read_text().replace("import /etc/caddy/camp-site.caddy", "reverse_proxy web:3000 {\n\t\theader_up X-Forwarded-For {client_ip}\n\t}"))
         backup_root = data_dir / "backups" if data_dir else self.root / "checkout.backups"
         backup_root.mkdir()
         self.env["FAILURE"] = failure
@@ -499,6 +519,7 @@ deploy "$TEST_ACTION"
         self.assertLess(index("build"), runtime)
         self.assertLess(runtime, index("up -d --wait --wait-timeout 120 db redis"))
         self.assertLess(runtime, index("stop web"))
+        self.assertLess(index("up -d --no-deps --wait --wait-timeout 60 caddy"), index("stop web"))
         self.assertLess(index("stop web"), index("exec -T db"))
         self.assertLess(index("exec -T db"), index("run --rm --no-deps web pnpm run migrate"))
         self.assertLess(index("run --rm --no-deps web"), index("up -d --no-deps --force-recreate --wait"))
@@ -536,6 +557,13 @@ deploy "$TEST_ACTION"
                     self.assertFalse(any("--force-recreate" in event for event in events))
                 if failure == "health":
                     self.assertEqual(events[-1], "stop web")
+
+    def test_invalid_maintenance_upgrade_restores_existing_proxy(self):
+        checkout, events, _ = self.deployment("proxy-config", legacy=True)
+        path = checkout / ".config/Caddyfile"
+        self.assertEqual(path.read_text(), path.with_name("Caddyfile.before-maintenance").read_text())
+        self.assertIn("reverse_proxy web:3000", path.read_text())
+        self.assertNotIn("stop web", events)
 
     def test_fresh_install_initializes_before_starting_the_official_entrypoint(self):
         _, events, _ = self.deployment(action="install")
@@ -794,7 +822,7 @@ main "${action[@]}" --dir "$TEST_ROOT/checkout"
                     self.assertIn("compose up -d --no-build --pull never --wait --wait-timeout 180", result.stdout)
                     self.assertIn("HTTPS checked", result.stdout)
                 if action in ("stop", "restart"):
-                    self.assertIn("compose stop --timeout 60", result.stdout)
+                    self.assertIn("compose stop --timeout 60 web db redis", result.stdout)
                 if action.startswith("autostart"):
                     self.assertNotIn("compose up", result.stdout)
                     self.assertNotIn("compose stop", result.stdout)
@@ -865,6 +893,8 @@ set_autostart off
             for name in ("web", "db", "redis", "caddy")
         }}))
         (checkout / "compose.assets.yml").write_text("services: {}\n")
+        # Own the bind source before Docker can create it as root.
+        (checkout / "private-assets/public").mkdir(parents=True)
         subprocess.run(["docker", "pull", image], env=self.env, check=True, capture_output=True, timeout=120)
         try:
             self.shell('''
@@ -879,9 +909,9 @@ compose up -d --force-recreate --no-build --pull never --wait --wait-timeout 15
 mapfile -t containers < <(compose ps --all --quiet)
 [[ $(docker inspect --format '{{.HostConfig.RestartPolicy.Name}}' "${containers[@]}" | sort -u) == no ]]
 stop_site
-[[ -z $(compose ps --status running --quiet) ]]
+[[ $(compose ps --status running --services) == caddy ]]
 set_autostart on
-[[ -z $(compose ps --status running --quiet) ]]
+[[ $(compose ps --status running --services) == caddy ]]
 start_site
 mapfile -t containers < <(compose ps --all --quiet)
 [[ $(docker inspect --format '{{.HostConfig.RestartPolicy.Name}}' "${containers[@]}" | sort -u) == always ]]

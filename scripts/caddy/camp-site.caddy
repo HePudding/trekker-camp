@@ -1,0 +1,66 @@
+# This file is imported inside the site's block.
+handle /__camp-maintenance/v1.html {
+	header {
+		Cache-Control "public, max-age=300, s-maxage=3600"
+		CDN-Cache-Control "public, max-age=3600"
+		Cloudflare-CDN-Cache-Control "public, max-age=3600"
+		X-Camp-Page "maintenance"
+		X-Robots-Tag "noindex, nofollow"
+	}
+	rewrite * /index.html
+	root * /srv/maintenance
+	file_server
+}
+
+handle /client-assets/camp/maintenance/* {
+	header Cache-Control "public, max-age=86400"
+	uri strip_prefix /client-assets/camp
+	root * /srv/camp-assets
+	file_server
+}
+
+handle {
+	route {
+		vars camp_client_ip {client_ip}
+		@edgeone expression `{env.CAMP_EDGEONE_ORIGIN_SECRET} != "" && {http.request.header.X-Camp-Origin-Secret} == {env.CAMP_EDGEONE_ORIGIN_SECRET} && {http.request.header.EO-Connecting-IP} != ""`
+		vars @edgeone camp_client_ip {http.request.header.EO-Connecting-IP}
+		request_header -X-Camp-Origin-Secret
+		reverse_proxy web:3000 {
+			transport http {
+				dial_timeout 3s
+			}
+			header_up X-Forwarded-For {vars.camp_client_ip}
+			header_down X-Camp-Page app
+			@unavailable status 502 503 504
+			handle_response @unavailable {
+				error 503
+			}
+		}
+	}
+}
+
+handle_errors 502 503 504 {
+	header {
+		Cache-Control "no-store, no-cache, max-age=0, must-revalidate"
+		CDN-Cache-Control "no-store"
+		Cloudflare-CDN-Cache-Control "no-store"
+		Retry-After "60"
+		X-Camp-Page "maintenance"
+		X-Robots-Tag "noindex, nofollow"
+		-ETag
+		-Last-Modified
+	}
+	@document {
+		method GET HEAD
+		header Accept *text/html*
+		not path /api/* /healthz /streaming /client-assets/* /assets/* /static-assets/* /sw.js
+	}
+	handle @document {
+		header Location "/__camp-maintenance/v1.html#{uri}"
+		respond "" 302
+	}
+	handle {
+		header Content-Type application/json
+		respond `{"error":{"message":"营地暂时休息中，请稍后重试。","code":"CAMP_MAINTENANCE"}}` 503
+	}
+}

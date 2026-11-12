@@ -6,15 +6,3 @@
 		client_ip_headers CF-Connecting-IP
 	}
 }
-
-(camp_reverse_proxy) {
-	route {
-		vars camp_client_ip {client_ip}
-		@edgeone expression `{env.CAMP_EDGEONE_ORIGIN_SECRET} != "" && {http.request.header.X-Camp-Origin-Secret} == {env.CAMP_EDGEONE_ORIGIN_SECRET} && {http.request.header.EO-Connecting-IP} != ""`
-		vars @edgeone camp_client_ip {http.request.header.EO-Connecting-IP}
-		request_header -X-Camp-Origin-Secret
-		reverse_proxy {args[0]} {
-			header_up X-Forwarded-For {vars.camp_client_ip}
-		}
-	}
-}
