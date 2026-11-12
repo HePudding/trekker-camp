@@ -20,15 +20,21 @@ handle /client-assets/camp/maintenance/* {
 }
 
 handle {
-	reverse_proxy web:3000 {
-		transport http {
-			dial_timeout 3s
-		}
-		header_up X-Forwarded-For {client_ip}
-		header_down X-Camp-Page app
-		@unavailable status 502 503 504
-		handle_response @unavailable {
-			error 503
+	route {
+		vars camp_client_ip {client_ip}
+		@edgeone expression `{env.CAMP_EDGEONE_ORIGIN_SECRET} != "" && {http.request.header.X-Camp-Origin-Secret} == {env.CAMP_EDGEONE_ORIGIN_SECRET} && {http.request.header.EO-Connecting-IP} != ""`
+		vars @edgeone camp_client_ip {http.request.header.EO-Connecting-IP}
+		request_header -X-Camp-Origin-Secret
+		reverse_proxy web:3000 {
+			transport http {
+				dial_timeout 3s
+			}
+			header_up X-Forwarded-For {vars.camp_client_ip}
+			header_down X-Camp-Page app
+			@unavailable status 502 503 504
+			handle_response @unavailable {
+				error 503
+			}
 		}
 	}
 }

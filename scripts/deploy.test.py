@@ -376,6 +376,83 @@ compose config --format json
                 self.assertTrue(any(issuer.get("challenges", {}).get("dns", {}).get("provider", {}).get("name") == "cloudflare" for issuer in issuers))
                 self.assertNotIn(token, result.stdout)
 
+    def test_cdn_configuration_preserves_credentials_and_upgrades_existing_proxy(self):
+        checkout = self.configuration()
+        config = checkout / ".config/Caddyfile"
+        config.write_text(config.read_text().replace(
+            "\timport /etc/caddy/camp-site.caddy",
+            "\treverse_proxy web:3000 {\n\t\theader_up X-Forwarded-For {client_ip}\n\t}"))
+        self.shell("prepare_cdn; upgrade_maintenance_config")
+        credentials = (checkout / ".config/cloudflare.env").read_text()
+        self.assertIn(f"CLOUDFLARE_API_TOKEN={CLOUDFLARE_TEST_TOKEN}", credentials)
+        self.assertRegex(credentials, r"CAMP_EDGEONE_ORIGIN_SECRET=[a-f0-9]{64}\n")
+        self.assertIn("import /etc/caddy/camp-site.caddy", config.read_text())
+        self.assertNotIn("header_up", config.read_text())
+        self.shell("prepare_cdn; upgrade_maintenance_config")
+        self.assertEqual((checkout / ".config/cloudflare.env").read_text(), credentials)
+        self.assertEqual((checkout / ".config/cloudflare.env").stat().st_mode & 0o777, 0o600)
+
+    def test_cdn_client_ip_forwarding(self):
+        image = os.environ.get("CADDY_TEST_IMAGE")
+        if not image:
+            self.skipTest("CADDY_TEST_IMAGE is supplied by the Caddy image validation job")
+        policy = (ROOT / "scripts/caddy/cloudflare-proxies.caddy").read_text()
+        secret = "a" * 64
+        for trusted, configured_secret in ((False, secret), (True, secret), (False, "")):
+            with self.subTest(trusted_cloudflare=trusted, secret_enabled=bool(configured_secret)):
+                # Loopback stands in for a Cloudflare socket peer in this isolated container.
+                config = policy.replace("trusted_proxies static ", "trusted_proxies static 127.0.0.1/32 " if trusted else "trusted_proxies static ")
+                config += '''
+http://:8080 {
+    import /tmp/camp-site.caddy
+}
+http://:8081 {
+    respond "{http.request.header.X-Forwarded-For}|{http.request.header.X-Camp-Origin-Secret}"
+}
+'''
+                container = subprocess.check_output([
+                    "docker", "run", "-d", "--network=none",
+                    "-e", f"CAMP_EDGEONE_ORIGIN_SECRET={configured_secret}", image,
+                    "sleep", "300",
+                ], text=True).strip()
+                try:
+                    subprocess.run(["docker", "exec", "-i", container, "sh", "-c", "cat > /tmp/Caddyfile"],
+                                   input=config, text=True, check=True)
+                    site = (ROOT / "scripts/caddy/camp-site.caddy").read_text().replace("web:3000", "127.0.0.1:8081")
+                    subprocess.run(["docker", "exec", "-i", container, "sh", "-c", "cat > /tmp/camp-site.caddy"],
+                                   input=site, text=True, check=True)
+                    subprocess.run(["docker", "exec", "-d", container, "caddy", "run",
+                                    "--config", "/tmp/Caddyfile", "--adapter", "caddyfile"], check=True)
+                    def request(headers):
+                        command = ["docker", "exec", container, "wget", "-qO-", "-T", "2"]
+                        for name, value in headers.items():
+                            command.extend(["--header", f"{name}: {value}"])
+                        return subprocess.run(command + ["http://127.0.0.1:8080"], capture_output=True, text=True)
+
+                    for _ in range(30):
+                        result = request({})
+                        if result.returncode == 0:
+                            break
+                        time.sleep(0.1)
+                    self.assertEqual(result.returncode, 0, result.stderr)
+                    baseline = "198.51.100.10" if trusted else "127.0.0.1"
+                    cases = [
+                        ({}, "127.0.0.1"),
+                        ({"CF-Connecting-IP": "198.51.100.10", "X-Forwarded-For": "192.0.2.99", "EO-Connecting-IP": "203.0.113.9"}, baseline),
+                        ({"X-Camp-Origin-Secret": "wrong", "EO-Connecting-IP": "203.0.113.9"}, "127.0.0.1"),
+                        ({"X-Camp-Origin-Secret": secret}, "127.0.0.1"),
+                    ]
+                    for ip in ("203.0.113.9", "2001:db8::1234"):
+                        cases.append(({"X-Camp-Origin-Secret": secret, "EO-Connecting-IP": ip,
+                                       "CF-Connecting-IP": "198.51.100.10", "X-Forwarded-For": "192.0.2.99"},
+                                      ip if configured_secret else baseline))
+                    for headers, expected in cases:
+                        result = request(headers)
+                        self.assertEqual(result.returncode, 0, result.stderr)
+                        self.assertEqual(result.stdout, expected + "|")
+                finally:
+                    subprocess.run(["docker", "rm", "-f", container], capture_output=True, check=True)
+
     def test_maintenance_upgrade_preserves_settings_and_is_idempotent(self):
         checkout = self.configuration()
         path = checkout / ".config/Caddyfile"

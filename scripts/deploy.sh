@@ -667,8 +667,23 @@ upgrade_maintenance_config() (
 	cat "$candidate" > "$config_dir/Caddyfile"
 )
 
+prepare_cdn() (
+	local secret
+	# Preserve the DNS credential and the origin secret across updates.
+	secret=$(sed -n 's/^CAMP_EDGEONE_ORIGIN_SECRET=//p' "$config_dir/cloudflare.env")
+	if [[ -z $secret ]]; then
+		secret=$(openssl rand -hex 32)
+		printf '\nCAMP_EDGEONE_ORIGIN_SECRET=%s\n' "$secret" >> "$config_dir/cloudflare.env"
+	fi
+	[[ $secret =~ ^[a-f0-9]{64}$ ]] || fail 'CAMP_EDGEONE_ORIGIN_SECRET 需为 64 位小写十六进制密钥。'
+	chmod 0600 "$config_dir/cloudflare.env"
+
+)
+
 deploy() {
 	local action=$1 maintenance_upgrade=0
+	stage='配置 CDN 访客 IP 识别'
+	prepare_cdn
 	stage='构建应用镜像'
 	compose config --quiet
 	compose build web caddy
