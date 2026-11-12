@@ -96,7 +96,7 @@ camp version
 
 ```bash
 sudo camp start                 # 启动应用、数据库、Redis 和 Caddy，检查 HTTPS
-sudo camp stop                  # 停止这套站点，保留容器和持久化数据
+sudo camp stop                  # 停止应用、数据库和 Redis，保留 Caddy 显示维护页
 sudo camp restart               # 停止后重新启动，检查 HTTPS
 sudo camp autostart on          # 开启开机自启，不立即启动已停止的站点
 sudo camp autostart off         # 关闭开机自启，不立即停止正在运行的站点
@@ -107,7 +107,7 @@ sudo camp autostart             # 查看 Docker 和各服务的开机自启状�
 
 新安装默认开启自启。开启时使用 Docker `always` 重启策略，并启用 Docker 服务随系统启动；关闭时使用 `no` 策略，仅改变本站容器。开机自启设置保存到数据目录的 `.config/compose.autostart.yml`，更新、容器重建及配置备份都会保留。旧安装未切换设置时沿用原来的 `unless-stopped` 策略，手动停止的容器会保持停止，状态中会注明。
 
-使用 `always` 时，`camp stop` 停止本次运行，Docker 或 VPS 重启后会再次启动；需要跨重启保持停站时，先执行 `camp autostart off`，再执行 `camp stop`。R2 定时备份的开关独立管理，关闭站点自启不会关闭备份任务；整套站点停止期间备份任务将因数据库未运行而报错。
+使用 `always` 时，`camp stop` 停止本次运行，Docker 或 VPS 重启后会再次启动；需要跨重启保持停站时，先执行 `camp autostart off`，再执行 `camp stop`。R2 定时备份的开关独立管理，关闭站点自启不会关闭备份任务；应用和数据库停止期间备份任务将因数据库未运行而报错。
 
 ### 更新应用与素材
 
@@ -121,7 +121,13 @@ Node 大版本随新镜像一起升级，构建与运行阶段使用 Dockerfile 
 
 首次签发证书时，CLI 显示一条等待提示并重试 HTTPS 检查；超时后显示最终连接错误。此时检查域名解析、80 / 443 端口及 `camp logs` 中的 Caddy 日志，修复后运行 `camp start` 重新检查。首次安装尚无 `camp` 命令时，使用 `bash /tmp/camp-deploy.sh logs --dir <代码目录>` 查看日志。脚本不会自动还原数据库迁移。
 
-Caddy 只信任 [Cloudflare 官方网段](https://www.cloudflare.com/ips/)传来的 `CF-Connecting-IP`，将解析后的访客 IP 传给应用；直接连接 VPS 的请求使用连接来源地址。WebSocket 由 Caddy 正常转发，Cloudflare 保持 WebSockets 启用。缓存规则沿用应用响应头，为 `/api/*`、`/streaming*` 和登录页面保留动态访问，避免设置整站强制缓存。
+Caddy 信任 [Cloudflare 官方网段](https://www.cloudflare.com/ips/)传来的 `CF-Connecting-IP`；EdgeOne 免费版通过回源密钥验证来源后读取 `EO-Connecting-IP`。解析后的访客 IP 统一传给应用，用于登录记录和限流。直接连接 VPS 且没有有效回源密钥的请求使用连接来源地址。
+
+接入 EdgeOne 时，先执行 `camp self-update` 和 `camp update`。CLI 会在数据目录 `.config/cloudflare.env` 中自动生成 `CAMP_EDGEONE_ORIGIN_SECRET`，权限为 root `0600`，后续更新保留该值；同时升级旧版自动生成的 Caddy 代理配置。按 `camp status` 显示的数据目录读取该密钥，在 EdgeOne 规则引擎中为本站全部请求设置**修改回源请求头 → 设置**：请求头名 `X-Camp-Origin-Secret`，值为该密钥。使用“设置”覆盖客户端同名头，保留 EdgeOne 默认的 `EO-Connecting-IP`，回源协议使用 HTTPS。不要把密钥放入响应头或提交到仓库。Caddy 会在转发应用前移除密钥头。未配置或密钥错误时，继续使用连接来源地址；Cloudflare 识别保持可用。
+
+轮换时，将 `.config/cloudflare.env` 中的密钥替换为 `openssl rand -hex 32` 生成的新值，同步修改 EdgeOne 回源规则，再执行 `camp update`。自定义 Caddy 配置需保留文件顶部的 `import /etc/caddy/cloudflare-proxies.caddy`，并使用 `import /etc/caddy/camp-site.caddy` 转发本站请求。
+
+WebSocket 由 Caddy 正常转发，CDN 保持 WebSockets 启用。缓存规则沿用应用响应头，为 `/api/*`、`/streaming*` 和登录页面保留动态访问，避免设置整站强制缓存。
 
 ### CLI 自更新
 
@@ -244,3 +250,21 @@ CLI 专项可在 Linux / WSL 中单独运行 `bash scripts/check-deploy.sh`。�
 部署相关文件发生改动时，`node scripts/check-shipping.mjs` 自动调用同一检查入口；Windows 使用默认 WSL 发行版。需在 Linux 环境安装 Bash、Python 3、Git、Git LFS 和 ShellCheck，Compose 检查需要 Docker CLI。Agent 依照 `AGENTS.md` 与交付技能使用实际数据路径，获得生产部署授权后通过 `camp update` 发布。
 
 `.github/workflows/deploy-cli.yml` 支持 PR、`master` 推送和手动触发，在 Ubuntu 22.04、24.04、26.04 容器中实际安装 Docker 官方 APT 软件包。检查覆盖终端菜单键盘操作、安装向导、普通用户提权、日志中断、失败后返回菜单、CLI 成套自更新、下载失败保留旧命令、自定义数据目录、旧安装路径、Git / LFS、Compose，以及备份 / 迁移 / 健康检查失败处理。运行时检查构建应用镜像，验证 Node / pnpm 版本错配、pnpm 调用其他 Node、原生模块加载失败的拒绝行为，并用 Node 24 旧容器验证升级至当前镜像时保留上传文件、预检失败保留旧容器。R2 流程测试覆盖停站恢复、上传失败、凭据保存和北京时间调度，并使用真实 Restic 镜像离线验证加密、增量备份和恢复。另行构建 Caddy 镜像，在禁用网络的容器中验证 Cloudflare DNS 和访客 IP 配置。结果汇总到 `VPS CLI checks`。测试使用临时仓库和隔离容器；实际 R2 连接在 VPS 绑定时验证。
+
+
+
+## 更新与停机维护页
+
+首次部署或升级到本版后，Caddy 独立提供维护页。`camp update` 在停止应用前启动新版入口，备份、迁移和应用停机期间返回维护响应；`camp stop` 停止 web、db、redis，保留 Caddy。直接停止 web 容器、连接失败或上游返回 502/503/504 时也会切换；应用恢复后自动返回正常响应。关闭 Caddy、Docker 或 VPS 后，源站入口不可用，显示内容由 CDN 的故障页配置决定。
+
+维护页沿用「营地·晴空」配色。私有素材库的 `public/maintenance/apology-v1.webp` 与 `apology-still-v1.webp` 通过 `compose.maintenance.yml` 只读挂载到 Caddy，仅开放 `/client-assets/camp/maintenance/` 路径。原稿和授权记录不挂载；缺图时页面保留图形占位和刷新按钮。素材需与代码配套发布。
+
+旧版 CLI 生成的标准反代块会替换为 `import /etc/caddy/camp-site.caddy`，原配置保存为 `.config/Caddyfile.before-maintenance`。域名、TLS 和其他设置保留；自定义反代块需先接入该文件，CLI 遇到未识别配置会保留现场并停止更新。
+
+浏览器文档请求在故障时返回不缓存的 **302**，跳转到独立维护页 `/__camp-maintenance/v1.html`。原路径和查询参数保存在 URL fragment，不参与 CDN 缓存键；「再看看营地」返回同源原地址检查恢复情况。直接打开维护页时按钮返回首页。
+
+维护页始终返回 **200**，浏览器缓存 5 分钟、CDN 缓存 1 小时；动图缓存 1 天。页面带 `X-Camp-Page: maintenance`，正常代理响应带 `X-Camp-Page: app`。API、健康检查、流连接等继续返回不缓存的 **503** JSON 与 `Retry-After: 60`。302 也带 `no-store`，避免应用恢复后仍被重定向。
+
+CDN 配置：Cloudflare 为 `/__camp-maintenance/v1.html` 单独设为「符合缓存条件」，遵循源站 TTL（HTML 默认不缓存）；EdgeOne 为该路径设置遵循源站缓存头。两家均让 `/client-assets/camp/maintenance/*` 按源站缓存头缓存。动态页面、API、健康检查继续绕过缓存，不强制缓存 302/503，不替换源站响应体。规则应让维护页的精确路径优先于动态页面绕过规则。
+
+参考：[Cloudflare 默认缓存行为](https://developers.cloudflare.com/cache/concepts/default-cache-behavior/)、[EdgeOne 节点缓存机制](https://edgeone.ai/zh/document/54213)。修改页面后可清理该独立地址缓存；日常应用恢复无需清理维护页缓存。此功能不改变 DNS、证书或可信代理配置。

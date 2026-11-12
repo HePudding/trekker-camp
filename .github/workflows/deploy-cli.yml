@@ -7,12 +7,14 @@ on:
     paths:
       - scripts/deploy.sh
       - scripts/deploy.test.py
+      - scripts/maintenance.test.py
       - scripts/backup.sh
       - scripts/backup.test.py
       - scripts/check-deploy.sh
       - scripts/check-shipping.mjs
       - scripts/caddy/**
       - compose.vps.yml
+      - compose.maintenance.yml
       - compose.assets.yml
       - Dockerfile
       - .node-version
@@ -31,12 +33,14 @@ on:
     paths:
       - scripts/deploy.sh
       - scripts/deploy.test.py
+      - scripts/maintenance.test.py
       - scripts/backup.sh
       - scripts/backup.test.py
       - scripts/check-deploy.sh
       - scripts/check-shipping.mjs
       - scripts/caddy/**
       - compose.vps.yml
+      - compose.maintenance.yml
       - compose.assets.yml
       - Dockerfile
       - .node-version
@@ -107,7 +111,11 @@ jobs:
       - name: Validate generated Caddy configuration without accessing DNS
         env:
           CADDY_TEST_IMAGE: camp-caddy-test
-        run: python3 scripts/deploy.test.py DeployTests.test_caddy_validates_cloudflare_dns_and_trusted_client_headers -v
+        run: python3 scripts/deploy.test.py DeployTests.test_caddy_validates_cloudflare_dns_and_trusted_client_headers DeployTests.test_cdn_client_ip_forwarding -v
+      - name: Verify maintenance responses and recovery
+        env:
+          CADDY_TEST_IMAGE: camp-caddy-test
+        run: python3 scripts/maintenance.test.py -v
 
   test:
     runs-on: ubuntu-latest

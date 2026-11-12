@@ -132,7 +132,7 @@ function normalizeStatus(status) {
  * @returns {{ status: number, summary: string }}
  */
 function runDeploymentChecks(changedFiles, repoRoot) {
-	if (!changedFiles.some(file => /^(scripts\/(deploy\.|backup\.|check-(deploy\.sh|shipping\.mjs)$|caddy\/)|compose\.(vps|assets)\.yml$|Dockerfile$|\.dockerignore$|\.config\/docker_example\.(yml|env)$|\.github\/workflows\/deploy-cli\.yml$)/.test(file))) {
+	if (!changedFiles.some(file => /^(scripts\/(deploy\.|backup\.|maintenance\.test\.py$|check-(deploy\.sh|shipping\.mjs)$|caddy\/)|compose\.(vps|assets|maintenance)\.yml$|Dockerfile$|\.dockerignore$|\.config\/docker_example\.(yml|env)$|\.github\/workflows\/deploy-cli\.yml$)/.test(file))) {
 		return { status: 0, summary: 'SKIPPED' };
 	}
 	try {
