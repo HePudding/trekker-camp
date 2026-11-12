@@ -50,7 +50,7 @@ class DeployTests(unittest.TestCase):
     def shell(self, body, success=True, timeout=30):
         result = subprocess.run(
             ["bash", "-c", 'set -Eeuo pipefail\nsource "$SCRIPT"\ncamp_dir="$TEST_ROOT/checkout"\nresolve_storage\n' + body],
-            env=self.env, text=True, capture_output=True, timeout=timeout,
+            cwd=self.root, env=self.env, text=True, capture_output=True, timeout=timeout,
         )
         if success:
             self.assertEqual(result.returncode, 0, result.stdout + result.stderr)
@@ -393,6 +393,10 @@ backup_dir=''
 compose() {
   printf '%s\n' "$*" >> "$TEST_ROOT/events"
   case "$1:$FAILURE" in build:build|exec:backup) return 42 ;; esac
+  if [[ $* == *'web node --input-type=module' ]]; then
+    cat > "$TEST_ROOT/runtime-check.mjs"
+    if [[ $FAILURE == runtime ]]; then return 42; fi
+  fi
   if [[ $FAILURE == init && $* == 'run --rm --no-deps web pnpm run init' ]]; then return 42; fi
   if [[ $FAILURE == migration && $* == 'run --rm --no-deps web pnpm run migrate' ]]; then return 42; fi
   if [[ $FAILURE == proxy-config && $* == *'caddy validate'* ]]; then return 42; fi
@@ -417,6 +421,10 @@ deploy "$TEST_ACTION"
         def index(prefix):
             return next(i for i, event in enumerate(events) if event.startswith(prefix))
         self.assertLess(index("build"), index("stop web"))
+        runtime = index("run --rm --no-deps -T --pull never --workdir")
+        self.assertLess(index("build"), runtime)
+        self.assertLess(runtime, index("up -d --wait --wait-timeout 120 db redis"))
+        self.assertLess(runtime, index("stop web"))
         self.assertLess(index("stop web"), index("exec -T db"))
         self.assertLess(index("exec -T db"), index("run --rm --no-deps web pnpm run migrate"))
         self.assertLess(index("run --rm --no-deps web"), index("up -d --no-deps --force-recreate --wait"))
@@ -434,7 +442,7 @@ deploy "$TEST_ACTION"
         self.assertIn("部署完成", result.stdout)
 
     def test_failures_stop_before_later_deployment_steps(self):
-        for failure in ("build", "proxy-config", "backup", "init", "migration", "health", "https"):
+        for failure in ("build", "runtime", "proxy-config", "backup", "init", "migration", "health", "https"):
             with self.subTest(failure=failure):
                 # Each attempt needs its own generated configuration and event log.
                 for path in (self.root / "checkout", self.root / "checkout.backups"):
@@ -444,11 +452,13 @@ deploy "$TEST_ACTION"
                 _, events, result = self.deployment(failure, action="install" if failure == "init" else "update")
                 self.assertNotIn("部署完成", result.stdout)
                 self.assertNotIn("install-cli", events)
-                if failure in ("build", "proxy-config"):
+                if failure in ("build", "runtime", "proxy-config"):
                     self.assertNotIn("stop web", events)
+                    self.assertFalse(any(event.startswith("up ") for event in events))
+                    self.assertFalse(list((self.root / "checkout.backups").iterdir()))
                 if failure in ("build", "proxy-config", "backup"):
                     self.assertFalse(any(event.startswith("run --rm --no-deps web") for event in events))
-                if failure in ("build", "proxy-config", "backup", "init", "migration"):
+                if failure in ("build", "runtime", "proxy-config", "backup", "init", "migration"):
                     self.assertFalse(any("--force-recreate" in event for event in events))
                 if failure == "health":
                     self.assertEqual(events[-1], "stop web")
@@ -474,6 +484,98 @@ deploy "$TEST_ACTION"
                 backup = next((self.root / "checkout.backups").iterdir())
                 with tarfile.open(backup / "config.tar.gz") as archive:
                     self.assertEqual(archive.extractfile(".config/default.yml").read(), config)
+
+    @unittest.skipUnless(os.environ.get("RUNTIME_TEST_IMAGE"),
+                         "RUNTIME_TEST_IMAGE enables real Node and native dependency checks")
+    def test_real_runtime_rejects_wrong_versions_and_incompatible_native_modules(self):
+        self.shell('''
+compose() { cat > "$TEST_ROOT/runtime-check.mjs"; }
+check_application_runtime
+''')
+        script = (self.root / "runtime-check.mjs").read_text()
+        fixtures = {
+            "valid": "",
+            "node-version": """
+import { writeFileSync } from 'node:fs';
+writeFileSync('/misskey/.node-version', '0.0.0');
+""",
+            "pnpm-version": r"""
+import { writeFileSync } from 'node:fs';
+writeFileSync('/usr/local/bin/pnpm', '#!/bin/sh\necho 0.0.0\n');
+""",
+            "pnpm-node": r"""
+import { writeFileSync } from 'node:fs';
+const pinnedPnpm = JSON.parse(readFileSync('/misskey/package.json', 'utf8')).packageManager.split('@')[1].split('+')[0];
+writeFileSync('/usr/local/bin/pnpm', '#!/bin/sh\nif [ "$1" = "--version" ]; then echo ' + pinnedPnpm + '\nelse echo 0.0.0\nfi\n');
+""",
+            "native-module": """
+import { writeFileSync } from 'node:fs';
+import { createRequire } from 'node:module';
+import { dirname, join } from 'node:path';
+const require = createRequire(import.meta.url);
+writeFileSync(join(dirname(require.resolve('re2')), 'build/Release/re2.node'), 'incompatible native binary');
+""",
+        }
+        for fixture, prefix in fixtures.items():
+            with self.subTest(fixture=fixture):
+                # Each attempt uses a disposable container without service mounts or networking.
+                result = subprocess.run(
+                    ["docker", "run", "--rm", "--network", "none", "-i", "--user", "0:0",
+                     "--workdir", "/misskey/apps/misskey/packages/backend", "--entrypoint", "node",
+                     os.environ["RUNTIME_TEST_IMAGE"], "--input-type=module"],
+                    input=prefix + script, env=self.env, text=True, capture_output=True, timeout=60,
+                )
+                if fixture == "valid":
+                    self.assertEqual(result.returncode, 0, result.stdout + result.stderr)
+                    self.assertIn("runtime checks passed", result.stdout)
+                else:
+                    self.assertNotEqual(result.returncode, 0, result.stdout + result.stderr)
+                    self.assertNotIn("runtime checks passed", result.stdout)
+                    message = {"node-version": "Node version differs", "pnpm-version": "pnpm version differs",
+                               "pnpm-node": "pnpm uses a different Node runtime",
+                               "native-module": "ERR_DLOPEN_FAILED"}[fixture]
+                    self.assertIn(message, result.stderr)
+
+    @unittest.skipUnless(os.environ.get("RUNTIME_TEST_IMAGE") and os.environ.get("RUNTIME_OLD_IMAGE"),
+                         "RUNTIME_TEST_IMAGE and RUNTIME_OLD_IMAGE enable a real Node major upgrade")
+    def test_real_node_major_upgrade_preserves_uploads_and_checks_before_recreation(self):
+        import json
+
+        self.env["RUNTIME_IMAGE"] = os.environ["RUNTIME_OLD_IMAGE"]
+        self.env["COMPOSE_PROJECT_NAME"] = self.root.name
+        (self.root / "runtime.compose.json").write_text(json.dumps({
+            "services": {"web": {
+                "image": "${RUNTIME_IMAGE}",
+                "command": ["node", "-e", "setInterval(() => {}, 1000)"],
+                "volumes": ["uploads:/misskey/files"],
+                "healthcheck": {"test": ["CMD", "node", "--version"], "interval": "1s"},
+            }},
+            "volumes": {"uploads": {}},
+        }))
+        prelude = '''
+compose() { docker compose -f "$TEST_ROOT/runtime.compose.json" "$@"; }
+'''
+        self.addCleanup(lambda: self.shell(prelude + 'compose down --volumes --timeout 5', timeout=60))
+        self.shell(prelude + '''
+compose up -d --no-build --pull never --wait --wait-timeout 30 web
+compose exec -T web node -e 'const fs = require("node:fs"); fs.writeFileSync("/misskey/files/keep", "existing-upload"); fs.chownSync("/misskey/files", 991, 991)'
+''', timeout=60)
+        old_id = self.shell(prelude + 'compose ps --quiet web').stdout.strip()
+        old_version = self.shell(prelude + 'compose exec -T web node --version').stdout.strip()
+
+        # The old base image lacks the new application runtime; rejection leaves it running.
+        self.shell(prelude + 'check_application_runtime', success=False, timeout=60)
+        self.assertEqual(self.shell(prelude + 'compose ps --quiet web').stdout.strip(), old_id)
+        self.env["RUNTIME_IMAGE"] = os.environ["RUNTIME_TEST_IMAGE"]
+        self.shell(prelude + 'check_application_runtime', timeout=60)
+        self.assertEqual(self.shell(prelude + 'compose ps --quiet web').stdout.strip(), old_id)
+        self.shell(prelude + 'compose up -d --no-deps --force-recreate --no-build --pull never --wait --wait-timeout 30 web', timeout=60)
+        self.assertNotEqual(self.shell(prelude + 'compose ps --quiet web').stdout.strip(), old_id)
+        new_version = self.shell(prelude + 'compose exec -T web node --version').stdout.strip()
+        self.assertNotEqual(old_version.split('.')[0], new_version.split('.')[0])
+        self.assertEqual(self.shell(prelude + 'compose exec -T web cat /misskey/files/keep').stdout, "existing-upload")
+        mounts = json.loads(self.shell(prelude + 'docker inspect --format "{{json .Mounts}}" "$(compose ps --quiet web)"').stdout)
+        self.assertEqual([mount["Destination"] for mount in mounts], ["/misskey/files"])
 
     @unittest.skipUnless(os.geteuid() == 0 and os.environ.get("SETUP_TEST_IMAGE"),
                          "SETUP_TEST_IMAGE enables real administrator initialization checks")
