@@ -816,6 +816,8 @@ set_autostart off
             for name in ("web", "db", "redis", "caddy")
         }}))
         (checkout / "compose.assets.yml").write_text("services: {}\n")
+        # Own the bind source before Docker can create it as root.
+        (checkout / "private-assets/public").mkdir(parents=True)
         subprocess.run(["docker", "pull", image], env=self.env, check=True, capture_output=True, timeout=120)
         try:
             self.shell('''
