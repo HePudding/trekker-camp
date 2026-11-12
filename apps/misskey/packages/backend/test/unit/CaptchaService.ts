@@ -7,6 +7,11 @@ import { afterAll, beforeAll, beforeEach, describe, expect, test, vi } from 'vit
 import type { Mocked } from 'vitest';
 import { Test, TestingModule } from '@nestjs/testing';
 import { Response } from 'node-fetch';
+import { createHash, randomBytes } from 'node:crypto';
+import { generateChallenge } from 'capjs-core';
+import type { Redis } from 'ioredis';
+import { DI } from '@/di-symbols.js';
+import { VerificationCodeService } from '@/core/VerificationCodeService.js';
 import {
 	CaptchaError,
 	CaptchaErrorCode,
@@ -97,6 +102,88 @@ describe('CaptchaService', () => {
 			expect(_e.code).toBe(code);
 		}
 	}
+
+	describe('Cap', () => {
+		let redis: Redis;
+
+		beforeAll(() => {
+			redis = app.get(DI.redis);
+		});
+
+		async function solvedChallenge(scope = 'camp-captcha') {
+			await service.capChallenge();
+			const challenge = await generateChallenge((await redis.get('captcha:cap:secret'))!, {
+				scope, format: 2, protocols: ['sha256-pow'], challengeCount: 1, challengeDifficulty: 1,
+			});
+			if (!('format' in challenge) || challenge.format !== 2) throw new Error('Expected format 2');
+			const { salt, target } = challenge.challenges[0].payload as { salt: string; target: string };
+			let nonce = 0;
+			while (!createHash('sha256').update(salt + nonce).digest('hex').startsWith(target)) nonce++;
+			return { token: challenge.token, solutions: [{ nonce }] };
+		}
+
+		test('issues HashWX and instrumentation challenges', async () => {
+			const challenge = await service.capChallenge();
+			expect(challenge).toHaveProperty('format', 2);
+			if (!('format' in challenge) || challenge.format !== 2) throw new Error('Expected format 2');
+			expect([...new Set(challenge.challenges.map(c => c.protocol))]).toEqual(['hashwx', 'instrumentation']);
+		});
+
+		test('redeems once and consumes a valid token exactly once across concurrent requests', async () => {
+			const body = await solvedChallenge();
+			const results = await Promise.all([service.capRedeem(body), service.capRedeem(body)]);
+			expect(results.filter(r => r.success)).toHaveLength(1);
+			const token = results.find(r => r.success)!.token!;
+			const verified = await Promise.allSettled([service.verifyCap(token), service.verifyCap(token)]);
+			expect(verified.filter(r => r.status === 'fulfilled')).toHaveLength(1);
+			expect(verified.filter(r => r.status === 'rejected')).toHaveLength(1);
+		});
+
+		test('rejects forged challenges and mismatched scope', async () => {
+			expect(await service.capRedeem({ token: 'forged', solutions: [] })).toMatchObject({ success: false });
+			expect(await service.capRedeem(await solvedChallenge('another-action'))).toMatchObject({ success: false });
+		});
+
+		test.each([undefined, null, '', 'junk', 'unknown:secret', 'a:b:c'])('rejects missing or forged token %s', async token => {
+			await expect(service.verifyCap(token)).rejects.toBeInstanceOf(CaptchaError);
+		});
+
+		test('rejects expired tokens', async () => {
+			const token = `${randomBytes(16).toString('hex')}:secret`;
+			const key = `captcha:cap:token:${token.split(':')[0]}:${createHash('sha256').update('secret').digest('hex')}`;
+			await redis.set(key, '1');
+			await redis.pexpire(key, -1);
+			await expect(service.verifyCap(token)).rejects.toBeInstanceOf(CaptchaError);
+		});
+
+		test('fails closed when Redis is unavailable', async () => {
+			vi.spyOn(redis, 'getdel').mockRejectedValueOnce(new Error('unavailable'));
+			await testCaptchaError(captchaErrorCodes.requestFailed, () => service.verifyCap('id:secret'));
+		});
+
+		test('requires a valid solve before enabling Cap and disables other providers', async () => {
+			expect(await service.save('cap', { captchaResult: 'forged' })).toMatchObject({ success: false });
+			expect(metaService.update).not.toHaveBeenCalled();
+			const result = await service.capRedeem(await solvedChallenge());
+			expect(await service.save('cap', { captchaResult: result.token })).toEqual({ success: true });
+			expect(metaService.update).toHaveBeenCalledWith({
+				enableCap: true, enableHcaptcha: false, enableMcaptcha: false,
+				enableRecaptcha: false, enableTurnstile: false, enableTestcaptcha: false,
+			});
+			metaService.fetch.mockResolvedValue({ enableCap: true } as MiMeta);
+			expect((await service.get()).provider).toBe('cap');
+		});
+
+		test('verification-code gate consumes Cap tokens and rejects replay', async () => {
+			metaService.fetch.mockResolvedValue({ enableCap: true } as MiMeta);
+			const gate = Object.create(VerificationCodeService.prototype) as VerificationCodeService;
+			Object.assign(gate, { captchaService: service });
+			await expect(gate.verifyCaptcha({})).rejects.toMatchObject({ code: 'CAPTCHA_FAILED' });
+			const result = await service.capRedeem(await solvedChallenge());
+			await expect(gate.verifyCaptcha({ 'cap-token': result.token })).resolves.toBeUndefined();
+			await expect(gate.verifyCaptcha({ 'cap-token': result.token })).rejects.toMatchObject({ code: 'CAPTCHA_FAILED' });
+		});
+	});
 
 	describe('verifyRecaptcha', () => {
 		test('success', async () => {
@@ -328,7 +415,7 @@ describe('CaptchaService', () => {
 					.resolves
 					.toStrictEqual({ success: true });
 				const partialParams = metaService.update.mock.calls[0][0];
-				expect(partialParams).toStrictEqual(expectMeta);
+				expect(partialParams).toStrictEqual({ enableCap: false, ...expectMeta });
 			}
 
 			test('none', async () => {

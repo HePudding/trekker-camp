@@ -127,6 +127,10 @@ export const packedMetaLiteSchema = {
 			type: 'boolean',
 			optional: false, nullable: false,
 		},
+		enableCap: {
+			type: 'boolean',
+			optional: false, nullable: false,
+		},
 		googleAnalyticsMeasurementId: {
 			type: 'string',
 			optional: false, nullable: true,

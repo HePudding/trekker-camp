@@ -157,6 +157,7 @@ async function onPasswordSubmitted(pw: PwResponse) {
 			'g-recaptcha-response': pw.captcha.reCaptchaResponse,
 			'turnstile-response': pw.captcha.turnstileResponse,
 			'testcaptcha-response': pw.captcha.testcaptchaResponse,
+			'cap-token': pw.captcha.capResponse,
 		});
 	}
 }

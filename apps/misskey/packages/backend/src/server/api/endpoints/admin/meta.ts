@@ -96,6 +96,10 @@ export const meta = {
 				type: 'boolean',
 				optional: false, nullable: false,
 			},
+			enableCap: {
+				type: 'boolean',
+				optional: false, nullable: false,
+			},
 			googleAnalyticsMeasurementId: {
 				type: 'string',
 				optional: false, nullable: true,
@@ -698,6 +702,7 @@ export default class extends Endpoint<typeof meta, typeof paramDef> { // eslint-
 				enableTurnstile: instance.enableTurnstile,
 				turnstileSiteKey: instance.turnstileSiteKey,
 				enableTestcaptcha: instance.enableTestcaptcha,
+				enableCap: instance.enableCap,
 				googleAnalyticsMeasurementId: instance.googleAnalyticsMeasurementId,
 				swPublickey: instance.swPublicKey,
 				themeColor: instance.themeColor,

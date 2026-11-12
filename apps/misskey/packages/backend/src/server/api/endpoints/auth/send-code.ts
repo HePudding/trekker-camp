@@ -39,6 +39,7 @@ export const paramDef = {
 		'g-recaptcha-response': { type: 'string', nullable: true },
 		'turnstile-response': { type: 'string', nullable: true },
 		'testcaptcha-response': { type: 'string', nullable: true },
+		'cap-token': { type: 'string', nullable: true, maxLength: 1024 },
 	},
 	required: ['channel', 'purpose'],
 } as const;

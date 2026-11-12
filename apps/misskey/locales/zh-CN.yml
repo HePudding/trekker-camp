@@ -3340,6 +3340,7 @@ _remoteLookupErrors:
     title: "未找到"
     description: "未找到请求的资源。请再次检查 URI。"
 _captcha:
+  capDescription: "由营地提供人机验证，无需填写密钥。请完成下方验证后保存启用。"
   verify: "请通过 CAPTCHA 验证"
   testSiteKeyMessage: "输入测试用的网站密钥及私密密钥后可以生成预览并检查，\n详情请看以下页面。"
   _error:

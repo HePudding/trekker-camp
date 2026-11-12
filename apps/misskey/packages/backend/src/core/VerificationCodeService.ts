@@ -25,7 +25,7 @@ export const verificationDefaults = {
 export type VerificationSettings = typeof verificationDefaults;
 export type CodePurpose = 'signup' | 'phone-old' | 'phone-new' | 'password-reset' | 'test';
 export type CodeChannel = 'sms' | 'email';
-export type CaptchaTokens = Partial<Record<'hcaptcha-response' | 'm-captcha-response' | 'g-recaptcha-response' | 'turnstile-response' | 'testcaptcha-response', string | null>>;
+export type CaptchaTokens = Partial<Record<'hcaptcha-response' | 'm-captcha-response' | 'g-recaptcha-response' | 'turnstile-response' | 'testcaptcha-response' | 'cap-token', string | null>>;
 export type CodeChallenge = {
 	channel: CodeChannel;
 	purpose: CodePurpose;
@@ -135,6 +135,7 @@ export class VerificationCodeService {
 		try {
 			switch (settings.provider) {
 				case 'none': return;
+				case 'cap': return await this.captchaService.verifyCap(tokens['cap-token']);
 				case 'testcaptcha': return await this.captchaService.verifyTestcaptcha(tokens['testcaptcha-response']);
 				case 'hcaptcha':
 					if (!settings.hcaptcha.secretKey) throw new Error();

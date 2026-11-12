@@ -119,6 +119,15 @@
 			// dist: Debian codename (e.g., bullseye, bookworm)（比較には使わない）
 			versioning: 'regex:^(?<major>\\d+)\\.(?<minor>\\d+)\\.(?<patch>\\d+)-(?<build>\\d+)-(?<dist>.+)$',
 		},
+		{
+			groupName: '[Cap] Update dependencies',
+			matchManagers: ['npm'],
+			matchPackageNames: [
+				'capjs-core',
+				'cap-widget',
+				'@cap.js/wasm',
+			],
+		},
 	],
 	customManagers: [
 		{

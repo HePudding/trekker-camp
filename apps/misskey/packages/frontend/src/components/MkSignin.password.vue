@@ -28,6 +28,7 @@ SPDX-License-Identifier: AGPL-3.0-only
 				<MkCaptcha v-if="instance.enableMcaptcha" ref="mcaptcha" v-model="mCaptchaResponse" provider="mcaptcha" :sitekey="instance.mcaptchaSiteKey" :instanceUrl="instance.mcaptchaInstanceUrl"/>
 				<MkCaptcha v-if="instance.enableRecaptcha" ref="recaptcha" v-model="reCaptchaResponse" provider="recaptcha" :sitekey="instance.recaptchaSiteKey"/>
 				<MkCaptcha v-if="instance.enableTurnstile" ref="turnstile" v-model="turnstileResponse" provider="turnstile" :sitekey="instance.turnstileSiteKey"/>
+				<MkCaptcha v-if="instance.enableCap" ref="cap" v-model="capResponse" provider="cap" :sitekey="null"/>
 				<MkCaptcha v-if="instance.enableTestcaptcha" ref="testcaptcha" v-model="testcaptchaResponse" provider="testcaptcha" :sitekey="null"/>
 			</div>
 
@@ -45,6 +46,7 @@ export type PwResponse = {
 		mCaptchaResponse: string | null;
 		reCaptchaResponse: string | null;
 		turnstileResponse: string | null;
+		capResponse: string | null;
 		testcaptchaResponse: string | null;
 	};
 };
@@ -77,6 +79,8 @@ const hCaptcha = useTemplateRef('hcaptcha');
 const mCaptcha = useTemplateRef('mcaptcha');
 const reCaptcha = useTemplateRef('recaptcha');
 const turnstile = useTemplateRef('turnstile');
+const cap = useTemplateRef('cap');
+const capResponse = ref<string | null>(null);
 const testcaptcha = useTemplateRef('testcaptcha');
 
 const hCaptchaResponse = ref<string | null>(null);
@@ -91,6 +95,7 @@ const captchaFailed = computed((): boolean => {
 		(instance.enableMcaptcha && !mCaptchaResponse.value) ||
 		(instance.enableRecaptcha && !reCaptchaResponse.value) ||
 		(instance.enableTurnstile && !turnstileResponse.value) ||
+		(instance.enableCap && !capResponse.value) ||
 		(instance.enableTestcaptcha && !testcaptchaResponse.value)
 	);
 });
@@ -109,6 +114,7 @@ function onSubmit() {
 			mCaptchaResponse: mCaptchaResponse.value,
 			reCaptchaResponse: reCaptchaResponse.value,
 			turnstileResponse: turnstileResponse.value,
+			capResponse: capResponse.value,
 			testcaptchaResponse: testcaptchaResponse.value,
 		},
 	});
@@ -119,6 +125,7 @@ function resetCaptcha() {
 	mCaptcha.value?.reset();
 	reCaptcha.value?.reset();
 	turnstile.value?.reset();
+	cap.value?.reset();
 	testcaptcha.value?.reset();
 }
 

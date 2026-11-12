@@ -12895,6 +12895,10 @@ export interface Locale extends ILocale {
     };
     "_captcha": {
         /**
+         * 由营地提供人机验证，无需填写密钥。请完成下方验证后保存启用。
+         */
+        "capDescription": string;
+        /**
          * 请通过 CAPTCHA 验证
          */
         "verify": string;
