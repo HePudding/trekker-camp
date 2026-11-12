@@ -30,7 +30,7 @@ CLI 会在下载私有素材、生成首次配置前检查代码中的部署文�
 2. 拉取代码和私有素材，仅下载 `public/` 下的 LFS 文件。
 3. 从仓库随附的 `.config/docker_example.yml` 和 `.config/docker_example.env` 生成配置，填入域名、随机数据库密码和独立的随机管理员初始化密码 `setupPassword`，保留官方模板的其他默认值与注释；生成 Caddy / Cloudflare DNS 配置，将 `compose.vps.yml` 复制为本站的 `compose.yml`。
 4. 构建应用及包含 Cloudflare 插件的 Caddy 镜像，验证代理配置，启动 PostgreSQL 18 和 Redis，备份数据库与配置，运行 `pnpm run init` 初始化数据库。
-5. 挂载素材，以镜像默认的 `pnpm run migrateandstart` 启动应用，等待容器健康检查和本机 HTTPS `/healthz` 检查成功。
+5. 挂载素材，以镜像默认的 `node apps/misskey/scripts/start.mjs --migrate` 启动应用，等待容器健康检查和本机 HTTPS `/healthz` 检查成功。
 
 首次打开站点时，输入 CLI 显示的 **初始化密码**，再自行设置管理员用户名和登录密码。初始化密码在应用启动前生成并写入数据目录的 `.config/default.yml`，使用 24 字节随机数；空白或错误的密码会被拒绝。尚未完成管理员创建时，安装完成输出、`camp status` 和菜单中的“查看站点状态”会显示该密码；管理员创建完成后只显示完成状态。已有部署的配置和管理员账号保持原样，更新与 CLI 自更新不会补写或更换初始化密码。站点创建后保持配置中的 `url` 不变。
 
@@ -38,7 +38,7 @@ CLI 会在下载私有素材、生成首次配置前检查代码中的部署文�
 
 CLI 沿用 [Misskey 官方 Docker Compose 安装流程](https://misskey-hub.net/en/docs/for-admin/install/guides/docker/)的源码构建、配置模板、`init` 初始化和镜像默认启动入口。上传文件、PostgreSQL 与 Redis 继续使用持久化挂载；Web 容器使用 Misskey 的非 root 用户。程序仍按 Misskey 配置处理媒体代理与对象存储。
 
-本站增加的运维步骤包括：Caddy / Cloudflare 自动 HTTPS、私有素材只读挂载、细粒度 PAT 保存、更新前本地备份、R2 定时备份、健康检查和交互管理。Redis 额外启用 AOF 持久化，应用端口只绑定本机，通过 Caddy 对外提供 HTTPS。更新在停止应用、完成备份后独立执行官方 `pnpm run migrate`；这样迁移失败会保留停站状态，耗时迁移也不会占用启动健康检查的等待时间。随后镜像的 `migrateandstart` 再检查待执行迁移并启动应用。
+本站增加的运维步骤包括：Caddy / Cloudflare 自动 HTTPS、私有素材只读挂载、细粒度 PAT 保存、更新前本地备份、R2 定时备份、健康检查和交互管理。Redis 额外启用 AOF 持久化，应用端口只绑定本机，通过 Caddy 对外提供 HTTPS。更新在停止应用、完成备份后独立执行官方 `pnpm run migrate`；这样迁移失败会保留停站状态，耗时迁移也不会占用启动健康检查的等待时间。随后镜像的 `start.mjs --migrate` 再检查待执行迁移、检查服务连接并启动应用。
 
 ### 自定义数据目录
 
@@ -103,7 +103,7 @@ sudo camp autostart off         # 关闭开机自启，不立即停止正在运�
 sudo camp autostart             # 查看 Docker 和各服务的开机自启状态
 ```
 
-菜单快捷键为 **S 启动、T 停止、R 重启、A 开启自启、D 关闭自启**。这些操作不需要 GitHub 或 Cloudflare token，与更新和备份共用操作锁。启动复用本机已有镜像，使用官方 `migrateandstart` 入口检查待执行迁移后启动；已完成部署的镜像通常没有待执行迁移。`camp status` 同时列出已停止的容器和开机自启状态。
+菜单快捷键为 **S 启动、T 停止、R 重启、A 开启自启、D 关闭自启**。这些操作不需要 GitHub 或 Cloudflare token，与更新和备份共用操作锁。启动复用本机已有镜像，使用官方 `start.mjs --migrate` 入口检查待执行迁移后启动；已完成部署的镜像通常没有待执行迁移。`camp status` 同时列出已停止的容器和开机自启状态。
 
 新安装默认开启自启。开启时使用 Docker `always` 重启策略，并启用 Docker 服务随系统启动；关闭时使用 `no` 策略，仅改变本站容器。开机自启设置保存到数据目录的 `.config/compose.autostart.yml`，更新、容器重建及配置备份都会保留。旧安装未切换设置时沿用原来的 `unless-stopped` 策略，手动停止的容器会保持停止，状态中会注明。
 
@@ -111,11 +111,13 @@ sudo camp autostart             # 查看 Docker 和各服务的开机自启状�
 
 ### 更新应用与素材
 
-`update` 同步两个仓库的 `master`，构建新镜像后停止应用，备份数据库、执行迁移并重新创建应用容器。素材清单中的新增表情会在应用启动时自动注册。数据库、上传文件、配置和证书持续保存在原有目录 / Docker 卷中。
+`update` 同步两个仓库的 `master`，构建并验证新镜像后停止应用，备份数据库、执行迁移并重新创建应用容器。素材清单中的新增表情会在应用启动时自动注册。数据库、上传文件、配置和证书持续保存在原有目录 / Docker 卷中。
+
+Node 大版本随新镜像一起升级，构建与运行阶段使用 Dockerfile 中的同一版本，pnpm 按根目录 `package.json` 的 `packageManager` 安装。依赖在镜像内重新安装，宿主机的 Node、pnpm 和旧容器的 `node_modules` 不参与新容器运行。CLI 在停站前核对新镜像中的 Node / pnpm 版本，并实际加载图像处理、正则匹配和其他核心原生依赖；版本或原生模块加载失败时终止更新，现有应用继续运行。
 
 代码或素材有未提交修改、未发布提交、分叉或处于其他分支时，CLI 会停止并保留现场。更新使用已有配置；旧版 CLI 生成的 Web `command: [pnpm, start]` 覆盖会在备份后移除，恢复镜像默认启动入口。其他自定义设置保留，`compose.vps.yml` 的其他变化由维护者审查后应用到服务器 `compose.yml`。
 
-构建失败时现有应用继续运行。备份、迁移或应用健康检查失败时应用保持停止；修复报错后再次执行 `camp update`。首次部署在安装 `camp` 命令前失败时，可以使用 `bash /tmp/camp-deploy.sh update` 继续；尚未生成配置时重新执行 `install`。
+构建或新镜像运行时检查失败时现有应用继续运行。备份、迁移或应用健康检查失败时应用保持停止；修复报错后再次执行 `camp update`。首次部署在安装 `camp` 命令前失败时，可以使用 `bash /tmp/camp-deploy.sh update` 继续；尚未生成配置时重新执行 `install`。
 
 首次签发证书时，CLI 显示一条等待提示并重试 HTTPS 检查；超时后显示最终连接错误。此时检查域名解析、80 / 443 端口及 `camp logs` 中的 Caddy 日志，修复后运行 `camp start` 重新检查。首次安装尚无 `camp` 命令时，使用 `bash /tmp/camp-deploy.sh logs --dir <代码目录>` 查看日志。脚本不会自动还原数据库迁移。
 
@@ -241,4 +243,4 @@ CLI 专项可在 Linux / WSL 中单独运行 `bash scripts/check-deploy.sh`。�
 
 部署相关文件发生改动时，`node scripts/check-shipping.mjs` 自动调用同一检查入口；Windows 使用默认 WSL 发行版。需在 Linux 环境安装 Bash、Python 3、Git、Git LFS 和 ShellCheck，Compose 检查需要 Docker CLI。Agent 依照 `AGENTS.md` 与交付技能使用实际数据路径，获得生产部署授权后通过 `camp update` 发布。
 
-`.github/workflows/deploy-cli.yml` 支持 PR、`master` 推送和手动触发，在 Ubuntu 22.04、24.04、26.04 容器中实际安装 Docker 官方 APT 软件包。检查覆盖终端菜单键盘操作、安装向导、普通用户提权、日志中断、失败后返回菜单、CLI 成套自更新、下载失败保留旧命令、自定义数据目录、旧安装路径、Git / LFS、Compose，以及备份 / 迁移 / 健康检查失败处理。R2 流程测试覆盖停站恢复、上传失败、凭据保存和北京时间调度，并使用真实 Restic 镜像离线验证加密、增量备份和恢复。另行构建 Caddy 镜像，在禁用网络的容器中验证 Cloudflare DNS 和访客 IP 配置。结果汇总到 `VPS CLI checks`。测试使用临时仓库和模拟服务命令；实际 R2 连接在 VPS 绑定时验证。
+`.github/workflows/deploy-cli.yml` 支持 PR、`master` 推送和手动触发，在 Ubuntu 22.04、24.04、26.04 容器中实际安装 Docker 官方 APT 软件包。检查覆盖终端菜单键盘操作、安装向导、普通用户提权、日志中断、失败后返回菜单、CLI 成套自更新、下载失败保留旧命令、自定义数据目录、旧安装路径、Git / LFS、Compose，以及备份 / 迁移 / 健康检查失败处理。运行时检查构建应用镜像，验证 Node / pnpm 版本错配、pnpm 调用其他 Node、原生模块加载失败的拒绝行为，并用 Node 24 旧容器验证升级至当前镜像时保留上传文件、预检失败保留旧容器。R2 流程测试覆盖停站恢复、上传失败、凭据保存和北京时间调度，并使用真实 Restic 镜像离线验证加密、增量备份和恢复。另行构建 Caddy 镜像，在禁用网络的容器中验证 Cloudflare DNS 和访客 IP 配置。结果汇总到 `VPS CLI checks`。测试使用临时仓库和隔离容器；实际 R2 连接在 VPS 绑定时验证。

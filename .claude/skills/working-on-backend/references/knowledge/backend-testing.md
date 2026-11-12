@@ -14,7 +14,7 @@
 
 ## 测试配置
 
-后端 test、test:e2e、test:fed 均在内部运行 `cross-env NODE_ENV=test pnpm compile-config`，读取 `.config/test.yml`。见 [package.json](../../../../../apps/misskey/packages/backend/package.json) 和 [compile_config.js](../../../../../apps/misskey/packages/backend/scripts/compile_config.js)。**缺少配置时测试无法启动。**
+后端 test、test:e2e、test:fed 使用 `NODE_ENV=test`，运行时直接读取根目录的 `.config/test.yml`。见 [package.json](../../../../../apps/misskey/packages/backend/package.json) 和 [config.ts](../../../../../apps/misskey/packages/backend/src/config.ts)。**缺少配置时测试无法启动。**
 
 尚未创建时，任选一种方式复制一次：
 
@@ -25,7 +25,7 @@ cp .github/misskey/test.yml .config/test.yml
 ```
 
 - 根目录 `pnpm start:test` 用于 Playwright，运行时会自动通过 ncp 复制配置，见 [package.json](../../../../../package.json)。直接执行后端测试时需手动复制。
-- 已有配置时，测试脚本内部的 compile-config 已足够，无需额外执行。
+- 修改 YAML 配置后，下次启动测试时直接生效。
 - 后端端到端测试无需先运行 start:test，额外启动会造成端口冲突。
 
 ## 测试类型与命令

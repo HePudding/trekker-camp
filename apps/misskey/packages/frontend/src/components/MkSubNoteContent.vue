@@ -22,7 +22,7 @@ SPDX-License-Identifier: AGPL-3.0-only
 			:noteId="note.id"
 			:multiple="note.poll.multiple"
 			:expiresAt="note.poll.expiresAt"
-			:choices="note.poll.choices"
+			:choices="$note?.pollChoices ?? note.poll.choices"
 			:author="note.user"
 			:emojiUrls="note.emojis"
 		/>
@@ -47,7 +47,7 @@ SPDX-License-Identifier: AGPL-3.0-only
 
 <script lang="ts" setup>
 import { filterUnreferencedFiles } from '@@/js/mfm-inline-image.js';
-import { ref, useTemplateRef } from 'vue';
+import { inject, ref, useTemplateRef } from 'vue';
 import * as Misskey from 'misskey-js';
 import * as mfm from 'mfm-js';
 import { shouldCollapsed } from '@@/js/collapsed.js';
@@ -57,11 +57,15 @@ import { truncateMfmNodes, COLLAPSED_RENDER_CHARS } from '@@/js/mfm-truncate.js'
 import MkMediaList from '@/components/MkMediaList.vue';
 import MkPoll from '@/components/MkPoll.vue';
 import { i18n } from '@/i18n.js';
+import { useNoteCapture } from '@/composables/use-note-capture.js';
+import { DI } from '@/di.js';
 
 const props = defineProps<{
 	note: Misskey.entities.Note;
 }>();
 
+const mock = inject(DI.mock, false);
+const $note = props.note.poll ? useNoteCapture({ note: props.note, parentNote: null, mock }).$note : null;
 const isLong = shouldCollapsed(props.note, []);
 
 const collapsed = ref(isLong);

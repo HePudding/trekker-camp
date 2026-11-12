@@ -223,7 +223,7 @@ export function useNoteCapture(props: {
 
 	// 操作がダブっていないかどうかを簡易的に記録するためのMap
 	const reactionUserMap = new Map<Misskey.entities.User['id'], string | typeof noReaction>();
-	let latestPollVotedKey: string | null = null;
+	const pollVotedKeys = new Set<string>();
 
 	function onReacted(ctx: { userId: Misskey.entities.User['id']; reaction: string; emoji?: { name: string; url: string; } | null; }): void {
 		let normalizedName = ctx.reaction.replace(/^:(\w+):$/, ':$1@.:');
@@ -266,8 +266,8 @@ export function useNoteCapture(props: {
 
 	function onPollVoted(ctx: { userId: Misskey.entities.User['id']; choice: number; }): void {
 		const newPollVotedKey = `${ctx.userId}:${ctx.choice}`;
-		if (newPollVotedKey === latestPollVotedKey) return;
-		latestPollVotedKey = newPollVotedKey;
+		if (pollVotedKeys.has(newPollVotedKey) || ($i && ctx.userId === $i.id && $note.pollChoices[ctx.choice].isVoted)) return;
+		pollVotedKeys.add(newPollVotedKey);
 
 		const choices = [...$note.pollChoices];
 		choices[ctx.choice] = {

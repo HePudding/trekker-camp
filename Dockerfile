@@ -1,6 +1,6 @@
 # syntax = docker/dockerfile:1.27
 
-ARG NODE_VERSION=26.12.1-trixie
+ARG NODE_VERSION=26.13.1-trixie
 
 # build assets & compile TypeScript
 
@@ -112,4 +112,4 @@ ENV LD_PRELOAD=/usr/local/lib/libjemalloc.so
 ENV NODE_ENV=production
 HEALTHCHECK --interval=5s --retries=20 CMD ["/bin/bash", "/misskey/healthcheck.sh"]
 ENTRYPOINT ["/usr/bin/tini", "--"]
-CMD ["pnpm", "run", "migrateandstart"]
+CMD ["node", "apps/misskey/scripts/start.mjs", "--migrate"]

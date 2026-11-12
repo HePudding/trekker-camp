@@ -250,7 +250,7 @@ export class ServerService implements OnApplicationShutdown {
 			reply.header('Content-Type', 'image/png');
 
 			if (this.meta.enableIdenticonGeneration) {
-				return await genIdenticon(request.params.x);
+				return genIdenticon(request.params.x);
 			} else {
 				return reply.redirect('/static-assets/avatar.png');
 			}

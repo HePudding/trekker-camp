@@ -617,11 +617,38 @@ use_image_start_command() (
 	mv -f -- "$candidate" "$camp_dir/compose.yml"
 )
 
+check_application_runtime() {
+	stage='验证新镜像的 Node 与原生依赖'
+	compose run --rm --no-deps -T --pull never --workdir /misskey/apps/misskey/packages/backend web node --input-type=module <<'JS'
+import assert from 'node:assert/strict';
+import { execFileSync } from 'node:child_process';
+import { readFileSync } from 'node:fs';
+
+const expectedNode = readFileSync('/misskey/.node-version', 'utf8').trim().replace(/^v/, '');
+assert.equal(process.versions.node, expectedNode, 'Node version differs from .node-version');
+const { packageManager } = JSON.parse(readFileSync('/misskey/package.json', 'utf8'));
+const expectedPnpm = packageManager.match(/^pnpm@([^+]+)(?:\+.*)?$/)?.[1];
+assert.ok(expectedPnpm, 'packageManager must pin pnpm');
+assert.equal(execFileSync('pnpm', ['--version'], { encoding: 'utf8', timeout: 15000 }).trim(), expectedPnpm,
+	'pnpm version differs from packageManager');
+assert.equal(execFileSync('pnpm', ['exec', 'node', '-p', 'process.versions.node'], { encoding: 'utf8', timeout: 15000 }).trim(),
+	expectedNode, 'pnpm uses a different Node runtime');
+
+const { default: sharp } = await import('sharp');
+await sharp({ create: { width: 1, height: 1, channels: 4, background: '#00000000' } }).png().toBuffer();
+const { default: RE2 } = await import('re2');
+assert.ok(new RE2('camp').test('camp'));
+await import('slacc');
+console.log(`Node ${process.versions.node}, pnpm ${expectedPnpm}: runtime checks passed`);
+JS
+}
+
 deploy() {
 	local action=$1
 	stage='构建应用镜像'
 	compose config --quiet
 	compose build web caddy
+	check_application_runtime
 	stage='验证 Caddy 与 Cloudflare 配置'
 	compose run --rm --no-deps caddy caddy validate --config /etc/caddy/Caddyfile --adapter caddyfile
 	stage='启动数据库与 Redis'

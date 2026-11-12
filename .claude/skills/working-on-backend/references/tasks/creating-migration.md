@@ -66,7 +66,7 @@ node .claude/skills/working-on-backend/scripts/prepare-generate.mjs
 脚本执行：
 
 - pnpm build-pre，生成 loadConfig 所需的 built/meta.json。
-- 后端 compile-config，生成 ormconfig.js 所需的 built/.config.json。输入为 .config/default.yml；缺失时先按 .config/example.yml 创建。
+- 检查运行时读取的根目录 .config/default.yml；缺失时先按 .config/example.yml 创建。
 - 后端 build，使 built 中的实体更新，CLI 从此读取。
 - `docker compose -f compose.local-db.yml up -d --wait db`，启动 PostgreSQL。--wait 要求 Docker Compose v2.1.1（2021-11）及以上，不支持已停止维护的 v1。
 

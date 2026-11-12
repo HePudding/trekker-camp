@@ -20,12 +20,14 @@ jobs:
       with:
         submodules: true
     - name: Setup pnpm
-      uses: pnpm/action-setup@v6.0.10
+      uses: pnpm/action-setup@v6.1.1
     - name: Use Node.js
-      uses: actions/setup-node@v7.0.0
+      uses: actions/setup-node@v7.1.0
       with:
         node-version-file: '.node-version'
         cache: 'pnpm'
+    - name: Test startup and migration orchestration
+      run: node --test apps/misskey/scripts/start.test.mjs
     - run: pnpm i --frozen-lockfile
     - name: Check pnpm-lock.yaml
       run: git diff --exit-code pnpm-lock.yaml
