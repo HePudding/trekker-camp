@@ -6,13 +6,13 @@ services:
         target: /misskey/node_modules
       - type: volume
         source: node_modules_backend
-        target: /misskey/packages/backend/node_modules
+        target: /misskey/apps/misskey/packages/backend/node_modules
       - type: volume
         source: node_modules_misskey-js
-        target: /misskey/packages/misskey-js/node_modules
+        target: /misskey/apps/misskey/packages/misskey-js/node_modules
       - type: volume
         source: node_modules_misskey-reversi
-        target: /misskey/packages/misskey-reversi/node_modules
+        target: /misskey/apps/misskey/packages/misskey-reversi/node_modules
 
   tester:
     networks:
@@ -25,10 +25,10 @@ services:
         target: /misskey/node_modules
       - type: volume
         source: node_modules_backend_dev
-        target: /misskey/packages/backend/node_modules
+        target: /misskey/apps/misskey/packages/backend/node_modules
       - type: volume
         source: node_modules_misskey-js_dev
-        target: /misskey/packages/misskey-js/node_modules
+        target: /misskey/apps/misskey/packages/misskey-js/node_modules
 
   daemon:
     networks:
@@ -41,7 +41,7 @@ services:
         target: /misskey/node_modules
       - type: volume
         source: node_modules_backend_dev
-        target: /misskey/packages/backend/node_modules
+        target: /misskey/apps/misskey/packages/backend/node_modules
 
   redis.test:
     networks:
@@ -62,13 +62,13 @@ services:
         target: /misskey/node_modules
       - type: volume
         source: node_modules_backend
-        target: /misskey/packages/backend/node_modules
+        target: /misskey/apps/misskey/packages/backend/node_modules
       - type: volume
         source: node_modules_misskey-js
-        target: /misskey/packages/misskey-js/node_modules
+        target: /misskey/apps/misskey/packages/misskey-js/node_modules
       - type: volume
         source: node_modules_misskey-reversi
-        target: /misskey/packages/misskey-reversi/node_modules
+        target: /misskey/apps/misskey/packages/misskey-reversi/node_modules
 
   b.test:
     networks:
@@ -84,13 +84,13 @@ services:
         target: /misskey/node_modules
       - type: volume
         source: node_modules_backend
-        target: /misskey/packages/backend/node_modules
+        target: /misskey/apps/misskey/packages/backend/node_modules
       - type: volume
         source: node_modules_misskey-js
-        target: /misskey/packages/misskey-js/node_modules
+        target: /misskey/apps/misskey/packages/misskey-js/node_modules
       - type: volume
         source: node_modules_misskey-reversi
-        target: /misskey/packages/misskey-reversi/node_modules
+        target: /misskey/apps/misskey/packages/misskey-reversi/node_modules
 
 networks:
   external_network:

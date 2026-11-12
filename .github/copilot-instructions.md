@@ -94,7 +94,7 @@ GitHub 认证使用限定私有素材仓库读取的细粒度 PAT，访问成功
 - 迁移差异检查：`pnpm --filter backend check-migrations`
 - 重新生成 misskey-js（API 修改后必需）：`pnpm build-misskey-js-with-types`
 
-**注意：**运行后端 `test`、`test:e2e`、`test:fed` 前，需要 `.config/test.yml`。尚未创建时，先执行 `ncp .github/misskey/test.yml .config/test.yml` 或 `cp .github/misskey/test.yml .config/test.yml`。各测试脚本内部会调用 `cross-env NODE_ENV=test pnpm compile-config`，完成复制后无需单独执行 compile-config。
+**注意：**运行后端 `test`、`test:e2e`、`test:fed` 前，需要 `.config/test.yml`。尚未创建时，先执行 `ncp .github/misskey/test.yml .config/test.yml` 或 `cp .github/misskey/test.yml .config/test.yml`。测试使用 `NODE_ENV=test`，运行时直接读取 YAML 配置。
 
 根据修改范围优先选择最相关的命令，必要时扩大到全量检查。
 

@@ -6286,6 +6286,10 @@ export interface Locale extends ILocale {
          * 根据环境不同，有可能无法开启。
          */
         "settingsPersistence_description2": string;
+        /**
+         * 自动播放链接预览中的嵌入式播放器
+         */
+        "autoplayEmbededPlayerOfUrlPreview": string;
         "_chat": {
             /**
              * 显示发送者的名字
@@ -14136,7 +14140,7 @@ export interface Locale extends ILocale {
          */
         "restrictSignupEmailDomains": string;
         /**
-         * 仅限制新账号的邮箱注册，支持 @qq.com 和 @gmail.com。
+         * 仅限制新账号的邮箱注册，支持 @qq.com 和 @gmail.com；关闭「QQ 邮箱仅允许数字邮箱注册」后，也支持 @foxmail.com 别名。
          */
         "emailRestrictionHint": string;
         /**
@@ -14148,7 +14152,7 @@ export interface Locale extends ILocale {
          */
         "numericQqHint": string;
         /**
-         * 请使用 QQ 邮箱（@qq.com）或 Gmail（@gmail.com）注册。
+         * 请使用 QQ 邮箱（@qq.com）或 Gmail（@gmail.com）注册；关闭 QQ 数字邮箱限制时也可使用 @foxmail.com 别名。
          */
         "emailDomainNotAllowed": string;
         /**

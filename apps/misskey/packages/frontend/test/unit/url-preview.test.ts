@@ -6,6 +6,7 @@
 import { describe, test, assert, afterEach, vi, expect } from 'vitest';
 import { render, cleanup, fireEvent, type RenderResult } from '@testing-library/vue';
 import type { SummalyResult } from '@misskey-dev/summaly';
+import { preferState } from '../setup.unit.js';
 import { components } from '@/components/index.js';
 import { directives } from '@/directives/index.js';
 import MkUrlPreview from '@/components/MkUrlPreview.vue';
@@ -61,6 +62,7 @@ describe('MkUrlPreview', () => {
 	};
 
 	afterEach(() => {
+		preferState.autoplayEmbededPlayerOfUrlPreview = true;
 		fetchMock.resetMocks();
 		vi.restoreAllMocks();
 		cleanup();
@@ -176,7 +178,8 @@ describe('MkUrlPreview', () => {
 		assert.strictEqual(iframe?.parentElement?.style.paddingTop, '200px');
 	});
 
-	test('Bilibili links open and close an official player without player metadata', async () => {
+	test.each([true, false])('Bilibili links open and close an official player with autoplay %s without player metadata', async (autoplay) => {
+		preferState.autoplayEmbededPlayerOfUrlPreview = autoplay;
 		const preview = await renderPreviewBy({
 			url: 'https://www.bilibili.com/video/BV1B7411m7LV/',
 			title: 'Video title',
@@ -191,7 +194,7 @@ describe('MkUrlPreview', () => {
 		assert.strictEqual(playerUrl.searchParams.get('bvid'), 'BV1B7411m7LV');
 		assert.strictEqual(playerUrl.searchParams.get('p'), '2');
 		assert.strictEqual(playerUrl.searchParams.get('t'), '30');
-		assert.strictEqual(playerUrl.searchParams.get('autoplay'), '1');
+		assert.strictEqual(playerUrl.searchParams.get('autoplay'), autoplay ? '1' : '0');
 		assert.isFalse(playerUrl.searchParams.has('spm_id_from'));
 		assert.strictEqual(iframe!.parentElement?.style.paddingTop, '56.25%');
 		assert.include(iframe!.allow, 'fullscreen');
@@ -234,7 +237,8 @@ describe('MkUrlPreview', () => {
 		assert.exists(preview.container.querySelector('iframe'));
 	});
 
-	test('The player window renders the supplied Bilibili player and branding', () => {
+	test.each([true, false])('The player window renders the supplied Bilibili player and branding with autoplay %s', (autoplay) => {
+		preferState.autoplayEmbededPlayerOfUrlPreview = autoplay;
 		const player = render(MkYouTubePlayer, {
 			props: {
 				urlOrSummalyResult: {
@@ -256,6 +260,7 @@ describe('MkUrlPreview', () => {
 		const iframe = player.container.querySelector('iframe');
 		assert.exists(iframe);
 		assert.strictEqual(new URL(iframe!.src).hostname, 'player.bilibili.com');
+		assert.strictEqual(new URL(iframe!.src).searchParams.get('autoplay'), autoplay ? '1' : '0');
 		assert.exists(player.container.querySelector('.ti-brand-bilibili'));
 		player.getByText('Video title');
 	});
