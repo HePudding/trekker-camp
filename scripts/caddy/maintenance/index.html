@@ -1,0 +1,33 @@
+<!-- SPDX-FileCopyrightText: syuilo and misskey-project -->
+<!-- SPDX-License-Identifier: AGPL-3.0-only -->
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex,nofollow">
+<meta name="theme-color" content="#eef2f8">
+<title>营地暂时休息中 · 旅人营地</title>
+<style>
+:root{color-scheme:light;--ink:#4b5082;--teal:#087f85;--paper:#fff;--bg:#eef2f8}
+*{box-sizing:border-box}body{margin:0;min-height:100svh;display:grid;place-items:center;padding:28px 20px;color:var(--ink);font:16px/1.8 system-ui,"Microsoft YaHei",sans-serif;background:radial-gradient(circle at 100% 0%,#0abec51a,transparent 42%),radial-gradient(circle at 0% 100%,#ffde6d24,transparent 38%),linear-gradient(#4b50820b 1px,transparent 1px) 0 0/32px 32px,linear-gradient(90deg,#4b50820b 1px,transparent 1px) 0 0/32px 32px,var(--bg)}
+main{width:min(100%,840px)}header{display:flex;align-items:center;justify-content:space-between;gap:16px;margin-bottom:18px}.brand{font-size:23px;font-weight:850;letter-spacing:.08em}.tag{font-size:12px;letter-spacing:.12em;color:var(--teal)}article{overflow:hidden;border:1px solid #4b508218;border-radius:28px;background:var(--paper);box-shadow:0 18px 64px #4b508214}.art{background:#e3f6f7;aspect-ratio:16/9;display:grid;place-items:center;position:relative;overflow:hidden}.stars{font-size:72px;color:var(--teal)}picture{position:absolute;inset:0}img{display:block;width:100%;height:100%;object-fit:contain}.copy{padding:30px 36px 34px}.eyebrow{color:var(--teal);font-size:12px;letter-spacing:.14em;font-weight:700}.eyebrow::before{content:"✦";color:#d5a100;margin-right:8px}h1{font-size:clamp(25px,5vw,34px);line-height:1.4;margin:10px 0 12px}p{margin:0;color:#606597}.actions{display:flex;align-items:center;gap:18px;flex-wrap:wrap;margin-top:24px}button{border:0;border-radius:999px;padding:12px 25px;background:var(--teal);color:white;font:inherit;font-weight:650;cursor:pointer}button:hover{background:#06666b}button:focus-visible{outline:3px solid #e9a514;outline-offset:4px}.hint{font-size:13px}footer{text-align:center;margin-top:20px;font-size:12px;letter-spacing:.06em;color:#606597}@media(max-width:480px){body{padding:20px 14px}.copy{padding:24px}article{border-radius:20px}.tag{font-size:10px}.brand{font-size:20px}}
+</style>
+</head>
+<body>
+<main>
+<header><span class="brand">旅人营地 ✦</span><span class="tag">STELLA SORA · CAMP</span></header>
+<article>
+<div class="art"><span class="stars" aria-hidden="true">✧ ⌂ ✦</span><picture><source media="(prefers-reduced-motion: reduce)" srcset="/client-assets/camp/maintenance/apology-still-v1.webp"><img src="/client-assets/camp/maintenance/apology-v1.webp" width="960" height="540" alt="两位旅人向大家鞠躬致歉" onerror="this.parentElement.hidden=true"></picture></div>
+<div class="copy"><div class="eyebrow">营地休整时间</div><h1>魔王大人，稍作休息吧。</h1><p>营地正在维护，或暂时无法连接。<br>抱歉让你久等了，感谢你的耐心陪伴。</p><div class="actions"><button type="button" onclick="returnToCamp()">再看看营地</button><span class="hint">稍后刷新，就能查看是否恢复。</span></div></div>
+</article>
+<footer>星光常在，期待与你再次相聚。</footer>
+</main>
+<script>
+function returnToCamp() {
+	const target = new URL(location.hash.slice(1) || '/', location.origin);
+	location.assign(target.origin === location.origin && !target.pathname.startsWith('/__camp-maintenance/') ? target.href : '/');
+}
+</script>
+</body>
+</html>

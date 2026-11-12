@@ -1,0 +1,5 @@
+# Keep maintenance artwork available independently of the application.
+services:
+  caddy:
+    volumes:
+      - ${CAMP_ASSETS_DIR:-./private-assets/public}:/srv/camp-assets:ro
