@@ -109,6 +109,22 @@ describe('Phone and email verification', () => {
 		}
 	});
 
+	test.each([
+		['alias@foxmail.com', null], [' Alias@FOXMAIL.COM ', null],
+		['alias@qq.com', null], ['alice@gmail.com', null],
+		['alias@foxmail.com.example.org', 'EMAIL_DOMAIN_NOT_ALLOWED'],
+		['alice@example.org', 'EMAIL_DOMAIN_NOT_ALLOWED'],
+	] as const)('allows QQ aliases with numeric-only signup disabled for %s', async (address, error) => {
+		Object.assign(settings, { enablePhoneVerification: false, restrictSignupEmailDomains: true, requireNumericQqEmail: false });
+		if (error) {
+			await expect(codes.validateSignup('email', address)).rejects.toThrow(error);
+			expect(email.validateEmailForAccount).not.toHaveBeenCalled();
+		} else {
+			await expect(codes.validateSignup('email', address)).resolves.toBeUndefined();
+			expect(email.validateEmailForAccount).toHaveBeenCalledWith(address);
+		}
+	});
+
 	test('signup restrictions do not block recovery and can be disabled independently', async () => {
 		Object.assign(settings, { enablePhoneVerification: false, restrictSignupEmailDomains: false, requireNumericQqEmail: true });
 		await expect(codes.validateSignup('email', 'alice@example.org')).resolves.toBeUndefined();
