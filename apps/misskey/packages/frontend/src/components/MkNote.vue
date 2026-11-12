@@ -621,7 +621,6 @@ const galleryFiles = filterUnreferencedFiles(appearNote.files ?? [], appearNote.
 	&.useSticky {
 		position: sticky !important;
 		top: calc(22px + var(--MI-stickyTop, 0px));
-		left: 0;
 	}
 }
 

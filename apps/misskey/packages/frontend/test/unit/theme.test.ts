@@ -5,6 +5,7 @@
 
 import { afterEach, assert, beforeEach, describe, test, vi } from 'vitest';
 import type { Theme } from '@@/js/theme.js';
+import { parseThemeCode } from '@@/js/theme-code.js';
 import lightTheme from '@@/themes/_light.json5';
 import darkTheme from '@@/themes/_dark.json5';
 import campLightTheme from '@@/themes/l-trekker.json5';
@@ -102,10 +103,10 @@ describe('ThemeManager', () => {
 		window.localStorage.clear();
 	});
 
-	test('camp themes apply decorations and clear them when switching to a plain theme', async () => {
+	test('imported camp themes apply decorations and clear them when switching to a plain theme', async () => {
 		const { themeManager } = await loadThemeModule();
 		for (const theme of [campLightTheme, campDarkTheme]) {
-			themeManager.updateTheme(theme);
+			themeManager.updateTheme(parseThemeCode(JSON.stringify(theme)));
 			assert.strictEqual(document.documentElement.dataset.colorScheme, theme.base);
 			const decoration = document.documentElement.style.getPropertyValue('--MI_THEME-bgDecoration');
 			assert.include(decoration, 'radial-gradient(');
