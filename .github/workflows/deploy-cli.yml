@@ -15,6 +15,12 @@ on:
       - compose.vps.yml
       - compose.assets.yml
       - Dockerfile
+      - .node-version
+      - package.json
+      - pnpm-lock.yaml
+      - pnpm-workspace.yaml
+      - patches/**
+      - apps/misskey/**
       - .dockerignore
       - .config/docker_example.yml
       - .config/docker_example.env
@@ -33,6 +39,12 @@ on:
       - compose.vps.yml
       - compose.assets.yml
       - Dockerfile
+      - .node-version
+      - package.json
+      - pnpm-lock.yaml
+      - pnpm-workspace.yaml
+      - patches/**
+      - apps/misskey/**
       - .dockerignore
       - .config/docker_example.yml
       - .config/docker_example.env
@@ -47,6 +59,24 @@ env:
   LC_ALL: C.UTF-8
 
 jobs:
+  runtime:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v7.0.1
+      - name: Build the application runtime
+        run: docker build -t camp-runtime-test .
+      - name: Prepare the previous Node major runtime
+        run: docker pull node:24.22.1-trixie-slim
+      - name: Verify runtime compatibility and preserve uploads across a Node major upgrade
+        env:
+          RUNTIME_TEST_IMAGE: camp-runtime-test
+          RUNTIME_OLD_IMAGE: node:24.22.1-trixie-slim
+        run: >-
+          python3 scripts/deploy.test.py
+          DeployTests.test_real_runtime_rejects_wrong_versions_and_incompatible_native_modules
+          DeployTests.test_real_node_major_upgrade_preserves_uploads_and_checks_before_recreation -v
+
   lifecycle:
     runs-on: ubuntu-latest
     timeout-minutes: 5
@@ -105,7 +135,7 @@ jobs:
   result:
     name: VPS CLI checks
     if: always()
-    needs: [test, caddy, backup, lifecycle]
+    needs: [test, caddy, backup, lifecycle, runtime]
     runs-on: ubuntu-latest
     steps:
       - name: Require every deployment check to pass
@@ -114,4 +144,5 @@ jobs:
           CADDY_RESULT: ${{ needs.caddy.result }}
           BACKUP_RESULT: ${{ needs.backup.result }}
           LIFECYCLE_RESULT: ${{ needs.lifecycle.result }}
-        run: test "$TEST_RESULT" = success && test "$CADDY_RESULT" = success && test "$BACKUP_RESULT" = success && test "$LIFECYCLE_RESULT" = success
+          RUNTIME_RESULT: ${{ needs.runtime.result }}
+        run: test "$TEST_RESULT" = success && test "$CADDY_RESULT" = success && test "$BACKUP_RESULT" = success && test "$LIFECYCLE_RESULT" = success && test "$RUNTIME_RESULT" = success
