@@ -462,9 +462,7 @@ ${site_url#https://} {
 		dns cloudflare {env.CLOUDFLARE_API_TOKEN}
 		resolvers 1.1.1.1 1.0.0.1
 	}
-	reverse_proxy web:3000 {
-		header_up X-Forwarded-For {client_ip}
-	}
+	import camp_reverse_proxy web:3000
 }
 EOF
 	cp "$camp_dir/compose.vps.yml" "$camp_dir/compose.yml"
@@ -643,8 +641,43 @@ console.log(`Node ${process.versions.node}, pnpm ${expectedPnpm}: runtime checks
 JS
 }
 
+prepare_cdn() (
+	local candidate secret
+	# Preserve the DNS credential and the origin secret across updates.
+	secret=$(sed -n 's/^CAMP_EDGEONE_ORIGIN_SECRET=//p' "$config_dir/cloudflare.env")
+	if [[ -z $secret ]]; then
+		secret=$(openssl rand -hex 32)
+		printf '\nCAMP_EDGEONE_ORIGIN_SECRET=%s\n' "$secret" >> "$config_dir/cloudflare.env"
+	fi
+	[[ $secret =~ ^[a-f0-9]{64}$ ]] || fail 'CAMP_EDGEONE_ORIGIN_SECRET 需为 64 位小写十六进制密钥。'
+	chmod 0600 "$config_dir/cloudflare.env"
+	candidate=$(mktemp "$config_dir/.Caddyfile-XXXXXX")
+	trap 'rm -f -- "$candidate"' EXIT
+	# Upgrade the original generated proxy block, preserving custom site settings.
+	awk '
+		/^[[:space:]]*reverse_proxy web:3000 \{$/ {
+			line = $0
+			getline first
+			getline second
+			if (first ~ /^[[:space:]]*header_up X-Forwarded-For \{client_ip\}$/ && second ~ /^[[:space:]]*\}$/) {
+				print "\timport camp_reverse_proxy web:3000"
+				next
+			}
+			print line; print first; print second; next
+		}
+		{ print }
+	' "$config_dir/Caddyfile" > "$candidate"
+	grep -q '^[[:space:]]*import camp_reverse_proxy web:3000[[:space:]]*$' "$candidate" ||
+		fail 'Caddyfile 使用了自定义代理配置，请将本站代理改为 import camp_reverse_proxy web:3000 后重试。'
+	if cmp -s "$candidate" "$config_dir/Caddyfile"; then return; fi
+	chmod --reference="$config_dir/Caddyfile" "$candidate"
+	mv -f -- "$candidate" "$config_dir/Caddyfile"
+)
+
 deploy() {
 	local action=$1
+	stage='配置 CDN 访客 IP 识别'
+	prepare_cdn
 	stage='构建应用镜像'
 	compose config --quiet
 	compose build web caddy

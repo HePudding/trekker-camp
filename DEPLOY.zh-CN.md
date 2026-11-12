@@ -121,7 +121,13 @@ Node 大版本随新镜像一起升级，构建与运行阶段使用 Dockerfile 
 
 首次签发证书时，CLI 显示一条等待提示并重试 HTTPS 检查；超时后显示最终连接错误。此时检查域名解析、80 / 443 端口及 `camp logs` 中的 Caddy 日志，修复后运行 `camp start` 重新检查。首次安装尚无 `camp` 命令时，使用 `bash /tmp/camp-deploy.sh logs --dir <代码目录>` 查看日志。脚本不会自动还原数据库迁移。
 
-Caddy 只信任 [Cloudflare 官方网段](https://www.cloudflare.com/ips/)传来的 `CF-Connecting-IP`，将解析后的访客 IP 传给应用；直接连接 VPS 的请求使用连接来源地址。WebSocket 由 Caddy 正常转发，Cloudflare 保持 WebSockets 启用。缓存规则沿用应用响应头，为 `/api/*`、`/streaming*` 和登录页面保留动态访问，避免设置整站强制缓存。
+Caddy 信任 [Cloudflare 官方网段](https://www.cloudflare.com/ips/)传来的 `CF-Connecting-IP`；EdgeOne 免费版通过回源密钥验证来源后读取 `EO-Connecting-IP`。解析后的访客 IP 统一传给应用，用于登录记录和限流。直接连接 VPS 且没有有效回源密钥的请求使用连接来源地址。
+
+接入 EdgeOne 时，先执行 `camp self-update` 和 `camp update`。CLI 会在数据目录 `.config/cloudflare.env` 中自动生成 `CAMP_EDGEONE_ORIGIN_SECRET`，权限为 root `0600`，后续更新保留该值；同时升级旧版自动生成的 Caddy 代理配置。按 `camp status` 显示的数据目录读取该密钥，在 EdgeOne 规则引擎中为本站全部请求设置**修改回源请求头 → 设置**：请求头名 `X-Camp-Origin-Secret`，值为该密钥。使用“设置”覆盖客户端同名头，保留 EdgeOne 默认的 `EO-Connecting-IP`，回源协议使用 HTTPS。不要把密钥放入响应头或提交到仓库。Caddy 会在转发应用前移除密钥头。未配置或密钥错误时，继续使用连接来源地址；Cloudflare 识别保持可用。
+
+轮换时，将 `.config/cloudflare.env` 中的密钥替换为 `openssl rand -hex 32` 生成的新值，同步修改 EdgeOne 回源规则，再执行 `camp update`。自定义 Caddy 配置需保留文件顶部的 `import /etc/caddy/cloudflare-proxies.caddy`，并使用 `import camp_reverse_proxy web:3000` 转发本站请求。
+
+WebSocket 由 Caddy 正常转发，CDN 保持 WebSockets 启用。缓存规则沿用应用响应头，为 `/api/*`、`/streaming*` 和登录页面保留动态访问，避免设置整站强制缓存。
 
 ### CLI 自更新
 
