@@ -4,7 +4,7 @@
 
 - 仓库：[HePudding/trekker-camp](https://github.com/HePudding/trekker-camp)
 - 默认分支：`master`（本站日常开发与交付目标）
-- 版本锚点（以仓库文件为准）：`.node-version` → Node **26.12.1**，`package.json#packageManager` → **pnpm@12.14.0**（当前 `2026.10.1` / nasubi）。
+- 版本锚点（以仓库文件为准）：`.node-version` → Node **26.13.1**，`package.json#packageManager` → **pnpm@12.17.0**（当前 `2026.11.0` / nasubi）。
 
 依赖中间件：**PostgreSQL**、**Redis**、**FFmpeg**。Meilisearch 可选（搜索功能和相关测试需要时启用）。
 
@@ -17,9 +17,8 @@ git clone https://github.com/HePudding/trekker-camp.git
 cd trekker-camp
 git checkout master
 
-# Node 26.12.x + 启用 corepack 以匹配 packageManager
-corepack enable
-corepack prepare pnpm@12.14.0 --activate
+# 使用 .node-version 指定的 Node，并安装匹配 packageManager 的 pnpm
+npm install -g pnpm@12.17.0
 
 # 只起 Postgres + Redis（不要用这个 compose 起 Misskey 本体）
 cp .config/docker_example.env .config/docker.env   # 按需改密码
@@ -55,7 +54,7 @@ pnpm --filter backend test
 
 仓库自带 `.devcontainer/`。用 Dev Containers 打开项目后会跑 `init.sh`：`pnpm install` → 拷配置 → `build` → `migrate`。
 
-注意：上游 `devcontainer.json` 里写死的 Node / pnpm **偏旧**（例如 Node 22 + pnpm 10），与当前 `.node-version` / `packageManager` 不一致。若 postCreate 失败，优先把 feature 版本改成与 `.node-version`、`package.json#packageManager` 一致，或改用方式 A。
+Devcontainer 使用仓库要求的 Node 版本，初始化时按 `package.json#packageManager` 安装 pnpm。
 
 使用 Devcontainer 的 Windows 环境建议在 **WSL** 中克隆仓库。直接在 Windows 开发时按仓库 `.gitattributes` 保持换行格式。
 

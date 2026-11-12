@@ -38,6 +38,8 @@ import { misskeyApi } from '@/utility/misskey-api.js';
 import { i18n } from '@/i18n.js';
 import { instance } from '@/instance.js';
 import { useLowresTime } from '@@/js/use-lowres-time.js';
+import { $i } from '@/i.js';
+import { noteEvents } from '@/composables/use-note-capture.js';
 
 const props = defineProps<{
 	noteId: string;
@@ -105,6 +107,7 @@ const vote = async (id: number) => {
 		noteId: props.noteId,
 		choice: id,
 	});
+	noteEvents.emit(`pollVoted:${props.noteId}`, { userId: $i!.id, choice: id });
 	if (!showResult.value) showResult.value = !props.multiple;
 };
 </script>

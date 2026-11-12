@@ -1,12 +1,12 @@
 {
 	"name": "trekker-camp",
-	"version": "2026.10.1",
+	"version": "2026.11.0",
 	"codename": "nasubi",
 	"repository": {
 		"type": "git",
 		"url": "https://github.com/HePudding/trekker-camp.git"
 	},
-	"packageManager": "pnpm@12.14.0",
+	"packageManager": "pnpm@12.17.0",
 	"workspaces": [
 		"apps/*",
 		"packages/*",
@@ -26,13 +26,12 @@
 	],
 	"private": true,
 	"scripts": {
-		"compile-config": "pnpm --dir apps/misskey run compile-config",
 		"build-pre": "pnpm --dir apps/misskey run build-pre",
 		"build-assets": "pnpm --dir apps/misskey run build-assets",
 		"build": "pnpm --dir apps/misskey run build",
 		"build-storybook": "pnpm --dir apps/misskey run build-storybook",
 		"build-misskey-js-with-types": "pnpm --dir apps/misskey run build-misskey-js-with-types",
-		"start": "pnpm --dir apps/misskey run start",
+		"start": "node apps/misskey/scripts/start.mjs",
 		"start:inspect": "pnpm --dir apps/misskey run start:inspect",
 		"start:test": "pnpm --dir apps/misskey run start:test",
 		"cli": "pnpm --dir apps/misskey run cli",
@@ -40,7 +39,7 @@
 		"migrate": "pnpm --dir apps/misskey run migrate",
 		"revert": "pnpm --dir apps/misskey run revert",
 		"check:connect": "pnpm --dir apps/misskey run check:connect",
-		"migrateandstart": "pnpm --dir apps/misskey run migrateandstart",
+		"migrateandstart": "node apps/misskey/scripts/start.mjs --migrate",
 		"watch": "pnpm --dir apps/misskey run watch",
 		"dev": "pnpm --dir apps/misskey run dev",
 		"assets:link": "node scripts/private-assets.mjs",
@@ -63,7 +62,7 @@
 	},
 	"dependencies": {
 		"esbuild": "0.28.2",
-		"execa": "10.1.1",
+		"execa": "10.2.1",
 		"ignore-walk": "9.0.0",
 		"js-yaml": "5.5.0",
 		"tar": "7.5.22"
@@ -71,13 +70,13 @@
 	"devDependencies": {
 		"@eslint/js": "9.39.5",
 		"@misskey-dev/eslint-plugin": "2.1.0",
-		"@types/node": "26.6.5",
-		"@typescript-eslint/eslint-plugin": "8.71.2",
-		"@typescript-eslint/parser": "8.71.2",
+		"@types/node": "26.6.6",
+		"@typescript-eslint/eslint-plugin": "8.72.1",
+		"@typescript-eslint/parser": "8.72.1",
 		"@typescript/native": "npm:typescript@7.0.2",
 		"cross-env": "10.1.0",
 		"eslint": "9.39.5",
-		"globals": "17.13.0",
+		"globals": "17.14.0",
 		"ncp": "2.0.0",
 		"start-server-and-test": "3.0.13",
 		"typescript": "npm:@typescript/typescript6@6.0.2"

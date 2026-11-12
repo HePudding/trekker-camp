@@ -1573,6 +1573,7 @@ _settings:
   settingsPersistence_title: "设置持久化"
   settingsPersistence_description1: "启用设置持久化可防止设置信息丢失。"
   settingsPersistence_description2: "根据环境不同，有可能无法开启。"
+  autoplayEmbededPlayerOfUrlPreview: "自动播放链接预览中的嵌入式播放器"
   _chat:
     showSenderName: "显示发送者的名字"
     sendOnEnter: "回车键发送"
