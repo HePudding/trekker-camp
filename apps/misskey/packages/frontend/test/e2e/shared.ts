@@ -11,6 +11,8 @@ export const ADMIN_SETUP_PASSWORD = 'example_password_please_change_this_or_you_
 export const DEFAULT_INVITATION_CODE = 'test-invitation-code';
 
 async function signupProof(invitationCode: string = randomUUID()) {
+	// Playwright runs separately from the server started with NODE_ENV=test.
+	process.env.MISSKEY_CONFIG_YML ||= 'test.yml';
 	const { loadConfig } = await import(new URL('../../../backend/built/config.js', import.meta.url).href);
 	const config = loadConfig();
 	if (config.db.db !== 'test-misskey') throw new Error('Phone fixtures require the isolated test database');
