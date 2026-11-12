@@ -92,7 +92,8 @@ export class VerificationCodeService {
 			throw new VerificationError('VERIFICATION_UNAVAILABLE');
 		}
 		const [local, domain] = normalizeEmail(address).split('@');
-		if (instance.restrictSignupEmailDomains && domain !== 'qq.com' && domain !== 'gmail.com') {
+		const allowFoxmailAlias = domain === 'foxmail.com' && !instance.requireNumericQqEmail;
+		if (instance.restrictSignupEmailDomains && domain !== 'qq.com' && domain !== 'gmail.com' && !allowFoxmailAlias) {
 			throw new VerificationError('EMAIL_DOMAIN_NOT_ALLOWED');
 		}
 		if (instance.requireNumericQqEmail && domain === 'qq.com' && !/^\d+$/.test(local)) {
